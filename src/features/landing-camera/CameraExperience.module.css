@@ -1,0 +1,8 @@
+/* 카메라 레이어 — 위치·크기는 Landing 레이아웃과 함께 정한다 */
+.layer {
+  pointer-events: none;
+}
+
+.layer[data-visible='false'] {
+  visibility: hidden;
+}
