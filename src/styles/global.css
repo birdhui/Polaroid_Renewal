@@ -1,0 +1,9 @@
+/* 전역 스타일 진입점 — src/main.jsx 에서 한 번만 import 한다. (공통 파일) */
+@import './reset.css';
+@import './variables.css';
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
