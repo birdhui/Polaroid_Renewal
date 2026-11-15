@@ -25,11 +25,11 @@ npm run dev                   # http://localhost:5173
 
 ## 작업 규칙
 
-1. **작업 전 브랜치 확인**: `git branch --show-current`가 내 브랜치인지 확인합니다.
+1. **작업 전 브랜치 확인**: `git branch --show-current`가 내 브랜치인지 확인합니다. 한 브랜치는 하나의 작업 범위만 다룹니다.
 2. **내 담당 디렉터리에서만 개발**합니다. 담당 범위는 `docs/project-structure.md`를 참고하세요.
 3. **다른 페이지 파일은 수정하지 않습니다.** 필요하면 담당자에게 요청합니다.
 4. **공통 파일은 PM과 사전 협의**한 뒤 수정합니다. 대상: `src/app/`, `src/shared/`, 루트 설정, 문서
-5. **Header·Footer는 `src/shared/components/`에만 있습니다.** 페이지에서 다시 만들지 않습니다.
+5. **Header·Footer는 `src/shared/components/`에만 있습니다.** 페이지에서 다시 만들지 않습니다. 수정은 정준혁과 공유한 뒤 진행합니다.
 6. **패키지는 실제로 필요할 때만** 추가하고, 이유를 PR에 적습니다.
 7. **완성되지 않은 디자인을 임의로 만들지 않습니다.** 확정된 화면 기획서가 배정된 기능만 구현합니다.
 
@@ -49,7 +49,7 @@ import CameraExperience from '@/features/landing-camera/CameraExperience.jsx';
 ### 스타일
 
 - 컴포넌트마다 `Component.module.css`(CSS Modules)를 사용합니다. 전역 CSS는 `src/shared/styles/`에만 둡니다.
-- 색·간격·폰트는 `src/shared/styles/variables.css`의 CSS 변수를 사용합니다. 값을 바꾸려면 모진아와 PM이 검토합니다.
+- 색·간격·폰트는 `src/shared/styles/variables.css`의 CSS 변수를 사용합니다. 기준은 `docs/styleguide.md`에 있고, 변경은 모진아가 `style/design-system` 브랜치에서 진행합니다(PM 검토).
 
 ### 네이밍
 
