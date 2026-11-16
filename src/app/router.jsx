@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { ROUTES } from '@/app/routes.js';
-import RootLayout from '@/layouts/RootLayout/RootLayout.jsx';
+import RootLayout from '@/shared/components/RootLayout/RootLayout.jsx';
 import LandingPage from '@/pages/Landing/LandingPage.jsx';
 import HistoryPage from '@/pages/History/HistoryPage.jsx';
 import CamerasPage from '@/pages/Cameras/CamerasPage.jsx';
