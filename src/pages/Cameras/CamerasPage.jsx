@@ -1,14 +1,25 @@
+import CamerasHero from './components/CamerasHero/CamerasHero.jsx';
+import CamerasStory from './components/CamerasStory/CamerasStory.jsx';
+import { CAMERAS_HERO, CAMERAS_STORY } from './data/camerasContent.js';
 import styles from './CamerasPage.module.css';
 
+const STORY_ID = 'cameras-story';
+
 /**
- * Cameras — 카메라 제품군 소개 (담당: 정준혁)
- * 세부 디자인과 기능은 확정된 화면 기획서를 받은 뒤 이 폴더 안에서 개발한다.
- * 페이지 전용 컴포넌트는 ./components/, 훅은 ./hooks/, 데이터는 ./data/ 에 둔다.
+ * Cameras — 카메라 서브페이지 (담당: 정준혁)
+ * 구조: Hero(로크업) → Story(타이틀 · 사진 · 고정 본문 · CTA)
+ * 화면 구조는 레퍼런스(collabo-detail) 기준이며, 콘텐츠는 ./data/camerasContent.js 에서 관리한다.
+ * Header·Footer 는 RootLayout 의 공통 컴포넌트를 그대로 사용한다.
  */
 export default function CamerasPage() {
   return (
-    <section className={styles.page} aria-labelledby="cameras-title">
-      <h1 id="cameras-title">Cameras</h1>
-    </section>
+    <div className={styles.page}>
+      <CamerasHero hero={CAMERAS_HERO} nextId={STORY_ID} />
+      <CamerasStory
+        id={STORY_ID}
+        story={CAMERAS_STORY}
+        lockup={{ brand: CAMERAS_HERO.brand, product: CAMERAS_HERO.product }}
+      />
+    </div>
   );
 }

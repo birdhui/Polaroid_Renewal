@@ -1,3 +1,17 @@
+/**
+ * Cameras 페이지 전용 디자인 값.
+ * Figma 덱 'DESIGN SYSTEM'(16번 슬라이드)에서 확정된 값이지만 아직 공통 토큰(variables.css)에 없다.
+ * 공통 토큰이 추가되면(모진아, style/design-system) 아래 값을 해당 토큰으로 교체한다.
+ * 폰트는 아직 로드되지 않으므로 대체 폰트로 표시된다.
+ */
 .page {
-  padding: var(--space-6);
+  --cam-bg: #171411; /* Primary */
+  --cam-ink: #f5efe6; /* Accent */
+  --cam-accent: #8fa9c4; /* Accent */
+  --cam-surface: #221e1a;
+  --cam-font-eng: 'DM Sans', var(--font-sans);
+  --cam-font-point: 'Zilla Slab', Georgia, 'Times New Roman', serif;
+
+  background: var(--cam-bg);
+  color: var(--cam-ink);
 }
