@@ -21,7 +21,7 @@ npm run dev                   # http://localhost:5173
 
 - React 19 · Vite 8 · React Router 8 · JavaScript(JSX) · CSS Modules
 - 아직 설치하지 않은 것: Three.js(또는 React Three Fiber), 스크롤·모션 라이브러리, 린터. 필요하면 PR 전에 PM과 협의합니다.
-- 백엔드·로그인·DB·서버 API는 범위가 아닙니다. Archive의 이미지 편집과 저장도 브라우저 안에서만 처리합니다.
+- 백엔드·로그인·DB·서버 API는 범위가 아닙니다. Film 페이지의 사진 편집과 저장도 브라우저 안에서만 처리합니다.
 
 ## 작업 규칙
 
