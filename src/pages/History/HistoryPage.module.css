@@ -1,3 +1,396 @@
+@font-face {
+  font-family: 'History DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/history/dm-sans-latin-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'History DM Sans';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('../../assets/history/dm-sans-latin-800.woff2') format('woff2');
+}
+
+/* Scope the shared header behavior to the History route. */
+:global(header):has(+ :global(main) > .page) {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--z-header);
+  background: transparent;
+  border-bottom: 0;
+  color: #fff;
+}
+
+:global(header):has(+ :global(main) > .page) :global(a) {
+  color: inherit;
+}
+
+/* History-only logo: the shared text logo is swapped for the brand SVG without touching SiteHeader. */
+:global(header):has(+ :global(main) > .page) > :global(a:first-child) {
+  display: block;
+  width: 80px;
+  height: 22px;
+  overflow: hidden;
+  font-size: 0;
+  background-color: currentColor;
+  mask: url('../../assets/history/polaroid-logo.svg') left center / contain no-repeat;
+}
+
+
+/* Focus-lens navigation: decoration never changes link geometry. */
+:global(header):has(+ :global(main) > .page) :global(nav a) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3));
+  transition: filter 180ms ease, opacity 180ms ease;
+}
+
+:global(header):has(+ :global(main) > .page) :global(nav a)::before,
+:global(header):has(+ :global(main) > .page) :global(nav a)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--space-2);
+  border: 1px solid currentColor;
+  mask-image: linear-gradient(to bottom, #000 9px, transparent 9px calc(100% - 9px), #000 calc(100% - 9px));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+:global(header):has(+ :global(main) > .page) :global(nav a)::before {
+  left: 0;
+  border-right: 0;
+  border-radius: 2px 0 0 2px;
+  transform: translateX(-4px);
+}
+
+:global(header):has(+ :global(main) > .page) :global(nav a)::after {
+  right: 0;
+  border-left: 0;
+  border-radius: 0 2px 2px 0;
+  transform: translateX(4px);
+}
+
+:global(header):has(+ :global(main) > .page) :global(nav a:focus-visible) {
+  outline: none;
+}
+
+:global(header):has(+ :global(main) > .page) :global(nav a:focus-visible)::before,
+:global(header):has(+ :global(main) > .page) :global(nav a:focus-visible)::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :global(header):has(+ :global(main) > .page) :global(nav:has(a:hover) a:not(:hover):not(:focus-visible)) {
+    filter: blur(3px);
+    opacity: 0.45;
+  }
+
+  :global(header):has(+ :global(main) > .page) :global(nav a:hover)::before,
+  :global(header):has(+ :global(main) > .page) :global(nav a:hover)::after {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  :global(header):has(+ :global(main) > .page) {
+    padding-inline: var(--space-4);
+    font-size: 13px;
+  }
+
+  :global(header):has(+ :global(main) > .page) :global(nav ul) {
+    gap: var(--space-3);
+  }
+
+  :global(header):has(+ :global(main) > .page) :global(nav a) {
+    padding-inline: var(--space-1);
+    margin-inline: calc(-1 * var(--space-1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(header):has(+ :global(main) > .page) :global(nav a),
+  :global(header):has(+ :global(main) > .page) :global(nav a)::before,
+  :global(header):has(+ :global(main) > .page) :global(nav a)::after {
+    transition: none;
+  }
+}
+
 .page {
-  padding: var(--space-6);
+  /* Values sampled from the Leica timeline reference; shared tokens stay untouched. */
+  --history-bg: #928f89;
+  --history-ink: #fff;
+  --history-ink-soft: rgb(255 255 255 / 0.86);
+  --history-font: 'History DM Sans', var(--font-sans);
+  --history-gutter: 28px;
+  /* Opening frame: title sits mid-screen, body starts just below the fold (Leica reference). */
+  --title-top: 36svh;
+  --title-size: clamp(40px, 7.4vw, 120px);
+  --title-lines: 2;
+  --copy-shift: 0px;
+  --portrait-shift: 0px;
+  position: relative;
+  min-height: 200svh;
+  /* Height now follows the copy column (title, body, sketch). */
+  overflow: clip;
+  background: var(--history-bg);
+  color: var(--history-ink);
+  font-family: var(--history-font);
+}
+
+/* ---------- Pinned chrome ---------- */
+.rail {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.railInner {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+.wheel {
+  /* Lens focus ring: marks sit on a cylinder seen side-on, so they compress and fade toward its edges. */
+  --wheel-width: 112px;
+  --wheel-radius: 300px;
+  /* Vertically centred in the pinned frame; no fill, so the ring sits directly on the page. */
+  --wheel-center: 50svh;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--wheel-width);
+  perspective: 1100px;
+  perspective-origin: 50% var(--wheel-center);
+  /* Soft top/bottom falloff, like light wrapping round the barrel. */
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+
+.wheelDrum {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--wheel-center);
+  height: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--wheel-radius) * -1)) rotateX(var(--wheel-rot, 0deg));
+}
+
+.wheelYear,
+.wheelTick {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 28px;
+  margin-top: -14px;
+  display: flex;
+  align-items: center;
+  transform: rotateX(calc(var(--mark-angle) * -1)) translateZ(var(--wheel-radius));
+  backface-visibility: hidden;
+}
+
+/* Tick marks drawn as short rules at the ring's inner edge. */
+.wheelYear::before,
+.wheelTick::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+}
+
+.wheelYear::before {
+  width: 20px;
+  opacity: 0.8;
+}
+
+.wheelTick::before {
+  width: 7px;
+  opacity: 0.45;
+}
+
+.wheelYear span {
+  margin-left: auto;
+  padding-right: 14px;
+  color: rgb(255 255 255 / 0.62);
+  font-size: clamp(18px, 1.5vw, 22px);
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.wheelYear[data-current] span {
+  color: var(--history-ink);
+  font-weight: 800;
+}
+
+/* The wheel is decorative (aria-hidden); this keeps the year available to screen readers on desktop. */
+.yearInline {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Portrait ---------- */
+.portrait {
+  position: absolute;
+  z-index: 1;
+  top: 80svh;
+  /* Centred in the frame. */
+  left: 50%;
+  /* Sized in steps from the first pass (72vw / 1040px): x1.2 x1.2 x1.2 x1.3 x0.85. */
+  width: min(137.49vw, 1986px);
+  transform: translate3d(-50%, var(--portrait-shift), 0);
+  will-change: transform;
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  column-gap: 20px;
+  max-width: 1536px;
+  margin-inline: auto;
+  padding: var(--title-top) var(--history-gutter) 45svh;
+  transform: translate3d(0, var(--copy-shift), 0);
+  will-change: transform;
+}
+
+.title {
+  /* Starts a fixed distance from the focus-ring wheel (labels end ~88px; marked gap ~120px). */
+  grid-column: 1 / -1;
+  margin-left: calc(208px - var(--history-gutter));
+  /* Sized so "the photo right away?" holds one line, like the reference's two-line title. */
+  font-size: var(--title-size);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.title span {
+  display: block;
+}
+
+.description {
+  grid-column: 8 / span 10;
+  /* Keeps the body hidden on first view: it begins a little past the bottom of the screen,
+     and never closer to the title than the marked-up gap. */
+  margin-top: max(
+    clamp(72px, 9.3vw, 132px),
+    calc(100svh - var(--title-top) - var(--title-size) * var(--title-lines) + 48px)
+  );
+  color: var(--history-ink-soft);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.sketch {
+  grid-column: 1 / -1;
+  display: block;
+  /* Horizontally centred in the full frame. */
+  justify-self: center;
+  width: min(42vw, 600px);
+  height: auto;
+  /* Gap between body copy and sketch: two steps of 22svh. */
+  margin: 44svh 0 0;
+}
+
+@media (max-width: 1023px) {
+  .copy {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .title,
+  .description {
+    grid-column: 1 / -1;
+  }
+
+  /* No wheel on narrow screens, so the title returns to the gutter. */
+  .title {
+    margin-left: 0;
+  }
+
+  .wheel {
+    display: none;
+  }
+
+  .page {
+    --title-top: 28svh;
+    --title-lines: 3;
+  }
+
+  .yearInline {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    display: block;
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-5);
+    font-size: 18px;
+  }
+
+  .portrait {
+    top: 86svh;
+    left: 50%;
+    width: 210.04vw;
+  }
+
+  .sketch {
+    width: min(78vw, 420px);
+    margin: 44svh auto 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    --history-gutter: var(--space-5);
+  }
+
+  :global(header):has(+ :global(main) > .page) > :global(a:first-child) {
+    width: 66px;
+    height: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait {
+    transform: translateX(-50%);
+    will-change: auto;
+  }
+
+  .copy {
+    transform: none;
+    will-change: auto;
+  }
 }
