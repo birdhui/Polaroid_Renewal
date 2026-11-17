@@ -1,0 +1,206 @@
+<!doctype html>
+<!--
+  Polaroid Now 상세페이지 시안 (CONCEPT · 비공식) — 담당: 정준혁
+  배포 빌드에는 포함되지 않는 정적 시안입니다. 확인: npm run dev 후
+  http://localhost:5173/src/pages/Cameras/prototype/polaroid-now.html
+  인화 사진은 polaroid.com(Sanity CDN) 이미지를 직접 불러옵니다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polaroid Now · Concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="./polaroid-now.css">
+</head>
+<body>
+<span class="concept">CONCEPT · 비공식</span>
+
+<header class="topbar">
+  <a class="wordmark" href="./polaroid-shop.html" aria-label="polaroid 쇼핑 홈">polaroid<span class="bar" aria-hidden="true"><i style="background:var(--red)"></i><i style="background:var(--orange)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><i style="background:var(--blue)"></i></span></a>
+  <nav class="nav" aria-label="주요 메뉴">
+    <a href="./polaroid-shop.html" aria-current="page">CAMERAS</a>
+    <a href="./polaroid-shop.html#best">BEST SELLERS</a>
+    <a href="#">FILM</a>
+    <a href="#">PRINTERS</a>
+    <a href="./polaroid-shop.html#collab">COLLABS</a>
+  </nav>
+  <div class="tools">
+    <a href="#" aria-label="검색"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></a>
+    <a href="#" aria-label="내 계정"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+    <a href="#" aria-label="장바구니"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></a>
+  </div>
+</header>
+
+<main>
+  <!-- 1. HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <span class="hero-ph" aria-hidden="true">사진추가예정</span>
+    <div class="hero-copy">
+      <h1 id="hero-title" class="t-title rv">Polaroid Now :<br>누구나 쉽게 쓰는 즉석카메라</h1>
+      <p class="t-body rv">2렌즈 오토포커스와 이중노출·셀프타이머로, 일상의 순간을 풀사이즈 Polaroid 필름에 바로 남겨요.</p>
+    </div>
+  </section>
+
+  <!-- 2. 제품 디자인 -->
+  <section class="design" aria-labelledby="design-title">
+    <span class="eyebrow rv">Iconic Polaroid design</span>
+    <h2 id="design-title" class="rv">일상의 모든 순간.<br>모두 Polaroid Now로.</h2>
+    <img class="design-img rv" src="../../../assets/cameras/now/now-colors.webp" alt="핑크와 틸 컬러의 Polaroid Now 두 대">
+    <p class="rv">생일, 여행, 평범한 저녁 식탁까지. 찍는 순간 바로 인화해 손에 쥐여 주는 일상 기록용 카메라예요.<br>전원을 켜고 셔터만 누르면 끝. 즉석카메라가 처음이어도 바로 찍을 수 있어요.</p>
+  </section>
+
+  <!-- 3. 기능 소개 (everyday.io 3열 카드 구성) -->
+  <section class="features" aria-labelledby="feat-title">
+    <header class="feat-intro rv">
+      <span class="eyebrow">Polaroid Now function</span>
+      <h2 id="feat-title">Three ways to make<br>every moment count</h2>
+    </header>
+    <ul class="feat-cards" role="list">
+      <li class="fcard rv">
+        <video class="feat-video" src="../../../assets/cameras/now/now-autofocus.mp4" autoplay muted loop playsinline aria-label="렌즈가 거리에 맞춰 전환되는 2렌즈 오토포커스 클로즈업"></video>
+        <div class="fcard-text">
+          <span>Two-lens autofocus</span>
+          <h3>가까운 얼굴도, 먼 풍경도<br>알아서 또렷하게</h3>
+        </div>
+      </li>
+      <li class="fcard rv">
+        <img src="https://cdn.sanity.io/images/ieogcuy1/production/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?w=1400&fm=webp&q=85" alt="네온사인과 인물이 한 장에 겹쳐 찍힌 이중노출 Polaroid 사진" loading="lazy">
+        <div class="fcard-text">
+          <span>Double exposure mode</span>
+          <h3>두 번 찍으면<br>두 장면이 한 장에</h3>
+        </div>
+      </li>
+      <li class="fcard rv">
+        <img src="https://cdn.sanity.io/images/ieogcuy1/production/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3014,1504,805,826&w=1000&fm=webp&q=90" alt="햇빛 아래 난간에 앉은 두 사람을 올려다본 Polaroid Now Gen 3 인화 사진" loading="lazy">
+        <div class="fcard-text">
+          <span>Bright light exposure</span>
+          <h3>강한 햇빛 아래서도<br>더 선명하게</h3>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 4. 소개 영상 (i2 'Get lost in the journey' 구성) -->
+  <section class="film" aria-labelledby="film-title">
+    <div class="film-top rv">
+      <h2 id="film-title">Learn it in a minute,<br>keep it for a lifetime</h2>
+      <span class="film-with">with</span>
+      <span class="film-sign" aria-hidden="true">Polaroid Now</span>
+    </div>
+    <div class="film-player rv" data-yt="FgUqS0QTaeA">
+      <img class="film-poster" src="https://i.ytimg.com/vi/FgUqS0QTaeA/maxresdefault.jpg" alt="" loading="lazy">
+      <button class="film-play" type="button" aria-label="How to use the Polaroid Now 영상 재생">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7v10l8-5z"/></svg>
+      </button>
+    </div>
+    <blockquote class="film-quote rv">
+      <span class="qmark" aria-hidden="true">“</span>
+      <p>Point. Shoot. Wait for the magic.</p>
+      <p class="ko">셔터를 누르고, 사진이 떠오르길 기다리는 것. 그게 Now 사용법의 전부예요.</p>
+      <footer><strong>How to use the Polaroid Now,</strong> Polaroid</footer>
+      <span class="qmark qmark-end" aria-hidden="true">”</span>
+    </blockquote>
+  </section>
+
+  <!-- 5. 결과물 (instax mini13 'Colorful moment' 구성) -->
+  <section class="results" aria-labelledby="results-title">
+    <div class="results-stage">
+      <div class="results-top">
+        <span class="eyebrow">Shot on Polaroid Now</span>
+        <h2 id="results-title">Real life, developed.</h2>
+        <p>Now로 찍고, 바로 손에 쥔 진짜 사진들</p>
+      </div>
+      <div class="prints" aria-label="Polaroid Now로 찍은 인화 사진">
+        <img class="print" style="--x:-34vw;--y:-22vh;--r:-7deg;--w:clamp(130px,13vw,230px);--at:.04" src="https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85" alt="파티 풍선 앞에서 찍은 두 사람의 Polaroid 사진">
+        <img class="print" style="--x:31vw;--y:-20vh;--r:6deg;--w:clamp(140px,14vw,250px);--at:.10" src="https://cdn.sanity.io/images/ieogcuy1/production/446e34b4d8d769c52324847338ad0277ac327cd8-4096x4096.png?rect=2049,1091,1559,1900&w=500&fm=webp&q=85" alt="튜브를 든 두 사람이 웃고 있는 Polaroid 사진">
+        <img class="print" style="--x:-27vw;--y:18vh;--r:5deg;--w:clamp(130px,13vw,230px);--at:.16" src="https://cdn.sanity.io/images/ieogcuy1/production/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?rect=820,372,885,1071&w=500&fm=webp&q=85" alt="네온사인과 인물이 겹친 이중노출 Polaroid 사진">
+        <img class="print" style="--x:26vw;--y:19vh;--r:-5deg;--w:clamp(130px,13vw,230px);--at:.22" src="https://cdn.sanity.io/images/ieogcuy1/production/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3029,1448,920,1113&w=500&fm=webp&q=85" alt="난간에 앉은 두 사람을 올려다본 Polaroid 사진">
+        <img class="print" style="--x:2vw;--y:-30vh;--r:-3deg;--w:clamp(110px,11vw,190px);--at:.28" src="https://cdn.sanity.io/images/ieogcuy1/production/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=1937,1448,936,1113&w=500&fm=webp&q=85" alt="햇빛 아래 난간에 기댄 두 사람의 Polaroid 사진">
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 앱 연동 -->
+  <section class="app" aria-labelledby="app-title">
+    <div class="app-copy rv">
+      <span class="eyebrow">Polaroid App</span>
+      <h2 id="app-title">Scan and share your photos in the Polaroid App.</h2>
+      <p class="app-links"><span>DOWNLOAD APP</span><span class="u">IOS</span><span class="sep" aria-hidden="true">|</span><span class="u">ANDROID</span></p>
+    </div>
+
+    <div class="phone" role="img" aria-label="Polaroid 앱으로 인화 사진을 스캔하고 공유하는 화면이 반복 재생되는 휴대폰">
+      <div class="screen">
+        <!-- story -->
+        <div class="s s-story">
+          <div class="story-bg"></div>
+          <div class="status"><span>9:41</span><i></i></div>
+          <div class="story-bar"><i></i></div>
+          <div class="story-head"><span class="avatar"></span><b>Polaroid</b><span class="dot"></span><span class="dots">···</span><span class="x">×</span></div>
+          <img class="story-print" src="https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85" alt="">
+          <div class="story-foot"><span class="msg">Send message</span><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/></svg><svg class="ic heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><svg class="ic" viewBox="0 0 24 24"><path d="M21 4 3 11l7 2 2 7z"/></svg></div>
+          <svg class="pop-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        </div>
+        <!-- scan -->
+        <div class="s s-scan">
+          <span class="hold">Hold still, please!</span>
+          <div class="scan-frame">
+            <img class="scan-print" src="https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85" alt="">
+            <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+            <span class="count n3">3</span><span class="count n2">2</span><span class="count n1">1</span>
+          </div>
+          <span class="shutter"></span>
+        </div>
+        <!-- share -->
+        <div class="s s-share">
+          <div class="status"><span>9:41</span><i></i></div>
+          <span class="x">×</span>
+          <p class="share-title">Select a sharing format</p>
+          <div class="share-cards">
+            <img src="https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85" alt="">
+            <span class="peek"></span>
+          </div>
+          <ul class="share-apps" role="list">
+            <li><i style="background:conic-gradient(#f5c33b,#f2763a,#e2457f,#8c5bd6,#3d8fe0,#4cc36a,#f5c33b)"></i>Photos</li>
+            <li><i style="background:#34c759"></i>Messages</li>
+            <li><i style="background:linear-gradient(45deg,#f7b733,#e1306c,#833ab4)"></i>Stories</li>
+            <li><i class="more"></i>More</li>
+          </ul>
+        </div>
+      </div>
+      <span class="island" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <!-- 7. Now 정리 -->
+  <section class="summary" aria-labelledby="sum-title">
+    <span id="sum-title" class="eyebrow rv">The classic instant camera.</span>
+    <p class="sum-text rv">The classic analog instant camera. With self-timer and double-exposure modes, an upgraded two-lens autofocusing system and made with 40% recycled materials in different colors. All so you can capture real life on iconic, full-sized Polaroid film.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="wordmark">polaroid<span class="bar" aria-hidden="true"><i style="background:var(--red)"></i><i style="background:var(--orange)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><i style="background:var(--blue)"></i></span></span>
+      <p class="footer-tagline">[브랜드 소개 한 줄 — 추가 예정]</p>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col"><h4>CAMERAS</h4><ul><li>[메뉴]</li><li>[메뉴]</li><li>[메뉴]</li></ul></div>
+      <div class="footer-col"><h4>FILM</h4><ul><li>[메뉴]</li><li>[메뉴]</li><li>[메뉴]</li></ul></div>
+      <div class="footer-col"><h4>PRINTERS</h4><ul><li>[메뉴]</li><li>[메뉴]</li></ul></div>
+      <div class="footer-col"><h4>COLLABS</h4><ul><li>[메뉴]</li><li>[메뉴]</li></ul></div>
+      <div class="footer-col"><h4>SUPPORT</h4><ul><li>[메뉴]</li><li>[메뉴]</li><li>[메뉴]</li><li>[메뉴]</li></ul></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 [저작권 문구]</span>
+    <nav aria-label="약관"><a href="#">이용약관</a><span aria-hidden="true">|</span><a href="#">개인정보처리방침</a><span aria-hidden="true">|</span><a href="#">쿠키 설정</a></nav>
+  </div>
+</footer>
+
+<script type="module" src="./polaroid-now.js"></script>
+</body>
+</html>
