@@ -1,3 +1,75 @@
+/*
+ * Figma 시안(1920px 기준): 높이 653, 로고 x=88·y=126(552×143), 메뉴 x=1214·y=126, 글자 30px, 간격 71.
+ * 시안 수치는 화면 폭에 비례해 줄어들고 1920px 이상에서는 그대로 유지한다.
+ * 글꼴은 Compare 페이지가 번들한 DM Sans 를 임시로 쓴다. 공통 폰트가 확정되면 교체한다.
+ */
 .footer {
-  /* 디자인 확정 전 — 스타일 없음 */
+  --u: min(calc(100vw / 1920), 1px);
+
+  background: #1e1e1e;
+  color: #fff;
+  font-family: 'Compare DM Sans', var(--font-sans);
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 1920px;
+  min-height: calc(653 * var(--u));
+  margin: 0 auto;
+  padding: calc(126 * var(--u)) calc(105 * var(--u)) calc(126 * var(--u)) calc(88 * var(--u));
+}
+
+.logo {
+  display: block;
+  flex: none;
+  line-height: 0;
+}
+
+.logoImage {
+  display: block;
+  width: calc(552 * var(--u));
+  height: auto;
+}
+
+.list {
+  display: flex;
+  gap: calc(71 * var(--u));
+}
+
+.link {
+  font-size: max(calc(30 * var(--u)), 16px);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: normal;
+}
+
+.logo:focus-visible,
+.link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .inner {
+    flex-direction: column;
+    gap: 48px;
+    min-height: 0;
+    padding: 64px 24px;
+  }
+
+  .logoImage {
+    width: min(100%, 320px);
+  }
+
+  .list {
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+
+  .link {
+    font-size: 20px;
+  }
 }
