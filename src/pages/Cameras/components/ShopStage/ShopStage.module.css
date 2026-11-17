@@ -1,0 +1,89 @@
+.stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 78svh;
+  padding: 0 clamp(var(--space-5), 5.6vw, 96px) clamp(56px, 9svh, 112px);
+  overflow: hidden;
+  background: var(--stage-bg, var(--cam-bg)) var(--stage-img, none) center / cover no-repeat;
+  color: var(--cam-ink);
+}
+
+.dark {
+  --stage-bg: var(--cam-surface);
+}
+
+.deep {
+  --stage-bg: var(--cam-bg);
+}
+
+/* 이미지가 들어오면 글자가 읽히도록 아래쪽을 어둡게 */
+.hasImage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.45), rgb(0 0 0 / 0) 55%);
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.isIn {
+  opacity: 1;
+  transform: none;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 28px;
+  font-family: var(--cam-font-eng);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  opacity: 0.7;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--cam-font-eng);
+  font-size: clamp(3.5rem, 9.4vw, 10.5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+.title span {
+  display: block;
+}
+
+.title .soft {
+  opacity: 0.42;
+}
+
+.desc {
+  max-width: 640px;
+  margin: var(--space-6) 0 0;
+  font-size: clamp(0.9375rem, 1.25vw, 1.1875rem);
+  line-height: 1.75;
+  opacity: 0.82;
+  word-break: keep-all;
+}
+
+.desc span {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
