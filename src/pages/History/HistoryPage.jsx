@@ -8,6 +8,16 @@ import { CURRENT_YEAR, HISTORY_YEARS } from '@/pages/History/data/historyYears';
 const WHEEL_STEP_DEG = 12;
 const MINOR_TICKS = 4;
 const currentIndex = HISTORY_YEARS.indexOf(CURRENT_YEAR);
+/* Marks facing the viewer stay crisp; toward the ring's top and bottom they thin out and soften. */
+const shadeWheel = (wheel, rotation) => {
+  wheel?.querySelectorAll('[data-angle]').forEach((mark) => {
+    const facing = Math.cos(((Number(mark.dataset.angle) - rotation) * Math.PI) / 180);
+    const depth = 1 - Math.max(0, facing);
+    mark.style.opacity = (Math.max(0, facing) ** 2.2).toFixed(3);
+    mark.style.filter = depth > 0.02 ? `blur(${(depth * 6).toFixed(2)}px)` : '';
+  });
+};
+
 const wheelMarks = HISTORY_YEARS.flatMap((year, index) => {
   const angle = (index - currentIndex) * WHEEL_STEP_DEG;
   const yearMark = { key: `y${year}`, angle, year };
@@ -29,6 +39,7 @@ const clamp = (value) => Math.min(1, Math.max(0, value));
 function useHistoryParallax(pageRef) {
   useLayoutEffect(() => {
     const page = pageRef.current;
+    const wheel = page.querySelector('[data-wheel]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frameId = null;
 
@@ -42,6 +53,7 @@ function useHistoryParallax(pageRef) {
         page.style.setProperty('--copy-shift', '0px');
         page.style.setProperty('--portrait-shift', '0px');
         page.style.setProperty('--wheel-rot', '0deg');
+        shadeWheel(wheel, 0);
         return;
       }
 
@@ -49,8 +61,11 @@ function useHistoryParallax(pageRef) {
       const travel = Math.max(0, scrolled);
       page.style.setProperty('--copy-shift', `${travel * 0.22}px`);
       page.style.setProperty('--portrait-shift', `${travel * -0.32}px`);
-      // Turn the focus ring a little as the page scrolls, never past half a step.
-      page.style.setProperty('--wheel-rot', `${clamp(scrolled / runway) * WHEEL_STEP_DEG * 0.45}deg`);
+      // Turn the focus ring over the first screen of scroll (up to 60% of a step): marks near the
+      // centre sweep past while the thinned top and bottom crawl, giving the ring its depth.
+      const rotation = clamp(scrolled / window.innerHeight) * WHEEL_STEP_DEG * 0.6;
+      page.style.setProperty('--wheel-rot', `${rotation}deg`);
+      shadeWheel(wheel, rotation);
     };
 
     const schedule = () => {
@@ -80,13 +95,14 @@ export default function HistoryPage() {
       {/* Viewport-pinned chrome: a lens focus-ring of years. */}
       <div className={styles.rail} aria-hidden="true">
         <div className={styles.railInner}>
-          <div className={styles.wheel}>
+          <div className={styles.wheel} data-wheel>
             <div className={styles.wheelDrum}>
               {wheelMarks.map(({ key, angle, year }) => (
                 <div
                   key={key}
                   className={year ? styles.wheelYear : styles.wheelTick}
                   data-current={year === CURRENT_YEAR || undefined}
+                  data-angle={angle}
                   style={{ '--mark-angle': `${angle}deg` }}
                 >
                   {year && <span>{year}</span>}
