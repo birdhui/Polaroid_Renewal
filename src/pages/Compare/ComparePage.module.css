@@ -1,0 +1,73 @@
+/*
+ * Compare 페이지 폰트·디자인 값
+ * 공통 토큰(src/shared/styles/variables.css)과 styleguide.md 가 확정되기 전이라
+ * Figma 시안 값을 이 페이지 안에서만 정의한다. 토큰이 확정되면 이 변수들을 공통 토큰으로 교체한다.
+ * 하위 컴포넌트(components/*)는 아래 --compare-* 변수를 상속해서 사용한다.
+ */
+
+/* 폰트는 Compare 전용으로 포함한다 (라이선스: SIL OFL 1.1, assets/compare/fonts/LICENSE-*.txt).
+   공통 폰트와 이름이 겹치지 않도록 별도 family 이름을 쓴다. */
+@font-face {
+  font-family: 'Compare DM Sans';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/dm-sans-latin-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare DM Sans';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/dm-sans-latin-600.woff2') format('woff2');
+}
+
+/* subset 은 완성형 한글 2,350자를 포함한다. 그 밖의 글자는 아래 fallback 폰트로 표시된다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-medium.subset.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-semibold.subset.woff2') format('woff2');
+}
+
+/*
+ * 레이아웃 배율: Figma 시안은 1920px 기준이다.
+ * --u 는 "시안의 1px"이 현재 화면에서 몇 px인지를 나타낸다. 1920px 이상에서는 1px(시안 그대로),
+ * 그보다 좁으면 비율로 줄어든다. 하위 컴포넌트는 calc(시안값 * var(--u)) 로 시안 수치를 그대로 쓴다.
+ */
+/* 가격(₩ 와 숫자)에만 쓰는 Bold. 필요한 글자만 담은 작은 subset 이다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-bold.price.woff2') format('woff2');
+}
+
+.page {
+  --compare-bg: #1e1e1e;
+  --compare-text: #fff;
+  --compare-hero-text: #f1e2c7;
+  --compare-card-bg: #000;
+  --compare-card-border: #e7e7d9;
+  --compare-card-border-active: #fff;
+  --compare-btn-back: #b7b7b7;
+  --compare-btn-next: #636161;
+  --compare-line: #b7b7b7;
+  --compare-font-en: 'Compare DM Sans', var(--font-sans);
+  --compare-font-ko: 'Compare Pretendard', var(--font-sans);
+  --u: min(calc(100cqw / 1920), 1px);
+
+  container-type: inline-size;
+  background: var(--compare-bg);
+}

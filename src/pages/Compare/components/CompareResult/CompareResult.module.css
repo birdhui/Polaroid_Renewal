@@ -1,0 +1,241 @@
+/* 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고. */
+.result {
+  background: #fff;
+  color: #000;
+}
+
+.result:focus {
+  outline: none;
+}
+
+/* 시안: 카메라 3열(폭 454), 왼쪽 129 부터 오른쪽 끝 1828 까지 */
+.inner {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1920px;
+  min-height: calc(1080 * var(--u));
+  margin: 0 auto;
+  padding: calc(141 * var(--u)) calc(92 * var(--u)) calc(120 * var(--u)) calc(129 * var(--u));
+}
+
+.product {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: calc(40 * var(--u));
+  width: calc(454 * var(--u));
+}
+
+.imageSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(217 * var(--u));
+}
+
+.image {
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  object-fit: cover;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: calc(13 * var(--u));
+  line-height: 1.3;
+}
+
+.titleRow {
+  display: grid;
+  grid-template-columns: calc(257 * var(--u)) calc(107 * var(--u));
+  column-gap: calc(74 * var(--u));
+  align-items: center;
+}
+
+.name {
+  font-family: var(--compare-font-en);
+  font-size: max(calc(40 * var(--u)), 24px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.price {
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(20 * var(--u)), 14px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.description {
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(20 * var(--u)), 14px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+}
+
+.colors {
+  display: flex;
+  gap: calc(9 * var(--u));
+  list-style: none;
+}
+
+.color {
+  flex: none;
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  min-width: 16px;
+  min-height: 16px;
+  border: 1px solid #7b8188;
+  border-radius: 50%;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(50 * var(--u));
+}
+
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: calc(15 * var(--u));
+  width: 100%;
+  font-size: max(calc(18 * var(--u)), 14px);
+  letter-spacing: -0.02em;
+}
+
+.spec {
+  display: grid;
+  grid-template-columns: calc(90 * var(--u)) minmax(0, 1fr);
+  column-gap: calc(41 * var(--u));
+  align-items: center;
+  padding-bottom: calc(15 * var(--u));
+  border-bottom: 1px solid var(--compare-line);
+  font-family: var(--compare-font-ko);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.spec:first-child {
+  padding-top: calc(15 * var(--u));
+  border-top: 1px solid var(--compare-line);
+  column-gap: calc(44 * var(--u));
+}
+
+.spec dt,
+.spec dd {
+  margin: 0;
+  word-break: keep-all;
+}
+
+/* "i-Type / " 는 영문 폰트, 숫자는 한글 폰트로 표시한 시안을 따른다 */
+.film {
+  font-family: var(--compare-font-en), var(--compare-font-ko);
+}
+
+.compare {
+  padding: calc(12 * var(--u)) calc(28 * var(--u));
+  border-radius: calc(15 * var(--u));
+  background: var(--compare-btn-next);
+  color: #fff;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(20 * var(--u)), 14px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.compare:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 72px;
+    min-height: 0;
+    padding: 80px 24px;
+  }
+
+  .product {
+    gap: 32px;
+    width: 100%;
+    max-width: 454px;
+  }
+
+  .imageSlot {
+    height: 217px;
+  }
+
+  .image {
+    width: calc(var(--w) * 1px);
+    height: calc(var(--h) * 1px);
+  }
+
+  .titleRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+  }
+
+  .name {
+    font-size: 32px;
+  }
+
+  .price,
+  .description {
+    font-size: 18px;
+  }
+
+  .colors {
+    gap: 9px;
+  }
+
+  .color {
+    width: 26px;
+    height: 26px;
+  }
+
+  .details {
+    gap: 40px;
+  }
+
+  .specs {
+    gap: 15px;
+    font-size: 16px;
+  }
+
+  .spec {
+    grid-template-columns: 90px minmax(0, 1fr);
+    column-gap: 24px;
+    padding-bottom: 15px;
+  }
+
+  .spec:first-child {
+    padding-top: 15px;
+    column-gap: 24px;
+  }
+
+  .compare {
+    padding: 12px 28px;
+    border-radius: 15px;
+    font-size: 18px;
+  }
+}
