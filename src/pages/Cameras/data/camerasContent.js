@@ -12,6 +12,11 @@ import { ROUTES } from '@/app/routes.js';
 export const CAMERAS_HERO = {
   /** 히어로 배경 이미지 (없으면 그라데이션 배경) */
   image: { src: null, alt: '' },
+  /**
+   * 히어로 배경 영상 (YouTube). 소리 없이 자동 재생·반복한다.
+   * '동작 줄이기' 설정이면 영상 대신 image(없으면 그라데이션 배경)를 보여준다.
+   */
+  video: { youtubeId: 'cYaZmVrUs1I' },
   /** 가운데 로크업: 브랜드 × 제품 라인 */
   brand: 'polaroid',
   product: 'Now',

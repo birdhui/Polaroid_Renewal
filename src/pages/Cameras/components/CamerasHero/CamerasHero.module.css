@@ -18,6 +18,18 @@
   object-fit: cover;
 }
 
+/* 배경 영상: 16:9 영상을 화면에 꽉 채우고(cover) 넘치는 부분은 잘라낸다 */
+.video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 177.78vh);
+  height: max(100%, 56.25vw);
+  border: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 /* 이미지 준비 전: 필름 테두리처럼 은은하게 번지는 빛 */
 .bgPlaceholder {
   background:
