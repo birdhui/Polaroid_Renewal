@@ -26,8 +26,8 @@ function youtubeBgSrc(id) {
  */
 export default function CamerasHero({ hero, nextId }) {
   const { image, video, brand, product } = hero;
-  const showVideo = Boolean(video?.youtubeId) && !reducedMotion;
   const reducedMotion = usePrefersReducedMotion();
+  const showVideo = Boolean(video?.youtubeId) && !reducedMotion;
 
   const handleScrollToNext = () => {
     const target = document.getElementById(nextId);
