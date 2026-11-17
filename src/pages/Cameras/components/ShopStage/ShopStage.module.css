@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   align-items: flex-end;
-  min-height: 78svh;
+  min-height: 100vh;
   padding: 0 clamp(var(--space-5), 5.6vw, 96px) clamp(56px, 9svh, 112px);
   overflow: hidden;
   background: var(--stage-bg, var(--cam-bg)) var(--stage-img, none) center / cover no-repeat;
