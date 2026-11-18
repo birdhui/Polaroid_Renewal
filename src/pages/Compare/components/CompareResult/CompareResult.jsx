@@ -1,16 +1,10 @@
 import { forwardRef, useState } from 'react';
 import { Link } from 'react-router';
-import { COMPARE_STEPS } from '@/pages/Compare/data/compareSteps.js';
 import getRecommendations from '@/pages/Compare/utils/getRecommendations.js';
 import styles from './CompareResult.module.css';
 
-/** 선택한 id 를 화면에 보여 줄 선택지 이름으로 바꾼다. */
-function getChoiceLabels(selection) {
-  return COMPARE_STEPS.map((step) => step.options.find((option) => option.id === selection[step.id])?.label).filter(Boolean);
-}
-
 /** 추천 카드 1개 — 컬러칩을 누르면 해당 색의 제품 이미지로 바뀐다. */
-function ProductCard({ rank, rankLabel, product, reason }) {
+function ProductCard({ rank, product }) {
   const [colorId, setColorId] = useState(product.defaultColor);
   const selectedColor = product.colors.find((color) => color.id === colorId);
   const currentImage = selectedColor?.image ?? product.image;
@@ -18,7 +12,6 @@ function ProductCard({ rank, rankLabel, product, reason }) {
   return (
     <article className={styles.product} aria-label={`${rank}순위 ${product.name}`}>
       <div className={styles.imageSlot}>
-        <span className={`${styles.rank} ${styles[`rank${rank}`]}`}>{rankLabel}</span>
         {currentImage ? (
           <img
             className={styles.image}
@@ -43,7 +36,7 @@ function ProductCard({ rank, rankLabel, product, reason }) {
             {product.generation ? <span className={styles.srOnly}> {product.generation}</span> : null}
           </h3>
           <p className={product.price ? styles.price : `${styles.price} ${styles.pricePending}`}>
-            {product.price ?? '가격 확인 중'}
+            {product.price ?? '₩ 국내 판매가 확인'}
           </p>
         </div>
         <p className={styles.description}>{product.summary}</p>
@@ -84,7 +77,7 @@ function ProductCard({ rank, rankLabel, product, reason }) {
           </div>
           <div className={styles.spec}>
             <dt>추천 이유</dt>
-            <dd className={styles.reason}>{reason}</dd>
+            <dd className={styles.reason}>{product.recommendReason}</dd>
           </div>
         </dl>
         {product.detailPath ? (
@@ -105,32 +98,18 @@ function ProductCard({ rank, rankLabel, product, reason }) {
 
 /**
  * 추천 결과 — STEP 1~3 을 모두 마친 뒤 나타난다.
- * 선택한 3가지 조건, 추천 카메라 3개(BEST / GOOD / ALTERNATIVE 순서), 다시 선택하기 버튼을 보여 준다.
+ * 추천 카메라 3개를 규칙표 순서대로 보여 준다.
  * 순위는 규칙표(data/compareRecommendations.js)를 그대로 따르며, 공식 폴라로이드 추천이 아닌 프로젝트의 초기 추천안이다.
  * 제품 상세페이지가 정해지지 않은 카메라(detailPath 가 null)의 버튼은 연결 전 상태로 둔다.
  */
-const CompareResult = forwardRef(function CompareResult({ selection, onReset }, ref) {
+const CompareResult = forwardRef(function CompareResult({ selection }, ref) {
   const recommendations = getRecommendations(selection);
-  const choices = getChoiceLabels(selection);
 
   return (
     <section ref={ref} className={styles.result} aria-label="카메라 추천 결과" tabIndex={-1}>
-      <div className={styles.summaryBar}>
-        <ul className={styles.choices} aria-label="선택한 조건">
-          {choices.map((label, index) => (
-            <li key={COMPARE_STEPS[index].id} className={styles.choice}>
-              {label}
-            </li>
-          ))}
-        </ul>
-        <button type="button" className={styles.reset} onClick={onReset}>
-          다시 선택하기
-        </button>
-      </div>
-
       <div className={styles.inner}>
-        {recommendations.map(({ rank, rankLabel, product, reason }) => (
-          <ProductCard key={product.id} rank={rank} rankLabel={rankLabel} product={product} reason={reason} />
+        {recommendations.map(({ rank, product }) => (
+          <ProductCard key={product.id} rank={rank} product={product} />
         ))}
       </div>
     </section>

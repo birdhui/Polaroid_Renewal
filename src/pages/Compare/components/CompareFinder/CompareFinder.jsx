@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import CompareResult from '@/pages/Compare/components/CompareResult/CompareResult.jsx';
 import StepPanel from '@/pages/Compare/components/StepPanel/StepPanel.jsx';
 import useCompareSteps from '@/pages/Compare/hooks/useCompareSteps.js';
@@ -10,8 +10,7 @@ import styles from './CompareFinder.module.css';
  * 결과는 3개 질문을 모두 마친 뒤에만 보이며, 다시 선택하기로 STEP 1 에 돌아갈 수 있다.
  */
 export default function CompareFinder() {
-  const { step, selectedId, submitted, choose, next, back, reset, canGoBack, canGoNext, navigated } = useCompareSteps();
-  const finderRef = useRef(null);
+  const { step, selectedId, submitted, choose, next, back, canGoBack, canGoNext, navigated } = useCompareSteps();
   const resultRef = useRef(null);
 
   // 결과가 나타나거나 갱신되면 결과 섹션으로 이동한다. 모션 감소 설정이면 부드러운 스크롤을 쓰지 않는다.
@@ -22,16 +21,10 @@ export default function CompareFinder() {
     resultRef.current?.focus({ preventScroll: true });
   }, [submitted]);
 
-  const handleReset = useCallback(() => {
-    reset();
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    finderRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-  }, [reset]);
-
   return (
     <>
       <section className={styles.finder} aria-labelledby="compare-title">
-        <div ref={finderRef} className={styles.inner}>
+        <div className={styles.inner}>
           <div className={styles.intro}>
             <h2 id="compare-title" className={styles.title}>
               Compare
@@ -55,7 +48,7 @@ export default function CompareFinder() {
           />
         </div>
       </section>
-      {submitted ? <CompareResult ref={resultRef} selection={submitted} onReset={handleReset} /> : null}
+      {submitted ? <CompareResult ref={resultRef} selection={submitted} /> : null}
     </>
   );
 }
