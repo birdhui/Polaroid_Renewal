@@ -19,7 +19,8 @@
 
 .copy {
   position: relative;
-  padding: calc(280 * var(--u)) 0 0 calc(206 * var(--u));
+  /* 1920px 보다 넓은 화면에서는 본문(최대 1920px, 가운데 정렬)과 같은 왼쪽 선에 맞춘다 */
+  padding: calc(280 * var(--u)) 0 0 calc(206 * var(--u) + max(0px, (100cqw - 1920px) / 2));
 }
 
 .title {
@@ -54,17 +55,39 @@
     background: linear-gradient(90deg, rgb(66 42 25 / 0.65), rgb(66 42 25 / 0) 80%);
   }
 
+  .image {
+    object-position: 78% center;
+  }
+
   .copy {
     z-index: 1;
     padding: 140px 24px 64px;
   }
 
   .title {
-    font-size: clamp(48px, 12vw, 80px);
+    font-size: clamp(44px, 7.5vw, 58px);
   }
 
   .subtitle {
     padding-left: 4px;
     font-size: 18px;
+  }
+}
+
+/* 좁은 모바일에서는 카메라(사진 오른쪽)와 글자가 겹치지 않도록 글자를 아래쪽에 둔다 */
+@media (max-width: 600px) {
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    min-height: 600px;
+  }
+
+  .hero::after {
+    background: linear-gradient(0deg, rgb(66 42 25 / 0.75), rgb(66 42 25 / 0) 65%);
+  }
+
+  .copy {
+    width: 100%;
+    padding: 120px 24px 48px;
   }
 }

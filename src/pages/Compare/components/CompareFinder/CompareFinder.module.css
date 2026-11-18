@@ -60,7 +60,7 @@
   }
 
   .title {
-    font-size: clamp(48px, 12vw, 80px);
+    font-size: clamp(44px, 7.5vw, 58px);
   }
 
   .description {
