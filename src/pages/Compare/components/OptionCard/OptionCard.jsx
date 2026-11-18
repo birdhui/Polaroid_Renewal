@@ -1,27 +1,19 @@
-import cameraActive from '@/assets/compare/camera-active.webp';
 import cameraIdle from '@/assets/compare/camera-idle.webp';
 import styles from './OptionCard.module.css';
 
 /**
- * 스텝 선택 카드. 강조(active) 상태는 시안의 진한 카드 + 카메라 일러스트로 표시한다.
- * - active: 기본 첫 카드, 마우스를 올리거나 포커스한 카드, 선택한 카드
+ * 스텝 선택 카드. 기본은 배경과 일러스트가 70% 투명도이고, 마우스를 올리거나 포커스·선택하면 100%가 된다.
+ * 호버해도 일러스트 크기나 그림은 바뀌지 않는다.
  */
-export default function OptionCard({ label, active, selected, onActivate, onSelect }) {
+export default function OptionCard({ label, selected, onSelect }) {
   return (
     <button
       type="button"
-      className={active ? `${styles.card} ${styles.active}` : styles.card}
+      className={selected ? `${styles.card} ${styles.selected}` : styles.card}
       aria-pressed={selected}
-      onPointerEnter={onActivate}
-      onFocus={onActivate}
       onClick={onSelect}
     >
-      <img
-        className={styles.image}
-        src={active ? cameraActive : cameraIdle}
-        alt=""
-        draggable="false"
-      />
+      <img className={styles.image} src={cameraIdle} alt="" draggable="false" />
       <span className={styles.label}>{label}</span>
     </button>
   );

@@ -11,13 +11,19 @@
   overflow: hidden;
   border: 1px solid var(--compare-card-border);
   border-radius: calc(15 * var(--u));
-  background: var(--compare-card-bg);
+  /* 기본은 배경과 일러스트가 70%, 호버·포커스·선택 시 100% */
+  background: color-mix(in srgb, var(--compare-card-bg) 70%, transparent);
   color: var(--compare-text);
   text-align: left;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.card.active {
+.card:hover,
+.card:focus-visible,
+.card.selected {
+  background: var(--compare-card-bg);
   border-color: var(--compare-card-border-active);
 }
 
@@ -30,19 +36,18 @@
   flex: none;
   object-fit: contain;
   object-position: bottom right;
-}
-
-/* 시안: 진한 카드 이미지 114x105 / 연한 카드 이미지 163x110 */
-.card.active .image {
-  width: calc(114 * var(--u));
-  height: calc(105 * var(--u));
-  margin: 0 calc(15 * var(--u)) calc(34 * var(--u)) 0;
-}
-
-.card:not(.active) .image {
+  /* 시안: 카드 이미지 163x110 */
   width: calc(163 * var(--u));
   height: calc(110 * var(--u));
   margin: 0 0 calc(20 * var(--u));
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.card:hover .image,
+.card:focus-visible .image,
+.card.selected .image {
+  opacity: 1;
 }
 
 .label {
@@ -65,13 +70,7 @@
     border-radius: 15px;
   }
 
-  .card.active .image {
-    width: 62%;
-    height: 46%;
-    margin: 0 8% 14% 0;
-  }
-
-  .card:not(.active) .image {
+  .image {
     width: 88%;
     height: 48%;
     margin: 0 0 9%;
