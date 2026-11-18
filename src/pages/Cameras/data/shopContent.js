@@ -7,6 +7,7 @@
  * - 타일 배경색·글자색은 이 페이지 전용 임시 값이다. 공통 토큰이 확정되면 교체한다.
  * - 콜라보 이미지는 아직 없다. `image`가 null이면 자리표시 박스가 렌더링된다.
  */
+import { ROUTES } from '@/app/routes.js';
 import modImage from '@/assets/cameras/polaroid-mod.webp';
 import flipImage from '@/assets/cameras/polaroid-flip.webp';
 import i2Image from '@/assets/cameras/polaroid-i2.webp';
@@ -72,6 +73,8 @@ export const CAMERA_TILES = [
     word: 'NOW',
     name: 'Polaroid Now',
     href: `${POLAROID_US}/cameras/now-camera`,
+    /** 사이트 안 Now 상세페이지 (polaroid-now 시안). `to`가 있으면 href 대신 이 경로로 이동한다. */
+    to: ROUTES.camerasNow,
     image: { src: nowImage, alt: 'Polaroid Now 즉석카메라, 화이트와 퍼플 바디' },
     bg: '#F28C28',
     fg: '#1A1712',

@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import SectionHead from '../SectionHead/SectionHead.jsx';
 import useInView from '../../hooks/useInView.js';
 import styles from './CameraCategory.module.css';
@@ -17,21 +18,34 @@ function CameraTile({ tile }) {
     ...(tile.halo ? { '--tile-halo': tile.halo } : {}),
   };
 
+  const content = (
+    <>
+      <span className={`${styles.word} ${styles.fill}`} aria-hidden="true">
+        {tile.word}
+      </span>
+      <img className={styles.camera} src={tile.image.src} alt={tile.image.alt} loading="lazy" decoding="async" />
+      <span className={`${styles.word} ${styles.line}`} aria-hidden="true">
+        {tile.word}
+      </span>
+      <span className={styles.meta}>
+        {tile.name}
+        <span className={styles.more}>둘러보기 →</span>
+      </span>
+    </>
+  );
+
+  // `to`가 있으면 사이트 안 상세페이지로(같은 탭), 없으면 polaroid.com 외부 링크(새 탭)로 연결한다.
   return (
     <li ref={ref} className={`${styles.item} ${inView ? styles.isIn : ''}`}>
-      <a className={styles.tile} href={tile.href} target="_blank" rel="noopener noreferrer" style={style}>
-        <span className={`${styles.word} ${styles.fill}`} aria-hidden="true">
-          {tile.word}
-        </span>
-        <img className={styles.camera} src={tile.image.src} alt={tile.image.alt} loading="lazy" decoding="async" />
-        <span className={`${styles.word} ${styles.line}`} aria-hidden="true">
-          {tile.word}
-        </span>
-        <span className={styles.meta}>
-          {tile.name}
-          <span className={styles.more}>둘러보기 →</span>
-        </span>
-      </a>
+      {tile.to ? (
+        <Link className={styles.tile} to={tile.to} style={style}>
+          {content}
+        </Link>
+      ) : (
+        <a className={styles.tile} href={tile.href} target="_blank" rel="noopener noreferrer" style={style}>
+          {content}
+        </a>
+      )}
     </li>
   );
 }
