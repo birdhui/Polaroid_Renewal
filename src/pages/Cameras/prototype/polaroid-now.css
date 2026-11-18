@@ -64,38 +64,85 @@ main>section{position:relative;min-height:100vh;min-height:100svh}
 .fcard-text span{display:block;font:500 clamp(18px,1.6vw,28px)/1.2 var(--display);letter-spacing:-.02em;color:rgba(244,240,232,.62)}
 .fcard-text h3{margin:6px 0 0;font:700 clamp(18px,1.6vw,28px)/1.25 var(--text);letter-spacing:-.025em;color:#fff}
 
-/* ---------- 4. film ---------- */
-.film{display:flex;flex-direction:column;align-items:center;gap:clamp(16px,2.6vh,30px);padding:calc(var(--head) + 6vh) 0 10vh;background:#0d0d0d;text-align:center}
-.film-top{display:flex;flex-direction:column;align-items:center}
-.film-top h2{margin:0;font:var(--t-title);letter-spacing:-.035em}
-.film-with{margin-top:clamp(10px,1.6vh,18px);font:700 15px/1 var(--display)}
-.film-sign{position:relative;z-index:2;margin-top:4px;margin-bottom:calc(clamp(40px,5vw,80px) * -.42);font:400 clamp(48px,5.4vw,96px)/.9 var(--hand);transform:rotate(-2deg)}
-.film-player{position:relative;width:calc(100% - var(--gut) * 2);aspect-ratio:16/9;background:#1a1918;overflow:hidden}
-.film-poster{width:100%;height:100%;object-fit:cover}
-.film-player::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none}
-.film-player:has(iframe)::after{display:none}
-.film-player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.film-play{position:absolute;left:50%;top:50%;translate:-50% -50%;width:clamp(64px,5vw,88px);height:clamp(64px,5vw,88px);display:grid;place-items:center;border:1.5px solid rgba(255,255,255,.9);z-index:1;border-radius:10px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;cursor:pointer;transition:background .2s,scale .2s}
-.film-play:hover{background:rgba(0,0,0,.55);scale:1.06}
-.film-play:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
-.film-play svg{width:22px;height:22px;fill:currentColor}
-.film-quote{margin:clamp(10px,2vh,24px) var(--gut) 0;max-width:760px}
-.qmark{display:block;font:700 34px/.6 var(--display)}
-.qmark-end{margin-top:clamp(22px,3vh,34px)}
-.film-quote p{margin:10px 0 0;font:400 clamp(22px,2.2vw,36px)/1.2 var(--display);letter-spacing:-.015em}
-.film-quote p.ko{margin-top:12px;font:var(--t-body);color:var(--c-body)}
-.film-quote footer{margin-top:16px;font-size:14px}
+/* ---------- 3-2. cutaway (three.js 실시간 3D, 스크롤 연출) ----------
+   GLB 모델을 스크롤 진행률에 맞춰 그린다. 카메라 맞춤·문구 위치는 polaroid-now-cutaway.js 가 넣는다. */
+.cutaway{position:relative;height:600vh;background:var(--bg)}
+.cutaway-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.cutaway-glow{position:absolute;top:50%;width:56vw;height:120vh;border-radius:50%;filter:blur(70px);opacity:.35;pointer-events:none;will-change:opacity,transform}
+.cutaway-glow-l{left:-30vw;translate:0 -50%;background:radial-gradient(closest-side,rgba(94,200,242,.75),rgba(139,224,78,.55) 45%,rgba(244,211,58,.35) 70%,transparent)}
+.cutaway-glow-r{right:-30vw;translate:0 -50%;background:radial-gradient(closest-side,rgba(242,140,40,.75),rgba(244,211,58,.5) 45%,rgba(139,224,78,.3) 72%,transparent)}
+.cutaway-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .6s ease}
+.cutaway-canvas.is-ready{opacity:1}
+.cutaway-poster{display:none;position:absolute;top:calc(var(--head) + 4vh);left:50%;width:min(640px,80vw);max-height:62vh;object-fit:contain;translate:-50% 0;pointer-events:none}
+.cutaway.is-fallback .cutaway-poster{display:block}
+.cutaway.is-fallback .cutaway-canvas{display:none}
+.cutaway.is-fallback .cutaway-copy{opacity:1!important;visibility:visible!important;top:auto!important;bottom:clamp(40px,9vh,96px)}
+.cutaway-copy{position:absolute;left:50%;top:100%;width:min(560px,calc(100% - var(--gut) * 2));translate:-50% 0;opacity:0;visibility:hidden;will-change:opacity,transform}
+.cutaway-text{margin:0;font:700 clamp(18px,1.55vw,26px)/1.3 var(--display);letter-spacing:-.015em;color:#fff}
+/* 영상 카드: 왼쪽 둥근 정사각형 썸네일 + 오른쪽 문구 (i-2 'Watch' 구성) */
+.watch-card{display:flex;align-items:center;gap:clamp(14px,1.3vw,22px);margin-top:clamp(20px,3vh,36px);padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.watch-thumb{position:relative;flex:none;width:clamp(76px,6.2vw,108px);aspect-ratio:1;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.55);background:#222}
+.watch-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.watch-thumb svg{position:absolute;top:50%;left:50%;width:30%;translate:-50% -50%;fill:#fff;filter:drop-shadow(0 1px 4px rgba(0,0,0,.45))}
+.watch-text{display:flex;flex-direction:column;gap:clamp(8px,1vh,12px);max-width:15em}
+.watch-label{font:500 clamp(13px,.95vw,16px)/1 var(--display);color:#8DBC43}
+.watch-title{font:500 clamp(16px,1.2vw,20px)/1.2 var(--display);letter-spacing:-.01em;color:#fff}
+.watch-card:hover .watch-thumb img{transform:scale(1.06)}
+.watch-card:focus-visible{outline:2px solid #8DBC43;outline-offset:6px;border-radius:8px}
+/* 영상 모달 */
+.video-modal{width:min(1100px,92vw);max-width:none;padding:0;border:0;background:#000;overflow:visible}
+.video-modal::backdrop{background:rgba(0,0,0,.82)}
+.video-modal-frame{aspect-ratio:16/9}
+.video-modal-frame iframe{display:block;width:100%;height:100%;border:0}
+.video-modal-close{position:absolute;right:0;bottom:calc(100% + 12px);width:40px;height:40px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer}
+.video-modal-close svg{width:20px;stroke:#fff;stroke-width:2;fill:none}
+.video-modal-close:hover{background:rgba(255,255,255,.22)}
 
-/* ---------- 5. results (scroll stage) ---------- */
-.results{height:180vh;background:var(--bg)}
-.results-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;--b:0}
-.results-top{position:absolute;left:50%;top:50%;z-index:2;width:90vw;text-align:center;translate:-50% calc(-50% - var(--b) * 30vh)}
-.results-top .eyebrow{margin-bottom:clamp(14px,2.4vh,28px)}
-.results-top h2{margin:0;font:var(--t-title);letter-spacing:-.035em}
-.results-top p{margin:clamp(14px,2.4vh,28px) 0 0;font:var(--t-body);color:var(--c-body)}
-.prints{position:absolute;inset:0;z-index:1;translate:0 calc(var(--b) * -30vh);pointer-events:none}
-.print{position:absolute;left:50%;top:50%;width:var(--w);height:auto;box-shadow:0 18px 30px rgba(0,0,0,.55);opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(calc(var(--r) * 2.2)) scale(1.35);transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
-.print.on{opacity:1;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r)) scale(1)}
+/* ---------- 4. filters (필터 캐러셀) ----------
+   인화 사진 창(가로 넘김) + 필터 원판 탭. 탭 위치·넘김은 polaroid-now.js 가 --o(가운데 기준 칸 수)로 정한다. */
+.filters{display:flex;flex-direction:column;align-items:center;gap:clamp(36px,6vh,72px);padding:calc(var(--head) + 8vh) var(--gut) 12vh;background:#0d0d0d;text-align:center;overflow:hidden}
+.filters-head{display:flex;flex-direction:column;align-items:center;gap:clamp(18px,2.6vh,30px)}
+.filters-eyebrow{margin:0;font:500 clamp(15px,1.15vw,19px)/1 var(--display);color:#EBB741}
+.filters-head h2{margin:0;font:800 clamp(38px,5vw,84px)/1.02 var(--display);letter-spacing:-.035em;color:#fff}
+.filter-viewer{--pw:min(440px,74vw,calc((100svh - var(--head) - 200px) * 88 / 107));display:flex;flex-direction:column;align-items:center;gap:clamp(22px,3.4vh,40px)}
+.filter-window{position:relative;width:var(--pw);aspect-ratio:88/107;overflow:hidden;touch-action:pan-y;cursor:grab}
+.filter-window.is-drag{cursor:grabbing}
+.filter-print{--o:0;position:absolute;inset:0;margin:0;padding:6.8% 5.7% 0;background:#f3f1ec;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);transform:translateX(calc(var(--o) * (100% + clamp(28px,4vw,56px))));transition:transform .85s cubic-bezier(.65,0,.35,1),opacity .35s}
+.filter-print.no-anim{transition:none}
+.filter-print img{width:100%;aspect-ratio:79/79;object-fit:cover;background:#ddd;user-select:none;-webkit-user-drag:none}
+.filter-print figcaption{margin-top:7.5%;font:400 clamp(13px,1.15vw,17px)/1 var(--mono);letter-spacing:.08em;color:#1c1c1c}
+.filter-tabs{--gap:clamp(64px,6vw,96px);position:relative;width:calc(var(--gap) * 5);height:clamp(96px,10vh,112px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.filter-tab{--o:0;position:absolute;top:0;left:50%;display:flex;flex-direction:column;align-items:center;gap:18px;width:var(--gap);margin-left:calc(var(--gap) / -2);padding:10px 0 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;transform:translateX(calc(var(--o) * var(--gap)));transition:transform .85s cubic-bezier(.65,0,.35,1),opacity .35s}
+.filter-tab.no-anim{transition:none}
+.filter-disc{position:relative;width:clamp(36px,3vw,46px);aspect-ratio:1;border-radius:50%;border:5px solid #181818;box-shadow:0 0 0 1px rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.12);background:var(--glass);transition:scale .5s cubic-bezier(.65,0,.35,1)}
+.filter-disc::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.38),transparent 46%)}
+.filter-disc--starburst{--glass:repeating-linear-gradient(0deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(-60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),#d7dbdf}
+.filter-disc--red-vignette{--glass:radial-gradient(circle,#0d0d0d 0 21%,rgba(255,255,255,.7) 22% 25%,#c8423b 26%)}
+.filter-disc--orange{--glass:#e39a52}
+.filter-disc--yellow{--glass:#e9de62}
+.filter-disc--blue{--glass:#5f93c8}
+.filter-name{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--c);opacity:0;transition:opacity .35s}
+.filter-tab[aria-selected="true"] .filter-disc{scale:1.32}
+.filter-tab[aria-selected="true"] .filter-name{opacity:1;transition-delay:.25s}
+.filter-tab:not([aria-selected="true"]):hover .filter-disc{scale:1.1}
+.filter-tab:focus-visible{outline:none}
+.filter-tab:focus-visible .filter-disc{outline:2px solid var(--c);outline-offset:6px}
+.filter-tab.is-far{opacity:.4}
+/* 사진 아래 설명 (내부 구조 섹션의 카메라 아래 문구와 같은 규격) */
+.filters-text{width:min(560px,100%);margin:clamp(8px,2vh,24px) 0 0;text-align:left;font:700 clamp(18px,1.55vw,26px)/1.3 var(--display);letter-spacing:-.015em;color:#fff}
+
+/* ---------- 4. results (고정 + 스크롤로 사진이 하나씩 떠오름) ----------
+   진행률(--p)은 polaroid-now.js 가 넣는다. 사진 k번째는 [k*step, k*step+4*step] 구간에 나타난다. */
+.results{height:calc(100vh + 1400px);height:calc(100svh + 1400px);background:var(--bg)}
+.results-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.results-title{position:absolute;left:50%;top:calc(50% + var(--head) / 2);z-index:30;margin:0;width:90vw;translate:-50% -50%;text-align:center;font:800 clamp(40px,5.4vw,92px)/1.04 var(--display);letter-spacing:-.035em;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.45);pointer-events:none}
+.bt-word{display:inline-block;white-space:nowrap}
+.bt-char{display:inline-block;opacity:0;transform:translateY(100px) scaleY(.5) rotate(45deg);transform-origin:50% 100%;transition:opacity .5s ease var(--d),transform .9s cubic-bezier(.34,1.56,.64,1) var(--d)}
+.results-title.is-in .bt-char{opacity:1;transform:none}
+.prints{position:absolute;inset:var(--head) 0 0}
+.print{position:absolute;left:var(--x);top:var(--y);width:clamp(64px,var(--w),240px);height:auto;translate:-50% -50%;box-shadow:0 14px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.35);opacity:0;transform:translateY(60px) scale(.92);will-change:opacity,transform}
+.results-credit{position:absolute;right:var(--gut);bottom:18px;z-index:31;margin:0;font:400 11px/1 var(--mono);color:rgba(244,240,232,.38)}
+.results-credit a{text-decoration:underline;text-underline-offset:2px}
 
 /* ---------- 6. app ---------- */
 .app{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(32px,6vw,120px);padding:calc(var(--head) + 4vh) clamp(24px,9vw,180px) 5vh;background:var(--bg-2)}
@@ -169,9 +216,6 @@ main>section{position:relative;min-height:100vh;min-height:100svh}
 @keyframes heartpop{0%,84%{opacity:0;transform:scale(0) rotate(-12deg)}87%{opacity:1;transform:scale(1.25) rotate(0)}90%,96%{opacity:1;transform:scale(1) translateY(-6cqw)}100%{opacity:0;transform:scale(1) translateY(-14cqw)}}
 @keyframes heartfill{0%,85%{fill:none;stroke:#fff}87%,100%{fill:#e0284f;stroke:#e0284f}}
 
-/* ---------- 7. summary ---------- */
-.summary{display:flex;flex-direction:column;justify-content:center;padding:calc(var(--head) + 4vh) var(--gut) 6vh;background:var(--bg)}
-.sum-text{margin:clamp(14px,2.4vh,28px) 0 0;max-width:1240px;font:var(--t-title);letter-spacing:-.035em}
 
 /* ---------- footer ---------- */
 .site-footer{background:#050505;color:#F2EEE9;padding:72px clamp(20px,3.4vw,48px) 32px;border-top:1px solid var(--line)}
@@ -189,6 +233,25 @@ main>section{position:relative;min-height:100vh;min-height:100svh}
 .rv.in{opacity:1;transform:none}
 
 /* ---------- responsive ---------- */
+/* ---------- 7. store (배경 사진 + 유리 박스, 쇼핑 페이지 이동) ---------- */
+.store{position:relative;height:120vh;height:120svh;display:grid;place-items:center;overflow:hidden;background:var(--bg);isolation:isolate}
+.store-bg{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:50% 40%;filter:grayscale(.45) brightness(.62) contrast(.95)}
+/* 회색빛으로 가라앉히고, 위·아래는 페이지 배경과 이어지게 */
+.store::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,0) 18%,rgba(10,10,10,0) 82%,var(--bg) 100%),rgba(28,28,30,.42)}
+.store-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:24px;width:min(1080px,calc(100% - var(--gut) * 2));height:min(820px,82svh);padding:clamp(40px,6vh,72px) clamp(20px,4vw,64px) clamp(32px,5vh,56px);border-radius:clamp(20px,2.4vw,34px);text-align:center;background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.1));-webkit-backdrop-filter:blur(26px) saturate(1.15);backdrop-filter:blur(26px) saturate(1.15);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 30px 80px rgba(0,0,0,.35)}
+/* 위쪽 테두리에 따뜻한 빛이 맺히는 느낌 */
+.store-card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(180deg,rgba(246,214,150,.85),rgba(255,255,255,.18) 14%,rgba(255,255,255,0) 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.store-top{margin:0;font:500 clamp(18px,2.3vw,40px)/1.12 var(--display);letter-spacing:-.025em;text-transform:uppercase;color:#fff}
+.store-link{font:italic 400 clamp(26px,3.1vw,50px)/1.1 'Playfair Display',Georgia,serif;letter-spacing:-.01em;color:#fff}
+/* 박스 전체를 눌러도 이동 */
+.store-link::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.store-nowrap{white-space:nowrap}
+.store-arrow{display:inline-block;margin-left:.35em;font:400 .8em/1 var(--display);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.store-card:hover .store-arrow,.store-link:focus-visible .store-arrow{transform:translateX(8px)}
+.store-link:focus-visible{outline:none}
+.store-card:has(.store-link:focus-visible){outline:2px solid #fff;outline-offset:4px}
+.store-bottom{margin:0;font:600 clamp(36px,6.4vw,108px)/.95 var(--display);letter-spacing:-.04em;color:rgba(255,255,255,.62)}
+
 @media (max-width:1024px){
   .nav{display:none}
   .app{grid-template-columns:1fr;justify-items:center;text-align:center}
@@ -196,24 +259,27 @@ main>section{position:relative;min-height:100vh;min-height:100svh}
   .phone{max-height:62vh;width:auto;height:62vh}
 }
 @media (max-width:640px){
+  .store-top br{display:none}
   .scroll-cue{display:none}
   .hero-ph{top:calc(var(--head) + 20px);bottom:auto}
   .phone{max-height:54vh;height:54vh}
   .features{height:auto;min-height:100svh}
   .feat-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;flex:none}
   .fcard{flex:none;width:78vw;height:62svh;scroll-snap-align:center}
-  .print{--w:clamp(84px,24vw,130px)!important}
+  .print{width:clamp(56px,calc(var(--w) * 2.2),130px)}
+  .print:nth-child(n+19){display:none}
     .footer-bottom{flex-direction:column}
 }
 
 /* 동작 줄이기: 스크롤 연출·루프 애니메이션 끄고 정지 상태로 */
 @media (prefers-reduced-motion:reduce){
+  .store-arrow{transition:none}
+  .filter-print,.filter-tab,.filter-disc{transition:none!important}
+  .cutaway{height:100vh;height:100svh}
   .rv{opacity:1;transform:none;transition:none}
-  .results{height:auto}
-  .results-stage{position:relative;height:auto;padding:calc(var(--head) + 8vh) 0 8vh;display:flex;flex-direction:column;gap:6vh}
-  .results-top{position:relative;left:auto;top:auto;translate:none;margin:0 auto}
-  .prints{position:relative;inset:auto;translate:none;display:flex;flex-wrap:wrap;justify-content:center;gap:24px;padding:0 var(--gut)}
-  .print{position:static;opacity:1;transform:rotate(var(--r));transition:none}
+  .results{height:100vh;height:100svh}
+  .print{opacity:1!important;transform:none!important}
+  .bt-char{opacity:1!important;transform:none!important;transition:none!important}
       .s,.story-bar i,.scan-print,.c,.count,.share-cards,.pop-heart,.ic.heart{animation:none}
   .s-scan{opacity:1}
   .n1{opacity:1}

@@ -11,9 +11,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Polaroid Now · Concept</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="./polaroid-now.css">
+<!-- 내부 구조 3D 연출용 three.js (시안 전용 CDN. React 이식 시 three 패키지 추가 필요 — PM 승인) -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"}}</script>
 </head>
 <body>
 <header class="topbar">
@@ -81,43 +83,114 @@
     </ul>
   </section>
 
-  <!-- 4. 소개 영상 (i2 'Get lost in the journey' 구성) -->
-  <section class="film" aria-labelledby="film-title">
-    <div class="film-top rv">
-      <h2 id="film-title">Learn it in a minute,<br>keep it for a lifetime</h2>
-      <span class="film-with">with</span>
-      <span class="film-sign" aria-hidden="true">Polaroid Now</span>
+  <!-- 3-2. 내부 구조 연출 (polaroid.com Now 'Easy-to-use, completely analog camera.' 애니메이션 + i2 마무리 구성)
+       three.js 실시간 3D. 스크롤할수록: 몸체가 잘려 열리고 → 렌즈로 스펙트럼이 천천히 들어와 거울을 거쳐 필름에 닿고
+       → 롤러로 사진이 배출·현상 → 몸체가 다시 닫힌다. 사진 아래(사진이 길어진 만큼 아래)에 설명 문구가 나타난다. -->
+  <section class="cutaway" aria-labelledby="cutaway-text">
+    <div class="cutaway-stage">
+      <div class="cutaway-glow cutaway-glow-l" aria-hidden="true"></div>
+      <div class="cutaway-glow cutaway-glow-r" aria-hidden="true"></div>
+      <img class="cutaway-poster" src="../../../assets/cameras/now/now-cutaway-poster.webp" alt="배출구로 인화 사진이 나온 그래파이트 Polaroid Now" loading="lazy">
+      <canvas class="cutaway-canvas" role="img" aria-label="Polaroid Now 내부: 몸체가 열리고 렌즈로 들어온 스펙트럼이 거울을 거쳐 필름에 닿은 뒤, 롤러를 지나 사진이 배출되어 현상되는 과정"></canvas>
+      <div class="cutaway-copy">
+        <p id="cutaway-text" class="cutaway-text">The classic analog instant camera. With self-timer and double-exposure modes, an upgraded two-lens autofocusing system and made with 40% recycled materials in different colors. All so you can capture real life on iconic, full-sized Polaroid film.</p>
+        <button class="watch-card" type="button" data-yt-modal="FgUqS0QTaeA" aria-haspopup="dialog">
+          <span class="watch-thumb">
+            <img src="https://i.ytimg.com/vi/FgUqS0QTaeA/maxresdefault.jpg" alt="" loading="lazy">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7v10l8-5z"/></svg>
+          </span>
+          <span class="watch-text"><span class="watch-label">Watch</span><span class="watch-title">How to use the Polaroid NOW</span></span>
+        </button>
+      </div>
     </div>
-    <div class="film-player rv" data-yt="FgUqS0QTaeA">
-      <img class="film-poster" src="https://i.ytimg.com/vi/FgUqS0QTaeA/maxresdefault.jpg" alt="" loading="lazy">
-      <button class="film-play" type="button" aria-label="How to use the Polaroid Now 영상 재생">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7v10l8-5z"/></svg>
-      </button>
-    </div>
-    <blockquote class="film-quote rv">
-      <span class="qmark" aria-hidden="true">“</span>
-      <p>Point. Shoot. Wait for the magic.</p>
-      <p class="ko">셔터를 누르고, 사진이 떠오르길 기다리는 것. 그게 Now 사용법의 전부예요.</p>
-      <footer><strong>How to use the Polaroid Now,</strong> Polaroid</footer>
-      <span class="qmark qmark-end" aria-hidden="true">”</span>
-    </blockquote>
   </section>
 
-  <!-- 5. 결과물 (instax mini13 'Colorful moment' 구성) -->
+  <!-- 4. 결과물 (instax mini13 'Colorful moment, feel so good!' 구성)
+       섹션이 화면에 고정된 동안 스크롤할수록 인화 사진 26장이 하나씩 떠오른다(아래에서 살짝 올라오며 커짐).
+       문구는 화면에 들어올 때 글자마다 튀어 오른다. 사진: Flickr LibraryTroll 'Polaroid Now (Gen 2)' 앨범 -->
   <section class="results" aria-labelledby="results-title">
     <div class="results-stage">
-      <div class="results-top">
-        <span class="eyebrow">Shot on Polaroid Now</span>
-        <h2 id="results-title">Real life, developed.</h2>
-        <p>Now로 찍고, 바로 손에 쥔 진짜 사진들</p>
+      <h2 id="results-title" class="results-title">Snap it now,<br>hold it forever!</h2>
+      <div class="prints" role="img" aria-label="Polaroid Now로 찍은 인화 사진 26장이 화면을 채운 모습">
+        <img class="print" style="--x:5%;--y:12%;--w:11.7vw;--k:6" src="https://live.staticflickr.com/65535/52984219731_aff9b3ca4c_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:19%;--y:9%;--w:10.4vw;--k:17" src="https://live.staticflickr.com/65535/52984594680_a172f6eb8e_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:33%;--y:14%;--w:13.0vw;--k:1" src="https://live.staticflickr.com/65535/52984678368_eae2a7fb1f_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:49%;--y:8%;--w:11.1vw;--k:12" src="https://live.staticflickr.com/65535/52983618662_57f8765e8f_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:64%;--y:13%;--w:12.3vw;--k:23" src="https://live.staticflickr.com/65535/52984594925_0140bde25e_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:79%;--y:9%;--w:10.4vw;--k:4" src="https://live.staticflickr.com/65535/52984220146_d12370ff18_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:94%;--y:13%;--w:11.7vw;--k:19" src="https://live.staticflickr.com/65535/52983619497_4c54333bcb_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:9%;--y:38%;--w:13.0vw;--k:10" src="https://live.staticflickr.com/65535/52984220751_9849eef6a5_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:23%;--y:35%;--w:10.4vw;--k:25" src="https://live.staticflickr.com/65535/52984594325_9a8eefb015_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:77%;--y:36%;--w:11.7vw;--k:0" src="https://live.staticflickr.com/65535/52983618267_01e30e35f9_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:92%;--y:40%;--w:11.1vw;--k:15" src="https://live.staticflickr.com/65535/52984220951_e8576a6fba_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:6%;--y:64%;--w:11.1vw;--k:8" src="https://live.staticflickr.com/65535/52984221946_b95e98f602_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:21%;--y:62%;--w:13.0vw;--k:21" src="https://live.staticflickr.com/65535/52984596930_4428259c69_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:80%;--y:63%;--w:13.0vw;--k:3" src="https://live.staticflickr.com/65535/52984680588_0f0c1c805b_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:94%;--y:66%;--w:10.4vw;--k:13" src="https://live.staticflickr.com/65535/52984679673_02bc726817_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:4%;--y:89%;--w:11.7vw;--k:20" src="https://live.staticflickr.com/65535/52984367629_3406d1e280_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:18%;--y:90%;--w:10.4vw;--k:7" src="https://live.staticflickr.com/65535/52983620212_e6bba45084_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:33%;--y:87%;--w:12.3vw;--k:16" src="https://live.staticflickr.com/65535/53023177804_d642c1991e_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:48%;--y:92%;--w:10.4vw;--k:24" src="https://live.staticflickr.com/65535/53114190318_9320ab3bb4_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:63%;--y:88%;--w:13.0vw;--k:2" src="https://live.staticflickr.com/65535/53114190008_38d145b5cc_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:78%;--y:91%;--w:11.1vw;--k:11" src="https://live.staticflickr.com/65535/53113692426_c9f092951e_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:93%;--y:88%;--w:11.7vw;--k:22" src="https://live.staticflickr.com/65535/53113692346_327e8c7228_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:35%;--y:31%;--w:9.1vw;--k:9" src="https://live.staticflickr.com/65535/53505277415_fefcffe7e2_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:65%;--y:30%;--w:9.8vw;--k:18" src="https://live.staticflickr.com/65535/53503967652_e1dbc7fac4_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:37%;--y:72%;--w:9.8vw;--k:5" src="https://live.staticflickr.com/65535/53980809093_c74d3c2dd7_z.jpg" alt="" loading="lazy" decoding="async">
+        <img class="print" style="--x:62%;--y:73%;--w:9.1vw;--k:14" src="https://live.staticflickr.com/65535/53241811078_af509f53d9_z.jpg" alt="" loading="lazy" decoding="async">
       </div>
-      <div class="prints" aria-label="Polaroid Now로 찍은 인화 사진">
-        <img class="print" style="--x:-34vw;--y:-22vh;--r:-7deg;--w:clamp(130px,13vw,230px);--at:.04" src="https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85" alt="파티 풍선 앞에서 찍은 두 사람의 Polaroid 사진">
-        <img class="print" style="--x:31vw;--y:-20vh;--r:6deg;--w:clamp(140px,14vw,250px);--at:.10" src="https://cdn.sanity.io/images/ieogcuy1/production/446e34b4d8d769c52324847338ad0277ac327cd8-4096x4096.png?rect=2049,1091,1559,1900&w=500&fm=webp&q=85" alt="튜브를 든 두 사람이 웃고 있는 Polaroid 사진">
-        <img class="print" style="--x:-27vw;--y:18vh;--r:5deg;--w:clamp(130px,13vw,230px);--at:.16" src="https://cdn.sanity.io/images/ieogcuy1/production/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?rect=820,372,885,1071&w=500&fm=webp&q=85" alt="네온사인과 인물이 겹친 이중노출 Polaroid 사진">
-        <img class="print" style="--x:26vw;--y:19vh;--r:-5deg;--w:clamp(130px,13vw,230px);--at:.22" src="https://cdn.sanity.io/images/ieogcuy1/production/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3029,1448,920,1113&w=500&fm=webp&q=85" alt="난간에 앉은 두 사람을 올려다본 Polaroid 사진">
-        <img class="print" style="--x:2vw;--y:-30vh;--r:-3deg;--w:clamp(110px,11vw,190px);--at:.28" src="https://cdn.sanity.io/images/ieogcuy1/production/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=1937,1448,936,1113&w=500&fm=webp&q=85" alt="햇빛 아래 난간에 기댄 두 사람의 Polaroid 사진">
+      <p class="results-credit">Photos: <a href="https://www.flickr.com/photos/130994751@N04/albums/72177720309162493" target="_blank" rel="noopener">LibraryTroll / Flickr</a></p>
+    </div>
+  </section>
+
+  <!-- 5. 필터 (polaroid.com Now & Now+ Filter Set + i2 'How to use' 모드 캐러셀 구성)
+       필터를 누르면 인화 사진이 옆으로 넘어가며 그 필터로 찍은 사진이 나온다. 누른 필터는 가운데로 온다. -->
+  <section class="filters" aria-labelledby="filters-title">
+    <div class="filters-head rv">
+      <p class="filters-eyebrow">Polaroid NOW filter</p>
+      <h2 id="filters-title">See the world through<br>different colored glasses.</h2>
+    </div>
+    <div class="filter-viewer rv">
+      <div class="filter-window">
+        <figure class="filter-print is-active" id="filter-print-starburst" role="tabpanel" aria-labelledby="filter-tab-starburst">
+          <img src="../../../assets/cameras/now/filters/now-filter-starburst.webp" alt="Starburst 필터: 기타를 치는 두 사람 사이로 빛줄기가 별 모양으로 퍼진 Polaroid 사진">
+          <figcaption>STARBURST</figcaption>
+        </figure>
+        <figure class="filter-print" id="filter-print-red-vignette" role="tabpanel" aria-labelledby="filter-tab-red-vignette" aria-hidden="true" inert>
+          <img src="../../../assets/cameras/now/filters/now-filter-red-vignette.webp" alt="Red Vignette 필터: 야자수 아래 웃는 두 사람의 가장자리가 붉게 물든 Polaroid 사진">
+          <figcaption>RED VIGNETTE</figcaption>
+        </figure>
+        <figure class="filter-print" id="filter-print-orange" role="tabpanel" aria-labelledby="filter-tab-orange" aria-hidden="true" inert>
+          <img src="../../../assets/cameras/now/filters/now-filter-orange.webp" alt="Orange 필터: 주황빛 벽 앞에 선 인물이 온통 주황색으로 찍힌 Polaroid 사진" loading="lazy">
+          <figcaption>ORANGE</figcaption>
+        </figure>
+        <figure class="filter-print" id="filter-print-yellow" role="tabpanel" aria-labelledby="filter-tab-yellow" aria-hidden="true" inert>
+          <img src="../../../assets/cameras/now/filters/now-filter-yellow.webp" alt="Yellow 필터: 야자수 그림자 아래 춤추는 인물이 노랗게 찍힌 Polaroid 사진" loading="lazy">
+          <figcaption>YELLOW</figcaption>
+        </figure>
+        <figure class="filter-print" id="filter-print-blue" role="tabpanel" aria-labelledby="filter-tab-blue" aria-hidden="true" inert>
+          <img src="../../../assets/cameras/now/filters/now-filter-blue.webp" alt="Blue 필터: 파란 하늘 아래 두 손을 머리에 올린 인물이 푸르게 찍힌 Polaroid 사진" loading="lazy">
+          <figcaption>BLUE</figcaption>
+        </figure>
       </div>
+      <div class="filter-tabs" role="tablist" aria-label="필터 선택">
+        <button class="filter-tab" type="button" role="tab" id="filter-tab-starburst" aria-controls="filter-print-starburst" aria-selected="true" tabindex="0" style="--c:#ECEEF0">
+          <span class="filter-disc filter-disc--starburst" aria-hidden="true"></span><span class="filter-name">Starburst</span>
+        </button>
+        <button class="filter-tab" type="button" role="tab" id="filter-tab-red-vignette" aria-controls="filter-print-red-vignette" aria-selected="false" tabindex="-1" style="--c:#EF5A4A">
+          <span class="filter-disc filter-disc--red-vignette" aria-hidden="true"></span><span class="filter-name">Red Vignette</span>
+        </button>
+        <button class="filter-tab" type="button" role="tab" id="filter-tab-orange" aria-controls="filter-print-orange" aria-selected="false" tabindex="-1" style="--c:#F59A3C">
+          <span class="filter-disc filter-disc--orange" aria-hidden="true"></span><span class="filter-name">Orange</span>
+        </button>
+        <button class="filter-tab" type="button" role="tab" id="filter-tab-yellow" aria-controls="filter-print-yellow" aria-selected="false" tabindex="-1" style="--c:#F2DC5D">
+          <span class="filter-disc filter-disc--yellow" aria-hidden="true"></span><span class="filter-name">Yellow</span>
+        </button>
+        <button class="filter-tab" type="button" role="tab" id="filter-tab-blue" aria-controls="filter-print-blue" aria-selected="false" tabindex="-1" style="--c:#6FA8DC">
+          <span class="filter-disc filter-disc--blue" aria-hidden="true"></span><span class="filter-name">Blue</span>
+        </button>
+      </div>
+      <p class="filters-text">The world is your laboratory and the filters are your test tubes. Pull up your sleeves and start experimenting with starburst, red vignette, orange, blue, and yellow effects with your Polaroid Now or Now+ Generation 3 camera. And when you're done protect your lens with included lens cap. See the world through different colored glasses. Not compatible with Polaroid Now Generation 1 or 2 Cameras.</p>
     </div>
   </section>
 
@@ -172,10 +245,15 @@
     </div>
   </section>
 
-  <!-- 7. Now 정리 -->
-  <section class="summary" aria-labelledby="sum-title">
-    <span id="sum-title" class="eyebrow rv">The classic instant camera.</span>
-    <p class="sum-text rv">The classic analog instant camera. With self-timer and double-exposure modes, an upgraded two-lens autofocusing system and made with 40% recycled materials in different colors. All so you can capture real life on iconic, full-sized Polaroid film.</p>
+
+  <!-- 7. 스토어 이동 (배경 사진 + 유리 박스) — polaroid.com Now 카메라 쇼핑 페이지로 연결 -->
+  <section class="store" aria-labelledby="store-title">
+    <img class="store-bg" src="../../../assets/cameras/now/now-store-bg.webp" alt="" loading="lazy" decoding="async">
+    <div class="store-card">
+      <p class="store-top" id="store-title">Since 1937, Polaroid has turned <br>moments into things you can hold.</p>
+      <a class="store-link" href="https://www.polaroid.com/en_us/cameras/now-camera" target="_blank" rel="noopener">Go to the Polaroid <span class="store-nowrap">Store<span class="store-arrow" aria-hidden="true">→</span></span><span class="sr-only"> (새 창에서 polaroid.com Now 카메라 페이지 열기)</span></a>
+      <p class="store-bottom" aria-hidden="true">MAKE IT A MOMENT.</p>
+    </div>
   </section>
 </main>
 
@@ -199,6 +277,11 @@
   </div>
 </footer>
 
+<dialog class="video-modal" aria-label="How to use the Polaroid NOW 영상">
+  <button class="video-modal-close" type="button" aria-label="영상 닫기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="video-modal-frame"></div>
+</dialog>
 <script type="module" src="./polaroid-now.js"></script>
+<script type="module" src="./polaroid-now-cutaway.js"></script>
 </body>
 </html>
