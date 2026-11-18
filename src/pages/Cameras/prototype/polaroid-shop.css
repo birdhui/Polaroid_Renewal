@@ -47,6 +47,9 @@ a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.hero-video{display:none}}
 .best-intro{min-height:100vh;--stage-bg:var(--dark-2)}
 .collab-intro{min-height:100vh;--stage-bg:#22201D}
+/* Best Sellers · Collaboration 소개: 제목은 히어로와 같은 크기, 설명은 한 단계 작게 */
+.best-intro h2,.collab-intro h2{font-size:clamp(40px,6.2vw,112px)}
+.best-intro p,.collab-intro p{margin-top:24px;font-size:clamp(14px,1.05vw,16px)}
 .scroll-cue{position:absolute;right:clamp(20px,5.6vw,96px);bottom:clamp(56px,9svh,112px);font:600 12px/1 var(--display);letter-spacing:.24em;color:rgba(246,241,232,.6);writing-mode:vertical-rl}
 
 /* ---------- section heads ---------- */
