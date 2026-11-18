@@ -36,7 +36,8 @@
   right: 0;
   left: 0;
   z-index: var(--z-header);
-  padding: max(calc(33 * var(--u)), 16px) max(calc(93 * var(--u)), 20px) 0 max(calc(68 * var(--u)), 20px);
+  --edge: max(0px, (100vw - 1920px) / 2); /* 1920px 보다 넓은 화면에서 본문과 같은 가장자리에 맞춘다 */
+  padding: max(calc(33 * var(--u)), 16px) calc(max(calc(93 * var(--u)), 20px) + var(--edge)) 0 calc(max(calc(68 * var(--u)), 20px) + var(--edge));
   border-bottom: 0;
   color: #fff;
   font-family: 'Compare DM Sans', var(--font-sans);
@@ -87,5 +88,26 @@
   .overlay .link,
   .overlay .active {
     font-size: 14px;
+  }
+}
+
+/* 390px 전후의 좁은 화면에서 로고와 첫 메뉴가 붙지 않도록 간격을 더 둔다 */
+@media (max-width: 440px) {
+  .overlay {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .logoImage {
+    width: 66px;
+  }
+
+  .overlay .list {
+    gap: 11px;
+  }
+
+  .overlay .link,
+  .overlay .active {
+    font-size: 13px;
   }
 }
