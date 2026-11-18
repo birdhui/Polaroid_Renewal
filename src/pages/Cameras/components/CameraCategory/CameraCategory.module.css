@@ -3,6 +3,11 @@
   color: var(--shop-ink);
 }
 
+/* 히어로 SCROLL 안내로 포커스만 옮겨 받는 섹션이라 외곽선은 숨긴다 */
+.section:focus {
+  outline: none;
+}
+
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

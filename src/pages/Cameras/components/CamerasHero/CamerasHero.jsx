@@ -1,4 +1,4 @@
-import BrandLockup from '../BrandLockup/BrandLockup.jsx';
+import { useEffect, useState } from 'react';
 import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion.js';
 import styles from './CamerasHero.module.css';
 
@@ -19,15 +19,25 @@ function youtubeBgSrc(id) {
   return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
 }
 
+const RAINBOW = ['red', 'orange', 'yellow', 'green', 'blue'];
+
 /**
- * Cameras 히어로: 전체 화면 배경(영상 → 이미지 → 그라데이션 순) + 가운데 로크업(페이지 h1) + SCROLL 안내.
- * SCROLL 안내는 주소(URL)에 해시를 남기지 않고 본문 섹션으로 스크롤한 뒤
+ * Cameras 히어로 (polaroid-shop 시안 1번 섹션).
+ * 전체 화면 배경(영상 → 이미지 → 단색 순) 위, 왼쪽 아래에 두 줄 제목(페이지 h1)과 무지개 바.
+ * 오른쪽 아래 세로 SCROLL 안내는 주소에 해시를 남기지 않고 다음 섹션으로 스크롤한 뒤
  * 그 섹션으로 포커스를 옮긴다(키보드 사용자도 같은 위치에서 이어서 읽도록).
  */
 export default function CamerasHero({ hero, nextId }) {
-  const { image, video, brand, product } = hero;
+  const { image, video, title } = hero;
   const reducedMotion = usePrefersReducedMotion();
   const showVideo = Boolean(video?.youtubeId) && !reducedMotion;
+  const [copyIn, setCopyIn] = useState(false);
+
+  // 첫 화면이므로 마운트 직후 한 프레임 뒤에 나타나게 한다.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setCopyIn(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const handleScrollToNext = () => {
     const target = document.getElementById(nextId);
@@ -49,30 +59,29 @@ export default function CamerasHero({ hero, nextId }) {
             tabIndex={-1}
           />
         </div>
-      ) : image.src ? (
-        <img
-          className={styles.bg}
-          src={image.src}
-          alt={image.alt}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-        />
-      ) : (
-        <div className={`${styles.bg} ${styles.bgPlaceholder}`} aria-hidden="true" />
-      )}
+      ) : image?.src ? (
+        <img className={styles.bg} src={image.src} alt={image.alt} loading="eager" decoding="async" fetchPriority="high" />
+      ) : null}
       <div className={styles.scrim} aria-hidden="true" />
 
-      <BrandLockup id="cameras-title" as="h1" brand={brand} product={product} className={styles.lockup} />
+      <div className={`${styles.copy} ${copyIn ? styles.isIn : ''}`}>
+        <h1 id="cameras-title" className={styles.title}>
+          {title.map((line, i) => (
+            <span key={line} className={i > 0 ? styles.soft : undefined}>
+              {line}
+            </span>
+          ))}
+        </h1>
+        <div className={styles.rainbow} aria-hidden="true">
+          {RAINBOW.map((color) => (
+            <i key={color} style={{ background: `var(--cam-${color})` }} />
+          ))}
+        </div>
+      </div>
 
-      <button type="button" className={styles.hint} onClick={handleScrollToNext} aria-controls={nextId}>
-        <span className={styles.hintLabel} aria-hidden="true">
-          SCROLL
-        </span>
-        <svg className={styles.hintIcon} width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-          <path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className={styles.visuallyHidden}>본문으로 이동</span>
+      <button type="button" className={styles.cue} onClick={handleScrollToNext} aria-controls={nextId}>
+        <span aria-hidden="true">SCROLL</span>
+        <span className={styles.visuallyHidden}>다음 섹션으로 이동</span>
       </button>
     </section>
   );

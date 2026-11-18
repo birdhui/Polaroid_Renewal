@@ -9,18 +9,23 @@
  */
 import { ROUTES } from '@/app/routes.js';
 
+/** 히어로 — polaroid-shop 시안(prototype/polaroid-shop.html) 1번 섹션 */
 export const CAMERAS_HERO = {
-  /** 히어로 배경 이미지 (없으면 그라데이션 배경) */
+  /** 두 줄 제목(페이지 h1). 두 번째 줄부터 톤을 낮춘다. */
+  title: ['Make It a Moment.', 'Make It Polaroid.'],
+  /** 히어로 배경 이미지 (영상을 못 쓸 때 대신 표시. 없으면 단색 배경) */
   image: { src: null, alt: '' },
   /**
    * 히어로 배경 영상 (YouTube). 소리 없이 자동 재생·반복한다.
-   * '동작 줄이기' 설정이면 영상 대신 image(없으면 그라데이션 배경)를 보여준다.
+   * '동작 줄이기' 설정이면 영상 대신 image(없으면 단색 배경)를 보여준다.
    */
   video: { youtubeId: 'cYaZmVrUs1I' },
-  /** 가운데 로크업: 브랜드 × 제품 라인 */
-  brand: 'polaroid',
-  product: 'Now',
 };
+
+/*
+ * 아래 CAMERAS_STORY 는 이전 화면(MOMENT to MEMORY 섹션)용 데이터다.
+ * 현재 CamerasPage 는 polaroid-shop 시안 구성을 따르므로 사용하지 않는다.
+ */
 
 export const CAMERAS_STORY = {
   /** 타이틀: 영문 단어 + 이탤릭 연결어 + 영문 단어 (콘셉트 'From Moment to Memory') */

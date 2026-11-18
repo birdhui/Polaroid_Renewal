@@ -10,11 +10,11 @@
 }
 
 .dark {
-  --stage-bg: var(--cam-surface);
+  --stage-bg: var(--cam-stage-2);
 }
 
 .deep {
-  --stage-bg: var(--cam-bg);
+  --stage-bg: var(--cam-stage-3);
 }
 
 /* 이미지가 들어오면 글자가 읽히도록 아래쪽을 어둡게 */
@@ -54,7 +54,7 @@
   margin: 0;
   font-family: var(--cam-font-eng);
   font-size: clamp(3.5rem, 9.4vw, 10.5rem);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 0.9;
   letter-spacing: -0.045em;
 }

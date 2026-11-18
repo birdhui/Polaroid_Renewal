@@ -36,9 +36,12 @@ function CameraTile({ tile }) {
   );
 }
 
-export default function CameraCategory({ id, head, tiles }) {
+/**
+ * sectionId: 히어로의 SCROLL 안내가 스크롤·포커스할 대상 id (tabIndex -1 로 포커스만 받는다)
+ */
+export default function CameraCategory({ id, sectionId, head, tiles }) {
   return (
-    <section className={styles.section} aria-labelledby={id}>
+    <section id={sectionId} className={styles.section} aria-labelledby={id} tabIndex={sectionId ? -1 : undefined}>
       <SectionHead id={id} title={head.title} desc={head.desc} />
       <ul className={styles.tiles} role="list">
         {tiles.map((tile) => (
