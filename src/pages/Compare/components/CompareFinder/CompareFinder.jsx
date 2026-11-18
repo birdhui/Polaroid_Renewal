@@ -6,10 +6,10 @@ import styles from './CompareFinder.module.css';
 
 /**
  * Compare 섹션 — 왼쪽 소개 문구와 오른쪽 STEP 선택, 그 아래 카메라 비교 섹션.
- * 소개 문구는 스텝이 바뀌어도 그대로 유지한다. 마지막 스텝에서 NEXT 를 누르면 아래 비교 섹션으로 이동한다.
+ * 소개 문구는 스텝이 바뀌어도 그대로 유지한다. 카드를 고르면 다음 스텝으로 자동 이동하고, 마지막 스텝에서는 아래 비교 섹션으로 이동한다. (NEXT·BACK 도 사용 가능)
  */
 export default function CompareFinder() {
-  const { step, selectedId, select, next, back, canGoBack, canGoNext, isLast, navigated } = useCompareSteps();
+  const { step, selectedId, choose, next, back, canGoBack, canGoNext, isLast, navigated } = useCompareSteps();
   const resultRef = useRef(null);
 
   // 모션 감소 설정이면 부드러운 스크롤을 쓰지 않는다.
@@ -18,6 +18,8 @@ export default function CompareFinder() {
     resultRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     resultRef.current?.focus({ preventScroll: true });
   }, []);
+
+  const handleSelect = useCallback((optionId) => choose(optionId, goToResult), [choose, goToResult]);
 
   return (
     <>
@@ -40,7 +42,7 @@ export default function CompareFinder() {
             moveFocus={navigated}
             canGoBack={canGoBack}
             canGoNext={canGoNext}
-            onSelect={select}
+            onSelect={handleSelect}
             onBack={back}
             onNext={isLast ? goToResult : next}
           />
