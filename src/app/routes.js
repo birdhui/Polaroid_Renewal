@@ -6,6 +6,7 @@ export const ROUTES = {
   landing: '/',
   history: '/history',
   cameras: '/cameras',
+  camerasNow: '/cameras/now',
   compare: '/compare',
   film: '/film',
 };
