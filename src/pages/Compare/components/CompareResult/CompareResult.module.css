@@ -8,14 +8,63 @@
   outline: none;
 }
 
+/* 선택한 조건과 다시 선택하기 — 카드 열과 같은 좌우 여백을 쓴다 */
+.summaryBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(24 * var(--u));
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: calc(80 * var(--u)) calc(92 * var(--u)) 0 calc(129 * var(--u));
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(12 * var(--u));
+  list-style: none;
+}
+
+.choice {
+  padding: calc(8 * var(--u)) calc(20 * var(--u));
+  border: 1px solid var(--compare-line);
+  border-radius: calc(15 * var(--u));
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(18 * var(--u)), 14px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.reset {
+  flex: none;
+  padding: calc(12 * var(--u)) calc(28 * var(--u));
+  border-radius: calc(15 * var(--u));
+  background: var(--compare-btn-back);
+  color: #fff;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(20 * var(--u)), 14px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.reset:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+
 /* 시안: 카메라 3열(폭 454), 왼쪽 129 부터 오른쪽 끝 1828 까지 */
 .inner {
   display: flex;
   justify-content: space-between;
   max-width: 1920px;
-  min-height: calc(1080 * var(--u));
+  min-height: calc(900 * var(--u));
   margin: 0 auto;
-  padding: calc(141 * var(--u)) calc(92 * var(--u)) calc(120 * var(--u)) calc(129 * var(--u));
+  padding: calc(60 * var(--u)) calc(92 * var(--u)) calc(120 * var(--u)) calc(129 * var(--u));
 }
 
 .product {
@@ -27,10 +76,53 @@
 }
 
 .imageSlot {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: calc(217 * var(--u));
+}
+
+/* 추천 순위 라벨 — 1순위는 채운 배경, 2·3순위는 테두리만 */
+.rank {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: calc(6 * var(--u)) calc(16 * var(--u));
+  border: 1px solid #000;
+  border-radius: calc(15 * var(--u));
+  font-family: var(--compare-font-en);
+  font-size: max(calc(16 * var(--u)), 12px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.rank1 {
+  background: #000;
+  color: #fff;
+}
+
+.rank3 {
+  border-color: var(--compare-line);
+  color: #636161;
+}
+
+/* 제품 이미지가 아직 없는 모델 자리 */
+.imageEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(216 * var(--u));
+  height: calc(217 * var(--u));
+  border: 1px dashed var(--compare-line);
+  border-radius: calc(15 * var(--u));
+  color: #7b8188;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(18 * var(--u)), 14px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .image {
@@ -69,6 +161,10 @@
   white-space: nowrap;
 }
 
+.pricePending {
+  font-weight: 500;
+}
+
 .description {
   font-family: var(--compare-font-ko);
   font-size: max(calc(20 * var(--u)), 14px);
@@ -84,6 +180,7 @@
 }
 
 .color {
+  display: block;
   flex: none;
   width: calc(26 * var(--u));
   height: calc(26 * var(--u));
@@ -93,10 +190,28 @@
   border-radius: 50%;
 }
 
+.colorButton {
+  display: block;
+  padding: 0;
+  cursor: pointer;
+}
+
+.colorActive {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.colorButton:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
 .details {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between; /* 추천 이유 길이가 달라도 버튼 높이를 맞춘다 */
   gap: calc(50 * var(--u));
 }
 
@@ -134,6 +249,11 @@
 }
 
 /* "i-Type / " 는 영문 폰트, 숫자는 한글 폰트로 표시한 시안을 따른다 */
+.reason {
+  font-size: max(calc(16 * var(--u)), 13px);
+  line-height: 1.5;
+}
+
 .film {
   font-family: var(--compare-font-en), var(--compare-font-ko);
 }
@@ -149,6 +269,11 @@
   line-height: 1.3;
   letter-spacing: -0.02em;
   white-space: nowrap;
+}
+
+.compareDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .compare:focus-visible {
@@ -167,12 +292,48 @@
 }
 
 @media (max-width: 1100px) {
+  .summaryBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 56px 24px 0;
+  }
+
+  .choice {
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 15px;
+  }
+
+  .reset {
+    padding: 12px 28px;
+    border-radius: 15px;
+    font-size: 18px;
+  }
+
+  .rank {
+    padding: 5px 14px;
+    border-radius: 15px;
+    font-size: 13px;
+  }
+
+  .imageEmpty {
+    width: 216px;
+    height: 217px;
+    border-radius: 15px;
+    font-size: 16px;
+  }
+
+  .reason {
+    font-size: 15px;
+  }
+
   .inner {
     flex-direction: column;
     align-items: center;
     gap: 72px;
     min-height: 0;
-    padding: 80px 24px;
+    padding: 56px 24px 80px;
   }
 
   .product {
@@ -183,6 +344,7 @@
 
   .imageSlot {
     height: 217px;
+    width: 100%;
   }
 
   .image {

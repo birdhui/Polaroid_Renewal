@@ -1,6 +1,6 @@
 /**
- * Compare 페이지 스텝 데이터 — Figma 시안(compare) 문구 기준.
- * 문구를 바꿀 때는 시안과 함께 확인한다.
+ * Compare 페이지 스텝 데이터 — 선택지 id 는 compareRecommendations.js 의 규칙표 키와 같아야 한다.
+ * 문구는 최종 Figma 시안 기준이다. 표시 문구만 바꿔도 id 가 같으면 추천 규칙은 그대로 동작한다.
  */
 export const COMPARE_STEPS = [
   {
@@ -20,7 +20,7 @@ export const COMPARE_STEPS = [
       { id: 'easy', label: '간편한 촬영' },
       { id: 'portable', label: '휴대성' },
       { id: 'effects', label: '다양한 촬영 효과' },
-      { id: 'control', label: '세밀한 조절' },
+      { id: 'control', label: '세밀한 조정' },
     ],
   },
   {

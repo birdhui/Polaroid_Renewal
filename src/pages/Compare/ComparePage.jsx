@@ -4,7 +4,7 @@ import styles from './ComparePage.module.css';
 
 /**
  * Compare — 나에게 맞는 카메라 찾기 (feat/compare)
- * 히어로 + STEP 1~3 선택. 결과 화면과 제품 비교는 확정된 시안이 없어 포함하지 않는다.
+ * 히어로 + STEP 1~3 선택. STEP 3 까지 마치면 선택에 맞는 추천 카메라 3개가 아래에 나타난다.
  * 페이지 전용 컴포넌트는 ./components/, 훅은 ./hooks/, 데이터는 ./data/ 에 둔다.
  */
 export default function ComparePage() {

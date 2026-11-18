@@ -1,30 +1,37 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import CompareResult from '@/pages/Compare/components/CompareResult/CompareResult.jsx';
 import StepPanel from '@/pages/Compare/components/StepPanel/StepPanel.jsx';
 import useCompareSteps from '@/pages/Compare/hooks/useCompareSteps.js';
 import styles from './CompareFinder.module.css';
 
 /**
- * Compare 섹션 — 왼쪽 소개 문구와 오른쪽 STEP 선택, 그 아래 카메라 비교 섹션.
- * 소개 문구는 스텝이 바뀌어도 그대로 유지한다. 카드를 고르면 다음 스텝으로 자동 이동하고, 마지막 스텝에서는 아래 비교 섹션으로 이동한다. (NEXT·BACK 도 사용 가능)
+ * Compare 섹션 — 왼쪽 소개 문구와 오른쪽 STEP 선택, 그 아래 추천 결과.
+ * 카드를 고르면 다음 스텝으로 자동 이동하고(NEXT·BACK 도 사용 가능), STEP 3 까지 마치면 추천 결과가 나타난다.
+ * 결과는 3개 질문을 모두 마친 뒤에만 보이며, 다시 선택하기로 STEP 1 에 돌아갈 수 있다.
  */
 export default function CompareFinder() {
-  const { step, selectedId, choose, next, back, canGoBack, canGoNext, isLast, navigated } = useCompareSteps();
+  const { step, selectedId, submitted, choose, next, back, reset, canGoBack, canGoNext, navigated } = useCompareSteps();
+  const finderRef = useRef(null);
   const resultRef = useRef(null);
 
-  // 모션 감소 설정이면 부드러운 스크롤을 쓰지 않는다.
-  const goToResult = useCallback(() => {
+  // 결과가 나타나거나 갱신되면 결과 섹션으로 이동한다. 모션 감소 설정이면 부드러운 스크롤을 쓰지 않는다.
+  useEffect(() => {
+    if (!submitted) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     resultRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     resultRef.current?.focus({ preventScroll: true });
-  }, []);
+  }, [submitted]);
 
-  const handleSelect = useCallback((optionId) => choose(optionId, goToResult), [choose, goToResult]);
+  const handleReset = useCallback(() => {
+    reset();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    finderRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [reset]);
 
   return (
     <>
       <section className={styles.finder} aria-labelledby="compare-title">
-        <div className={styles.inner}>
+        <div ref={finderRef} className={styles.inner}>
           <div className={styles.intro}>
             <h2 id="compare-title" className={styles.title}>
               Compare
@@ -42,13 +49,13 @@ export default function CompareFinder() {
             moveFocus={navigated}
             canGoBack={canGoBack}
             canGoNext={canGoNext}
-            onSelect={handleSelect}
+            onSelect={choose}
             onBack={back}
-            onNext={isLast ? goToResult : next}
+            onNext={next}
           />
         </div>
       </section>
-      <CompareResult ref={resultRef} />
+      {submitted ? <CompareResult ref={resultRef} selection={submitted} onReset={handleReset} /> : null}
     </>
   );
 }
