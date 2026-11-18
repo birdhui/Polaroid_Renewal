@@ -6,8 +6,8 @@ export const ROUTES = {
   landing: '/',
   history: '/history',
   cameras: '/cameras',
+  compare: '/compare',
   film: '/film',
-  archive: '/archive',
 };
 
 /**
@@ -17,6 +17,6 @@ export const ROUTES = {
 export const NAV_ITEMS = [
   { label: 'History', path: ROUTES.history },
   { label: 'Cameras', path: ROUTES.cameras },
+  { label: 'Compare', path: ROUTES.compare },
   { label: 'Film', path: ROUTES.film },
-  { label: 'Archive', path: ROUTES.archive },
 ];
