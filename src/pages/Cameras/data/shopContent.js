@@ -61,6 +61,8 @@ export const CAMERA_TILES = [
     word: 'NOW+',
     name: 'Polaroid Now+',
     href: `${POLAROID_US}/cameras/now-plus-camera`,
+    /** 사이트 안 Now+ 상세페이지. `to`가 있으면 href 대신 이 경로로 이동한다. */
+    to: ROUTES.camerasNowPlus,
     image: { src: nowPlusImage, alt: 'Polaroid Now+ 즉석카메라, 화이트 바디' },
     bg: '#F6C243',
     fg: '#1A1712',

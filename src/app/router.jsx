@@ -5,6 +5,7 @@ import LandingPage from '@/pages/Landing/LandingPage.jsx';
 import HistoryPage from '@/pages/History/HistoryPage.jsx';
 import CamerasPage from '@/pages/Cameras/CamerasPage.jsx';
 import CameraNowPage from '@/pages/Cameras/now/CameraNowPage.jsx';
+import CameraNowPlusPage from '@/pages/Cameras/now-plus/CameraNowPlusPage.jsx';
 import ComparePage from '@/pages/Compare/ComparePage.jsx';
 import FilmPage from '@/pages/Film/FilmPage.jsx';
 import NotFoundPage from '@/pages/NotFound/NotFoundPage.jsx';
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: ROUTES.history, element: <HistoryPage /> },
       { path: ROUTES.cameras, element: <CamerasPage /> },
       { path: ROUTES.camerasNow, element: <CameraNowPage /> },
+      { path: ROUTES.camerasNowPlus, element: <CameraNowPlusPage /> },
       { path: ROUTES.compare, element: <ComparePage /> },
       { path: ROUTES.film, element: <FilmPage /> },
       { path: '*', element: <NotFoundPage /> },
