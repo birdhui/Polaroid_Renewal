@@ -1,3 +1,122 @@
+/*
+ * 공통 Footer — Cameras 시안(polaroid-shop) 푸터와 같은 값 (어두운 배경).
+ * 아래 색·글꼴 값은 아직 공통 토큰(variables.css)에 없어서 이 컴포넌트 안에만 둔다.
+ * 디자인 시스템에 정해지면 토큰으로 옮긴다(모진아 담당, PM 검토).
+ */
 .footer {
-  /* 디자인 확정 전 — 스타일 없음 */
+  --footer-bg: #0f0f0f;
+  --footer-ink: #f2eee9;
+  --footer-muted: #9a958c;
+  --footer-faint: #77736b;
+  --footer-line: #2a2a2a;
+  --footer-red: #e3412b;
+  --footer-orange: #f28c28;
+  --footer-yellow: #f6c243;
+  --footer-green: #74b544;
+  --footer-blue: #1d92d2;
+  --footer-display: 'Archivo', 'Pretendard Variable', var(--font-sans);
+
+  padding: 72px clamp(20px, 3.4vw, 48px) 32px;
+  background: var(--footer-bg);
+  color: var(--footer-ink);
+  font-family: 'Pretendard Variable', 'Pretendard', var(--font-sans);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  justify-content: space-between;
+}
+
+.brand {
+  max-width: 300px;
+}
+
+.wordmark {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--footer-ink);
+  font: 800 24px / 1 var(--footer-display);
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.bar {
+  display: flex;
+  width: 30px;
+  height: 6px;
+}
+
+.bar i {
+  flex: 1;
+}
+
+.tagline {
+  margin: 18px 0 0;
+  color: var(--footer-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(28px, 4vw, 64px);
+}
+
+.col h4 {
+  margin: 0 0 18px;
+  font: 700 12px / 1 var(--footer-display);
+  letter-spacing: 0.16em;
+}
+
+.col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  color: var(--footer-muted);
+  font-size: 14px;
+  list-style: none;
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--footer-line);
+  color: var(--footer-faint);
+  font-size: 13px;
+}
+
+.bottom nav {
+  display: flex;
+  gap: 16px;
+}
+
+.legalItem {
+  display: flex;
+  gap: 16px;
+}
+
+.bottom a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.bottom a:hover,
+.bottom a:focus-visible {
+  color: var(--footer-ink);
+}
+
+.wordmark:focus-visible,
+.bottom a:focus-visible {
+  outline: 2px solid var(--footer-ink);
+  outline-offset: 4px;
 }
