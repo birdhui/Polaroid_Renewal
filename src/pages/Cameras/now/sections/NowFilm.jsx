@@ -9,14 +9,16 @@ import styles from '../CameraNowPage.module.css';
  * 사진: 사용자 제공 이미지를 Now 인화 사진처럼 보정(now-film-print.webp, 88×107 비율, 이미지 79×79)
  */
 const TITLE_LINES = ['Snap it now,', 'hold it forever!'];
-/** 인화지 안에서 사진(이미지 영역)의 위치: 가로 4.5/88, 세로 6/107, 크기 79×79 */
-const IMG = { cx: 0.5, cy: (6 + 79 / 2) / 107, w: 79 / 88 };
+/** 인화지(88×107) 안에서 사진(이미지 영역)의 위치를 비율로: 위 6/107, 왼쪽 4.5/88, 크기 79×79 */
+const NOW_BOX = { top: 6 / 107, left: 4.5 / 88, w: 79 / 88, h: 79 / 107 };
+const NOW_TEXT =
+  'Every Now photo comes out on Color i-Type film: soft, dreamy and a little unpredictable, with colors no filter can copy. It starts out blank, then slowly comes to life in 10–15 minutes inside that iconic white frame. Made at the last Polaroid film factory in the world.';
 
 /** 문구를 단어·글자 단위로 쪼갠다. 글자마다 등장 지연(--d)을 0~0.6초로 나눠 준다. */
-function BounceTitle({ id, className }) {
+function BounceTitle({ id, className, lines }) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
-  const total = TITLE_LINES.join('').replace(/\s/g, '').length;
+  const total = lines.join('').replace(/\s/g, '').length;
 
   useEffect(() => {
     const el = ref.current;
@@ -39,8 +41,8 @@ function BounceTitle({ id, className }) {
 
   let n = 0;
   return (
-    <h2 id={id} ref={ref} className={`${className} ${inView ? styles.isIn : ''}`} aria-label={TITLE_LINES.join(' ')}>
-      {TITLE_LINES.map((line, li) => (
+    <h2 id={id} ref={ref} className={`${className} ${inView ? styles.isIn : ''}`} aria-label={lines.join(' ')}>
+      {lines.map((line, li) => (
         <span key={line} aria-hidden="true">
           {li > 0 && <br />}
           {line.split(' ').map((word, wi) => (
@@ -65,7 +67,28 @@ function BounceTitle({ id, className }) {
   );
 }
 
-export default function NowFilm({ reducedMotion }) {
+/**
+ * @param {object} props
+ * @param {boolean} props.reducedMotion
+ * @param {string} [props.idPrefix]   id 접두어
+ * @param {string} [props.eyebrow]    주황색 라벨
+ * @param {string[]} [props.titleLines] 큰 영문 제목 (줄 단위)
+ * @param {string} [props.image]      인화 사진 (88×107 비율)
+ * @param {string} [props.imageAlt]
+ * @param {{top:number,left:number,w:number,h:number}} [props.box] 인화지 안 사진 영역(비율)
+ * @param {string} [props.text]       고정이 풀린 뒤 사진 아래 설명
+ */
+export default function NowFilm({
+  reducedMotion,
+  idPrefix = 'now',
+  eyebrow = 'Polaroid NOW Film',
+  titleLines = TITLE_LINES,
+  image = filmPrintImage,
+  imageAlt = 'Polaroid Now로 찍은 인화 사진: 잔잔한 물 위로 알록달록한 집들이 그대로 비친 풍경',
+  box = NOW_BOX,
+  text = NOW_TEXT,
+}) {
+  const IMG = { cy: box.top + box.h / 2, w: box.w };
   const pinRef = useRef(null);
   const printRef = useRef(null);
   const undevRef = useRef(null);
@@ -129,32 +152,29 @@ export default function NowFilm({ reducedMotion }) {
       window.removeEventListener('resize', onResize);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, IMG.cy, IMG.w]);
 
   return (
-    <section className={styles.film} aria-labelledby="now-film-title">
+    <section className={styles.film} aria-labelledby={`${idPrefix}-film-title`}>
       <div ref={pinRef} className={styles.filmPin}>
         <div className={styles.filmStage}>
           <div className={styles.filmHead}>
-            <p className={styles.filmEyebrow}>Polaroid NOW Film</p>
-            <BounceTitle id="now-film-title" className={styles.filmTitle} />
+            <p className={styles.filmEyebrow}>{eyebrow}</p>
+            <BounceTitle id={`${idPrefix}-film-title`} className={styles.filmTitle} lines={titleLines} />
           </div>
           <div ref={printRef} className={styles.filmPrint}>
-            <img
-              src={filmPrintImage}
-              alt="Polaroid Now로 찍은 인화 사진: 잔잔한 물 위로 알록달록한 집들이 그대로 비친 풍경"
-              decoding="async"
+            <img src={image} alt={imageAlt} decoding="async" />
+            <span
+              ref={undevRef}
+              className={styles.filmUndev}
+              style={{ top: `${box.top * 100}%`, left: `${box.left * 100}%`, width: `${box.w * 100}%`, height: `${box.h * 100}%` }}
+              aria-hidden="true"
             />
-            <span ref={undevRef} className={styles.filmUndev} aria-hidden="true" />
           </div>
         </div>
       </div>
       <div className={styles.filmCopy}>
-        <p className={styles.filmText}>
-          Every Now photo comes out on Color i-Type film: soft, dreamy and a little unpredictable, with colors no filter can
-          copy. It starts out blank, then slowly comes to life in 10–15 minutes inside that iconic white frame. Made at the
-          last Polaroid film factory in the world.
-        </p>
+        <p className={styles.filmText}>{text}</p>
       </div>
     </section>
   );
