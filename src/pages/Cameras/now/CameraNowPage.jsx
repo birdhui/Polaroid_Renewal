@@ -1,86 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion.js';
 import nowColorsImage from '@/assets/cameras/now/now-colors.webp';
 import nowAutofocusVideo from '@/assets/cameras/now/now-autofocus.mp4';
+import NowCutaway from './sections/NowCutaway.jsx';
+import NowResults from './sections/NowResults.jsx';
+import NowFilters from './sections/NowFilters.jsx';
+import NowStore from './sections/NowStore.jsx';
 import styles from './CameraNowPage.module.css';
 
 /**
  * Polaroid Now 상세페이지 (담당: 정준혁) — 경로: /cameras/now
- * polaroid-now 시안(../prototype/polaroid-now.html)과 같은 구성:
- *   Hero → 제품 디자인 → 기능 3카드 → 소개 영상 → 결과물(스크롤 연출) → 앱 연동 → 요약
- * 시안 자체 헤더·푸터 대신 RootLayout 의 공통 SiteHeader·SiteFooter 를 사용한다.
- * 인화 사진은 시안과 같이 polaroid.com(Sanity CDN) 이미지를 직접 불러온다.
+ * 구성: Hero → 제품 디자인 → 기능 3카드 → 내부 구조(3D) → 결과물(사진 26장) → 필터 → 앱 연동 → 스토어 이동
+ * 헤더·푸터는 RootLayout 의 공통 SiteHeader·SiteFooter 를 사용한다.
+ * 사진은 polaroid.com(Sanity CDN)·Flickr 이미지를 직접 불러온다.
  */
 
 /** 시안과 같은 글꼴. 이 페이지에 들어올 때만 불러오고, 실패해도 기본 글꼴로 표시된다. */
 const FONT_GOOGLE =
-  'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&display=swap';
+  'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Reenie+Beanie&family=Playfair+Display:ital,wght@1,400;1,500&display=swap';
 const FONT_PRETENDARD =
   'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css';
 
 const SANITY = 'https://cdn.sanity.io/images/ieogcuy1/production';
 const PRINT_PARTY = `${SANITY}/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85`;
 
-const FILM_YOUTUBE_ID = 'FgUqS0QTaeA';
-
-/** 결과물 섹션 인화 사진: 위치(x·y), 기울기(r), 폭(w), 등장 시점(at: 스크롤 진행률) */
-const PRINTS = [
-  { id: 'party', x: '-34vw', y: '-22vh', r: '-7deg', w: 'clamp(130px,13vw,230px)', at: 0.04, src: PRINT_PARTY, alt: '파티 풍선 앞에서 찍은 두 사람의 Polaroid 사진' },
-  { id: 'tube', x: '31vw', y: '-20vh', r: '6deg', w: 'clamp(140px,14vw,250px)', at: 0.1, src: `${SANITY}/446e34b4d8d769c52324847338ad0277ac327cd8-4096x4096.png?rect=2049,1091,1559,1900&w=500&fm=webp&q=85`, alt: '튜브를 든 두 사람이 웃고 있는 Polaroid 사진' },
-  { id: 'neon', x: '-27vw', y: '18vh', r: '5deg', w: 'clamp(130px,13vw,230px)', at: 0.16, src: `${SANITY}/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?rect=820,372,885,1071&w=500&fm=webp&q=85`, alt: '네온사인과 인물이 겹친 이중노출 Polaroid 사진' },
-  { id: 'rail', x: '26vw', y: '19vh', r: '-5deg', w: 'clamp(130px,13vw,230px)', at: 0.22, src: `${SANITY}/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3029,1448,920,1113&w=500&fm=webp&q=85`, alt: '난간에 앉은 두 사람을 올려다본 Polaroid 사진' },
-  { id: 'sun', x: '2vw', y: '-30vh', r: '-3deg', w: 'clamp(110px,11vw,190px)', at: 0.28, src: `${SANITY}/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=1937,1448,936,1113&w=500&fm=webp&q=85`, alt: '햇빛 아래 난간에 기댄 두 사람의 Polaroid 사진' },
-];
-
-/** 소개 영상: 썸네일을 누르면 YouTube 플레이어로 바뀐다. */
-function FilmPlayer({ className }) {
-  const [playing, setPlaying] = useState(false);
-  const [poster, setPoster] = useState(`https://i.ytimg.com/vi/${FILM_YOUTUBE_ID}/maxresdefault.jpg`);
-
-  const q = new URLSearchParams({ autoplay: '1', rel: '0', playsinline: '1', modestbranding: '1' });
-
-  // 바깥 div 는 항상 같은 요소로 유지한다(나타남 효과 클래스가 지워지지 않도록).
-  return (
-    <div className={className}>
-      {playing ? (
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${FILM_YOUTUBE_ID}?${q.toString()}`}
-          title="How to use the Polaroid Now"
-          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        />
-      ) : (
-        <PosterButton poster={poster} setPoster={setPoster} onPlay={() => setPlaying(true)} />
-      )}
-    </div>
-  );
-}
-
-function PosterButton({ poster, setPoster, onPlay }) {
-  return (
-    <>
-      <img
-        className={styles.filmPoster}
-        src={poster}
-        alt=""
-        loading="lazy"
-        onError={() => {
-          if (!poster.includes('hqdefault')) setPoster(`https://i.ytimg.com/vi/${FILM_YOUTUBE_ID}/hqdefault.jpg`);
-        }}
-      />
-      <button className={styles.filmPlay} type="button" aria-label="How to use the Polaroid Now 영상 재생" onClick={onPlay}>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 7v10l8-5z" />
-        </svg>
-      </button>
-    </>
-  );
-}
-
 export default function CameraNowPage() {
   const pageRef = useRef(null);
-  const resultsRef = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
 
   // 화면에 들어온 요소(.rv)를 차례로 나타낸다.
@@ -122,34 +67,6 @@ export default function CameraNowPage() {
     );
     vids.forEach((v) => io.observe(v));
     return () => io.disconnect();
-  }, [reducedMotion]);
-
-  // 결과물: 스크롤에 따라 인화 사진이 하나씩 흩뿌려진다.
-  useEffect(() => {
-    const sec = resultsRef.current;
-    if (!sec || reducedMotion) return undefined;
-    const prints = [...sec.querySelectorAll(`.${styles.print}`)];
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const r = sec.getBoundingClientRect();
-      const total = sec.offsetHeight - window.innerHeight || 1;
-      const p = Math.min(1, Math.max(0, -r.top / total));
-      // 섹션 위쪽이 화면 35% 지점에 닿으면 시작, 스크롤 절반쯤에서 모두 놓인다.
-      const enter = r.top < window.innerHeight * 0.35 ? p * 0.9 + 0.02 : -1;
-      prints.forEach((el) => el.classList.toggle(styles.on, enter >= Number(el.dataset.at)));
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (frame) cancelAnimationFrame(frame);
-    };
   }, [reducedMotion]);
 
   const rv = styles.rv;
@@ -256,59 +173,14 @@ export default function CameraNowPage() {
         </ul>
       </section>
 
-      {/* 4. 소개 영상 */}
-      <section className={styles.film} aria-labelledby="now-film-title">
-        <div className={`${styles.filmTop} ${rv}`}>
-          <h2 id="now-film-title">
-            Learn it in a minute,
-            <br />
-            keep it for a lifetime
-          </h2>
-          <span className={styles.filmWith}>with</span>
-          <span className={styles.filmSign} aria-hidden="true">
-            Polaroid Now
-          </span>
-        </div>
-        <FilmPlayer className={`${styles.filmPlayer} ${rv}`} />
-        <blockquote className={`${styles.filmQuote} ${rv}`}>
-          <span className={styles.qmark} aria-hidden="true">
-            “
-          </span>
-          <p>Point. Shoot. Wait for the magic.</p>
-          <p className={styles.ko}>셔터를 누르고, 사진이 떠오르길 기다리는 것. 그게 Now 사용법의 전부예요.</p>
-          <footer>
-            <strong>How to use the Polaroid Now,</strong> Polaroid
-          </footer>
-          <span className={`${styles.qmark} ${styles.qmarkEnd}`} aria-hidden="true">
-            ”
-          </span>
-        </blockquote>
-      </section>
+      {/* 3-2. 내부 구조 (three.js 3D) + 설명 문구 + Watch 영상 카드 */}
+      <NowCutaway reducedMotion={reducedMotion} />
 
-      {/* 5. 결과물 */}
-      <section ref={resultsRef} className={styles.results} aria-labelledby="now-results-title">
-        <div className={styles.resultsStage}>
-          <div className={styles.resultsTop}>
-            <span className={styles.eyebrow}>Shot on Polaroid Now</span>
-            <h2 id="now-results-title">Real life, developed.</h2>
-            <p>Now로 찍고, 바로 손에 쥔 진짜 사진들</p>
-          </div>
-          <div className={styles.prints} aria-label="Polaroid Now로 찍은 인화 사진">
-            {PRINTS.map((p) => (
-              <img
-                key={p.id}
-                className={styles.print}
-                data-at={p.at}
-                style={{ '--x': p.x, '--y': p.y, '--r': p.r, '--w': p.w }}
-                src={p.src}
-                alt={p.alt}
-                loading="lazy"
-                decoding="async"
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 4. 결과물 (사진 26장이 하나씩 떠오름) */}
+      <NowResults reducedMotion={reducedMotion} />
+
+      {/* 5. 필터 캐러셀 */}
+      <NowFilters />
 
       {/* 6. 앱 연동 */}
       <section className={styles.app} aria-labelledby="now-app-title">
@@ -412,19 +284,8 @@ export default function CameraNowPage() {
         </div>
       </section>
 
-      {/* 7. Now 정리 */}
-      <section className={styles.summary} aria-labelledby="now-sum-title">
-        <span id="now-sum-title" className={`${styles.eyebrow} ${rv}`}>
-          The classic instant camera.
-        </span>
-        <p className={`${styles.sumText} ${rv}`}>
-          The classic analog instant camera. With self-timer and double-exposure modes, an upgraded two-lens autofocusing
-          system and made with 40% recycled materials in different colors. All so you can capture real life on iconic,
-          full-sized Polaroid film.
-        </p>
-      </section>
-
-      <span className={styles.concept}>CONCEPT · 비공식</span>
+      {/* 7. 스토어 이동 */}
+      <NowStore />
     </div>
   );
 }

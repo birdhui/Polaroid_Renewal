@@ -1,6 +1,6 @@
 /*
- * Polaroid Now 상세페이지 — polaroid-now 시안(../prototype/polaroid-now.css)과 같은 값 (검은 배경)
- * 시안 자체 헤더·푸터는 공통 SiteHeader·SiteFooter 로 대체했다.
+ * Polaroid Now 상세페이지 (검은 배경) — 경로: /cameras/now
+ * 헤더·푸터는 공통 SiteHeader·SiteFooter 를 쓴다.
  * 공통 헤더가 화면 위에 고정되지 않으므로 시안의 헤더 높이(--head)는 0 으로 둔다.
  */
 .page {
@@ -46,20 +46,6 @@
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-}
-
-.concept {
-  position: fixed;
-  bottom: 14px;
-  left: 14px;
-  z-index: 60;
-  padding: 7px 10px;
-  border-radius: 99px;
-  background: rgb(20 20 20 / 0.72);
-  color: #f6f1e8;
-  font: 600 11px / 1 var(--display);
-  letter-spacing: 0.16em;
-  pointer-events: none;
 }
 
 .eyebrow {
@@ -228,149 +214,438 @@
   color: #fff;
 }
 
-/* ---------- 4. film ---------- */
-.film {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(16px, 2.6vh, 30px);
-  padding: calc(var(--head) + 6vh) 0 10vh;
-  background: #0d0d0d;
-  text-align: center;
-}
-
-.filmTop {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.filmTop h2 {
-  margin: 0;
-  font: var(--t-title);
-  letter-spacing: -0.035em;
-}
-
-.filmWith {
-  margin-top: clamp(10px, 1.6vh, 18px);
-  font: 700 15px / 1 var(--display);
-}
-
-.filmSign {
+/* ---------- 3-2. cutaway (three.js 실시간 3D, 스크롤 연출) ----------
+   GLB 모델을 스크롤 진행률에 맞춰 그린다. 카메라 맞춤·문구 위치는 cutaway/createCutaway.js 가 넣는다. */
+.cutaway {
   position: relative;
-  z-index: 2;
-  margin-top: 4px;
-  margin-bottom: calc(clamp(40px, 5vw, 80px) * -0.42);
-  font: 400 clamp(48px, 5.4vw, 96px) / 0.9 var(--hand);
-  transform: rotate(-2deg);
+  height: 600vh;
+  background: var(--bg);
 }
 
-.filmPlayer {
-  position: relative;
-  width: calc(100% - var(--gut) * 2);
-  aspect-ratio: 16 / 9;
+.cutawayStage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
-  background: #1a1918;
 }
 
-.filmPoster {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.cutawayGlow {
+  position: absolute;
+  top: 50%;
+  width: 56vw;
+  height: 120vh;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .35;
+  pointer-events: none;
+  will-change: opacity,transform;
 }
 
-.filmPlayer::after {
-  content: '';
+.cutawayGlowL {
+  left: -30vw;
+  translate: 0 -50%;
+  background: radial-gradient(closest-side,rgba(94,200,242,.75),rgba(139,224,78,.55) 45%,rgba(244,211,58,.35) 70%,transparent);
+}
+
+.cutawayGlowR {
+  right: -30vw;
+  translate: 0 -50%;
+  background: radial-gradient(closest-side,rgba(242,140,40,.75),rgba(244,211,58,.5) 45%,rgba(139,224,78,.3) 72%,transparent);
+}
+
+.cutawayCanvas {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 0.22);
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.cutawayCanvas.isReady {
+  opacity: 1;
+}
+
+.cutawayPoster {
+  display: none;
+  position: absolute;
+  top: calc(var(--head) + 4vh);
+  left: 50%;
+  width: min(640px,80vw);
+  max-height: 62vh;
+  object-fit: contain;
+  translate: -50% 0;
   pointer-events: none;
 }
 
-.filmPlayer:has(iframe)::after {
+.cutaway.isFallback .cutawayPoster {
+  display: block;
+}
+
+.cutaway.isFallback .cutawayCanvas {
   display: none;
 }
 
-.filmPlayer iframe {
+.cutaway.isFallback .cutawayCopy {
+  opacity: 1!important;
+  visibility: visible!important;
+  top: auto!important;
+  bottom: clamp(40px,9vh,96px);
+}
+
+.cutawayCopy {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 100%;
+  width: min(560px,calc(100% - var(--gut) * 2));
+  translate: -50% 0;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity,transform;
+}
+
+.cutawayText {
+  margin: 0;
+  font: 700 clamp(18px,1.55vw,26px)/1.3 var(--display);
+  letter-spacing: -.015em;
+  color: #fff;
+}
+
+/* 영상 카드: 왼쪽 둥근 정사각형 썸네일 + 오른쪽 문구 (i-2 'Watch' 구성) */
+.watchCard {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px,1.3vw,22px);
+  margin-top: clamp(20px,3vh,36px);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.watchThumb {
+  position: relative;
+  flex: none;
+  width: clamp(76px,6.2vw,108px);
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.55);
+  background: #222;
+}
+
+.watchThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.watchThumb svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  translate: -50% -50%;
+  fill: #fff;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.45));
+}
+
+.watchText {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px,1vh,12px);
+  max-width: 15em;
+}
+
+.watchLabel {
+  font: 500 clamp(13px,.95vw,16px)/1 var(--display);
+  color: #8DBC43;
+}
+
+.watchTitle {
+  font: 500 clamp(16px,1.2vw,20px)/1.2 var(--display);
+  letter-spacing: -.01em;
+  color: #fff;
+}
+
+.watchCard:hover .watchThumb img {
+  transform: scale(1.06);
+}
+
+.watchCard:focus-visible {
+  outline: 2px solid #8DBC43;
+  outline-offset: 6px;
+  border-radius: 8px;
+}
+
+/* 영상 모달 */
+.videoModal {
+  width: min(1100px,92vw);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: #000;
+  overflow: visible;
+}
+
+.videoModal::backdrop {
+  background: rgba(0,0,0,.82);
+}
+
+.videoModalFrame {
+  aspect-ratio: 16/9;
+}
+
+.videoModalFrame iframe {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;
 }
 
-.filmPlay {
+.videoModalClose {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
-  width: clamp(64px, 5vw, 88px);
-  height: clamp(64px, 5vw, 88px);
-  border: 1.5px solid rgb(255 255 255 / 0.9);
-  border-radius: 10px;
-  background: rgb(0 0 0 / 0.35);
-  color: #fff;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
   cursor: pointer;
-  translate: -50% -50%;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition:
-    background 0.2s,
-    scale 0.2s;
 }
 
-.filmPlay:hover {
-  background: rgb(0 0 0 / 0.55);
-  scale: 1.06;
+.videoModalClose svg {
+  width: 20px;
+  stroke: #fff;
+  stroke-width: 2;
+  fill: none;
 }
 
-.filmPlay:focus-visible {
-  outline: 3px solid var(--yellow);
-  outline-offset: 4px;
+.videoModalClose:hover {
+  background: rgba(255,255,255,.22);
 }
 
-.filmPlay svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
+/* ---------- 5. filters (필터 캐러셀) ----------
+   인화 사진 창(가로 넘김) + 필터 원판 탭. 탭 위치·넘김은 FilterCarousel 이 --o(가운데 기준 칸 수)로 정한다. */
+.filters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(36px,6vh,72px);
+  padding: calc(var(--head) + 8vh) var(--gut) 12vh;
+  background: #0d0d0d;
+  text-align: center;
+  overflow: hidden;
 }
 
-.filmQuote {
-  max-width: 760px;
-  margin: clamp(10px, 2vh, 24px) var(--gut) 0;
+.filtersHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px,2.6vh,30px);
 }
 
-.qmark {
-  display: block;
-  font: 700 34px / 0.6 var(--display);
+.filtersEyebrow {
+  margin: 0;
+  font: 500 clamp(15px,1.15vw,19px)/1 var(--display);
+  color: #EBB741;
 }
 
-.qmarkEnd {
-  margin-top: clamp(22px, 3vh, 34px);
+.filtersHead h2 {
+  margin: 0;
+  font: 800 clamp(38px,5vw,84px)/1.02 var(--display);
+  letter-spacing: -.035em;
+  color: #fff;
 }
 
-.filmQuote p {
-  margin: 10px 0 0;
-  font: 400 clamp(22px, 2.2vw, 36px) / 1.2 var(--display);
-  letter-spacing: -0.015em;
+.filterViewer {
+  --pw: min(440px,74vw,calc((100svh - var(--head) - 200px) * 88 / 107));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(22px,3.4vh,40px);
 }
 
-.filmQuote p.ko {
-  margin-top: 12px;
-  font: var(--t-body);
-  color: var(--c-body);
+.filterWindow {
+  position: relative;
+  width: var(--pw);
+  aspect-ratio: 88/107;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
 }
 
-.filmQuote footer {
-  margin-top: 16px;
-  font-size: 14px;
+.filterWindow.isDrag {
+  cursor: grabbing;
 }
 
-/* ---------- 5. results (scroll stage) ---------- */
+.filterPrint {
+  --o: 0;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 6.8% 5.7% 0;
+  background: #f3f1ec;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  transform: translateX(calc(var(--o) * (100% + clamp(28px,4vw,56px))));
+  transition: transform .85s cubic-bezier(.65,0,.35,1),opacity .35s;
+}
+
+.filterPrint.noAnim {
+  transition: none;
+}
+
+.filterPrint img {
+  width: 100%;
+  aspect-ratio: 79/79;
+  object-fit: cover;
+  background: #ddd;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.filterPrint figcaption {
+  margin-top: 7.5%;
+  font: 400 clamp(13px,1.15vw,17px)/1 var(--mono);
+  letter-spacing: .08em;
+  color: #1c1c1c;
+}
+
+.filterTabs {
+  --gap: clamp(64px,6vw,96px);
+  position: relative;
+  width: calc(var(--gap) * 5);
+  height: clamp(96px,10vh,112px);
+  -webkit-mask-image: linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
+  mask-image: linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
+}
+
+.filterTab {
+  --o: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: var(--gap);
+  margin-left: calc(var(--gap) / -2);
+  padding: 10px 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transform: translateX(calc(var(--o) * var(--gap)));
+  transition: transform .85s cubic-bezier(.65,0,.35,1),opacity .35s;
+}
+
+.filterTab.noAnim {
+  transition: none;
+}
+
+.filterDisc {
+  position: relative;
+  width: clamp(36px,3vw,46px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 5px solid #181818;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.12);
+  background: var(--glass);
+  transition: scale .5s cubic-bezier(.65,0,.35,1);
+}
+
+.filterDisc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg,rgba(255,255,255,.38),transparent 46%);
+}
+
+.filterDiscStarburst {
+  --glass: repeating-linear-gradient(0deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(-60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),#d7dbdf;
+}
+
+.filterDiscRedVignette {
+  --glass: radial-gradient(circle,#0d0d0d 0 21%,rgba(255,255,255,.7) 22% 25%,#c8423b 26%);
+}
+
+.filterDiscOrange {
+  --glass: #e39a52;
+}
+
+.filterDiscYellow {
+  --glass: #e9de62;
+}
+
+.filterDiscBlue {
+  --glass: #5f93c8;
+}
+
+.filterName {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--c);
+  opacity: 0;
+  transition: opacity .35s;
+}
+
+.filterTab[aria-selected="true"] .filterDisc {
+  scale: 1.32;
+}
+
+.filterTab[aria-selected="true"] .filterName {
+  opacity: 1;
+  transition-delay: .25s;
+}
+
+.filterTab:not([aria-selected="true"]):hover .filterDisc {
+  scale: 1.1;
+}
+
+.filterTab:focus-visible {
+  outline: none;
+}
+
+.filterTab:focus-visible .filterDisc {
+  outline: 2px solid var(--c);
+  outline-offset: 6px;
+}
+
+.filterTab.isFar {
+  opacity: .4;
+}
+
+/* 사진 아래 설명 (내부 구조 섹션의 카메라 아래 문구와 같은 규격) */
+.filtersText {
+  width: min(560px,100%);
+  margin: clamp(8px,2vh,24px) 0 0;
+  text-align: left;
+  font: 700 clamp(18px,1.55vw,26px)/1.3 var(--display);
+  letter-spacing: -.015em;
+  color: #fff;
+}
+
+/* ---------- 4. results (고정 + 스크롤로 사진이 하나씩 떠오름) ----------
+   사진 k번째는 [k*step,
+k*step+4*step] 구간에 나타난다. */
 .results {
-  height: 180vh;
+  height: calc(100vh + 1400px);
+  height: calc(100svh + 1400px);
   background: var(--bg);
 }
 
@@ -382,56 +657,71 @@
   overflow: hidden;
 }
 
-.resultsTop {
+.resultsTitle {
   position: absolute;
-  top: 50%;
   left: 50%;
-  z-index: 2;
-  width: 90vw;
-  text-align: center;
-  translate: -50% -50%;
-}
-
-.resultsTop .eyebrow {
-  margin-bottom: clamp(14px, 2.4vh, 28px);
-}
-
-.resultsTop h2 {
+  top: calc(50% + var(--head) / 2);
+  z-index: 30;
   margin: 0;
-  font: var(--t-title);
-  letter-spacing: -0.035em;
+  width: 90vw;
+  translate: -50% -50%;
+  text-align: center;
+  font: 800 clamp(40px,5.4vw,92px)/1.04 var(--display);
+  letter-spacing: -.035em;
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(0,0,0,.45);
+  pointer-events: none;
 }
 
-.resultsTop p {
-  margin: clamp(14px, 2.4vh, 28px) 0 0;
-  font: var(--t-body);
-  color: var(--c-body);
+.btWord {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.btChar {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100px) scaleY(.5) rotate(45deg);
+  transform-origin: 50% 100%;
+  transition: opacity .5s ease var(--d),transform .9s cubic-bezier(.34,1.56,.64,1) var(--d);
+}
+
+.resultsTitle.isIn .btChar {
+  opacity: 1;
+  transform: none;
 }
 
 .prints {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
+  inset: var(--head) 0 0;
 }
 
 .print {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--w);
+  left: var(--x);
+  top: var(--y);
+  width: clamp(64px,var(--w),240px);
   height: auto;
-  box-shadow: 0 18px 30px rgb(0 0 0 / 0.55);
+  translate: -50% -50%;
+  box-shadow: 0 14px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.35);
   opacity: 0;
-  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(calc(var(--r) * 2.2)) scale(1.35);
-  transition:
-    opacity 0.6s ease,
-    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(60px) scale(.92);
+  will-change: opacity,transform;
 }
 
-.print.on {
-  opacity: 1;
-  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r)) scale(1);
+.resultsCredit {
+  position: absolute;
+  right: var(--gut);
+  bottom: 18px;
+  z-index: 31;
+  margin: 0;
+  font: 400 11px/1 var(--mono);
+  color: rgba(244,240,232,.38);
+}
+
+.resultsCredit a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ---------- 6. app ---------- */
@@ -925,20 +1215,133 @@
   87%, 100% { fill: #e0284f; stroke: #e0284f; }
 }
 
-/* ---------- 7. summary ---------- */
-.summary {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: calc(var(--head) + 4vh) var(--gut) 6vh;
+/* ---------- 7. store (배경 사진 + 유리 박스, 쇼핑 페이지 이동) ---------- */
+.store {
+  position: relative;
+  height: 120vh;
+  height: 120svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   background: var(--bg);
+  isolation: isolate;
 }
 
-.sumText {
-  max-width: 1240px;
-  margin: clamp(14px, 2.4vh, 28px) 0 0;
-  font: var(--t-title);
-  letter-spacing: -0.035em;
+.storeBg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  filter: grayscale(.45) brightness(.62) contrast(.95);
+}
+
+/* 회색빛으로 가라앉히고,
+위·아래는 페이지 배경과 이어지게 */
+.store::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,0) 18%,rgba(10,10,10,0) 82%,var(--bg) 100%),rgba(28,28,30,.42);
+}
+
+.storeCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: min(1080px,calc(100% - var(--gut) * 2));
+  height: min(820px,82svh);
+  padding: clamp(40px,6vh,72px) clamp(20px,4vw,64px) clamp(32px,5vh,56px);
+  border-radius: clamp(20px,2.4vw,34px);
+  text-align: center;
+  background: linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.1));
+  -webkit-backdrop-filter: blur(26px) saturate(1.15);
+  backdrop-filter: blur(26px) saturate(1.15);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28),0 30px 80px rgba(0,0,0,.35);
+}
+
+/* 위쪽 테두리에 따뜻한 빛이 맺히는 느낌 */
+.storeCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(180deg,rgba(246,214,150,.85),rgba(255,255,255,.18) 14%,rgba(255,255,255,0) 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.storeTop {
+  margin: 0;
+  font: 500 clamp(18px,2.3vw,40px)/1.12 var(--display);
+  letter-spacing: -.025em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.storeLink {
+  font: italic 400 clamp(26px,3.1vw,50px)/1.1 'Playfair Display',Georgia,serif;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+
+/* 박스 전체를 눌러도 이동 */
+.storeLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.storeNowrap {
+  white-space: nowrap;
+}
+
+.storeArrow {
+  display: inline-block;
+  margin-left: .35em;
+  font: 400 .8em/1 var(--display);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+
+.storeCard:hover .storeArrow,
+.storeLink:focus-visible .storeArrow {
+  transform: translateX(8px);
+}
+
+.storeLink:focus-visible {
+  outline: none;
+}
+
+.storeCard:has(.storeLink:focus-visible) {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.storeBottom {
+  margin: 0;
+  font: 600 clamp(36px,6.4vw,108px)/.95 var(--display);
+  letter-spacing: -.04em;
+  color: rgba(255,255,255,.62);
+}
+
+/* 화면에는 숨기고 스크린리더만 읽는 글 */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ---------- reveal ---------- */
@@ -1005,7 +1408,15 @@
   }
 
   .print {
-    --w: clamp(84px, 24vw, 130px) !important;
+    width: clamp(56px, calc(var(--w) * 2.2), 130px);
+  }
+
+  .print:nth-child(n + 19) {
+    display: none;
+  }
+
+  .storeTop br {
+    display: none;
   }
 }
 
@@ -1017,42 +1428,24 @@
     transition: none;
   }
 
+  .cutaway,
   .results {
-    height: auto;
+    height: 100vh;
+    height: 100svh;
   }
 
-  .resultsStage {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 6vh;
-    height: auto;
-    padding: calc(var(--head) + 8vh) 0 8vh;
+  .print,
+  .btChar {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 
-  .resultsTop {
-    position: relative;
-    top: auto;
-    left: auto;
-    margin: 0 auto;
-    translate: none;
-  }
-
-  .prints {
-    position: relative;
-    inset: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-    justify-content: center;
-    padding: 0 var(--gut);
-  }
-
-  .print {
-    position: static;
-    opacity: 1;
-    transform: rotate(var(--r));
-    transition: none;
+  .filterPrint,
+  .filterTab,
+  .filterDisc,
+  .storeArrow {
+    transition: none !important;
   }
 
   .s,

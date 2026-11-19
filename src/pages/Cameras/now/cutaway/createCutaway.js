@@ -1,4 +1,5 @@
 // Polaroid Now 내부 구조 연출 (three.js 실시간 3D) — 담당: 정준혁
+// CameraNowPage 의 '내부 구조' 섹션에서 createCutaway() 로 한 번 만들고, 페이지를 떠나면 destroy() 로 정리한다.
 // 모델: Blender 원본(흰색 Now)을 그래파이트로 바꾸고 내부 부품을 더해 GLB로 내보냄
 //   src/assets/cameras/now/now-graphite.glb
 // 스크롤 진행률(p)에 따른 장면
@@ -8,25 +9,60 @@
 //   0.56 → 0.76  롤러가 돌며 사진이 배출된다 (현상 시작)
 //   0.76 → 0.86  몸체가 다시 닫히고 카메라가 위로 올라간다
 //   0.86 → 0.95  사진 아래에 설명 문구와 영상 카드가 나타난다
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-const sec = document.querySelector('.cutaway');
-if (sec) init(sec);
+/*
+ * three.js 는 아직 package.json 에 없어서(새 패키지는 PM 승인 필요) jsDelivr CDN 의 ES 모듈로 불러온다.
+ * 승인 후 `npm i three` 를 하면 loadThree() 를 아래 정적 import 로 바꾸면 된다.
+ *   import * as THREE from 'three';
+ *   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; ...
+ */
+const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.187.0';
+let threePromise = null;
+function loadThree() {
+  threePromise ??= Promise.all([
+    import(/* @vite-ignore */ `${THREE_CDN}/+esm`),
+    import(/* @vite-ignore */ `${THREE_CDN}/examples/jsm/loaders/GLTFLoader.js/+esm`),
+    import(/* @vite-ignore */ `${THREE_CDN}/examples/jsm/libs/meshopt_decoder.module.js/+esm`),
+    import(/* @vite-ignore */ `${THREE_CDN}/examples/jsm/environments/RoomEnvironment.js/+esm`),
+  ]).then(([THREE, gltf, meshopt, room]) => ({
+    THREE,
+    GLTFLoader: gltf.GLTFLoader,
+    MeshoptDecoder: meshopt.MeshoptDecoder,
+    RoomEnvironment: room.RoomEnvironment,
+  }));
+  threePromise.catch(() => { threePromise = null; }); // 실패하면 다음 방문 때 다시 시도
+  return threePromise;
+}
 
-function init(sec) {
-  const stage = sec.querySelector('.cutaway-stage');
-  const canvas = sec.querySelector('.cutaway-canvas');
-  const text = sec.querySelector('.cutaway-copy'); // 설명 문구 + 영상 카드
-  const glowL = sec.querySelector('.cutaway-glow-l');
-  const glowR = sec.querySelector('.cutaway-glow-r');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/**
+ * @param {object} o
+ * @param {HTMLElement} o.section  스크롤 길이를 가진 섹션
+ * @param {HTMLElement} o.stage    화면에 고정되는 무대
+ * @param {HTMLCanvasElement} o.canvas
+ * @param {HTMLElement} [o.copy]   설명 문구 + 영상 카드 (사진 아래로 따라 내려간다)
+ * @param {HTMLElement} [o.glowL]
+ * @param {HTMLElement} [o.glowR]
+ * @param {string} o.modelUrl
+ * @param {string} o.printUrl      인화 사진
+ * @param {boolean} o.reduce       동작 줄이기: 마지막 장면만 그린다
+ * @param {number} [o.head]        화면 위 고정 헤더 높이(px)
+ * @param {() => void} [o.onReady]
+ * @param {() => void} [o.onFail]  WebGL·모델·three.js 를 쓸 수 없을 때
+ * @returns {{ destroy: () => void }}
+ */
+export function createCutaway(o) {
+  let destroyed = false;
+  let cleanup = () => {};
+  loadThree()
+    .then((lib) => { if (!destroyed) cleanup = init(lib, o); })
+    .catch(() => { if (!destroyed) o.onFail?.(); });
+  return { destroy() { destroyed = true; cleanup(); } };
+}
 
-  const MODEL = window.__NOW_GLB || '../../../assets/cameras/now/now-graphite.glb';
-  const PRINT = window.__NOW_PRINT
-    || 'https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=1600&fm=jpg&q=90';
+function init({ THREE, GLTFLoader, MeshoptDecoder, RoomEnvironment }, { section: sec, stage, canvas, copy: text, glowL, glowR, modelUrl, printUrl, reduce, head = 0, onReady, onFail }) {
+  const MODEL = modelUrl;
+  const PRINT = printUrl;
+  let disposed = false;
 
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const seg = (p, a, b) => clamp((p - a) / (b - a));
@@ -40,8 +76,8 @@ function init(sec) {
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, stencil: true, powerPreference: 'high-performance' });
   } catch (e) {
-    sec.classList.add('is-fallback');
-    return;
+    onFail?.();
+    return () => {};
   }
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -227,9 +263,9 @@ function init(sec) {
   let ready = false;
   let needsRender = true;
 
-  if (/debug/.test(location.search)) window.__cut = { THREE, scene, camera, renderer };
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   loader.load(MODEL, (gltf) => {
+    if (disposed) return;
     const model = gltf.scene;
     model.traverse((o) => {
       if (!o.isMesh) return;
@@ -261,8 +297,8 @@ function init(sec) {
     bodyBox = new THREE.Box3().setFromObject(model);
     ready = true;
     needsRender = true;
-    canvas.classList.add('is-ready');
-  }, undefined, () => sec.classList.add('is-fallback'));
+    onReady?.();
+  }, undefined, () => { if (!disposed) onFail?.(); });
 
   // ---------- 화면 맞춤 ----------
   const tmp = new THREE.Vector3();
@@ -361,7 +397,6 @@ function init(sec) {
     // 카메라: 오른쪽 → 왼쪽으로 돌고, 마지막엔 살짝 정면으로
     const az = lerp(lerp(34, -40, rot), -30, close);
     const el = lerp(lerp(18, 27, rot), 21, close);
-    const head = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--head')) || 64;
     const textH = text ? text.offsetHeight : 0;
     const top = head + H * 0.05;
     const bodyPts = corners(bodyBox);
@@ -413,8 +448,31 @@ function init(sec) {
   };
   const kick = () => { if (!rafId) rafId = requestAnimationFrame(loop); };
 
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, { rootMargin: '100px 0px' }).observe(sec);
-  window.addEventListener('resize', () => { resize(); kick(); });
+  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, { rootMargin: '100px 0px' });
+  io.observe(sec);
+  const onResize = () => { resize(); kick(); };
+  window.addEventListener('resize', onResize);
   resize();
   const wait = setInterval(() => { if (ready) { clearInterval(wait); needsRender = true; kick(); } }, 60);
+
+  // 페이지를 떠나면 화면 갱신을 멈추고 GPU 자원을 돌려준다.
+  return () => {
+    disposed = true;
+    visible = false;
+    clearInterval(wait);
+    if (rafId) cancelAnimationFrame(rafId);
+    io.disconnect();
+    window.removeEventListener('resize', onResize);
+    photo.onload = null;
+    scene.traverse((obj) => {
+      obj.geometry?.dispose();
+      const mats = Array.isArray(obj.material) ? obj.material : obj.material ? [obj.material] : [];
+      mats.forEach((m) => { m.map?.dispose(); m.dispose(); });
+    });
+    printTex.dispose();
+    scene.environment?.dispose();
+    pmrem.dispose();
+    renderer.dispose();
+    renderer.forceContextLoss();
+  };
 }
