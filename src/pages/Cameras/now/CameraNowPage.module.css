@@ -130,19 +130,14 @@
   color: var(--c-body);
 }
 
-/* ---------- 3. features (3열 카드) ---------- */
+/* ---------- 3. features (기능마다 한 화면, 좌우 분할 에디토리얼) ----------
+   한쪽은 설명(작은 사진 + 글), 반대쪽은 큰 이미지 자리. .featRowFlip 이면 좌우가 바뀐다. */
 .features {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 3.6vh, 44px);
-  height: 100vh;
-  height: 100svh;
-  min-height: 680px;
-  padding: calc(var(--head) + 4vh) clamp(10px, 0.8vw, 16px) clamp(10px, 1.4vh, 16px);
   background: var(--bg);
 }
 
 .featIntro {
+  padding: calc(var(--head) + clamp(72px, 12vh, 140px)) var(--gut) clamp(48px, 8vh, 96px);
   text-align: center;
 }
 
@@ -152,25 +147,65 @@
   letter-spacing: -0.035em;
 }
 
-.featCards {
-  display: grid;
-  flex: 1;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(8px, 0.7vw, 12px);
-  min-height: 0;
+.featList {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.fcard {
-  position: relative;
-  overflow: hidden;
-  background: #151413;
+.featRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  height: 100vh;
+  height: 100svh;
+  min-height: 640px;
+  border-top: 1px solid var(--line);
 }
 
-.fcard img,
-.fcard video {
+.featRowFlip .featInfo {
+  order: 2;
+}
+
+.featInfo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(56px, 9vh, 96px) var(--gut) clamp(72px, 11vh, 110px);
+  background: var(--bg-2);
+  text-align: center;
+}
+
+.featTag {
+  padding: 6px 14px 5px;
+  border: 1px solid rgb(244 240 232 / 0.45);
+  border-radius: 999px;
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.featName {
+  margin: clamp(14px, 2vh, 22px) 0 clamp(20px, 3.2vh, 36px);
+  font: 700 clamp(13px, 0.95vw, 15px) / 1.2 var(--display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.featMedia {
+  position: relative;
+  overflow: hidden;
+  width: auto;
+  height: clamp(220px, 42vh, 470px);
+  aspect-ratio: 24 / 25;
+  max-width: 100%;
+  background: #1c1b19;
+}
+
+.featMedia img,
+.featMedia video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -179,39 +214,51 @@
   transition: scale 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.fcard:hover img,
-.fcard:hover video {
+.featMedia:hover img,
+.featMedia:hover video {
   scale: 1.04;
 }
 
-.fcard::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0.25) 30%, rgb(0 0 0 / 0) 52%);
-  pointer-events: none;
-}
-
-.fcardText {
-  position: absolute;
-  right: clamp(18px, 1.6vw, 30px);
-  bottom: clamp(18px, 2.4vh, 30px);
-  left: clamp(18px, 1.6vw, 30px);
-  z-index: 1;
-}
-
-.fcardText span {
-  display: block;
-  font: 500 clamp(18px, 1.6vw, 28px) / 1.2 var(--display);
-  letter-spacing: -0.02em;
-  color: rgb(244 240 232 / 0.62);
-}
-
-.fcardText h3 {
-  margin: 6px 0 0;
-  font: 700 clamp(18px, 1.6vw, 28px) / 1.25 var(--text);
-  letter-spacing: -0.025em;
+.featInfo h3 {
+  margin: clamp(22px, 3.6vh, 40px) 0 0;
+  font: 700 clamp(20px, 1.7vw, 30px) / 1.3 var(--text);
+  letter-spacing: -0.03em;
   color: #fff;
+}
+
+.featDesc {
+  max-width: 420px;
+  margin: 12px 0 0;
+  font: var(--t-body);
+  color: var(--c-body);
+  word-break: keep-all;
+}
+
+.featFoot {
+  position: absolute;
+  right: var(--gut);
+  bottom: clamp(22px, 3.4vh, 36px);
+  left: var(--gut);
+  display: flex;
+  justify-content: space-between;
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* 큰 이미지 자리 (이미지 확정 전) */
+.featVisual {
+  position: relative;
+  background: #4a4845;
+}
+
+.featPending {
+  position: absolute;
+  right: clamp(18px, 1.8vw, 32px);
+  bottom: clamp(18px, 2.6vh, 32px);
+  font: 600 14px / 1 var(--text);
+  color: rgb(255 255 255 / 0.78);
 }
 
 /* ---------- 3-2. cutaway (three.js 실시간 3D, 스크롤 연출) ----------
@@ -640,16 +687,19 @@
   color: #fff;
 }
 
-/* ---------- 4. results (고정 + 스크롤로 사진이 하나씩 떠오름) ----------
-   사진 k번째는 [k*step,
-k*step+4*step] 구간에 나타난다. */
-.results {
-  height: calc(100vh + 1400px);
-  height: calc(100svh + 1400px);
+/* ---------- 4. Polaroid NOW Film (i-2 '우리 필름' 구성) ----------
+   고정된 무대에서 인화 사진이 올라와 현상되며 화면을 채운다. 위치·크기는 NowFilm 이 넣는다. */
+.film {
   background: var(--bg);
 }
 
-.resultsStage {
+.filmPin {
+  position: relative;
+  height: 320vh;
+  height: 320svh;
+}
+
+.filmStage {
   position: sticky;
   top: 0;
   height: 100vh;
@@ -657,20 +707,30 @@ k*step+4*step] 구간에 나타난다. */
   overflow: hidden;
 }
 
-.resultsTitle {
+.filmHead {
   position: absolute;
+  top: calc(var(--head) + clamp(56px, 11vh, 120px));
   left: 50%;
-  top: calc(50% + var(--head) / 2);
-  z-index: 30;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.2vh, 26px);
+  align-items: center;
   width: 90vw;
-  translate: -50% -50%;
   text-align: center;
-  font: 800 clamp(40px,5.4vw,92px)/1.04 var(--display);
-  letter-spacing: -.035em;
+  translate: -50% 0;
+}
+
+.filmEyebrow {
+  margin: 0;
+  color: #f28c28;
+  font: 500 clamp(14px, 1.05vw, 18px) / 1 var(--display);
+}
+
+.filmTitle {
+  margin: 0;
   color: #fff;
-  text-shadow: 0 4px 30px rgba(0,0,0,.45);
-  pointer-events: none;
+  font: 800 clamp(40px, 5.4vw, 92px) / 1.04 var(--display);
+  letter-spacing: -0.035em;
 }
 
 .btWord {
@@ -681,47 +741,64 @@ k*step+4*step] 구간에 나타난다. */
 .btChar {
   display: inline-block;
   opacity: 0;
-  transform: translateY(100px) scaleY(.5) rotate(45deg);
+  transform: translateY(100px) scaleY(0.5) rotate(45deg);
   transform-origin: 50% 100%;
-  transition: opacity .5s ease var(--d),transform .9s cubic-bezier(.34,1.56,.64,1) var(--d);
+  transition:
+    opacity 0.5s ease var(--d),
+    transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d);
 }
 
-.resultsTitle.isIn .btChar {
+.filmTitle.isIn .btChar {
   opacity: 1;
   transform: none;
 }
 
-.prints {
+/* JS 가 오기 전 기본 위치: 화면 아래쪽에 살짝 기울어 보인다 */
+.filmPrint {
   position: absolute;
-  inset: var(--head) 0 0;
+  top: 70%;
+  left: 37%;
+  z-index: 2;
+  width: 26vw;
+  aspect-ratio: 88 / 107;
+  background: #f3f1ec; /* 사진을 불러오기 전에도 인화지처럼 보이게 */
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.55),
+    0 4px 12px rgb(0 0 0 / 0.35);
+  transform: rotate(-3deg);
+  will-change: transform;
 }
 
-.print {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: clamp(64px,var(--w),240px);
-  height: auto;
-  translate: -50% -50%;
-  box-shadow: 0 14px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.35);
-  opacity: 0;
-  transform: translateY(60px) scale(.92);
-  will-change: opacity,transform;
+.filmPrint img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
 }
 
-.resultsCredit {
+/* 현상 전: 사진 자리가 흐린 회색으로 덮여 있다가 스크롤에 맞춰 걷힌다 */
+.filmUndev {
   position: absolute;
-  right: var(--gut);
-  bottom: 18px;
-  z-index: 31;
+  top: calc(6 / 107 * 100%);
+  left: calc(4.5 / 88 * 100%);
+  width: calc(79 / 88 * 100%);
+  height: calc(79 / 107 * 100%);
+  background: linear-gradient(160deg, #e4e3df, #cfcfcc);
+  pointer-events: none;
+}
+
+.filmCopy {
+  display: flex;
+  justify-content: center;
+  padding: clamp(56px, 10vh, 120px) var(--gut) clamp(96px, 16vh, 180px);
+}
+
+.filmText {
+  width: min(560px, 100%);
   margin: 0;
-  font: 400 11px/1 var(--mono);
-  color: rgba(244,240,232,.38);
-}
-
-.resultsCredit a {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: #fff;
+  font: 700 clamp(18px, 1.55vw, 26px) / 1.3 var(--display);
+  letter-spacing: -0.015em;
 }
 
 /* ---------- 6. app ---------- */
@@ -1388,31 +1465,24 @@ k*step+4*step] 구간에 나타난다. */
     max-height: 54vh;
   }
 
-  .features {
+  .featRow {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 46svh;
     height: auto;
-    min-height: 100svh;
+    min-height: 0;
   }
 
-  .featCards {
-    display: flex;
-    flex: none;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+  .featRowFlip .featInfo {
+    order: 0;
   }
 
-  .fcard {
-    flex: none;
-    width: 78vw;
-    height: 62svh;
-    scroll-snap-align: center;
+  .featInfo {
+    padding-top: 56px;
   }
 
-  .print {
-    width: clamp(56px, calc(var(--w) * 2.2), 130px);
-  }
-
-  .print:nth-child(n + 19) {
-    display: none;
+  .featMedia {
+    width: min(78vw, 360px);
+    height: auto;
   }
 
   .storeTop br {
@@ -1428,13 +1498,42 @@ k*step+4*step] 구간에 나타난다. */
     transition: none;
   }
 
-  .cutaway,
-  .results {
+  .cutaway {
     height: 100vh;
     height: 100svh;
   }
 
-  .print,
+  .filmPin {
+    height: auto;
+  }
+
+  .filmStage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6vh;
+    align-items: center;
+    height: auto;
+    padding: calc(var(--head) + 10vh) 0 0;
+  }
+
+  .filmHead {
+    position: static;
+    translate: none;
+  }
+
+  .filmPrint {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(420px, 70vw);
+    transform: none;
+  }
+
+  .filmUndev {
+    display: none;
+  }
+
   .btChar {
     opacity: 1 !important;
     transform: none !important;

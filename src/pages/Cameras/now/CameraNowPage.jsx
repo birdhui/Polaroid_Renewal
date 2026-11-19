@@ -3,16 +3,16 @@ import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion.js';
 import nowColorsImage from '@/assets/cameras/now/now-colors.webp';
 import nowAutofocusVideo from '@/assets/cameras/now/now-autofocus.mp4';
 import NowCutaway from './sections/NowCutaway.jsx';
-import NowResults from './sections/NowResults.jsx';
+import NowFilm from './sections/NowFilm.jsx';
 import NowFilters from './sections/NowFilters.jsx';
 import NowStore from './sections/NowStore.jsx';
 import styles from './CameraNowPage.module.css';
 
 /**
  * Polaroid Now 상세페이지 (담당: 정준혁) — 경로: /cameras/now
- * 구성: Hero → 제품 디자인 → 기능 3카드 → 내부 구조(3D) → 결과물(사진 26장) → 필터 → 앱 연동 → 스토어 이동
+ * 구성: Hero → 제품 디자인 → 기능 3가지(좌우 분할) → 내부 구조(3D) → Polaroid NOW Film(인화 사진 확대) → 필터 → 앱 연동 → 스토어 이동
  * 헤더·푸터는 RootLayout 의 공통 SiteHeader·SiteFooter 를 사용한다.
- * 사진은 polaroid.com(Sanity CDN)·Flickr 이미지를 직접 불러온다.
+ * 사진은 polaroid.com(Sanity CDN) 이미지를 직접 불러온다.
  */
 
 /** 시안과 같은 글꼴. 이 페이지에 들어올 때만 불러오고, 실패해도 기본 글꼴로 표시된다. */
@@ -23,6 +23,39 @@ const FONT_PRETENDARD =
 
 const SANITY = 'https://cdn.sanity.io/images/ieogcuy1/production';
 const PRINT_PARTY = `${SANITY}/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=500&fm=webp&q=85`;
+
+/**
+ * 3번 기능 섹션 데이터. side 는 설명(사진+글)이 놓이는 쪽이고, 반대쪽은 큰 이미지 자리다.
+ */
+const FEATURES = [
+  {
+    id: 'autofocus',
+    side: 'left',
+    name: 'Two-lens autofocus',
+    video: nowAutofocusVideo,
+    alt: '렌즈가 거리에 맞춰 전환되는 2렌즈 오토포커스 클로즈업',
+    title: ['가까운 얼굴도, 먼 풍경도', '알아서 또렷하게'],
+    desc: '피사체와의 거리에 맞춰 근접 렌즈와 표준 렌즈가 자동으로 바뀌어요. 셀피부터 풍경까지 초점 걱정 없이 셔터만 누르면 돼요.',
+  },
+  {
+    id: 'double',
+    side: 'right',
+    name: 'Double exposure mode',
+    img: `${SANITY}/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?w=1000&fm=webp&q=85`,
+    alt: '네온사인과 인물이 한 장에 겹쳐 찍힌 이중노출 Polaroid 사진',
+    title: ['두 번 찍으면', '두 장면이 한 장에'],
+    desc: '한 장의 필름에 두 번 노출해 두 장면을 겹쳐요. 인물 실루엣 위에 풍경을 얹으면 꿈처럼 몽환적인 사진이 남아요.',
+  },
+  {
+    id: 'bright',
+    side: 'left',
+    name: 'Bright light exposure',
+    img: `${SANITY}/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3014,1504,805,826&w=1000&fm=webp&q=90`,
+    alt: '햇빛 아래 난간에 앉은 두 사람을 올려다본 Polaroid Now Gen 3 인화 사진',
+    title: ['강한 햇빛 아래서도', '더 선명하게'],
+    desc: '밝은 빛에 맞춰 노출을 다듬어, 한낮의 야외에서도 하얗게 날아가지 않고 또렷한 사진으로 남겨요.',
+  },
+];
 
 export default function CameraNowPage() {
   const pageRef = useRef(null);
@@ -108,7 +141,7 @@ export default function CameraNowPage() {
         </p>
       </section>
 
-      {/* 3. 기능 소개 (3열 카드) */}
+      {/* 3. 기능 소개 (기능마다 한 화면, 좌우 분할 에디토리얼) */}
       <section className={styles.features} aria-labelledby="now-feat-title">
         <header className={`${styles.featIntro} ${rv}`}>
           <span className={styles.eyebrow}>Polaroid Now function</span>
@@ -118,66 +151,54 @@ export default function CameraNowPage() {
             every moment count
           </h2>
         </header>
-        <ul className={styles.featCards} role="list">
-          <li className={`${styles.fcard} ${rv}`}>
-            <video
-              src={nowAutofocusVideo}
-              autoPlay={!reducedMotion}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-label="렌즈가 거리에 맞춰 전환되는 2렌즈 오토포커스 클로즈업"
-            />
-            <div className={styles.fcardText}>
-              <span>Two-lens autofocus</span>
-              <h3>
-                가까운 얼굴도, 먼 풍경도
-                <br />
-                알아서 또렷하게
-              </h3>
-            </div>
-          </li>
-          <li className={`${styles.fcard} ${rv}`}>
-            <img
-              src={`${SANITY}/317d602c786057784868bb6ad46aa830fa6ef3f2-2010x1850.jpg?w=1400&fm=webp&q=85`}
-              alt="네온사인과 인물이 한 장에 겹쳐 찍힌 이중노출 Polaroid 사진"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className={styles.fcardText}>
-              <span>Double exposure mode</span>
-              <h3>
-                두 번 찍으면
-                <br />
-                두 장면이 한 장에
-              </h3>
-            </div>
-          </li>
-          <li className={`${styles.fcard} ${rv}`}>
-            <img
-              src={`${SANITY}/0f023bd8b78f5d9cc579dcf94ec2bb089d762e6e-4096x4096.png?rect=3014,1504,805,826&w=1000&fm=webp&q=90`}
-              alt="햇빛 아래 난간에 앉은 두 사람을 올려다본 Polaroid Now Gen 3 인화 사진"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className={styles.fcardText}>
-              <span>Bright light exposure</span>
-              <h3>
-                강한 햇빛 아래서도
-                <br />
-                더 선명하게
-              </h3>
-            </div>
-          </li>
-        </ul>
+        <ol className={styles.featList} role="list">
+          {FEATURES.map((f, i) => (
+            <li key={f.id} className={`${styles.featRow} ${f.side === 'right' ? styles.featRowFlip : ''}`}>
+              <article className={styles.featInfo} aria-labelledby={`now-feat-${f.id}`}>
+                <span className={`${styles.featTag} ${rv}`}>Function — {String(i + 1).padStart(2, '0')}</span>
+                <p className={`${styles.featName} ${rv}`}>{f.name}</p>
+                <div className={`${styles.featMedia} ${rv}`}>
+                  {f.video ? (
+                    <video
+                      src={f.video}
+                      autoPlay={!reducedMotion}
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={f.alt}
+                    />
+                  ) : (
+                    <img src={f.img} alt={f.alt} loading="lazy" decoding="async" />
+                  )}
+                </div>
+                <h3 id={`now-feat-${f.id}`} className={rv}>
+                  {f.title[0]}
+                  <br />
+                  {f.title[1]}
+                </h3>
+                <p className={`${styles.featDesc} ${rv}`}>{f.desc}</p>
+                <div className={styles.featFoot} aria-hidden="true">
+                  <span>Polaroid Now</span>
+                  <span>
+                    {String(i + 1).padStart(2, '0')} / {String(FEATURES.length).padStart(2, '0')}
+                  </span>
+                </div>
+              </article>
+              {/* 큰 이미지 자리 (이미지 확정 전 회색 상자) */}
+              <div className={styles.featVisual} role="img" aria-label={`${f.name} 큰 이미지 (추가 예정)`}>
+                <span className={styles.featPending}>이미지 추가 예정</span>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* 3-2. 내부 구조 (three.js 3D) + 설명 문구 + Watch 영상 카드 */}
       <NowCutaway reducedMotion={reducedMotion} />
 
-      {/* 4. 결과물 (사진 26장이 하나씩 떠오름) */}
-      <NowResults reducedMotion={reducedMotion} />
+      {/* 4. Polaroid NOW Film (인화 사진이 다가와 화면을 채움) */}
+      <NowFilm reducedMotion={reducedMotion} />
 
       {/* 5. 필터 캐러셀 */}
       <NowFilters />
