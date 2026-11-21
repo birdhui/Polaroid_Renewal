@@ -15,12 +15,14 @@ export default function HistoryPage() {
 <div className="glow"></div>
 <div className="scene" id="sHero">
 <div className="frame" id="heroFrame">
-<div className="ph" data-kind="car" data-x="132" data-y="181" data-w="352" data-h="352" data-f="1"><div className="card"><img src={asset3} alt="차창 너머의 꽃을 든 사람" /></div></div>
-<div className="ph" data-kind="camera" data-x="1173" data-y="140" data-w="191" data-h="185" data-f="1"><div className="card"><img src={asset4} alt="손에 든 폴라로이드 카메라" /></div></div>
-<div className="ph" data-kind="dinner" data-x="1404" data-y="392" data-w="384" data-h="512" data-f="1"><div className="card"><img src={asset5} alt="함께한 저녁 식사" /></div></div>
-<div className="ph" data-kind="sunset" data-x="322" data-y="698" data-w="319" data-h="243" data-f="1"><div className="card"><img src={asset6} alt="창밖으로 바라본 노을" /></div></div>
-<div className="origin" id="origin"><p className="origin-since">{"Since"}</p><h1 className="origin-year">{"1937"}</h1></div>
-<div className="memory-copy" id="memoryCopy"><h2 className="memory-title">{"The Act of Creating Memories"}</h2><p className="memory-body">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
+<div className="ph" data-x="182" data-y="166" data-w="352" data-h="352" data-f="1.25"><div className="card"><img src={asset3} alt="차창 너머의 꽃을 든 사람" /></div></div>
+<div className="ph" data-kind="camera" data-x="1138" data-y="125" data-w="191" data-h="185" data-f="1.45"><div className="card"><img src={asset4} alt="손에 든 폴라로이드 카메라" /></div></div>
+<div className="ph" data-x="1355" data-y="382" data-w="391" data-h="522" data-f="1.05"><div className="card"><img src={asset5} alt="함께한 저녁 식사" /></div></div>
+<div className="ph" data-x="220" data-y="682" data-w="347" data-h="255" data-f="1.3"><div className="card"><img src={asset6} alt="창밖으로 바라본 노을" /></div></div>
+</div>
+<div className="hero-copy" id="heroCopy">
+<div className="yblock" id="yblock"><h1 className="odo" id="odo" aria-label="1937년부터 2026년까지"></h1>
+<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
 </div>
 <div className="scroll-cue" id="cue">{"SCROLL"}</div>
 </div>
@@ -30,15 +32,15 @@ export default function HistoryPage() {
 <div className="still"><img src={asset7} alt="폴라로이드 카메라로 사진을 찍는 사람" /><i className="dim"></i></div>
 </div>
 <div className="film-titles">
-<p className="big l"><span className="ln"><span className="w">{"A"}</span>
-<span className="w">{"day"}</span>
-<span className="w">{"we"}</span>
+<p className="big l"><span className="ln"><span className="w">{"A"}</span>{" "}
+<span className="w">{"day"}</span>{" "}
+<span className="w">{"we"}</span>{" "}
 <span className="w">{"spent"}</span></span><span className="ln"><span className="w">{"together."}</span></span></p>
-<p className="big r"><span className="ln"><span className="w">{"Years"}</span>
-<span className="w">{"later,"}</span></span><span className="ln"><span className="w">{"one"}</span>
-<span className="w">{"photograph"}</span>
-<span className="w">{"takes"}</span>
-<span className="w">{"us"}</span>
+<p className="big r"><span className="ln"><span className="w">{"Years"}</span>{" "}
+<span className="w">{"later,"}</span></span><span className="ln"><span className="w">{"one"}</span>{" "}
+<span className="w">{"photograph"}</span>{" "}
+<span className="w">{"takes"}</span>{" "}
+<span className="w">{"us"}</span>{" "}
 <span className="w">{"back."}</span></span></p>
 </div>
 </div>

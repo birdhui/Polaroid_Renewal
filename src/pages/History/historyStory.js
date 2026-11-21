@@ -1,4 +1,4 @@
-import { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20 } from './storyAssets.js';
+import { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20, asset21, asset22 } from './storyAssets.js';
 export function initHistoryStory(root) {
  let disposed = false;
  const controller = new AbortController();
@@ -14,7 +14,7 @@ export function initHistoryStory(root) {
 const CH = [
   { year: 1937, img: asset12, hl: ['편광 기술에서 시작된', '혁신의 역사'],
     bd: '1937년, 에드윈 랜드는 편광 기술을 기반으로 폴라로이드 코퍼레이션을 출범시켰습니다.<br>빛을 연구하던 작은 시작은 훗날 사진의 역사를 바꾸는 혁신으로 이어졌습니다.' },
-  { year: 1943, img: asset13, hl: ['작은 바램에서 시작된', '순간을 담는 새로운 방식'],
+  { year: 1943, img: asset21, hl: ['작은 바램에서 시작된', '순간을 담는 새로운 방식'],
     bd: '“찍은 사진을 왜 바로 볼 수 없나요?” 딸의 질문에서 영감을 얻은 에드윈 랜드는<br>촬영한 사진을 그 자리에서 볼 수 있는 새로운 방식을 구상했습니다.<br>그렇게 즉석사진을 향한 폴라로이드의 여정이 시작됐습니다.' },
   { year: 1948, img: asset14, hl: ['폴라로이드', '즉석사진의 탄생'],
     bd: '에드윈 랜드와 조지 휠라이트가 세운 연구소는 1937년 폴라로이드의 설립으로 이어졌습니다.<br>1947년 즉석사진 기술을 공개한 데 이어, 이듬해 첫 상용 카메라인 랜드 카메라 모델 95를<br>선보였습니다. 촬영한 자리에서 사진을 확인할 수 있는, 즉석사진의 시대가 열린 것입니다.' },
@@ -24,7 +24,7 @@ const CH = [
     bd: '디지털 사진의 확산 속에서 폴라로이드는 2001년 파산보호를 신청하고 2008년 즉석필름<br>생산을 중단했습니다. 오랜 시간 이어온 폴라로이드 즉석사진의 미래는 불확실해졌습니다.' },
   { year: 2017, img: asset17, hl: ['한 장의 사진을', '포기하지 않은 사람들'],
     bd: '2008년, 즉석사진을 지키려는 사람들이 ‘임파서블 프로젝트’라는 이름으로 네덜란드의<br>마지막 폴라로이드 필름 공장을 살렸습니다. 끊어진 생산 기반 속에서 필름을 다시 개발한<br>이들의 도전은 2017년 폴라로이드 오리지널스의 출범으로 이어졌습니다.' },
-  { year: 2026, img: asset18, hl: ['다시 쓰는 폴라로이드 역사', '그리고 NOW'],
+  { year: 2026, img: asset22, hl: ['다시 쓰는 폴라로이드 역사', '그리고 NOW'],
     bd: '2020년, 폴라로이드 오리지널스는 다시 폴라로이드라는 이름으로 돌아와<br>Now를 선보였습니다. 사진이 서서히 나타나는 기다림과 손에 남는 한 장의 감각.<br>폴라로이드의 이야기는 오늘 우리가 남기는 순간 속에서 계속됩니다.' }
 ];
 const RULE_ASSETS = [asset19, asset20, asset20, asset20, asset20, asset20, asset20];
@@ -41,12 +41,15 @@ let U = 1, vh = innerHeight, vw = innerWidth;
 
 /* ================= DOM 생성 ================= */
 const digitCol = extra => `<div class="dg"><div class="col">${[...'0123456789'].map(d => `<span>${d}</span>`).join('')}${extra ? '<span>0</span>' : ''}</div></div>`;
+$('odo').innerHTML = [0, 1, 2, 3].map(() => digitCol(true)).join('');
 $('yr').innerHTML = [0, 1, 2, 3].map(() => digitCol(false)).join('');
-$('titles').innerHTML = CH.map((c, i) => `<div class="ch${i ? '' : ' on'}"><p class="since">Since</p><p class="year">${c.year}</p></div>`).join('');
+// Since + 연도는 한 자리에 고정하고, 숫자만 다이얼처럼 굴러가며 바뀐다.
+$('titles').innerHTML = `<div class="ch on title-fixed"><p class="since">Since</p><p class="year" id="titleYear" aria-label="${CH[0].year}">${[0, 1, 2, 3].map(() => `<span class="dg" aria-hidden="true"><span class="col">${[...'0123456789'].map(d => `<span>${d}</span>`).join('')}</span></span>`).join('')}</p></div>`;
 $('bodies').innerHTML = CH.map((c, i) => `<div class="ch${i ? '' : ' on'}"><h3 class="hl">${c.hl.join('<br>')}</h3><p class="bd">${c.bd}</p></div>`).join('');
 $('pics').innerHTML = CH.map((c, i) => `<div class="pic${i ? '' : ' on'}" data-year="${c.year}"><img src="${c.img}" alt="${c.year}년 아카이브 사진"></div>`).join('');
-const titles = [...$('titles').children], bodies = [...$('bodies').children], pics = [...$('pics').children];
-const yrCols = [...$('yr').querySelectorAll('.col')];
+const titleCols = [...$('titleYear').querySelectorAll('.col')];
+const bodies = [...$('bodies').children], pics = [...$('pics').children];
+const odoCols = [...$('odo').querySelectorAll('.col')], yrCols = [...$('yr').querySelectorAll('.col')];
 $('dial').setAttribute('aria-valuemin', 0); $('dial').setAttribute('aria-valuemax', n - 1);
 
 /* 다이얼 눈금: 연도 사이 작은 눈금 4개 (Wheel/Tick) */
@@ -68,14 +71,15 @@ const photos = [...root.querySelectorAll('#heroFrame .ph')].map(el => {
 /* ================= 레이아웃 · 타임라인 =================
    하나의 고정 무대(#story) 안에서 스크롤 위치(px)로 장면을 전환한다. 단위 k = 화면 높이
    0 ─ Hero(연도) ─ 1.4k ─ Film ─ 4.4k ─ 질문 ─ F0 ─ 플래시 ─ Why ─ chStart ─ 연도 7개 ─ Q0 ─ 인용 ─ C0 ─ 클로징 ─ END */
+const HOLD_PX = 500;                               // 2026 화면 고정 유지 거리 (휠 한 칸 ≈ 100px × 5)
 let F0, flashLen, introLen, chStart, step, Q0, QLEN, C0, END, R;
 function layout() {
   vh = innerHeight; vw = innerWidth;
   U = vw <= 820 ? vw / 820 : Math.min(vw / 1920, vh / 1080);
   const k = vh;
-  // Since → 브랜드 메시지 → 사진 패럴랙스 퇴장 → 필름 장면
-  RELEASE = 2.2;
-  FILM_A = RELEASE + 0.9; FILM_B = RELEASE + 4.1;
+  // 사진이 모두 사라진 뒤(≈0.67화면) 휠 다섯 번만큼 고정 → 그 뒤 긴 페이지처럼 위로 올라가며 Film 등장
+  RELEASE = 0.67 + HOLD_PX / k;
+  FILM_A = RELEASE + 0.9; FILM_B = RELEASE + 4.1; FILM_OUT = RELEASE + 3.6;
   F0 = (RELEASE + 4.7) * k; flashLen = 2.0 * k; introLen = 1.3 * k; step = 0.9 * k;
   chStart = F0 + flashLen + introLen;
   Q0 = chStart + (n - 1) * step + 0.5 * k; QLEN = 2.6 * k;
@@ -92,67 +96,111 @@ function layout() {
 }
 const show = (el, on) => { el.style.visibility = on ? 'visible' : 'hidden'; };
 
-/* ================= 1. Hero ================= */
-// 1937은 고정 텍스트이며, 시간 기반 숫자 카운트는 사용하지 않는다.
+/* ================= 1. Hero (polaroid-history_40) ================= */
+function setOdometer(cols, v) {
+  // 실제 주행거리계처럼: 아래 자리가 9→0으로 넘어갈 때만 윗자리가 같이 굴러감
+  const s = Math.floor(v), frac = v - s;
+  const digits = String(s).padStart(4, '0').split('').map(Number);
+  let carry = frac;
+  for (let i = 3; i >= 0; i--) {
+    const pos = digits[i] + carry;
+    cols[i].style.transform = `translateY(${-pos}em)`;
+    carry = digits[i] === 9 ? carry : 0;
+  }
+}
+/* 진입 연출(시간 기반): 아웃포커스 → 포커스 인 → 잠시 멈춤 → 1937→2026 카운트 → 사진이 한 장씩 등장 */
+const T_FOCUS = 1400, T_HOLD = 700, T_COUNT = 2800;
+const hero = { t0: performance.now(), focus: 0, v: 1937, tc: 0, c: 0, arr: -1, done: false };
+const ORDER = [2, 0, 3, 1];                          // 2026 도착 후 등장 순서 (photos 인덱스)
+const STAGGER = 140, DUR = 620;
+const easeOutBack = t => { const c = 1.6; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+function styleCards() {
+  ORDER.forEach((i, k) => {
+    const card = photos[i].el.querySelector('.card');
+    const t = clamp((hero.arr - k * STAGGER) / DUR);
+    const m = easeOutBack(t), a = clamp(t * 2.2);
+    card.style.opacity = a.toFixed(3);
+    card.style.transform = `translate3d(0,${((1 - m) * 220 * U).toFixed(1)}px,0) scale(${(0.9 + 0.1 * m).toFixed(4)})`;
+    card.style.filter = B && t < 1 ? `blur(${((1 - clamp(t * 1.6)) * 10).toFixed(2)}px) brightness(${(1 + (1 - t) * 0.35).toFixed(3)})` : 'none';
+  });
+}
+function heroIntro(now) {
+  if (hero.done) return false;
+  const el = now - hero.t0;
+  hero.focus = easeOut(clamp(el / T_FOCUS));
+  hero.tc = clamp((el - T_FOCUS - T_HOLD) / T_COUNT);
+  hero.c = easeInOut(hero.tc);
+  hero.v = 1937 + 89 * hero.c;
+  hero.arr = el - T_FOCUS - T_HOLD - T_COUNT - 150;
+  styleCards();
+  if (hero.arr >= (ORDER.length - 1) * STAGGER + DUR) {
+    hero.done = true;
+    $('cue').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 200, fill: 'forwards' });
+  }
+  return true;
+}
+function skipIntro() {                              // 동작 줄이기 or 중간에서 새로고침한 경우
+  Object.assign(hero, { focus: 1, v: 2026, tc: 1, c: 1, arr: 1e5, done: true });
+  styleCards(); $('cue').style.opacity = 1;
+}
+// 사진별 깊이: depth 1 = 가장 앞(빠름), 0 = 가장 뒤(느림)
 const PAR = [
-  { depth: 0.6, dist: 1180, delay: 0.00, span: 0.78, inner: 45 },
-  { depth: 1.0, dist: 1450, delay: 0.00, span: 0.68, inner: 60 },
-  { depth: 0.15, dist: 1020, delay: 0.05, span: 0.87, inner: 25 },
-  { depth: 0.75, dist: 1350, delay: 0.02, span: 0.80, inner: 50 }
+  { depth: 0.6,  dist: 1180, delay: 0.00, span: 0.58, inner: 90 },
+  { depth: 1.0,  dist: 1450, delay: 0.00, span: 0.48, inner: 120 },
+  { depth: 0.15, dist: 1020, delay: 0.05, span: 0.62, inner: 50 },
+  { depth: 0.75, dist: 1350, delay: 0.02, span: 0.56, inner: 100 }
 ];
-let hs = 0, RELEASE = 2.2;
+let hs = 0, RELEASE = 0.75;
 function heroUpdate(sk) {
-  const progress = Math.max(hs, sk - 0.08);
-  const originOut = easeInOut(clamp((progress - 0.12) / 0.36));
-  $('origin').style.opacity = (1 - originOut).toFixed(3);
-  $('origin').style.filter = B && originOut > 0 ? `blur(${(originOut * 12).toFixed(2)}px)` : 'none';
-  const memoryIn = easeOut(clamp((progress - 0.4) / 0.35));
-  const memoryOut = easeInOut(clamp((progress - 1.85) / 0.35));
-  const photoProgress = easeInOut(clamp((progress - 0.95) / 0.85));
-  $('memoryCopy').style.left = (961 - 0.5 * photoProgress) * U + 'px';
-  $('memoryCopy').style.top = (555 - 15 * photoProgress) * U + 'px';
-  $('memoryCopy').style.opacity = (memoryIn * (1 - memoryOut)).toFixed(3);
-  $('memoryCopy').style.filter = B && memoryOut > 0 ? `blur(${(memoryOut * 14).toFixed(2)}px)` : 'none';
+  // 스크롤해도 2026 유지. 멈췄을 때 숫자가 반쯤 걸쳐 보이지 않도록 각 칸의 마지막 35%에서만 굴러감
+  let yv = hero.v;
+  if (hero.done) yv = 2026;
+  setOdometer(odoCols, yv);
+  // 문구는 제자리, 사진만 위로 빠져나감 (사진마다 속도가 달라 깊이감)
   photos.forEach((ph, i) => {
     const d = PAR[i];
-    const enter = easeOut(clamp((progress - 0.32 - i * 0.025) / 0.36));
-    // 두 Figma 상태 사이의 깊이 차이를 유지하고, 722px 올라간 뒤 화면 밖으로 마저 퇴장한다.
-    const p = clamp((progress - 0.95) / 0.85);
-    const drift = Math.sin(Math.PI * p) * (d.depth - 0.5) * 110;
-    const e = easeInOut(p);
-    const tail = easeInOut(clamp((progress - 1.8) / 0.4));
-    const y = -(722 * e + drift + (d.dist - 722) * tail) * U;
-    ph.el.style.transform = `translate3d(0,${y.toFixed(1)}px,0)`;
-    ph.el.style.opacity = (1 - tail).toFixed(3);
-    const card = ph.el.querySelector('.card');
-    card.style.opacity = enter.toFixed(3);
-    card.style.transform = `translate3d(0,${((1 - enter) * 70 * U).toFixed(1)}px,0)`;
-    ph.el.querySelector('img').style.setProperty('--iy', '0px');
+    const t = clamp((Math.max(hs, sk - 0.08) - d.delay) / d.span);
+    const e = t * t * (3 - 2 * t) * 0.35 + t * 0.65;
+    const y = -e * d.dist * U;
+    const sc = 1 - 0.05 * e * (1 - d.depth);
+    ph.el.style.transform = `translate3d(0,${y.toFixed(1)}px,0) scale(${sc.toFixed(4)})`;
+    ph.el.style.opacity = (1 - clamp((t - 0.7) / 0.3) * 0.6).toFixed(3);
+    ph.el.querySelector('img').style.setProperty('--iy', (e * d.inner * U).toFixed(1) + 'px');
   });
-  $('cue').style.opacity = '1';
-  $('cue').style.visibility = sk < 1.85 ? 'visible' : 'hidden';
+  const c = $('heroCopy');
+  c.style.filter = hero.focus < 1 ? `blur(${(18 * (1 - hero.focus) * B).toFixed(2)}px)` : 'none';
+  c.style.transform = `scale(${(1 + 0.04 * (1 - hero.focus) * B).toFixed(4)})`;
+  c.style.opacity = clamp(hero.focus * 1.4).toFixed(3);
+  const sa = easeOut(clamp((hero.arr - 250) / 700));
+  const sub = $('heroSub');
+  sub.style.opacity = sa.toFixed(3);
+  sub.style.transform = `translateY(${((1 - sa) * 10).toFixed(1)}px)`;
+  $('yblock').style.transform = `translateY(${((1 - sa) * (37 + 10) * U).toFixed(1)}px)`;
+  $('cue').style.visibility = sk > 0.08 ? 'hidden' : 'visible';
 }
 
 /* ================= 2. Film (k 단위 위치 sk) =================
    레퍼런스(ILKWANG about) 방식: 큰 문장이 줄 단위로 아래에서 마스크 리빌 →
    줄마다 다른 속도로 가로로 흘러 서로 엇갈림 → 가운데 영상 컷은 작게 열리며 커지고 어둠이 걷힘 → 빛 번짐이 지나감 */
 let marqW = 0;
-let FILM_A = 1.65, FILM_B = 4.85;                    // 장면 구간 (화면 높이 배수)
+let FILM_A = 1.65, FILM_B = 4.85, FILM_OUT = 4.35;                    // 장면 구간 (화면 높이 배수)
 const filmWords = [...root.querySelectorAll('#sFilm .w')];   // 띄어쓰기 기준 단어 12개
 const W0 = 0.1, W1 = 0.78, WDUR = 0.11;              // 단어가 나타나는 구간과 한 단어 등장 길이(진행률)
 const filmS = root.querySelector('#sFilm .still'), filmDim = root.querySelector('#sFilm .dim');
 function filmUpdate(sk) {
   const p = clamp((sk - FILM_A) / (FILM_B - FILM_A));          // 0~1 장면 진행
   const sc = $('sFilm');
-  const o = clamp((p - 0.86) / 0.14);                           // 나가는 구간
-  sc.style.opacity = (1 - o).toFixed(3);
+  // 나가는 구간: 흐려지며 사라지지 않고, 긴 페이지처럼 위로 올라가며 다음 문구가 아래에서 올라옴
+  const out = clamp(sk - FILM_OUT);
+  sc.style.opacity = '1';
+  $('pre').style.transform = out < 1 ? `translate3d(0,${((1 - out) * vh).toFixed(1)}px,0)` : 'none';
   // 2026 화면이 위로 밀려 올라가고, 다음 장면이 아래에서 올라와 자리를 잡음
   // 하나의 페이지처럼: 2026 화면과 다음 장면이 이어 붙어 스크롤과 똑같은 속도로 함께 올라감
   const up = clamp(sk - RELEASE);
   $('sHero').style.transform = `translate3d(0,${(-up * vh).toFixed(1)}px,0)`;
-  sc.style.transform = up < 1 ? `translate3d(0,${((1 - up) * vh).toFixed(1)}px,0)` : 'none';
-  sc.style.filter = o > 0 ? `blur(${(o * 12 * B).toFixed(2)}px)` : 'none';
-  show(sc, sk > RELEASE && sk < FILM_B);
+  sc.style.transform = up < 1 ? `translate3d(0,${((1 - up) * vh).toFixed(1)}px,0)` : `translate3d(0,${(-out * vh).toFixed(1)}px,0)`;
+  sc.style.filter = 'none';
+  show(sc, sk > RELEASE && out < 1);
   // 단어가 스크롤에 맞춰 한 단어씩 천천히: 흐리고 아래에 있던 단어가 떠오르며 초점이 맞음
   const gap = (W1 - W0 - WDUR) / (filmWords.length - 1);
   filmWords.forEach((w, i) => {
@@ -197,20 +245,20 @@ function applyFlash(f) {
   focusIn = easeOut(clamp((f - 0.8) / 0.2));
 }
 // 선명한 Why 문구를 읽는 시간과 퇴장 시간을 스크롤 진행과 분리한다.
-const WHY_HOLD = 5000, WHY_OUT = 1200;
-const why = { started: null, done: false, active: false, progress: 0 };
+const WHY_HOLD = 5000, WHY_OUT = 1200, WHY_STEPS = 3;   // 5초가 지나거나 아래로 스크롤 3번 하면 다음으로
+const why = { started: null, done: false, active: false, progress: 0, count: 0, leaveAt: null };
 function updateWhy(now, sy) {
   const start = F0 + flashLen;
   const readableAt = F0 + flashLen * 0.96;
   why.active = false;
   if (sy < readableAt - 4) {
-    why.started = null; why.done = false; why.progress = 0;
+    Object.assign(why, { started: null, done: false, progress: 0, count: 0, leaveAt: null });
     return sy;
   }
   if (why.done) return sy;
   if (why.started === null) why.started = now;
-  const elapsed = now - why.started;
-  why.progress = clamp((elapsed - WHY_HOLD) / WHY_OUT);
+  if (why.leaveAt === null && (now - why.started >= WHY_HOLD || why.count >= WHY_STEPS)) why.leaveAt = now;
+  why.progress = why.leaveAt === null ? 0 : clamp((now - why.leaveAt) / WHY_OUT);
   if (why.progress >= 1) {
     why.done = true;
     scrollTo({ top: storyTop() + chStart, behavior: 'instant' });
@@ -218,7 +266,7 @@ function updateWhy(now, sy) {
   }
   why.active = true;
   // 앞으로 스크롤해도 문구가 선명해진 위치에서 읽기 시간을 확보한다. 위로는 돌아갈 수 있다.
-  if (Math.abs(sy - start) > 0.5) scrollTo({ top: storyTop() + start, behavior: 'instant' });
+  if (Math.abs(scrollY - storyTop() - start) > 0.5) scrollTo({ top: storyTop() + start, behavior: 'instant' });
   return start;
 }
 function applyIntro(t) {
@@ -235,7 +283,7 @@ function applyIntro(t) {
   h.style.transform = a >= 1 ? 'none' : `scale(${(1 - 0.04 * (1 - a) * B).toFixed(4)})`;
   reveal = clamp((t - 0.55) / 0.4);
   $('yr').style.opacity = clamp((t - 0.75) / 0.25);
-  $('rule').style.transform = t >= 1 ? 'none' : `scaleX(${easeOut(clamp((t - 0.6) / 0.35))})`;
+  // 구분선은 연도와 함께 흐린 상태에서 한 번에 나타남 (가운데에서 펼쳐지는 효과 없음)
 }
 
 /* ================= 다이얼 ================= */
@@ -253,7 +301,13 @@ function drawTicks(cur) {
     tk.el.style.opacity = ((0.35 + 0.65 * c) * rv).toFixed(3);
   }
 }
-const setYear = y => String(y).split('').forEach((d, i) => yrCols[i].style.transform = `translateY(${-d * 1.15}em)`);
+const setYear = y => {
+  String(y).split('').forEach((d, i) => {
+    yrCols[i].style.transform = `translateY(${-d * 1.15}em)`;
+    titleCols[i].style.transform = `translateY(${-d * 0.89}em)`;
+  });
+  $('titleYear').setAttribute('aria-label', String(y));
+};
 
 /* ================= 챕터 전환: 랙 포커스 크로스페이드 ================= */
 const anim = (el, kf, o) => el.animate(kf, Object.assign({ fill: 'backwards' }, o));
@@ -262,12 +316,11 @@ function change(from, to) {
   const dir = to > from ? 1 : -1;
   active = to;
   $('hist').dataset.year = CH[to].year;
-  $('ruleAsset').src = RULE_ASSETS[to];
   setYear(CH[to].year);
   $('dial').setAttribute('aria-valuenow', to);
   $('dial').setAttribute('aria-valuetext', CH[to].year + '년');
-  const groups = [titles, bodies, pics];
-  groups.flat().concat($('rule')).forEach(e => e.getAnimations().forEach(x => x.cancel()));
+  const groups = [bodies, pics];
+  groups.flat().forEach(e => e.getAnimations().forEach(x => x.cancel()));
   groups.forEach(g => g.forEach((e, i) => e.classList.toggle('on', i === to)));
   const olds = groups.map(g => g[from]), news = groups.map(g => g[to]);
   if (reduced) { news.forEach(e => anim(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })); return; }
@@ -279,9 +332,6 @@ function change(from, to) {
     { opacity: 0, filter: 'blur(14px)', transform: `translateY(${12 * dir}px)` },
     { opacity: 1, filter: 'blur(0px)', transform: 'translateY(0px)' }
   ], { duration: 640, delay: 120, easing: 'cubic-bezier(.25,.8,.3,1)' }));
-  $('rule').animate([
-    { filter: 'blur(0px)', opacity: 1 }, { filter: 'blur(3px)', opacity: .5, offset: .4 }, { filter: 'blur(0px)', opacity: 1 }
-  ], { duration: 700, easing: 'ease-in-out' });
 }
 
 /* ================= 5. 인용 → 6. 클로징 ================= */
@@ -330,15 +380,25 @@ function gnbTheme(f, sy) {
 /* ================= 메인 루프 ================= */
 let cur = 0, vel = 0, lastF = -1, lastT = -1, lastH = -1, lastFi = -1, lastPre = -1;
 const near = (a, b) => Math.abs(a - b) < 0.0004;
+// 마우스 휠은 한 칸에 100px 이상 뚝뚝 끊겨 움직이므로, 장면은 실제 스크롤 값을 부드럽게 따라가는 값(ss)으로 그린다.
+let ss = null, lastNow = performance.now();
+const follow = (dt, rate) => (reduced ? 1 : 1 - Math.pow(1 - rate, dt / 16.667));
 function frame() {
   if (disposed) return;
-  const sy = updateWhy(performance.now(), scrollY - storyTop()), sk = sy / vh;
+  const now = performance.now(), dt = Math.min(64, now - lastNow); lastNow = now;
+  const raw = scrollY - storyTop();
+  if (ss === null || Math.abs(raw - ss) > 2.5 * vh) ss = raw;      // 첫 프레임·앵커 이동처럼 큰 점프는 그대로 반영
+  else { ss += (raw - ss) * follow(dt, 0.16); if (Math.abs(raw - ss) < 0.3) ss = raw; }
+  const locked = updateWhy(now, ss);
+  if (locked !== ss) ss = locked;                                  // Why 고정·통과 시점은 정확한 위치로 맞춤
+  const sy = ss, sk = sy / vh;
   const hp = clamp(sk, 0, 3);
-  const hsPrev = hs; hs += (hp - hs) * (reduced ? 1 : 0.085);
-  if (dirty || !near(hp, lastH) || Math.abs(hs - hsPrev) > 1e-4) { heroUpdate(hp); lastH = hp; show($('sHero'), sk < RELEASE + 1.05); }
+  const playing = heroIntro(now);
+  const hsPrev = hs; hs += (hp - hs) * follow(dt, 0.085);
+  if (playing || dirty || !near(hp, lastH) || Math.abs(hs - hsPrev) > 1e-4) { heroUpdate(hp); lastH = hp; show($('sHero'), sk < RELEASE + 1.05); }
   if (dirty || !near(sk, lastFi)) {
     filmUpdate(sk); quoteUpdate(sy); closeUpdate(sy); lastFi = sk;
-    preIn = easeOut(clamp((sk - RELEASE - 4.0) / 0.5));
+    preIn = sk > FILM_OUT ? 1 : 0;                                // 문구는 처음부터 선명하게, 위치만 아래에서 올라옴
   }
   const f = clamp((sy - F0) / flashLen), t = why.active ? why.progress : clamp((sy - F0 - flashLen) / introLen);
   const fc = dirty || !near(f, lastF) || preIn !== lastPre;
@@ -346,7 +406,7 @@ function frame() {
   if (fc || why.active || !near(t, lastT)) { applyIntro(t); lastT = t; }
   show($('hist'), t > 0.3 && sy < Q0 + vh);
   const target = clamp((sy - chStart) / step, 0, n - 1);
-  if (reduced) cur = target; else { vel += (target - cur) * 0.085; vel *= 0.74; cur += vel; }
+  if (reduced) cur = target; else { const st = dt / 16.667; vel += (target - cur) * 0.085 * st; vel *= Math.pow(0.74, st); cur += vel * st; }
   if (dirty || Math.abs(cur - lastCur) > 1e-4 || reveal !== lastReveal) { drawTicks(cur); lastCur = cur; lastReveal = reveal; }
   const idx = Math.round(clamp(cur, 0, n - 1));
   if (idx !== active) change(active, idx);
@@ -360,6 +420,7 @@ let tmr, dragging = false, lastSy = 0, dir = 1;
 const stops = () => { const b = storyTop(); return [b + F0 + flashLen, ...CH.map((_, i) => b + chStart + i * step)]; };
 function snap() {
   if (dragging || why.active) return;
+  if (performance.now() - whyLastWheel < 220) { tmr = setTimeout(snap, 120); return; }   // 관성 스크롤 중엔 기다림
   const sy = scrollY, st = stops(), last = st[st.length - 1];
   if (sy < st[0] || sy >= last) return;
   let j = 0;
@@ -372,10 +433,40 @@ addEventListener('scroll', () => {
   const sy = scrollY;
   if (Math.abs(sy - lastSy) > 1) dir = sy > lastSy ? 1 : -1;
   lastSy = sy;
-  clearTimeout(tmr); tmr = setTimeout(snap, 170);
+  clearTimeout(tmr); tmr = setTimeout(snap, 240);
+}, { passive: true });
+/* Why 화면: 아래로 스크롤하는 동작을 한 번씩 센다 (트랙패드 관성 이벤트는 한 번으로 묶음) */
+let whyLastWheel = 0, whyLastCount = 0, whyTouchY = null;
+const whyStep = now => {
+  if (why.started === null || why.done || why.leaveAt !== null) return;
+  if (now - whyLastCount < 300) return;
+  whyLastCount = now; why.count += 1;
+};
+const whyHolding = () => why.started !== null && !why.done;
+addEventListener('wheel', e => {
+  const now = performance.now(), gap = now - whyLastWheel;
+  whyLastWheel = now;
+  if (e.deltaY > 0 && whyHolding()) e.preventDefault();          // 아래로는 고정, 위로는 돌아갈 수 있음
+  if (e.deltaY > 0 && gap > 120) whyStep(now);
+}, { passive: false });
+addEventListener('touchmove', e => {
+  const y = e.touches[0]?.clientY;
+  if (whyHolding() && whyTouchY !== null && y !== undefined && y < whyTouchY) e.preventDefault();
+}, { passive: false });
+addEventListener('touchstart', e => { whyTouchY = e.touches[0]?.clientY ?? null; }, { passive: true });
+addEventListener('touchend', e => {
+  const y = e.changedTouches[0]?.clientY;
+  if (whyTouchY !== null && y !== undefined && whyTouchY - y > 30) whyStep(performance.now());
+  whyTouchY = null;
 }, { passive: true });
 addEventListener('keydown', e => {
+  if (!['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key)) return;
+  if (whyHolding() && !e.target.closest?.('input,textarea,select,[contenteditable]')) e.preventDefault();
+  whyStep(performance.now());
+});
+addEventListener('keydown', e => {
   if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  if (e.key === 'ArrowDown' && whyHolding()) return;        // Why 화면에서는 위 핸들러가 횟수만 셈
   const sy = scrollY, st = stops();
   if (sy < st[0] - 4 || sy > st[st.length - 1] + 4) return;
   e.preventDefault();
@@ -431,6 +522,7 @@ document.fonts?.ready.then(() => { if (!disposed) layout(); });
 $('ruleAsset').src = RULE_ASSETS[0];
 layout();
 setYear(CH[0].year);
+if (reduced || scrollY > innerHeight * 0.5) skipIntro();
 requestAnimationFrame(frame);
 
  return () => {
