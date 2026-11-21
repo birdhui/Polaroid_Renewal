@@ -1,151 +1,77 @@
 import { useLayoutEffect, useRef } from 'react';
-import styles from '@/pages/History/HistoryPage.module.css';
-import landPortrait from '@/assets/history/edwin-land-lecture.webp';
-import model95Sketch from '@/assets/history/model95-line-sketch.webp';
-import { CURRENT_YEAR, HISTORY_YEARS } from '@/pages/History/data/historyYears';
-
-/* Focus-ring geometry: one year per step, four fine ticks between years. */
-const WHEEL_STEP_DEG = 12;
-const MINOR_TICKS = 4;
-const currentIndex = HISTORY_YEARS.indexOf(CURRENT_YEAR);
-/* Marks facing the viewer stay crisp; toward the ring's top and bottom they thin out and soften. */
-const shadeWheel = (wheel, rotation) => {
-  wheel?.querySelectorAll('[data-angle]').forEach((mark) => {
-    const facing = Math.cos(((Number(mark.dataset.angle) - rotation) * Math.PI) / 180);
-    const depth = 1 - Math.max(0, facing);
-    mark.style.opacity = (Math.max(0, facing) ** 2.2).toFixed(3);
-    mark.style.filter = depth > 0.02 ? `blur(${(depth * 6).toFixed(2)}px)` : '';
-  });
-};
-
-const wheelMarks = HISTORY_YEARS.flatMap((year, index) => {
-  const angle = (index - currentIndex) * WHEEL_STEP_DEG;
-  const yearMark = { key: `y${year}`, angle, year };
-  if (index === HISTORY_YEARS.length - 1) return [yearMark];
-  const minors = Array.from({ length: MINOR_TICKS }, (_, i) => ({
-    key: `m${year}-${i}`,
-    angle: angle + ((i + 1) * WHEEL_STEP_DEG) / (MINOR_TICKS + 1),
-  }));
-  return [yearMark, ...minors];
-});
-
-const clamp = (value) => Math.min(1, Math.max(0, value));
-
-/**
- * Layered parallax after the Leica timeline reference:
- * copy drifts slower than the page, the portrait behind it rises faster,
- * and a lens focus-ring of years on the left turns with the page.
- */
-function useHistoryParallax(pageRef) {
-  useLayoutEffect(() => {
-    const page = pageRef.current;
-    const wheel = page.querySelector('[data-wheel]');
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let frameId = null;
-
-    const render = () => {
-      frameId = null;
-      const bounds = page.getBoundingClientRect();
-      const scrolled = -bounds.top;
-      const runway = Math.max(1, bounds.height - window.innerHeight);
-
-      if (reducedMotion.matches) {
-        page.style.setProperty('--copy-shift', '0px');
-        page.style.setProperty('--portrait-shift', '0px');
-        page.style.setProperty('--wheel-rot', '0deg');
-        shadeWheel(wheel, 0);
-        return;
-      }
-
-      // Only transform-based custom properties change, so scrolling never rerenders React.
-      const travel = Math.max(0, scrolled);
-      page.style.setProperty('--copy-shift', `${travel * 0.22}px`);
-      page.style.setProperty('--portrait-shift', `${travel * -0.32}px`);
-      // Turn the focus ring over the first screen of scroll (up to 60% of a step): marks near the
-      // centre sweep past while the thinned top and bottom crawl, giving the ring its depth.
-      const rotation = clamp(scrolled / window.innerHeight) * WHEEL_STEP_DEG * 0.6;
-      page.style.setProperty('--wheel-rot', `${rotation}deg`);
-      shadeWheel(wheel, rotation);
-    };
-
-    const schedule = () => {
-      if (frameId === null) frameId = window.requestAnimationFrame(render);
-    };
-
-    render();
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    reducedMotion.addEventListener('change', schedule);
-
-    return () => {
-      window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-      reducedMotion.removeEventListener('change', schedule);
-      if (frameId !== null) window.cancelAnimationFrame(frameId);
-    };
-  }, [pageRef]);
-}
+import styles from './HistoryPage.module.css';
+import { initHistoryStory } from './historyStory.js';
+import { asset3, asset4, asset5, asset6, asset7, asset8, asset9 } from './storyAssets.js';
 
 export default function HistoryPage() {
-  const pageRef = useRef(null);
-  useHistoryParallax(pageRef);
+ const root = useRef(null);
+ useLayoutEffect(() => initHistoryStory(root.current), []);
+ return <section ref={root} className={styles.page} aria-label="Polaroid History">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,500&amp;display=swap" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
-  return (
-    <section ref={pageRef} className={styles.page} aria-labelledby="history-title">
-      {/* Viewport-pinned chrome: a lens focus-ring of years. */}
-      <div className={styles.rail} aria-hidden="true">
-        <div className={styles.railInner}>
-          <div className={styles.wheel} data-wheel>
-            <div className={styles.wheelDrum}>
-              {wheelMarks.map(({ key, angle, year }) => (
-                <div
-                  key={key}
-                  className={year ? styles.wheelYear : styles.wheelTick}
-                  data-current={year === CURRENT_YEAR || undefined}
-                  data-angle={angle}
-                  style={{ '--mark-angle': `${angle}deg` }}
-                >
-                  {year && <span>{year}</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+<section className="pin" id="story">
+<div className="stage" id="stage">
+<div className="glow"></div>
+<div className="scene" id="sHero">
+<div className="frame" id="heroFrame">
+<div className="ph" data-kind="car" data-x="132" data-y="181" data-w="352" data-h="352" data-f="1"><div className="card"><img src={asset3} alt="차창 너머의 꽃을 든 사람" /></div></div>
+<div className="ph" data-kind="camera" data-x="1173" data-y="140" data-w="191" data-h="185" data-f="1"><div className="card"><img src={asset4} alt="손에 든 폴라로이드 카메라" /></div></div>
+<div className="ph" data-kind="dinner" data-x="1404" data-y="392" data-w="384" data-h="512" data-f="1"><div className="card"><img src={asset5} alt="함께한 저녁 식사" /></div></div>
+<div className="ph" data-kind="sunset" data-x="322" data-y="698" data-w="319" data-h="243" data-f="1"><div className="card"><img src={asset6} alt="창밖으로 바라본 노을" /></div></div>
+<div className="origin" id="origin"><p className="origin-since">{"Since"}</p><h1 className="origin-year">{"1937"}</h1></div>
+<div className="memory-copy" id="memoryCopy"><h2 className="memory-title">{"The Act of Creating Memories"}</h2><p className="memory-body">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
+</div>
+<div className="scroll-cue" id="cue">{"SCROLL"}</div>
+</div>
+<div className="scene film" id="sFilm">
+<div className="glow"></div>
+<div className="frame">
+<div className="still"><img src={asset7} alt="폴라로이드 카메라로 사진을 찍는 사람" /><i className="dim"></i></div>
+</div>
+<div className="film-titles">
+<p className="big l"><span className="ln"><span className="w">{"A"}</span>
+<span className="w">{"day"}</span>
+<span className="w">{"we"}</span>
+<span className="w">{"spent"}</span></span><span className="ln"><span className="w">{"together."}</span></span></p>
+<p className="big r"><span className="ln"><span className="w">{"Years"}</span>
+<span className="w">{"later,"}</span></span><span className="ln"><span className="w">{"one"}</span>
+<span className="w">{"photograph"}</span>
+<span className="w">{"takes"}</span>
+<span className="w">{"us"}</span>
+<span className="w">{"back."}</span></span></p>
+</div>
+</div>
+<div className="pre" id="pre"><p>{"지나간 순간을, 손에 남는 한 장으로"}</p></div>
+<div className="flash" id="flash"><img src={asset8} width="1604" height="1604" alt="" /></div>
+<div className="pop" id="pop"></div>
+<div className="ivory" id="ivory"></div>
+<div className="intro" id="intro"><p className="quote">{"Why can’t I see the picture"}<br />{"right now?"}</p></div>
+<div className="hist" id="hist" data-year="1937">
+<div className="dial" id="dial" role="slider" tabIndex="0" aria-label="연도 다이얼"><div className="ticks" id="ticks"></div><div className="yr" id="yr"></div></div>
+<div className="row" id="row">
+<div className="txt">
+<div className="stack" id="titles"></div>
+<div className="rule" id="rule"><img id="ruleAsset" alt="" width="520" height="1" /></div>
+<div className="stack" id="bodies"></div>
+</div>
+<div className="pics stack" id="pics"></div>
+</div>
+</div>
+<div className="scene quote-sec" id="sQuote">
+<i className="q-grad" id="qGrad"></i>
+<div className="frame">
+<p className="marq" id="marq">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
+<div className="land" id="land"><img src={asset9} alt="SX-70 카메라와 사진을 들어 보이는 에드윈 랜드" /></div>
+<p className="q-en" id="qEn">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
+<p className="q-kr" id="qKr">{"“정말 중요한 일이라면, 불가능해 보여도 도전하라.”"}<br />{"— Edwin Land · 폴라로이드 창립자"}</p>
+</div>
+</div>
+<div className="scene closing" id="sClose">
+<p><span>{"즉석사진의 탄생부터, 멈췄던 필름이 다시 만들어지기까지."}</span><span>{"폴라로이드가 이어온 여정은"}</span><span>{"오늘 당신이 남기는 한 장의 사진으로 계속됩니다."}</span></p>
+</div>
+</div>
+</section>
 
-      {/* Toned to the page gray and faded at the bottom so it melts into the background. */}
-      <div className={styles.portrait}>
-        <img
-          src={landPortrait}
-          width="1423"
-          height="1105"
-          alt="강연하는 에드윈 랜드"
-          decoding="async"
-        />
-      </div>
-
-      <div className={styles.copy}>
-        <p className={styles.yearInline}>{CURRENT_YEAR}</p>
-        <h1 id="history-title" className={styles.title} lang="en">
-          <span>Why can’t we see</span>{' '}
-          <span>the photo right away?</span>
-        </h1>
-        <p className={styles.description} lang="ko">
-          “찍은 사진을 왜 바로 볼 수 없을까?” 딸의 질문에서 영감을 얻어,
-          찍은 자리에서 사진을 볼 수 있는 즉석사진 기술을 개발한 에드윈 랜드.
-          사진을 기다리던 시간을 바꾼 폴라로이드의 여정은 그렇게 시작됐습니다.
-        </p>
-        {/* Line sketch rides with the copy, over the portrait, like the reference's M drawing. */}
-        <img
-          className={styles.sketch}
-          src={model95Sketch}
-          width="1200"
-          height="1353"
-          alt="폴라로이드 랜드 카메라 모델 95 라인 드로잉"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-    </section>
-  );
+</section>;
 }
