@@ -1,4 +1,4 @@
-import { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20, asset21, asset22 } from './storyAssets.js';
+import { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20, asset21, asset22, asset23, asset24, asset25, asset26, asset27, asset28 } from './storyAssets.js';
 export function initHistoryStory(root) {
  let disposed = false;
  const controller = new AbortController();
@@ -14,17 +14,17 @@ export function initHistoryStory(root) {
 const CH = [
   { year: 1937, img: asset12, hl: ['편광 기술에서 시작된', '혁신의 역사'],
     bd: '1937년, 에드윈 랜드는 편광 기술을 기반으로 폴라로이드 코퍼레이션을 출범시켰습니다.<br>빛을 연구하던 작은 시작은 훗날 사진의 역사를 바꾸는 혁신으로 이어졌습니다.' },
-  { year: 1943, img: asset21, hl: ['작은 바램에서 시작된', '순간을 담는 새로운 방식'],
+  { year: 1943, img: asset23, hl: ['작은 바램에서 시작된', '순간을 담는 새로운 방식'],
     bd: '“찍은 사진을 왜 바로 볼 수 없나요?” 딸의 질문에서 영감을 얻은 에드윈 랜드는<br>촬영한 사진을 그 자리에서 볼 수 있는 새로운 방식을 구상했습니다.<br>그렇게 즉석사진을 향한 폴라로이드의 여정이 시작됐습니다.' },
-  { year: 1948, img: asset14, hl: ['폴라로이드', '즉석사진의 탄생'],
+  { year: 1948, img: asset24, hl: ['폴라로이드', '즉석사진의 탄생'],
     bd: '에드윈 랜드와 조지 휠라이트가 세운 연구소는 1937년 폴라로이드의 설립으로 이어졌습니다.<br>1947년 즉석사진 기술을 공개한 데 이어, 이듬해 첫 상용 카메라인 랜드 카메라 모델 95를<br>선보였습니다. 촬영한 자리에서 사진을 확인할 수 있는, 즉석사진의 시대가 열린 것입니다.' },
-  { year: 1981, img: asset15, hl: ['사람들의 일상으로', '이어진 즉석사진의 혁신'],
+  { year: 1981, img: asset25, hl: ['사람들의 일상으로', '이어진 즉석사진의 혁신'],
     bd: '1963년 컬러 즉석사진에 이어, 1972년에는 필름을 분리할 필요 없는<br>SX-70이 등장했습니다. 이후 One Stop과 600시리즈는 즉석사진의 경험을 넓혔습니다.<br>폴라로이드는 일상의 추억을 남기는 카메라이자, 예술가들의 표현 도구로 자리 잡았습니다.' },
-  { year: 2008, img: asset16, hl: ['시대의 변화 속', '멈춰 선 폴라로이드'],
+  { year: 2008, img: asset26, hl: ['시대의 변화 속', '멈춰 선 폴라로이드'],
     bd: '디지털 사진의 확산 속에서 폴라로이드는 2001년 파산보호를 신청하고 2008년 즉석필름<br>생산을 중단했습니다. 오랜 시간 이어온 폴라로이드 즉석사진의 미래는 불확실해졌습니다.' },
-  { year: 2017, img: asset17, hl: ['한 장의 사진을', '포기하지 않은 사람들'],
+  { year: 2017, img: asset27, hl: ['한 장의 사진을', '포기하지 않은 사람들'],
     bd: '2008년, 즉석사진을 지키려는 사람들이 ‘임파서블 프로젝트’라는 이름으로 네덜란드의<br>마지막 폴라로이드 필름 공장을 살렸습니다. 끊어진 생산 기반 속에서 필름을 다시 개발한<br>이들의 도전은 2017년 폴라로이드 오리지널스의 출범으로 이어졌습니다.' },
-  { year: 2026, img: asset22, hl: ['다시 쓰는 폴라로이드 역사', '그리고 NOW'],
+  { year: 2026, img: asset28, hl: ['다시 쓰는 폴라로이드 역사', '그리고 NOW'],
     bd: '2020년, 폴라로이드 오리지널스는 다시 폴라로이드라는 이름으로 돌아와<br>Now를 선보였습니다. 사진이 서서히 나타나는 기다림과 손에 남는 한 장의 감각.<br>폴라로이드의 이야기는 오늘 우리가 남기는 순간 속에서 계속됩니다.' }
 ];
 const RULE_ASSETS = [asset19, asset20, asset20, asset20, asset20, asset20, asset20];
@@ -89,7 +89,7 @@ function layout() {
   photos.forEach(p => Object.assign(p.el.style, { left: p.x * U + 'px', top: p.y * U + 'px', width: p.w * U + 'px', height: p.h * U + 'px' }));
   const row = $('row');                 // 텍스트+이미지 행을 정수 px로 중앙 배치
   if (vw <= 820) { row.style.transform = 'none'; row.style.left = '72px'; row.style.top = Math.round(Math.max(90, (vh - row.offsetHeight) / 2)) + 'px'; }
-  else { row.style.left = '50%'; row.style.top = '50%'; row.style.transform = 'translate(-50%,-50%)'; }
+  else { row.style.left = '0'; row.style.top = '0'; row.style.transform = 'none'; }   // Figma 1396:9917: 이미지는 오른쪽 절반을 꽉 채우고, 글은 왼쪽에 고정
   $('ruleAsset').style.transform = `scale(${U})`;
   marqW = $('marq').scrollWidth;
   lastCur = 99; dirty = true;
@@ -374,7 +374,11 @@ function closeUpdate(sy) {
 /* ================= GNB 테마 ================= */
 function gnbTheme(f, sy) {
   const inStory = scrollY < storyTop() + $('story').offsetHeight - 40;
-  if (header) header.dataset.historyTheme = lastF > 0.65 && sy < Q0 + 1.2 * vh ? 'light' : 'dark';
+  if (!header) return;
+  header.dataset.historyTheme = lastF > 0.65 && sy < Q0 + 1.2 * vh ? 'light' : 'dark';
+  // 아래로 스크롤하면 숨기고, 위로 스크롤하면 다시 내려온다. 맨 위에서는 항상 보인다.
+  const hidden = scrollY > 40 && headerDir > 0;
+  if ((header.dataset.historyHidden === 'true') !== hidden) header.dataset.historyHidden = String(hidden);
 }
 
 /* ================= 메인 루프 ================= */
@@ -406,7 +410,13 @@ function frame() {
   if (fc || why.active || !near(t, lastT)) { applyIntro(t); lastT = t; }
   show($('hist'), t > 0.3 && sy < Q0 + vh);
   const target = clamp((sy - chStart) / step, 0, n - 1);
-  if (reduced) cur = target; else { const st = dt / 16.667; vel += (target - cur) * 0.085 * st; vel *= Math.pow(0.74, st); cur += vel * st; }
+  if (reduced) cur = target;
+  else {
+    // 프레임이 느려도 튀지 않도록 60fps 기준 고정 간격으로 나눠서 계산 (큰 간격 한 번에 계산하면 발산함)
+    const steps = Math.max(1, Math.min(4, Math.round(dt / 16.667)));
+    for (let i = 0; i < steps; i++) { vel += (target - cur) * 0.085; vel *= 0.74; cur += vel; }
+    if (!Number.isFinite(cur)) { cur = target; vel = 0; }
+  }
   if (dirty || Math.abs(cur - lastCur) > 1e-4 || reveal !== lastReveal) { drawTicks(cur); lastCur = cur; lastReveal = reveal; }
   const idx = Math.round(clamp(cur, 0, n - 1));
   if (idx !== active) change(active, idx);
@@ -435,6 +445,19 @@ addEventListener('scroll', () => {
   lastSy = sy;
   clearTimeout(tmr); tmr = setTimeout(snap, 240);
 }, { passive: true });
+/* 헤더 표시: 사용자가 스크롤하는 방향(휠·터치·키보드)을 기준으로 정한다 */
+let headerDir = 0, headerTouchY = null;
+addEventListener('wheel', e => { if (Math.abs(e.deltaY) > 2) headerDir = e.deltaY > 0 ? 1 : -1; }, { passive: true });
+addEventListener('touchstart', e => { headerTouchY = e.touches[0]?.clientY ?? null; }, { passive: true });
+addEventListener('touchmove', e => {
+  const y = e.touches[0]?.clientY;
+  if (headerTouchY === null || y === undefined || Math.abs(y - headerTouchY) < 8) return;
+  headerDir = y < headerTouchY ? 1 : -1; headerTouchY = y;
+}, { passive: true });
+addEventListener('keydown', e => {
+  if (['ArrowDown', 'PageDown', ' ', 'Spacebar', 'End'].includes(e.key)) headerDir = 1;
+  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) headerDir = -1;
+});
 /* Why 화면: 아래로 스크롤하는 동작을 한 번씩 센다 (트랙패드 관성 이벤트는 한 번으로 묶음) */
 let whyLastWheel = 0, whyLastCount = 0, whyTouchY = null;
 const whyStep = now => {
@@ -531,6 +554,6 @@ requestAnimationFrame(frame);
   window.cancelAnimationFrame(frameId);
   timers.forEach(window.clearTimeout);
   root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
-  if (header) delete header.dataset.historyTheme;
+  if (header) { delete header.dataset.historyTheme; delete header.dataset.historyHidden; }
  };
 }

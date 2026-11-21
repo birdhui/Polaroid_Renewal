@@ -22,7 +22,7 @@ export default function HistoryPage() {
 </div>
 <div className="hero-copy" id="heroCopy">
 <div className="yblock" id="yblock"><h1 className="odo" id="odo" aria-label="1937년부터 2026년까지"></h1>
-<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
+<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해"}<br />{"사진 너머의 추억을 만들어왔습니다."}</p></div>
 </div>
 <div className="scroll-cue" id="cue">{"SCROLL"}</div>
 </div>
@@ -54,7 +54,7 @@ export default function HistoryPage() {
 <div className="row" id="row">
 <div className="txt">
 <div className="stack" id="titles"></div>
-<div className="rule" id="rule"><img id="ruleAsset" alt="" width="520" height="1" /></div>
+<div className="rule" id="rule"><img id="ruleAsset" alt="" width="532" height="1" /></div>
 <div className="stack" id="bodies"></div>
 </div>
 <div className="pics stack" id="pics"></div>
@@ -70,7 +70,7 @@ export default function HistoryPage() {
 </div>
 </div>
 <div className="scene closing" id="sClose">
-<p><span>{"즉석사진의 탄생부터, 멈췄던 필름이 다시 만들어지기까지."}</span><span>{"폴라로이드가 이어온 여정은"}</span><span>{"오늘 당신이 남기는 한 장의 사진으로 계속됩니다."}</span></p>
+<p><span>{"즉석사진의 탄생부터, 멈췄던 필름이 다시 만들어지기까지."}</span><span>{"폴라로이드가 이어온 여정은 오늘 당신이 남기는 한 장의 사진으로 계속됩니다."}</span></p>
 </div>
 </div>
 </section>
