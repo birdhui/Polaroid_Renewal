@@ -1,4 +1,5 @@
 import FilmChooseSection from './components/FilmChooseSection.jsx';
+import FilmClassicWhiteSection from './components/FilmClassicWhiteSection.jsx';
 import introPhoto from '@/assets/film/film-intro-photo.png';
 import FocusTitle from './components/FocusTitle.jsx';
 import FilmGoSection from './components/FilmGoSection.jsx';
@@ -36,6 +37,7 @@ export default function FilmPage() {
       <FilmGoSection />
       <FilmITypeSection />
       <FilmChooseSection />
+      <FilmClassicWhiteSection />
     </>
   );
 }

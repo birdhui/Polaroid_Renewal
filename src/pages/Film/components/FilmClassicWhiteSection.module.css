@@ -1,0 +1,73 @@
+.section {
+  position: relative;
+  overflow: hidden;
+  background-color: #fff9e8;
+  color: #fff;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0 auto auto -0.625%;
+  inline-size: 101.354167%;
+  block-size: 100%;
+  max-inline-size: none;
+  object-fit: cover;
+  mask-image: linear-gradient(to bottom, transparent 0% 1%, rgb(0 0 0 / 55%) 15%, #000 34%);
+}
+
+.composition {
+  width: min(56.145833%, 1078px);
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.scene {
+  position: relative;
+  min-block-size: 101.576994cqw;
+}
+
+.photo {
+  position: absolute;
+  inset: calc(50% - 26.391466cqw) auto auto 28.293135%;
+  inline-size: 47.124304%;
+  block-size: 52.782931cqw;
+  overflow: hidden;
+}
+
+.photo img {
+  position: absolute;
+  inset: -0.05% auto auto -0.98%;
+  inline-size: 100.98%;
+  block-size: 100.09%;
+  max-inline-size: none;
+}
+
+.title {
+  position: absolute;
+  inset: calc(50% - 5.612245cqw) 0 auto;
+  font: 600 8.905380cqw / 1.260417 'Film Stock Outfit', var(--font-sans);
+  white-space: nowrap;
+}
+
+.title > .line {
+  display: flex;
+  justify-content: space-between;
+}
+
+.line > :first-child {
+  inline-size: 28.107607%;
+}
+
+.line > :last-child {
+  inline-size: 24.304267%;
+}
+
+@media (max-width: 959px) {
+  .composition {
+    width: min(calc(100% - 2 * var(--space-5)), 650px);
+  }
+
+  .scene {
+    min-block-size: max(280px, 101.576994cqw);
+  }
+}
