@@ -54,36 +54,9 @@
   word-break: keep-all;
 }
 
-.titleLine,
-.brand {
-  display: block;
-}
-
 .brand {
   font-family: 'Film Outfit', var(--font-sans);
   font-weight: 700;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .title[data-focus] > span {
-    animation: focus-line 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .title[data-focus] > .brand {
-    animation-delay: 180ms;
-  }
-}
-
-@keyframes focus-line {
-  from {
-    filter: blur(8px);
-    opacity: 0.45;
-  }
-
-  to {
-    filter: blur(0);
-    opacity: 1;
-  }
 }
 
 .description {
