@@ -23,8 +23,7 @@
 
 .calendar {
   display: grid;
-  grid-template-columns: minmax(0, 321fr) minmax(0, 145fr) minmax(0, 380fr);
-  grid-template-rows: minmax(0, 65fr) minmax(0, 6fr) minmax(0, 42fr) minmax(0, 175fr) minmax(0, 434fr);
+  grid-template-rows: minmax(0, 65fr) minmax(0, 6fr) minmax(0, 651fr);
   inline-size: min(44.0625%, 846px);
   aspect-ratio: 846 / 722;
 }
@@ -61,12 +60,99 @@
   block-size: 108.29%;
 }
 
-.photo {
-  position: relative;
-  grid-area: 4 / 2 / 5 / 3;
+.interactionLayer {
+  position: absolute;
+  inset-block-start: -8.29%;
+  inset-inline-start: -24.01%;
+  inline-size: 148.15%;
+  block-size: 108.29%;
+  pointer-events: none;
+}
+
+.photoDays {
+  position: absolute;
+  /* Match the cells within the original 1920 × 1080 bitmap. */
+  inset: 14.722222% auto auto 18.28125%;
+  inline-size: 63.4375%;
+  block-size: 81.111111%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.photoDay {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.photoDay:focus-visible {
+  outline: 2px solid #fff9e8;
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .photoDay:hover {
+    box-shadow: inset 0 0 0 1px rgb(255 249 232 / 80%);
+  }
+}
+
+.preview {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: var(--z-overlay);
+  inline-size: clamp(130px, 14vw, 190px);
+  aspect-ratio: 829 / 1002;
+  filter: drop-shadow(0 8px 16px rgb(0 0 0 / 42%));
+  pointer-events: none;
+}
+
+.originalPrint,
+.print {
+  display: block;
   inline-size: 100%;
   block-size: 100%;
-  object-fit: cover;
+}
+
+.print {
+  padding: 6%;
+  background: #f4f1e7;
+}
+
+.printCrop {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.printCrop img {
+  position: absolute;
+  inset: calc(-100% * var(--crop-y) / 116) auto auto calc(-100% * var(--crop-x) / 116);
+  inline-size: calc(100% * 1920 / 116);
+  block-size: calc(100% * 1080 / 116);
+  max-inline-size: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .preview > * {
+    animation: lift-photo 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@keyframes lift-photo {
+  0% {
+    opacity: 0.35;
+    transform: translate(var(--lift-x), var(--lift-y)) scale(var(--lift-scale));
+  }
+
+  82% {
+    opacity: 1;
+    transform: scale(1.025);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 959px) {
