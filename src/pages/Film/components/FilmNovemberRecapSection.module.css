@@ -1,0 +1,81 @@
+.section {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  width: min(100%, 1920px);
+  min-block-size: min(56.25cqw, 1080px);
+  margin-inline: auto;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: minmax(0, 321fr) minmax(0, 145fr) minmax(0, 380fr);
+  grid-template-rows: minmax(0, 65fr) minmax(0, 6fr) minmax(0, 42fr) minmax(0, 175fr) minmax(0, 434fr);
+  inline-size: min(44.0625%, 846px);
+  aspect-ratio: 846 / 722;
+}
+
+.headingCrop,
+.gridCrop {
+  position: relative;
+  overflow: hidden;
+}
+
+.headingCrop {
+  grid-area: 1 / 1 / 2 / -1;
+}
+
+.gridCrop {
+  grid-area: 3 / 1 / -1 / -1;
+}
+
+.headingCrop img,
+.gridCrop img {
+  position: absolute;
+  inset-inline-start: -24.01%;
+  inline-size: 148.15%;
+  max-inline-size: none;
+}
+
+.headingCrop img {
+  inset-block-start: -7.69%;
+  block-size: 1084.62%;
+}
+
+.gridCrop img {
+  inset-block-start: -8.29%;
+  block-size: 108.29%;
+}
+
+.photo {
+  position: relative;
+  grid-area: 4 / 2 / 5 / 3;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 959px) {
+  .stage {
+    min-block-size: auto;
+    padding: var(--space-8) var(--space-5);
+  }
+
+  .calendar {
+    inline-size: min(100%, 424px);
+  }
+}

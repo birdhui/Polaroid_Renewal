@@ -1,18 +1,6 @@
 .section {
   position: relative;
-  overflow: hidden;
-  background-color: #fff9e8;
   color: #fff;
-}
-
-.backdrop {
-  position: absolute;
-  inset: 0 auto auto -0.625%;
-  inline-size: 101.354167%;
-  block-size: 100%;
-  max-inline-size: none;
-  object-fit: cover;
-  mask-image: linear-gradient(to bottom, transparent 0% 1%, rgb(0 0 0 / 55%) 15%, #000 34%);
 }
 
 .composition {

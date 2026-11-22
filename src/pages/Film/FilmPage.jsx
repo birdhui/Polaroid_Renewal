@@ -1,5 +1,7 @@
+import recapBackdrop from '@/assets/film/film-recap-background.png';
 import FilmChooseSection from './components/FilmChooseSection.jsx';
 import FilmClassicWhiteSection from './components/FilmClassicWhiteSection.jsx';
+import FilmNovemberRecapSection from './components/FilmNovemberRecapSection.jsx';
 import introPhoto from '@/assets/film/film-intro-photo.png';
 import FocusTitle from './components/FocusTitle.jsx';
 import FilmGoSection from './components/FilmGoSection.jsx';
@@ -37,7 +39,21 @@ export default function FilmPage() {
       <FilmGoSection />
       <FilmITypeSection />
       <FilmChooseSection />
-      <FilmClassicWhiteSection />
+      <div className={styles.recapSequence}>
+        <div className={styles.recapBackdropFrame} aria-hidden="true">
+          <img
+            className={styles.recapBackdrop}
+            src={recapBackdrop}
+            alt=""
+            width={1920}
+            height={1080}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <FilmClassicWhiteSection />
+        <FilmNovemberRecapSection />
+      </div>
     </>
   );
 }
