@@ -1,3 +1,123 @@
-.page {
-  padding: var(--space-6);
+/* Pretendard subset for the Film introduction's Korean copy. */
+@font-face {
+  font-family: 'Film Intro Sans';
+  src: url('@/assets/film/fonts/film-intro-sans.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Film Outfit';
+  src: url('@/assets/film/fonts/outfit-bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Film 미리보기에서 공통 헤더를 임시로 숨긴다. */
+:has(> main > .intro) > header {
+  display: none;
+}
+
+.intro {
+  background-color: #fff9e8;
+  color: #151515;
+}
+
+.stage {
+  max-width: 1920px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 424fr) minmax(0, 554fr);
+  column-gap: 20.052cqw;
+  align-items: start;
+  min-block-size: 57.031cqw;
+  padding-block: 9.219cqw;
+  padding-inline: 16.198cqw 12.813cqw;
+}
+
+.copy {
+  font-family: 'Film Intro Sans', var(--font-sans);
+  margin-block-start: 6.354cqw;
+}
+
+.title {
+  font-size: clamp(30px, 2.865cqw, 55px);
+  font-weight: 600;
+  line-height: 1.23;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+.titleLine,
+.brand {
+  display: block;
+}
+
+.brand {
+  font-family: 'Film Outfit', var(--font-sans);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .title[data-focus] > span {
+    animation: focus-line 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .title[data-focus] > .brand {
+    animation-delay: 180ms;
+  }
+}
+
+@keyframes focus-line {
+  from {
+    filter: blur(8px);
+    opacity: 0.45;
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+.description {
+  margin-block-start: clamp(var(--space-5), 2.604cqw, 50px);
+  font-size: clamp(16px, 1.25cqw, 24px);
+  line-height: 1.333;
+  letter-spacing: clamp(-2px, -0.104cqw, -0.5px);
+  word-break: keep-all;
+}
+
+.description span {
+  display: block;
+}
+
+.photo {
+  inline-size: 100%;
+  block-size: auto;
+}
+
+@container (width <= 800px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+    min-block-size: auto;
+    padding-block: var(--space-8);
+    padding-inline: clamp(var(--space-5), 8cqw, var(--space-8));
+  }
+
+  .copy {
+    margin-block-start: 0;
+  }
+
+  .photo {
+    max-inline-size: 360px;
+    justify-self: center;
+  }
 }
