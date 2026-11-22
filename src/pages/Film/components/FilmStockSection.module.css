@@ -6,14 +6,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Film Stock Outfit';
-  src: url('@/assets/film/fonts/stock-outfit.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-}
-
 .section {
   container-type: inline-size;
   background: #fff9e8;

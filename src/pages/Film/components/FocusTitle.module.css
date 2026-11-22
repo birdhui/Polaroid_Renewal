@@ -10,6 +10,10 @@
     opacity: calc(0.45 + 0.55 * var(--line-focus));
   }
 
+  .title > span:only-child {
+    --line-focus: var(--focus-progress, 1);
+  }
+
   .title > span + span {
     --line-focus: clamp(0, calc((var(--focus-progress, 1) - 0.4) / 0.6), 1);
   }

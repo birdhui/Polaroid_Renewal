@@ -15,6 +15,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Film Stock Outfit';
+  src: url('@/assets/film/fonts/stock-outfit.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
 /* Film 미리보기에서 공통 헤더를 임시로 숨긴다. */
 :has(> main > .intro) > header {
   display: none;
