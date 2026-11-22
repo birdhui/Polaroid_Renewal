@@ -28,11 +28,6 @@
   user-select: none;
 }
 
-/* 누끼가 없는 카메라용 임시 이미지: 흰 배경이 옆 카메라를 가리지 않도록 곱하기로 합성 */
-.crop {
-  mix-blend-mode: multiply;
-}
-
 .ready .camera {
   opacity: 1;
   animation: gather var(--hero-gather-duration) var(--hero-gather-ease) var(--hero-gather-delay) backwards;

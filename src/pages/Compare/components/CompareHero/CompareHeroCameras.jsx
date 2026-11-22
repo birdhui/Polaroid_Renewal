@@ -54,7 +54,7 @@ export default function CompareHeroCameras() {
         return (
           <img
             key={camera.id}
-            className={`${styles.camera} ${camera.kind === 'crop' ? styles.crop : ''}`}
+            className={styles.camera}
             src={camera.src}
             alt=""
             draggable={false}
