@@ -1,0 +1,24 @@
+.svg {
+  display: block;
+  overflow: visible;
+}
+
+/* 마스크 선: 흰색 부분만 이미지가 보인다. 길이를 1로 맞추고(pathLength) 오프셋을 1 → 0 으로 줄여 그린다. */
+.stroke {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* 둥근 선 끝이 그리기 전부터 점으로 보이지 않도록 자기 차례 전에는 숨긴다 */
+  opacity: 0;
+}
+
+.play {
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transition:
+    stroke-dashoffset var(--dur) linear var(--delay),
+    opacity 0s linear var(--delay);
+}

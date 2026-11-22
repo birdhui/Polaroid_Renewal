@@ -1,0 +1,196 @@
+/* 2. 카메라 라인업 (시안 1920×1764, 배경 #fff9e8) */
+.section {
+  position: relative;
+  overflow: hidden;
+  /* 제목 위 227 / 카메라 이름 줄 아래 348 */
+  padding: calc(227 * var(--px)) 0 calc(348 * var(--px));
+  background: #fff9e8;
+}
+
+.title {
+  margin: 0;
+  color: #151515;
+  font-family: var(--cm-font-text);
+  font-weight: 600;
+  font-size: max(26px, calc(56 * var(--px)));
+  line-height: 1.15;
+  letter-spacing: -0.036em;
+  text-align: center;
+}
+
+/* 프레임·카메라 무대: 시안 y 446 ~ 1114 */
+.stage {
+  position: relative;
+  height: calc(668 * var(--px));
+  margin-top: calc(90 * var(--px));
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 세로 스크롤은 브라우저에 맡기고 가로 끌기만 받는다 */
+  touch-action: pan-y;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.stage:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 8px;
+}
+
+/* 프레임 선 두께(8)만큼 바깥으로 4px 큰 SVG */
+.frame {
+  position: absolute;
+  left: calc(497 * var(--px));
+  top: calc(-4 * var(--px));
+  width: calc(902 * var(--px));
+  height: auto;
+  pointer-events: none;
+}
+
+.camera {
+  position: absolute;
+  /* --drag: 끄는 동안 손을 따라 움직이는 거리 */
+  left: calc(var(--cx) * var(--px) + var(--drag, 0px));
+  /* 세로 중심 y 738 = 무대 위쪽(446) + 292 */
+  top: calc(292 * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%);
+  transition:
+    left 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
+    filter 0.7s ease;
+}
+
+.camera img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.center {
+  z-index: 2;
+  cursor: inherit;
+}
+
+.side {
+  z-index: 1;
+  filter: blur(calc(4 * var(--px)));
+  cursor: inherit;
+}
+
+.side:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 4px;
+}
+
+/* 끄는 동안에는 손을 바로 따라오게 위치 전환을 끈다 */
+.dragging .camera {
+  transition: filter 0.7s ease;
+}
+
+/* 화면 밖 한쪽 끝에서 반대쪽 끝으로 옮겨 가는 카메라는 가로지르지 않고 바로 옮긴다 */
+.wrap {
+  transition: none;
+}
+
+/* 이름 줄: 시안 'Now'(x717, y1295) · '제품 보러가기'(x998) · 화살표(x1199) */
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(87 * var(--px));
+  margin-top: calc(181 * var(--px));
+  /* 시안에서 이름 줄 묶음의 중심은 화면 중앙보다 26px 오른쪽 */
+  transform: translateX(calc(26 * var(--px)));
+}
+
+.name {
+  margin: 0;
+  color: #000;
+  font-family: var(--cm-font-eng);
+  font-weight: 600;
+  font-size: max(40px, calc(96 * var(--px)));
+  line-height: 1.26;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* 이름이 바뀔 때 살짝 떠오르며 바뀐다 */
+.nameText {
+  display: inline-block;
+  animation: nameIn 0.5s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+@keyframes nameIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.18em);
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(29 * var(--px));
+  margin-top: calc(30 * var(--px));
+  color: #000;
+  font-family: var(--cm-font-eng);
+  font-size: max(15px, calc(32 * var(--px)));
+  letter-spacing: -0.06em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link img {
+  display: block;
+  width: max(32px, calc(57 * var(--px)));
+  height: auto;
+  transition: transform 0.25s ease;
+}
+
+.link:hover img,
+.link:focus-visible img {
+  transform: rotate(45deg);
+}
+
+@media (max-width: 1023px) {
+  .section {
+    padding: 64px 0 72px;
+  }
+
+  /* 좁은 화면: 무대를 1.28배 키우고 가운데를 맞춘다 (양옆 카메라는 화면 밖으로 반쯤 잘린다) */
+  .stage {
+    --px: calc(100cqw / 1500);
+    width: calc(1920 * var(--px));
+    margin: 32px 0 0 calc(-210 * var(--px));
+  }
+
+  .caption {
+    gap: 24px;
+    margin-top: 40px;
+    transform: none;
+  }
+
+  .link {
+    gap: 12px;
+    margin-top: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .camera,
+  .link img {
+    transition: none;
+  }
+
+  .nameText {
+    animation: none;
+  }
+}

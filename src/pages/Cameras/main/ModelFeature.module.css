@@ -1,0 +1,182 @@
+/* 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080 — 배경 #fffaec) */
+.section {
+  position: relative;
+  height: calc(var(--sh) * var(--px));
+  overflow: hidden;
+  background: #fffaec;
+}
+
+/* 손글씨 + 카메라 묶음 */
+.visual {
+  position: absolute;
+  left: calc(var(--l) * var(--px));
+  top: calc(var(--t) * var(--px));
+  width: calc(var(--w) * var(--px));
+}
+
+.script,
+.camera {
+  position: absolute;
+  object-fit: contain;
+}
+
+/* 소개 글 묶음 — 시안 기준선(--edge)과 첫 줄(--top)에 맞춘다 */
+.copy {
+  position: absolute;
+  top: calc(var(--top) * var(--px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section[data-side='left'] .copy {
+  left: calc(var(--edge) * var(--px));
+}
+
+.section[data-side='right'] .copy {
+  right: calc((1920 - var(--edge)) * var(--px));
+  align-items: flex-end;
+  text-align: right;
+}
+
+/*
+ * 초점 맞추기: 메인 헤드라인만 흐림(blur)·흐린 농도로 시작해, 드로잉이 시작되면(.focused) 선명해진다.
+ * 흐림 정도는 화면 폭에 비례(--px)하고, 너무 작아지지 않게 최소 4px 로 둔다.
+ */
+.copy .title {
+  filter: blur(max(4px, calc(10 * var(--px))));
+  opacity: 0.3;
+  transition:
+    filter 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    opacity 1s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.focused .title {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* 입문자용 · 전문가용 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max(52px, calc(63 * var(--px)));
+  height: max(18px, calc(22 * var(--px)));
+  margin-bottom: calc(8 * var(--px));
+  border: 1px solid #fff;
+  background: #f0a137;
+  color: #fff;
+  font-family: var(--cm-font-text);
+  font-weight: 500;
+  font-size: max(10px, calc(10 * var(--px)));
+  letter-spacing: -0.1em;
+}
+
+.name {
+  margin: 0;
+  color: #151515;
+  font-family: var(--cm-font-eng);
+  font-size: max(16px, calc(24 * var(--px)));
+  line-height: 1.2;
+}
+
+.title {
+  margin: 0;
+  color: #000;
+  font-family: var(--cm-font-text);
+  font-weight: 700;
+  font-size: max(24px, calc(40 * var(--px)));
+  line-height: 1.2;
+  letter-spacing: -0.05em;
+}
+
+.body {
+  margin: calc(24 * var(--px)) 0 0;
+  color: #151515;
+  font-family: var(--cm-font-text);
+  font-size: max(13px, calc(16 * var(--px)));
+  line-height: 1.2;
+  letter-spacing: -0.125em;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: max(36px, calc(41 * var(--px)));
+  margin-top: calc(72 * var(--px));
+  padding: 0 max(24px, calc(36 * var(--px)));
+  background: #151515;
+  color: #fff;
+  font-family: var(--cm-font-text);
+  font-weight: 500;
+  font-size: max(13px, calc(16 * var(--px)));
+  letter-spacing: -0.0625em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: #3a3833;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 좁은 화면: 이미지 → 글 순서로 세로로 쌓는다 */
+@media (max-width: 1023px) {
+  .section {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 56px 24px 72px;
+  }
+
+  .visual {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: min(100%, 520px);
+    margin: 0 auto;
+  }
+
+  .copy,
+  .section[data-side='left'] .copy,
+  .section[data-side='right'] .copy {
+    position: static;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .tag {
+    margin-bottom: 8px;
+  }
+
+  .body {
+    margin-top: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.04em;
+  }
+
+  .button {
+    margin-top: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy .title {
+    filter: none;
+    opacity: 1;
+    transition: none;
+  }
+}

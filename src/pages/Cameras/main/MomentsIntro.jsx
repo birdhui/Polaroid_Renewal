@@ -1,0 +1,43 @@
+import useInView from '../hooks/useInView.js';
+import { boxVars } from './layout.js';
+import styles from './MomentsIntro.module.css';
+
+/**
+ * 3. Every Moment Has Its Camera — 소개 문구 + 기울어진 폴라로이드 사진 3장 (시안 높이 1095)
+ * 사진은 화면에 들어오면 왼쪽 사진부터 차례로 아래에서 위로 떠오르며 나타난다.
+ */
+const STAGE_TOP = 415;
+const STAGGER_MS = 140;
+
+export default function MomentsIntro({ moments, reducedMotion }) {
+  const [stageRef, inView] = useInView({ threshold: 0.3 });
+  // 겹침 순서(z)는 데이터 순서 그대로 두고, 나타나는 순서만 왼쪽부터로 정한다
+  const order = [...moments.photos].sort((a, b) => a.box[0] - b.box[0]);
+  return (
+    <section className={styles.section} aria-labelledby="cameras-moments-title">
+      <h2 id="cameras-moments-title" className={styles.title}>
+        {moments.title}
+      </h2>
+      <p className={styles.body}>
+        {moments.body.map((line, i) => (
+          <span key={line}>
+            {i > 0 && <br />}
+            {line}
+          </span>
+        ))}
+      </p>
+      <div ref={stageRef} className={`${styles.stage} ${inView || reducedMotion ? styles.shown : ''}`}>
+        {moments.photos.map((photo) => (
+          <img
+            key={photo.src}
+            className={styles.photo}
+            style={{ ...boxVars(photo.box, [0, STAGE_TOP]), '--delay': `${order.indexOf(photo) * STAGGER_MS}ms` }}
+            src={photo.src}
+            alt={photo.alt}
+            loading="lazy"
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
