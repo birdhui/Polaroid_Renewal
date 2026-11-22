@@ -1,0 +1,275 @@
+/*
+ * 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고.
+ * 시안: 섹션 높이 1095 / 대화 열 폭 616(가운데) / 입력창 위 876·높이 56 / "Find" 위 123.
+ * 말풍선·입력창 안쪽 치수는 화면이 좁아져도 시안 px 그대로 쓰고, 좁은 화면(600px 이하)에서만 따로 맞춘다.
+ */
+.chat {
+  /*
+   * 모션 값 — 시안에 정해진 수치가 없어 임시로 둔 값이다. (CLAUDE.md: 확정되지 않은 모션 수치는 추측하지 않는다)
+   * 확정되면 여기 변수만 바꾸면 된다. --chat-shift-duration·--chat-ease-out 은 CompareChat.jsx 도 읽는다. (ms 단위로 쓸 것)
+   */
+  --chat-rise-distance: 96px; /* 질문 말풍선이 아래에서 올라오는 거리 */
+  --chat-rise-duration: 650ms;
+  --chat-drop-distance: 28px; /* 선택지가 위에서 내려오는 거리 */
+  --chat-drop-duration: 480ms;
+  --chat-options-delay: 320ms; /* 질문이 뜬 뒤 선택지가 나오기까지 */
+  --chat-options-stagger: 80ms; /* 선택지 사이 간격 */
+  --chat-shift-duration: 550ms; /* 새 질문이 붙을 때 앞 말풍선들이 위로 밀려 올라가는 시간 */
+  --chat-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* 살짝 튕기며 자리 잡는 이징 */
+  --chat-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: max(calc(1095 * var(--u)), 780px);
+  /* 위쪽은 "Find" 자리, 아래쪽은 시안의 입력창 아래 여백(1095 - 932 = 163) */
+  padding: max(calc(170 * var(--u)), 112px) 16px max(calc(163 * var(--u)), 72px);
+  background: var(--compare-beige);
+  color: var(--compare-ink);
+}
+
+/* 시안: Outfit Regular 20 / 자간 -0.9 / 위에서 123 */
+.title {
+  position: absolute;
+  top: max(calc(123 * var(--u)), 72px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--compare-font-display);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.045em;
+  color: #000;
+  white-space: nowrap;
+}
+
+.column {
+  width: min(616px, 100%);
+  margin: 0 auto;
+}
+
+/* 말풍선들 — 입력창 바로 위에 붙어서 위로 쌓인다. 입력창 아래로 올라오는 모션이 입력창 뒤에서 나오도록 z-index 를 낮게 둔다. */
+.stack {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 시안: 질문 사이 간격 36, 세로로 쌓인 선택지(STEP 1) 다음은 27 */
+.step + .step {
+  margin-top: 36px;
+}
+
+.step[data-layout='stack'] + .step {
+  margin-top: 27px;
+}
+
+/* 질문 — 검정 말풍선. 시안: 폭 295 / 왼쪽 위·오른쪽 위·오른쪽 아래 28.385, 왼쪽 아래 5.677 / Pretendard Medium 15 */
+.question {
+  width: fit-content;
+  min-width: min(295px, 100%);
+  max-width: 100%;
+  padding: 11.354px 24px;
+  border-radius: 28.385px 28.385px 28.385px 5.677px;
+  background: var(--compare-bubble);
+  color: var(--compare-bubble-text);
+  font-family: var(--compare-font-ko);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+  /* backwards: 시작 전(지연 중)에는 첫 장면(숨김)을 유지하고, 끝나면 기본 스타일로 돌아온다 */
+  animation: rise var(--chat-rise-duration) var(--chat-ease-bounce) backwards;
+}
+
+.options {
+  display: flex;
+  align-self: flex-end;
+}
+
+/* STEP 1 — 긴 대답 2개를 세로로. 시안: 폭 195·높이 41·간격 4, 질문 바로 아래 */
+.step[data-layout='stack'] .options {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* STEP 2·3 — 짧은 대답 4개를 가로로. 시안: 폭 102·간격 14, 질문 아래 36 */
+.step[data-layout='row'] .options {
+  gap: 14px;
+  margin-top: 36px;
+}
+
+/* 대답 — 기본은 연한 주황, 호버·포커스·선택하면 진한 주황. 시안: 높이 41·모서리 24 / Pretendard Regular 15 / 자간 0.5677 */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 41px;
+  border-radius: 24px;
+  background: var(--compare-orange-soft);
+  color: var(--compare-bubble-text);
+  font-family: var(--compare-font-ko);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.5677px;
+  white-space: nowrap;
+  transition: background-color 200ms ease;
+  /* 질문 다음에 위에서 아래로 내려온다. reveal 은 나타나기 전(지연 시간)에 누르거나 포커스되지 않도록 숨겨 둔다. */
+  animation:
+    drop var(--chat-drop-duration) var(--chat-ease-bounce) backwards,
+    reveal 10ms linear backwards;
+  animation-delay:
+    calc(var(--chat-options-delay) + var(--i) * var(--chat-options-stagger)),
+    calc(var(--chat-options-delay) + var(--i) * var(--chat-options-stagger));
+}
+
+.step[data-layout='stack'] .option {
+  width: 195px;
+}
+
+.step[data-layout='row'] .option {
+  width: 102px;
+}
+
+.selected {
+  background: var(--compare-orange);
+}
+
+@media (hover: hover) {
+  .option:hover {
+    background: var(--compare-orange);
+  }
+}
+
+.option:focus-visible {
+  background: var(--compare-orange);
+  outline: 2px solid var(--compare-ink);
+  outline-offset: 3px;
+}
+
+/* 입력창 — 시안의 장식이다. 시안: 폭 616·높이 56·모서리 16 / 안쪽 좌우 20 / 아이콘 16(칸 24)·간격 8 */
+.bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 20px;
+  border: 0.5px solid rgb(0 0 0 / 0.2);
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.8);
+  user-select: none;
+}
+
+.barIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.barText {
+  flex: 1;
+  padding: 0 8px;
+  color: rgb(0 0 0 / 0.2);
+  font-family: var(--compare-font-ko);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--chat-rise-distance));
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--chat-drop-distance) * -1));
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal {
+  from {
+    visibility: hidden;
+  }
+
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 좁은 화면 (시안에 없는 보정): 긴 질문은 줄바꿈하고, 선택지 4개는 2×2 로 둔다. */
+@media (max-width: 600px) {
+  .question {
+    min-width: 0;
+  }
+
+  .step[data-layout='stack'] .option {
+    width: auto;
+    min-width: 195px;
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .step[data-layout='row'] .options {
+    display: grid;
+    grid-template-columns: repeat(2, 102px);
+    gap: 8px 14px;
+  }
+}
+
+/* 모션 줄이기: 움직임 없이 나타나기만 한다. (reset.css 가 애니메이션 시간도 거의 0 으로 줄인다) */
+@media (prefers-reduced-motion: reduce) {
+  .question {
+    animation: fade 150ms linear backwards;
+  }
+
+  .option {
+    animation: fade 150ms linear backwards;
+    transition: none;
+  }
+}

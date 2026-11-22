@@ -1,0 +1,5 @@
+/* 시안(Frame 165): 높이 1095, 배경은 채팅 섹션과 같은 베이지. --u 는 ComparePage.module.css 참고. */
+.loading {
+  height: max(calc(1095 * var(--u)), 560px);
+  background: var(--compare-beige);
+}

@@ -11,7 +11,10 @@ export default function ComparePage() {
   return (
     <div className={styles.page}>
       <CompareHero />
-      <CompareFinder />
+      {/* 히어로의 "찾아보기" 버튼이 이 지점으로 이동한다 (CompareHero 의 FINDER_ID) */}
+      <div id="compare-finder">
+        <CompareFinder />
+      </div>
     </div>
   );
 }

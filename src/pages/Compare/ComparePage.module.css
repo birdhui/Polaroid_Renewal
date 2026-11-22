@@ -23,7 +23,32 @@
   src: url('../../assets/compare/fonts/dm-sans-latin-600.woff2') format('woff2');
 }
 
+/* 히어로 제목용. 시안의 영문 글꼴이다. */
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-600.woff2') format('woff2');
+}
+
 /* subset 은 완성형 한글 2,350자를 포함한다. 그 밖의 글자는 아래 fallback 폰트로 표시된다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-regular.subset.woff2') format('woff2');
+}
+
 @font-face {
   font-family: 'Compare Pretendard';
   font-weight: 500;
@@ -64,7 +89,14 @@
   --compare-btn-back: #b7b7b7;
   --compare-btn-next: #636161;
   --compare-line: #b7b7b7;
+  --compare-beige: #fff9e8;
+  --compare-ink: #151515;
+  --compare-bubble: #3a3b3c;
+  --compare-bubble-text: #fefefe;
+  --compare-orange: #f0a137;
+  --compare-orange-soft: rgb(240 161 55 / 0.5);
   --compare-font-en: 'Compare DM Sans', var(--font-sans);
+  --compare-font-display: 'Compare Outfit', var(--font-sans);
   --compare-font-ko: 'Compare Pretendard', var(--font-sans);
   --u: min(calc(100cqw / 1920), 1px);
 
