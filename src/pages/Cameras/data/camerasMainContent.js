@@ -30,8 +30,6 @@ import cardFlip from '@/assets/cameras/main/card-flip.webp';
 import cardMod from '@/assets/cameras/main/card-mod.webp';
 import cardI2 from '@/assets/cameras/main/card-i2.webp';
 import cardGo from '@/assets/cameras/main/card-go.webp';
-import hoverFlip from '@/assets/cameras/main/hover-flip.webp';
-import hoverI2 from '@/assets/cameras/main/hover-i2.webp';
 import helpCamera from '@/assets/cameras/main/help-camera-split.webp';
 import scriptFindCamera from '@/assets/cameras/main/script-find-camera.webp';
 import scriptFindAnswers from '@/assets/cameras/main/script-find-answers.webp';
@@ -87,11 +85,7 @@ export const MOMENTS = {
  * side: 글이 놓이는 쪽(left: 왼쪽 정렬 / right: 오른쪽 정렬), edge: 글 기준선(left 면 왼쪽 x, right 면 오른쪽 x), top: 헤드라인 첫 줄 y
  * script: 손글씨 모델명 이미지 (글과 같은 쪽, 헤드라인 위)
  * card: 반대쪽 626×626 제품 카드(배경색이 들어간 사진). tone: 카드 위 라벨 글자색(dark: 검정 / light: 흰색), index: 카드 번호
- *       bg: 카드 배경색(사진 배경과 같은 색 — 마우스를 올렸을 때 바뀐 그림 뒤에 깔린다)
- *       hover: 마우스를 올렸을 때 바뀌는 모습
- *         - tilt: 같은 사진을 살짝 돌린다(dir: left / right)
- *         - zoom: origin 지점으로 scale 배 확대 (Mod 다이얼)
- *         - image: 다른 사진으로 바꾼다 (fit: cover / contain, position: 보일 부분)
+ *       bg: 카드 배경색(사진 배경과 같은 색 — 마우스를 올려 사진이 커질 때 테두리에 깔린다)
  * camera: 배경 없는 제품 이미지 — 위쪽 카메라 라인업에서 쓴다
  * to: 사이트 안 상세페이지 / href: 상세페이지가 없으면 polaroid.com 제품 페이지(새 창)
  */
@@ -107,7 +101,7 @@ export const MODELS = [
     top: 448,
     script: { src: scriptNow, box: [317, 231, 446, 240] },
     camera: { src: cameraNow, alt: 'Polaroid Now 즉석카메라, 화이트와 퍼플 바디', box: [1206, 320, 348, 393] },
-    card: { src: cardNow, alt: '퍼플 바디의 Polaroid Now 즉석카메라', box: [1040, 235, 626, 626], tone: 'dark', index: 1, bg: '#dee5f2', hover: { kind: 'tilt', dir: 'left' } },
+    card: { src: cardNow, alt: '퍼플 바디의 Polaroid Now 즉석카메라', box: [1040, 235, 626, 626], tone: 'dark', index: 1, bg: '#dee5f2' },
     to: ROUTES.camerasNow,
   },
   {
@@ -120,7 +114,7 @@ export const MODELS = [
     top: 520,
     script: { src: scriptNowPlus, box: [1220, 290, 474, 245] },
     camera: { src: cameraNowPlus, alt: 'Polaroid Now+ 즉석카메라, 화이트 바디', box: [377, 325, 366, 414] },
-    card: { src: cardNowPlus, alt: '세이지 그린 바디의 Polaroid Now+ 즉석카메라', box: [261, 235, 626, 626], tone: 'dark', index: 2, bg: '#dcdde1', hover: { kind: 'tilt', dir: 'right' } },
+    card: { src: cardNowPlus, alt: '세이지 그린 바디의 Polaroid Now+ 즉석카메라', box: [261, 235, 626, 626], tone: 'dark', index: 2, bg: '#dcdde1' },
     to: ROUTES.camerasNowPlus,
   },
   {
@@ -137,7 +131,7 @@ export const MODELS = [
     top: 516,
     script: { src: scriptFlip, box: [283, 281, 461, 260] },
     camera: { src: cameraFlip, alt: 'Polaroid Flip 즉석카메라, 화이트 바디에 오렌지 패널', box: [1107, 315, 448, 426] },
-    card: { src: cardFlip, alt: '블랙·오렌지 패널의 Polaroid Flip 즉석카메라', box: [1047, 251, 626, 626], tone: 'dark', index: 3, bg: '#f4dfd4', hover: { kind: 'image', src: hoverFlip, alt: '플래시가 켜진 Polaroid Flip 앞면 확대', fit: 'cover', position: '72% 50%' } },
+    card: { src: cardFlip, alt: '블랙·오렌지 패널의 Polaroid Flip 즉석카메라', box: [1047, 251, 626, 626], tone: 'dark', index: 3, bg: '#f4dfd4' },
     href: `${POLAROID_US}/cameras/flip-camera`,
   },
   {
@@ -154,7 +148,7 @@ export const MODELS = [
     top: 523,
     script: { src: scriptMod, box: [1220, 286, 499, 304] },
     camera: { src: cameraMod, alt: 'Polaroid Mod 즉석카메라, 그래파이트 바디', box: [352, 307, 396, 449] },
-    card: { src: cardMod, alt: '그래파이트 바디의 Polaroid Mod 즉석카메라', box: [262, 235, 626, 626], tone: 'light', index: 4, bg: '#1b5461', hover: { kind: 'zoom', origin: '61% 53%', scale: 2.2 } },
+    card: { src: cardMod, alt: '그래파이트 바디의 Polaroid Mod 즉석카메라', box: [262, 235, 626, 626], tone: 'light', index: 4, bg: '#1b5461' },
     href: `${POLAROID_US}/cameras/mod-camera`,
   },
   {
@@ -172,7 +166,7 @@ export const MODELS = [
     top: 436,
     script: { src: scriptI2, box: [293, 245, 394, 239] },
     camera: { src: cameraI2, alt: 'Polaroid I-2 즉석카메라, 블랙 바디', box: [1151, 355, 468, 377] },
-    card: { src: cardI2, alt: '블랙 바디의 Polaroid I-2 즉석카메라', box: [1014, 235, 626, 626], tone: 'light', index: 5, bg: '#6b2d3d', hover: { kind: 'image', src: hoverI2, alt: '비스듬히 본 Polaroid I-2', fit: 'contain' } },
+    card: { src: cardI2, alt: '블랙 바디의 Polaroid I-2 즉석카메라', box: [1014, 235, 626, 626], tone: 'light', index: 5, bg: '#6b2d3d' },
     href: `${POLAROID_US}/cameras/i2-camera`,
   },
   {
@@ -190,7 +184,7 @@ export const MODELS = [
     height: 1080,
     script: { src: scriptGo, box: [1316, 271, 346, 292] },
     camera: { src: cameraGo, alt: 'Polaroid Go 즉석카메라, 라이트 블루 바디', box: [383, 395, 415, 367] },
-    card: { src: cardGo, alt: '라이트 블루 바디의 Polaroid Go 즉석카메라', box: [277, 228, 626, 626], tone: 'light', index: 6, bg: '#e9d9aa', hover: { kind: 'tilt', dir: 'left' } },
+    card: { src: cardGo, alt: '라이트 블루 바디의 Polaroid Go 즉석카메라', box: [277, 228, 626, 626], tone: 'light', index: 6, bg: '#e9d9aa' },
     href: `${POLAROID_US}/cameras/go-camera`,
   },
 ];
