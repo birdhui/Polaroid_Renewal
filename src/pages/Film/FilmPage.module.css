@@ -16,6 +16,15 @@
 }
 
 @font-face {
+  font-family: 'Film Hero Outfit';
+  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+
+@font-face {
   font-family: 'Film Stock Outfit';
   src: url('@/assets/film/fonts/stock-outfit.woff2') format('woff2');
   font-style: normal;
@@ -27,6 +36,43 @@
 :has(> main > .intro) > header {
   display: none;
 }
+
+.hero {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  overflow: hidden;
+  background-color: #222118;
+  color: #fff;
+}
+
+.heroPhoto {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100.092593%;
+  object-fit: cover;
+}
+
+.heroIdentity {
+  position: absolute;
+  inset-inline-start: 3.333333%;
+  inset-block-start: 75.555556%;
+  inline-size: 24.166667%;
+}
+
+.heroWordmark {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.heroTitle {
+  margin: 0;
+  font: 300 2.5cqw / 1.2 'Film Hero Outfit', var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
 
 .intro {
   background-color: #fff9e8;
@@ -120,5 +166,39 @@
   inset-block-start: 0;
   inline-size: 100%;
   block-size: min(100svh, 100%);
+}
+
+.recapBackdrop img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: cover;
+}
+
+.faqBackdrop {
+  opacity: 0;
+}
+
+@supports (timeline-scope: --film-faq-entry) and (animation-timeline: view()) {
+  .recapSequence {
+    timeline-scope: --film-faq-entry;
+  }
+
+  .recapBackdrop .faqBackdrop {
+    animation: fadeToFaq linear both;
+    animation-timeline: --film-faq-entry;
+    animation-range: entry 0% entry 72%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recapBackdrop .faqBackdrop {
+      animation-timing-function: steps(1, end);
+    }
+  }
+}
+
+@keyframes fadeToFaq {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

@@ -1,9 +1,13 @@
 import recapBackdrop from '@/assets/film/film-recap-background.png';
+import faqBackdrop from '@/assets/film/faq-background.png';
 import FilmChooseSection from './components/FilmChooseSection.jsx';
 import FilmClassicWhiteSection from './components/FilmClassicWhiteSection.jsx';
 import FilmNovemberRecapSection from './components/FilmNovemberRecapSection.jsx';
 import introPhoto from '@/assets/film/film-intro-photo.png';
+import heroPhoto from '@/assets/film/film-hero.png';
+import heroWordmark from '@/assets/film/film-hero-wordmark.svg';
 import FocusTitle from './components/FocusTitle.jsx';
+import FilmFaqSection from './components/FilmFaqSection.jsx';
 import FilmGoSection from './components/FilmGoSection.jsx';
 import FilmITypeSection from './components/FilmITypeSection.jsx';
 import styles from './FilmPage.module.css';
@@ -11,11 +15,31 @@ import styles from './FilmPage.module.css';
 export default function FilmPage() {
   return (
     <>
-      <section className={styles.intro} aria-labelledby="film-title">
+      <section className={styles.hero} aria-labelledby="film-title">
+        <img
+          className={styles.heroPhoto}
+          src={heroPhoto}
+          alt=""
+          width={1672}
+          height={941}
+          fetchPriority="high"
+        />
+        <div className={styles.heroIdentity}>
+          <img
+            className={styles.heroWordmark}
+            src={heroWordmark}
+            alt="Polaroid"
+            width={464}
+            height={127}
+          />
+          <h1 className={styles.heroTitle} id="film-title" lang="en">Instant Film</h1>
+        </div>
+      </section>
+      <section className={styles.intro} aria-labelledby="film-intro-title">
         <div className={styles.stage}>
           <div className={styles.layout}>
             <div className={styles.copy}>
-              <FocusTitle as="h1" className={styles.title} id="film-title" animateOnLoad>
+              <FocusTitle as="h2" className={styles.title} id="film-intro-title">
                 <span>순간을 담는 방식,</span>{' '}
                 <span className={styles.brand} lang="en">Polaroid Film.</span>
               </FocusTitle>
@@ -31,7 +55,7 @@ export default function FilmPage() {
               width={1084}
               height={1451}
               decoding="async"
-              fetchPriority="high"
+              loading="lazy"
             />
           </div>
         </div>
@@ -41,18 +65,14 @@ export default function FilmPage() {
       <FilmChooseSection />
       <div className={styles.recapSequence}>
         <div className={styles.recapBackdropFrame} aria-hidden="true">
-          <img
-            className={styles.recapBackdrop}
-            src={recapBackdrop}
-            alt=""
-            width={1920}
-            height={1080}
-            loading="lazy"
-            decoding="async"
-          />
+          <div className={styles.recapBackdrop}>
+            <img src={recapBackdrop} alt="" width={1920} height={1080} loading="lazy" />
+            <img className={styles.faqBackdrop} src={faqBackdrop} alt="" width={1920} height={1080} loading="lazy" />
+          </div>
         </div>
         <FilmClassicWhiteSection />
         <FilmNovemberRecapSection />
+        <FilmFaqSection />
       </div>
     </>
   );
