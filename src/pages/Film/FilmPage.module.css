@@ -17,9 +17,9 @@
 
 @font-face {
   font-family: 'Film Hero Outfit';
-  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
+  src: url('@/assets/film/fonts/outfit-extra-light.woff2') format('woff2');
   font-style: normal;
-  font-weight: 300;
+  font-weight: 200;
   font-display: swap;
 }
 
@@ -33,24 +33,25 @@
 }
 
 /* Film 미리보기에서 공통 헤더를 임시로 숨긴다. */
-:has(> main > .intro) > header {
+:has(> main > .hero) > header {
   display: none;
 }
 
 .hero {
   position: relative;
-  aspect-ratio: 16 / 9;
+  inline-size: 100%;
+  block-size: 100svh;
   container-type: inline-size;
   overflow: hidden;
   background-color: #222118;
   color: #fff;
 }
 
-.heroPhoto {
+.heroMedia {
   position: absolute;
   inset: 0;
   inline-size: 100%;
-  block-size: 100.092593%;
+  block-size: 100%;
   object-fit: cover;
 }
 
@@ -69,39 +70,34 @@
 
 .heroTitle {
   margin: 0;
-  font: 300 2.5cqw / 1.2 'Film Hero Outfit', var(--font-sans);
+  font: 200 1.875cqw / 1.2 'Film Hero Outfit', var(--font-sans);
   letter-spacing: -0.02em;
 }
 
 
-.intro {
-  background-color: #fff9e8;
-  color: #151515;
-}
-
 .stage {
-  max-width: 1920px;
+  max-width: 2560px;
   margin-inline: auto;
   container-type: inline-size;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 424fr) minmax(0, 554fr);
-  column-gap: 20.052cqw;
+  grid-template-columns: minmax(0, 424fr) minmax(0, 547fr);
+  column-gap: 17.708333cqw;
   align-items: start;
-  min-block-size: 57.031cqw;
-  padding-block: 9.219cqw;
-  padding-inline: 16.198cqw 12.813cqw;
+  min-block-size: 56.302083cqw;
+  padding-block: 7.5cqw;
+  padding-inline: 16.5625cqw 15.15625cqw;
 }
 
 .copy {
   font-family: 'Film Intro Sans', var(--font-sans);
-  margin-block-start: 6.354cqw;
+  margin-block-start: 12.135417cqw;
 }
 
 .title {
-  font-size: clamp(30px, 2.865cqw, 55px);
+  font-size: clamp(30px, 2.865cqw, 73.333px);
   font-weight: 600;
   line-height: 1.23;
   letter-spacing: -0.055em;
@@ -114,10 +110,10 @@
 }
 
 .description {
-  margin-block-start: clamp(var(--space-5), 2.604cqw, 50px);
-  font-size: clamp(16px, 1.25cqw, 24px);
+  margin-block-start: clamp(var(--space-5), 2.604cqw, 66.667px);
+  font-size: clamp(16px, 1.25cqw, 32px);
   line-height: 1.333;
-  letter-spacing: clamp(-2px, -0.104cqw, -0.5px);
+  letter-spacing: clamp(-2.667px, -0.104cqw, -0.5px);
   word-break: keep-all;
 }
 
@@ -125,9 +121,24 @@
   display: block;
 }
 
-.photo {
+.introArtwork {
+  position: relative;
   inline-size: 100%;
-  block-size: auto;
+  aspect-ratio: 547 / 731;
+}
+
+.introArtwork img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.introArtwork .introPrint {
+  position: absolute;
+  inset: 12.5855% auto auto 15.1737%;
+  inline-size: 87.7514%;
+  block-size: 72.777%;
 }
 
 @container (width <= 800px) {
@@ -143,62 +154,32 @@
     margin-block-start: 0;
   }
 
-  .photo {
+  .introArtwork {
     max-inline-size: 360px;
     justify-self: center;
   }
 }
 
-.recapSequence {
+.filmSequence {
   position: relative;
+  isolation: isolate;
   overflow: clip;
-  background: #1d160e;
+  background: #151210;
+  color: #ffffff;
 }
 
-.recapBackdropFrame {
+.backdropFrame {
   position: absolute;
   inset: 0;
+  z-index: -1;
   pointer-events: none;
 }
 
-.recapBackdrop {
+.backdrop {
   position: sticky;
   inset-block-start: 0;
+  display: block;
   inline-size: 100%;
   block-size: min(100svh, 100%);
-}
-
-.recapBackdrop img {
-  position: absolute;
-  inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
   object-fit: cover;
-}
-
-.faqBackdrop {
-  opacity: 0;
-}
-
-@supports (timeline-scope: --film-faq-entry) and (animation-timeline: view()) {
-  .recapSequence {
-    timeline-scope: --film-faq-entry;
-  }
-
-  .recapBackdrop .faqBackdrop {
-    animation: fadeToFaq linear both;
-    animation-timeline: --film-faq-entry;
-    animation-range: entry 0% entry 72%;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .recapBackdrop .faqBackdrop {
-      animation-timing-function: steps(1, end);
-    }
-  }
-}
-
-@keyframes fadeToFaq {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }

@@ -7,7 +7,7 @@
     --line-focus: clamp(0, calc(var(--focus-progress, 1) / 0.6), 1);
 
     filter: blur(calc(4px * (1 - var(--line-focus))));
-    opacity: calc(0.65 + 0.35 * clamp(0, calc(var(--focus-progress, 1) * 4), 1));
+    opacity: clamp(0, calc(var(--focus-progress, 1) * 4), 1);
     transition: filter 280ms ease-out, opacity 120ms ease-out;
   }
 

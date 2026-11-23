@@ -27,19 +27,16 @@ export default function FilmRecapPhotoPreview({ selection, calendarRef, onClose 
       const { x, y } = point ?? anchorToButton(trigger);
       const left = Math.min(Math.max(gap, x + gap), window.innerWidth - width - gap);
       const above = y - height - gap;
-      const top = above >= gap ? above : Math.min(y + gap, window.innerHeight - height - gap);
+      const top = point || above >= gap
+        ? above
+        : Math.min(y + gap, window.innerHeight - height - gap);
       preview.style.transform = `translate3d(${left}px, ${top}px, 0)`;
-      return { left, top };
     }
 
     function updatePosition() {
       frame = null;
-      const { left, right, top, bottom } = section.getBoundingClientRect();
-      const cursorOutside = point && (
-        point.x < left || point.x >= right || point.y < top || point.y >= bottom
-      );
-
-      if (cursorOutside || bottom <= 0 || top >= window.innerHeight) {
+      const { top, bottom } = section.getBoundingClientRect();
+      if (!point && (bottom <= 0 || top >= window.innerHeight)) {
         onClose(null);
         return;
       }
@@ -64,39 +61,25 @@ export default function FilmRecapPhotoPreview({ selection, calendarRef, onClose 
       schedulePosition();
     }
 
-    function dismissOnLeave(event) {
-      if (event.pointerType === 'mouse') onClose(null);
-    }
-
     function dismissOutside(event) {
-      if (!calendarRef.current?.contains(event.target)) onClose(null);
+      const target = pointer ? event.target.closest('button') : event.target;
+      if (!target || !calendarRef.current?.contains(target)) onClose(null);
     }
 
     function dismissOnEscape(event) {
       if (event.key === 'Escape') onClose(null);
     }
 
-    const { left, top } = positionPreview();
-    const origin = trigger.getBoundingClientRect();
-    const scale = Math.min(origin.width / width, origin.height / height);
-    preview.style.setProperty('--lift-x', `${origin.left + origin.width / 2 - left - width / 2}px`);
-    preview.style.setProperty('--lift-y', `${origin.top + origin.height / 2 - top - height / 2}px`);
-    preview.style.setProperty('--lift-scale', scale);
+    positionPreview();
 
-    if (pointer) {
-      section.addEventListener('pointermove', followPointer, { passive: true });
-      section.addEventListener('pointerleave', dismissOnLeave);
-    }
+    if (pointer) window.addEventListener('pointermove', followPointer, { passive: true });
     window.addEventListener('scroll', schedulePosition, { passive: true });
     window.addEventListener('resize', resize);
     document.addEventListener('pointerdown', dismissOutside);
     document.addEventListener('keydown', dismissOnEscape);
 
     return () => {
-      if (pointer) {
-        section.removeEventListener('pointermove', followPointer);
-        section.removeEventListener('pointerleave', dismissOnLeave);
-      }
+      if (pointer) window.removeEventListener('pointermove', followPointer);
       window.removeEventListener('scroll', schedulePosition);
       window.removeEventListener('resize', resize);
       document.removeEventListener('pointerdown', dismissOutside);

@@ -1,23 +1,20 @@
-import backdrop from '@/assets/film/faq-background.png';
 import divider from '@/assets/film/faq-divider.svg';
 import openDivider from '@/assets/film/faq-open-divider.svg';
-import minusIcon from '@/assets/film/faq-minus.svg';
-import plusIcon from '@/assets/film/faq-plus.svg';
 import FocusTitle from './FocusTitle.jsx';
 import styles from './FilmFaqSection.module.css';
 
 const introLines = [
-  '사진이 카메라에서 나온 뒤에도 필름 안에서는 현상이 계속돼요.',
-  '이때 강한 빛에 노출되거나 사진을 흔들면',
-  '아래쪽 가장자리에 얼룩이나 왜곡이 생길 수 있어요.',
+  '사진이 기대했던 것과 다르게 나왔나요?',
+  '필름을 찍고 현상할 때 자주 겪는 문제의 원인과 해결 방법을 모았어요.',
+  '다음 촬영에 도움이 될 다양한 팁을 확인해보세요.',
 ];
 
 const questions = [
   {
     question: '사진에 얼룩이 생기거나 이미지가 왜곡돼요.',
     answer: [
-      `${introLines[0]} ${introLines[1]}`,
-      `${introLines[2]} 사진이 나오면 밝은 빛을 가리고,`,
+      '사진이 카메라에서 나온 뒤에도 필름 안에서는 현상이 계속돼요. 이때 강한 빛에 노출되거나 사진을 흔들면',
+      '아래쪽 가장자리에 얼룩이나 왜곡이 생길 수 있어요. 사진이 나오면 밝은 빛을 가리고,',
       '흔들지 않은 채 현상될 때까지 기다려 주세요.',
     ],
   },
@@ -38,7 +35,6 @@ const questions = [
 export default function FilmFaqSection() {
   return (
     <section className={styles.section} id="film-faq" aria-labelledby="film-faq-title">
-      <img className={styles.backdrop} src={backdrop} alt="" loading="lazy" decoding="async" />
       <div className={styles.stage}>
         <div>
           <FocusTitle as="h2" className={styles.title} id="film-faq-title" lang="en">
@@ -58,15 +54,12 @@ export default function FilmFaqSection() {
         </div>
 
         <div className={styles.questions}>
-          {questions.map(({ question, answer }, index) => (
+          {questions.map(({ question, answer }) => (
             <div className={styles.item} key={question}>
-              <details name="film-faq" open={index === 0}>
+              <details name="film-faq">
                 <summary className={styles.question}>
                   {question}
-                  <span className={styles.icon} aria-hidden="true">
-                    <img className={styles.plus} src={plusIcon} alt="" width={14} height={14} />
-                    <img className={styles.minus} src={minusIcon} alt="" width={12} height={2} />
-                  </span>
+                  <span className={styles.icon} aria-hidden="true" />
                 </summary>
                 <p className={styles.answer}>
                   {answer.map(line => <span key={line}>{line}</span>)}

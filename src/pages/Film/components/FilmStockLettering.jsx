@@ -36,12 +36,14 @@ export default function FilmStockLettering({ stockId, lettering }) {
       return;
     }
 
+    const entryThreshold = 0.2;
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setPhase('writing');
-        observer.disconnect();
+      if (!entry.isIntersecting) {
+        setPhase('waiting');
+      } else if (entry.intersectionRatio >= entryThreshold) {
+        setPhase(current => current === 'waiting' ? 'writing' : current);
       }
-    }, { threshold: 0.2 });
+    }, { threshold: [0, entryThreshold] });
 
     observer.observe(artwork);
     return () => observer.disconnect();

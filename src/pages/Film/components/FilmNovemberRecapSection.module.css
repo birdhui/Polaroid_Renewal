@@ -16,15 +16,15 @@
 .stage {
   display: grid;
   place-items: center;
-  width: min(100%, 1920px);
-  min-block-size: min(56.25cqw, 1080px);
+  width: min(100%, 2560px);
+  min-block-size: min(56.25cqw, 1440px);
   margin-inline: auto;
 }
 
 .calendar {
   display: grid;
   grid-template-rows: minmax(0, 65fr) minmax(0, 6fr) minmax(0, 651fr);
-  inline-size: min(44.0625%, 846px);
+  inline-size: min(44.0625%, 1128px);
   aspect-ratio: 846 / 722;
 }
 
@@ -100,7 +100,7 @@
   position: fixed;
   inset: 0 auto auto 0;
   z-index: var(--z-overlay);
-  inline-size: clamp(130px, 14vw, 190px);
+  inline-size: clamp(130px, 14vw, clamp(190px, 9.895833vw, 253.333px));
   aspect-ratio: 829 / 1002;
   filter: drop-shadow(0 8px 16px rgb(0 0 0 / 42%));
   pointer-events: none;
@@ -130,29 +130,6 @@
   inline-size: calc(100% * 1920 / 116);
   block-size: calc(100% * 1080 / 116);
   max-inline-size: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .preview > * {
-    animation: lift-photo 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-  }
-}
-
-@keyframes lift-photo {
-  0% {
-    opacity: 0.35;
-    transform: translate(var(--lift-x), var(--lift-y)) scale(var(--lift-scale));
-  }
-
-  82% {
-    opacity: 1;
-    transform: scale(1.025);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 @media (max-width: 959px) {

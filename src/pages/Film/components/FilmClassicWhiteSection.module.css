@@ -1,61 +1,200 @@
+@font-face {
+  font-family: 'Film Stock Outfit';
+  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
 .section {
   position: relative;
+  min-block-size: 550svh;
   color: #fff;
 }
 
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.stage {
+  --frame-position: -1;
+
+  position: sticky;
+  inset-block-start: 0;
+  display: grid;
+  align-items: center;
+  min-block-size: 100svh;
+}
+
 .composition {
-  width: min(56.145833%, 1078px);
+  width: min(55.729167%, 1426.667px, 110svh);
   margin-inline: auto;
   container-type: inline-size;
 }
 
 .scene {
+
   position: relative;
-  min-block-size: 101.576994cqw;
+  min-block-size: 67cqw;
 }
 
 .photo {
   position: absolute;
-  inset: calc(50% - 26.391466cqw) auto auto 28.293135%;
-  inline-size: 47.124304%;
-  block-size: 52.782931cqw;
+  inset: calc(50% - 20.560748cqw) auto auto 39.906542%;
+  inline-size: 36.915888%;
+  block-size: 41.028037cqw;
   overflow: hidden;
+  isolation: isolate;
 }
 
-.photo img {
+.print,
+.tint,
+.photoLayer {
   position: absolute;
-  inset: -0.05% auto auto -0.98%;
-  inline-size: 100.98%;
-  block-size: 100.09%;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
   max-inline-size: none;
 }
 
-.title {
+.tint,
+.photoLayer {
+  --enter: clamp(0, calc((var(--frame-position) - var(--frame-index) + 0.42) / 0.84), 1);
+  --exit: clamp(0, calc((var(--frame-position) - var(--frame-index) - 0.58) / 0.84), 1);
+}
+
+.tint,
+.photoLayer {
+  clip-path: inset(calc((1 - var(--enter)) * 100%) 0 calc(var(--exit) * 100%));
+}
+
+.tint {
+  mix-blend-mode: multiply;
+}
+
+.tint:last-child,
+.photoLayer[data-final] {
+  --exit: 0;
+}
+
+.photoWindow {
   position: absolute;
-  inset: calc(50% - 5.612245cqw) 0 auto;
-  font: 600 8.905380cqw / 1.260417 'Film Stock Outfit', var(--font-sans);
+  inset: 11.022% 13.979% 24.927% 15.316%;
+  overflow: hidden;
+}
+
+.photoWindow img {
+  position: absolute;
+  filter: blur(0.3px);
+  max-inline-size: none;
+}
+
+.photoWindow::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+  opacity: 0.28;
+}
+
+.paper {
+  position: absolute;
+  inset: 0;
+  background: var(--frame-color);
+  /* Use the print's alpha for its outer edges and exclude the photo window. */
+  mask: url('@/assets/film/film-choose-accordion-player.png') center / 100% 100% no-repeat;
+  clip-path: polygon(evenodd,
+    0 0, 100% 0, 100% 100%, 0 100%, 0 0,
+    15.316% 11.022%, 15.316% 75.073%, 86.021% 75.073%, 86.021% 11.022%, 15.316% 11.022%);
+}
+
+.labels {
+  position: absolute;
+  inset: calc(50% - 5.700935cqw) 0 auto;
+  block-size: 1.26em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 600 8.971963cqw / 1.260417 'Film Stock Outfit', var(--font-sans);
   white-space: nowrap;
 }
 
-.title > .line {
-  display: flex;
-  justify-content: space-between;
+.label {
+  --appear: clamp(0, calc((var(--frame-position) - var(--frame-index) + 0.04) / 0.5), 1);
+  --disappear: clamp(0, calc((var(--frame-position) - var(--frame-index) - 0.52) / 0.4), 1);
+  --focus: calc(var(--appear) * (1 - var(--disappear)));
+
+  position: absolute;
+  inset: 0;
+  opacity: var(--focus);
+  filter: blur(calc(7px * (1 - var(--focus))));
 }
 
-.line > :first-child {
-  inline-size: 28.107607%;
+.label:first-child {
+  --appear: 1;
 }
 
-.line > :last-child {
-  inline-size: 24.304267%;
+.label:last-child {
+  --disappear: 0;
 }
+
+.introFocus,
+.introFocus > span {
+  block-size: 100%;
+}
+
+.lead,
+.leftWord,
+.openBracket,
+.closeBracket,
+.rightWord {
+  position: absolute;
+}
+
+.lead {
+  inset: -2.149533cqw auto auto 0;
+  font: 300 2.990654cqw / 1.25 'Film Stock Outfit', var(--font-sans);
+  letter-spacing: -0.093458cqw;
+}
+
+.leftWord {
+  inset-inline-end: 65.794393%;
+}
+
+.openBracket {
+  inset-inline-start: 35.794393%;
+}
+
+.closeBracket {
+  inset-inline-start: 78.130841%;
+}
+
+.rightWord {
+  inset-inline-start: 82.523364%;
+}
+
 
 @media (max-width: 959px) {
   .composition {
-    width: min(calc(100% - 2 * var(--space-5)), 650px);
+    width: min(calc(100% - 2 * var(--space-5)), 650px, 110svh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tint,
+  .photoLayer {
+    clip-path: inset(calc((1 - round(var(--enter), 1)) * 100%) 0 calc(round(var(--exit), 1) * 100%));
   }
 
-  .scene {
-    min-block-size: max(280px, 101.576994cqw);
+  .label {
+    opacity: calc((1 - round(var(--disappear), 1)) * round(var(--appear), 1));
+    filter: none;
   }
 }

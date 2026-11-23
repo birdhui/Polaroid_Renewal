@@ -30,12 +30,14 @@ function Dimensions({ dimensions, vertical = false }) {
       return;
     }
 
+    const entryThreshold = 0.25;
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+      if (!entry.isIntersecting) {
+        setVisible(false);
+      } else if (entry.intersectionRatio >= entryThreshold) {
         setVisible(true);
-        observer.disconnect();
       }
-    }, { threshold: 0.25 });
+    }, { threshold: [0, entryThreshold] });
 
     observer.observe(listRef.current);
     return () => observer.disconnect();

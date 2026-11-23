@@ -9,12 +9,24 @@ export default function FilmNovemberRecapSection() {
   const calendarRef = useRef(null);
   const [selection, setSelection] = useState(null);
 
+  function previewOnHover(event, day, column, row) {
+    if (event.pointerType !== 'mouse') return;
+
+    setSelection({
+      day,
+      column,
+      row,
+      trigger: event.currentTarget,
+      pointer: { x: event.clientX, y: event.clientY },
+    });
+  }
+
   function choosePhoto(event, day, column, row) {
+    const { pointerType } = event.nativeEvent;
+    if (event.detail > 0 && pointerType !== 'touch' && pointerType !== 'pen') return;
+
     const trigger = event.currentTarget;
-    const pointer = event.nativeEvent.pointerType === 'mouse'
-      ? { x: event.clientX, y: event.clientY }
-      : null;
-    setSelection(current => current?.day === day ? null : { day, column, row, trigger, pointer });
+    setSelection(current => current?.day === day ? null : { day, column, row, trigger, pointer: null });
   }
 
   return (
@@ -49,6 +61,7 @@ export default function FilmNovemberRecapSection() {
                       style={{ gridColumn: column + 1, gridRow: row + 1 }}
                       aria-label={`11월 ${day}일 사진`}
                       aria-pressed={selection?.day === day}
+                      onPointerEnter={event => previewOnHover(event, day, column, row)}
                       onClick={event => choosePhoto(event, day, column, row)}
                     />
                   );
