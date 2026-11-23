@@ -190,13 +190,17 @@
 
 /* App promo */
 .appPromo {
+  padding: var(--space-6) var(--space-5);
+}
+
+.appPromoInner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   align-items: center;
   gap: var(--space-8);
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
 }
 
 .appCopy .eyebrow,
@@ -236,19 +240,34 @@
   font-weight: 300;
 }
 
+/*
+ * Figma 원본: 왼쪽·가운데 컷은 573×573 정사각형, 오른쪽 컷만 622×573으로 더 넓다.
+ * 또한 왼쪽 컷이 프레임 왼쪽 끝에 딱 붙어 시작해서(인셋 없음) 화면 끝까지 꽉 차는
+ * 구성이라, 섹션 좌우 패딩을 상쇄해 엣지투엣지로 배치한다.
+ */
 .purchaseGallery {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
-  max-width: min(900px, 45vw);
-  margin: var(--space-4) auto;
+  grid-template-columns: 573fr 573fr 622fr;
+  align-items: stretch;
+  gap: 5vw;
+  width: calc(100% + 2 * var(--space-5));
+  margin: var(--space-4) calc(-1 * var(--space-5)) 0;
 }
 
 .purchaseGallery img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
   border-radius: var(--space-2);
+}
+
+.purchaseGallery img:nth-child(1),
+.purchaseGallery img:nth-child(2) {
+  aspect-ratio: 1 / 1;
+}
+
+.purchaseGallery img:nth-child(3) {
+  aspect-ratio: 622 / 573;
 }
 
 .purchaseButton {
@@ -347,7 +366,7 @@
     max-width: 100%;
   }
 
-  .appPromo {
+  .appPromoInner {
     grid-template-columns: minmax(0, 1fr);
   }
 

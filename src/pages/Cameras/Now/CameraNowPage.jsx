@@ -67,12 +67,14 @@ export default function CameraNowPage() {
       </section>
 
       <section className={`${styles.appPromo} ${styles.screen} ${styles.darkSection}`}>
-        <div className={styles.appCopy}>
-          <p className={styles.eyebrow}>{appPromo.eyebrow}</p>
-          <h3 className={styles.sectionHeading}>{appPromo.heading}</h3>
-          <p className={styles.appDescription}>{appPromo.description}</p>
+        <div className={styles.appPromoInner}>
+          <div className={styles.appCopy}>
+            <p className={styles.eyebrow}>{appPromo.eyebrow}</p>
+            <h3 className={styles.sectionHeading}>{appPromo.heading}</h3>
+            <p className={styles.appDescription}>{appPromo.description}</p>
+          </div>
+          <img className={styles.appPhone} src={appPromo.image} alt="Polaroid 앱 스토리 화면" />
         </div>
-        <img className={styles.appPhone} src={appPromo.image} alt="Polaroid 앱 스토리 화면" />
       </section>
 
       <section className={`${styles.purchase} ${styles.screen} ${styles.darkSection}`}>

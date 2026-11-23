@@ -98,7 +98,8 @@ export const purchaseCta = {
   heading: '오늘의 어떤 순간을 첫 장으로 남길까요?',
   wordmark: 'Now',
   ctaLabel: '구매하기',
-  images: [purchaseShot1Image, purchaseShot2Image, purchaseShot3Image],
+  // Figma 좌→우 순서: Shot 1(왼쪽, 573×573) → Shot 3(가운데, 573×573) → Shot 2(오른쪽, 622×573)
+  images: [purchaseShot1Image, purchaseShot3Image, purchaseShot2Image],
 };
 
 export const discoverMore = {
