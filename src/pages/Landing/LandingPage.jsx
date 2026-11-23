@@ -1,5 +1,6 @@
 import CameraExperience from '@/features/landing-camera/CameraExperience.jsx';
 import { DEFAULT_CAMERA_STATE } from '@/features/landing-camera/cameraContract.js';
+import ViewfinderLoader from './components/ViewfinderLoader.jsx';
 import styles from './LandingPage.module.css';
 
 /**
@@ -15,6 +16,7 @@ export default function LandingPage() {
     <section className={styles.page} aria-labelledby="landing-title">
       <h1 id="landing-title">Landing</h1>
       <CameraExperience {...DEFAULT_CAMERA_STATE} />
+      <ViewfinderLoader />
     </section>
   );
 }
