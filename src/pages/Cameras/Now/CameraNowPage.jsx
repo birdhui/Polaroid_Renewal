@@ -1,4 +1,4 @@
-import FeatureHighlight from './components/FeatureHighlight.jsx';
+import FeatureShowcase from './components/FeatureShowcase.jsx';
 import {
   hero,
   intro,
@@ -14,13 +14,13 @@ import styles from './CameraNowPage.module.css';
 /**
  * Cameras › Polaroid Now 상세 페이지 (담당: 임희지 · 브랜치: feat/cameras-now)
  * Figma "Cameras-detail Page" > "Cameras - NOW" 프레임을 기준으로 한 정적 구현.
+ * 각 섹션은 Figma 프레임과 같은 1920×1080 비율(.screen)로 고정한다.
  * 이미지는 같은 Figma 레이어를 export_node_as_image로 내려받은 실제 에셋이다.
- * 스크롤 연동 모션(ghost 헤드라인 투명도 변화 등)은 정적 구현 범위에서 제외했다.
  */
 export default function CameraNowPage() {
   return (
     <article className={styles.page} aria-labelledby="camera-now-title">
-      <section className={styles.hero}>
+      <section className={`${styles.hero} ${styles.screen}`}>
         <img className={styles.heroImage} src={hero.image} alt="" />
         <div className={styles.heroCopy}>
           <h1 id="camera-now-title" className={styles.heroTitle}>
@@ -30,7 +30,7 @@ export default function CameraNowPage() {
         </div>
       </section>
 
-      <section className={styles.intro}>
+      <section className={`${styles.intro} ${styles.screen}`}>
         <p className={styles.eyebrow}>{intro.eyebrow}</p>
         <h2 className={styles.introHeading}>
           {intro.heading.map((line) => (
@@ -42,13 +42,9 @@ export default function CameraNowPage() {
         <h3 className={styles.sectionHeading}>{featuresHeading}</h3>
       </section>
 
-      <section className={styles.features} aria-label={featuresHeading}>
-        {features.map((feature) => (
-          <FeatureHighlight key={feature.id} feature={feature} />
-        ))}
-      </section>
+      <FeatureShowcase heading={featuresHeading} features={features} />
 
-      <section className={`${styles.filters} ${styles.darkSection}`}>
+      <section className={`${styles.filters} ${styles.screen} ${styles.darkSection}`}>
         <p className={styles.eyebrow}>{filterShowcase.eyebrow}</p>
         <h3 className={styles.sectionHeading}>{filterShowcase.heading}</h3>
         <img
@@ -70,7 +66,7 @@ export default function CameraNowPage() {
         </ul>
       </section>
 
-      <section className={`${styles.appPromo} ${styles.darkSection}`}>
+      <section className={`${styles.appPromo} ${styles.screen} ${styles.darkSection}`}>
         <div className={styles.appCopy}>
           <p className={styles.eyebrow}>{appPromo.eyebrow}</p>
           <h3 className={styles.sectionHeading}>{appPromo.heading}</h3>
@@ -79,7 +75,7 @@ export default function CameraNowPage() {
         <img className={styles.appPhone} src={appPromo.image} alt="Polaroid 앱 스토리 화면" />
       </section>
 
-      <section className={`${styles.purchase} ${styles.darkSection}`}>
+      <section className={`${styles.purchase} ${styles.screen} ${styles.darkSection}`}>
         <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
         <p className={styles.wordmark}>{purchaseCta.wordmark}</p>
         <div className={styles.purchaseGallery}>
@@ -92,7 +88,7 @@ export default function CameraNowPage() {
         </button>
       </section>
 
-      <section className={`${styles.discover} ${styles.darkSection}`}>
+      <section className={`${styles.discover} ${styles.screen} ${styles.darkSection}`}>
         <h3 className={styles.discoverHeading}>
           {discoverMore.heading.map((line) => (
             <span key={line}>{line}</span>

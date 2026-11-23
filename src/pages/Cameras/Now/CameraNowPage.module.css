@@ -25,7 +25,7 @@
 .sectionHeading {
   max-width: 720px;
   margin: 0 auto;
-  font-size: 2rem;
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
@@ -34,20 +34,36 @@
 
 .wordmark {
   margin: var(--space-2) 0;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   text-align: center;
 }
 
-/* Hero */
-.hero {
+/*
+ * Figma의 각 섹션 프레임은 1920×1080(한 섹션 = 풀스크린 한 장) 기준으로 설계됐다.
+ * min-height를 그 비율(56.25vw)로 맞춰 "화면 한 장" 느낌을 유지하되,
+ * 실제 콘텐츠가 더 필요하면 잘리지 않고 자연스럽게 늘어나게 한다.
+ */
+.screen {
   position: relative;
   display: flex;
-  align-items: flex-end;
-  min-height: 70vh;
-  color: #fff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56.25vw;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
+  color: #fff;
 }
 
 .hero::after {
@@ -76,21 +92,22 @@
 
 .heroTitle {
   margin: 0 0 var(--space-4);
-  font-size: 5rem;
+  font-size: clamp(2.5rem, 7vw, 5rem);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .heroDescription {
   margin: 0;
-  font-size: 1.25rem;
+  max-width: 44rem;
+  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
   font-weight: 300;
   line-height: 1.4;
 }
 
 /* Intro */
 .intro {
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-6) var(--space-5);
   background: var(--now-cream);
   text-align: center;
 }
@@ -99,7 +116,7 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-size: 2.75rem;
+  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
   font-weight: 600;
   letter-spacing: -0.03em;
 }
@@ -107,16 +124,9 @@
 .introImage {
   display: block;
   width: 100%;
-  max-width: 720px;
-  margin: var(--space-6) auto;
+  max-width: 34vw;
+  margin: var(--space-4) auto;
   border-radius: var(--space-2);
-}
-
-/* Features */
-.features {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
 }
 
 /* 필터·앱 프로모·구매·discover 섹션(07~10)은 모두 같은 어두운 풀블리드 사진("Section BG Photo")을 배경으로 쓴다 */
@@ -129,7 +139,7 @@
 
 /* Filters */
 .filters {
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
 }
 
@@ -138,8 +148,8 @@
 }
 
 .filterPreview {
-  max-width: 400px;
-  margin: var(--space-6) auto;
+  max-width: min(400px, 22vw);
+  margin: var(--space-4) auto;
   border-radius: var(--space-2);
 }
 
@@ -186,7 +196,7 @@
   gap: var(--space-8);
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-6) var(--space-5);
 }
 
 .appCopy .eyebrow,
@@ -207,7 +217,7 @@
 
 .appPhone {
   width: 100%;
-  max-width: 320px;
+  max-width: min(320px, 17vw);
   aspect-ratio: 9 / 19;
   object-fit: cover;
   border-radius: var(--space-4);
@@ -215,14 +225,14 @@
 
 /* Purchase CTA */
 .purchase {
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
 }
 
 .purchaseHeading {
   margin: 0 auto var(--space-2);
   max-width: 600px;
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
   font-weight: 300;
 }
 
@@ -230,8 +240,8 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
-  max-width: 900px;
-  margin: var(--space-6) auto;
+  max-width: min(900px, 45vw);
+  margin: var(--space-4) auto;
 }
 
 .purchaseGallery img {
@@ -254,30 +264,30 @@
 
 /* Discover more */
 .discover {
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
 }
 
 .discoverHeading {
   display: flex;
   flex-direction: column;
-  margin: 0 0 var(--space-4);
-  font-size: 2.5rem;
+  margin: 0 0 var(--space-3);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 600;
 }
 
 .discoverDescription {
   max-width: 560px;
-  margin: 0 auto var(--space-7);
+  margin: 0 auto var(--space-5);
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.6;
 }
 
 .discoverGrid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 160px));
+  grid-template-columns: repeat(6, minmax(0, 120px));
   justify-content: center;
-  gap: var(--space-6) var(--space-4);
+  gap: var(--space-4) var(--space-3);
   max-width: 1100px;
   margin: 0 auto;
   padding: 0;
@@ -323,12 +333,18 @@
 }
 
 @media (max-width: 860px) {
-  .heroTitle {
-    font-size: 3rem;
+  /* 좁은 화면에서는 "화면 한 장" 느낌보다 콘텐츠가 읽히는 게 우선이라 최소 높이를 낮춘다 */
+  .screen {
+    min-height: 0;
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-7);
   }
 
-  .introHeading {
-    font-size: 2rem;
+  .introImage,
+  .filterPreview,
+  .appPhone,
+  .purchaseGallery {
+    max-width: 100%;
   }
 
   .appPromo {
