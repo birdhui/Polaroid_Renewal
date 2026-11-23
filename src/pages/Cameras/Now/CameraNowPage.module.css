@@ -13,11 +13,12 @@
   background: var(--color-bg);
 }
 
+/* Figma 기준 18px, Outfit Medium, letter-spacing 0.7px — 1920px 기준 비율로 스케일 */
 .eyebrow {
   margin: 0 0 var(--space-2);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: clamp(0.75rem, 1vw, 1.125rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
   color: var(--now-accent);
   text-align: center;
 }
@@ -137,13 +138,34 @@
   text-align: center;
 }
 
+/* Figma 기준 56px, Pretendard SemiBold, letter-spacing -2px — 1920px 기준 비율로 스케일 */
 .introHeading {
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
+  font-size: clamp(1.5rem, 2.92vw, 3.5rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.036em;
+}
+
+/* Figma: 헤드라인과 eyebrow+워드마크 그룹 사이 간격(frame 1920px 기준 195px → 10.16vw) */
+.introWordmarkGroup {
+  margin-top: 10.16vw;
+}
+
+.introWordmarkGroup .eyebrow {
+  margin-bottom: 0;
+}
+
+/* Figma 기준 200px, Outfit SemiBold, letter-spacing 0.7px — 1920px 기준 비율로 스케일 */
+.introWordmark {
+  margin: 0;
+  font-size: clamp(4rem, 10.42vw, 12.5rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1;
+  color: #000;
+  text-align: center;
 }
 
 /* 03 Features Heading — Figma에서 Intro와 분리된 독립 풀스크린 섹션 */
@@ -152,11 +174,12 @@
   text-align: center;
 }
 
+/* Figma 기준 720px(프레임 너비의 37.5%) */
 .introImage {
   display: block;
   width: 100%;
-  max-width: 34vw;
-  margin: var(--space-4) auto;
+  max-width: 37.5vw;
+  margin: var(--space-3) auto 0;
   border-radius: var(--space-2);
 }
 

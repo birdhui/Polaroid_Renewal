@@ -36,13 +36,20 @@ export default function CameraNowPage() {
           .connectedBg 하나의 그라데이션이 쭉 이어지도록 감싼다. */}
       <div className={styles.connectedBg}>
         <section className={`${styles.intro} ${styles.screen}`}>
-          <p className={styles.eyebrow}>{intro.eyebrow}</p>
+          {/*
+            Figma 순서: 큰 한국어 헤드라인이 맨 위, 그 아래 eyebrow + "Now" 워드마크가
+            한 쌍으로 붙어있고, 마지막에 제품 이미지. (이전엔 eyebrow를 맨 위에 둬서
+            순서가 틀렸었다.)
+          */}
           <h2 className={styles.introHeading}>
             {intro.heading.map((line) => (
               <span key={line}>{line}</span>
             ))}
           </h2>
-          <p className={styles.wordmark}>{intro.wordmark}</p>
+          <div className={styles.introWordmarkGroup}>
+            <p className={styles.eyebrow}>{intro.eyebrow}</p>
+            <p className={styles.introWordmark}>{intro.wordmark}</p>
+          </div>
           <img className={styles.introImage} src={intro.image} alt="Polaroid Now 제품 이미지" />
           <BackgroundLabel lines={backgroundLabel} />
         </section>
