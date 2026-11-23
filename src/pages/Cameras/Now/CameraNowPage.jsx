@@ -1,15 +1,113 @@
+import FeatureHighlight from './components/FeatureHighlight.jsx';
+import {
+  hero,
+  intro,
+  featuresHeading,
+  features,
+  filterShowcase,
+  appPromo,
+  purchaseCta,
+  discoverMore,
+} from './data/sections.js';
 import styles from './CameraNowPage.module.css';
 
 /**
  * Cameras › Polaroid Now 상세 페이지 (담당: 임희지 · 브랜치: feat/cameras-now)
- * 세부 디자인과 기능은 확정된 화면 기획서(Figma)를 받은 뒤 이 폴더 안에서 개발한다.
- * 페이지 전용 컴포넌트는 ./components/, 훅은 ./hooks/, 데이터는 ./data/ 에 둔다.
- * 이미지·영상은 src/assets/cameras/now/ 또는 public/assets/cameras/now/ 에 둔다.
+ * Figma "Cameras-detail Page" > "Cameras - NOW" 프레임을 기준으로 한 정적 구현.
+ * 이미지는 같은 Figma 레이어를 export_node_as_image로 내려받은 실제 에셋이다.
+ * 스크롤 연동 모션(ghost 헤드라인 투명도 변화 등)은 정적 구현 범위에서 제외했다.
  */
 export default function CameraNowPage() {
   return (
-    <section className={styles.page} aria-labelledby="camera-now-title">
-      <h1 id="camera-now-title">Polaroid Now</h1>
-    </section>
+    <article className={styles.page} aria-labelledby="camera-now-title">
+      <section className={styles.hero}>
+        <img className={styles.heroImage} src={hero.image} alt="" />
+        <div className={styles.heroCopy}>
+          <h1 id="camera-now-title" className={styles.heroTitle}>
+            {hero.title}
+          </h1>
+          <p className={styles.heroDescription}>{hero.description}</p>
+        </div>
+      </section>
+
+      <section className={styles.intro}>
+        <p className={styles.eyebrow}>{intro.eyebrow}</p>
+        <h2 className={styles.introHeading}>
+          {intro.heading.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </h2>
+        <p className={styles.wordmark}>{intro.wordmark}</p>
+        <img className={styles.introImage} src={intro.image} alt="Polaroid Now 제품 이미지" />
+        <h3 className={styles.sectionHeading}>{featuresHeading}</h3>
+      </section>
+
+      <section className={styles.features} aria-label={featuresHeading}>
+        {features.map((feature) => (
+          <FeatureHighlight key={feature.id} feature={feature} />
+        ))}
+      </section>
+
+      <section className={`${styles.filters} ${styles.darkSection}`}>
+        <p className={styles.eyebrow}>{filterShowcase.eyebrow}</p>
+        <h3 className={styles.sectionHeading}>{filterShowcase.heading}</h3>
+        <img
+          className={styles.filterPreview}
+          src={filterShowcase.previewImage}
+          alt="필터 적용 예시 사진"
+        />
+        <ul className={styles.filterList}>
+          {filterShowcase.items.map((item) => (
+            <li key={item.id} className={styles.filterItem}>
+              <span
+                className={`${styles.filterDisc} ${item.featured ? styles.filterDiscFeatured : ''}`}
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+              <span className={styles.filterLabel}>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={`${styles.appPromo} ${styles.darkSection}`}>
+        <div className={styles.appCopy}>
+          <p className={styles.eyebrow}>{appPromo.eyebrow}</p>
+          <h3 className={styles.sectionHeading}>{appPromo.heading}</h3>
+          <p className={styles.appDescription}>{appPromo.description}</p>
+        </div>
+        <img className={styles.appPhone} src={appPromo.image} alt="Polaroid 앱 스토리 화면" />
+      </section>
+
+      <section className={`${styles.purchase} ${styles.darkSection}`}>
+        <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
+        <p className={styles.wordmark}>{purchaseCta.wordmark}</p>
+        <div className={styles.purchaseGallery}>
+          {purchaseCta.images.map((src, index) => (
+            <img key={src} src={src} alt={`Polaroid Now 제품컷 ${index + 1}`} />
+          ))}
+        </div>
+        <button type="button" className={styles.purchaseButton}>
+          {purchaseCta.ctaLabel}
+        </button>
+      </section>
+
+      <section className={`${styles.discover} ${styles.darkSection}`}>
+        <h3 className={styles.discoverHeading}>
+          {discoverMore.heading.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </h3>
+        <p className={styles.discoverDescription}>{discoverMore.description}</p>
+        <ul className={styles.discoverGrid}>
+          {discoverMore.products.map((product) => (
+            <li key={product.id} className={styles.discoverCard}>
+              <img src={product.image} alt={`${product.label} 제품 이미지`} />
+              <span className={styles.discoverLabel}>{product.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </article>
   );
 }

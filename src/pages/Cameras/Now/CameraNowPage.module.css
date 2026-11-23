@@ -1,3 +1,353 @@
+/**
+ * Figma "Cameras - NOW" 프레임 색상(크림 #fff9e8, 잉크 #151515, 포인트 #f0a137)은
+ * 아직 variables.css 공통 토큰으로 확정되지 않아 이 페이지 스코프 변수로만 선언한다.
+ * 토큰이 확정되면 모진아(style/design-system)가 올리는 공통 값으로 교체한다.
+ */
 .page {
-  padding: var(--space-6);
+  --now-cream: #fff9e8;
+  --now-ink: #151515;
+  --now-accent: #f0a137;
+  --now-muted: rgba(21, 21, 21, 0.6);
+
+  color: var(--now-ink);
+  background: var(--color-bg);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--now-accent);
+  text-align: center;
+}
+
+.sectionHeading {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.wordmark {
+  margin: var(--space-2) 0;
+  font-size: 4rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 70vh;
+  color: #fff;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.05) 55%);
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-8) var(--space-6);
+  max-width: 760px;
+}
+
+.heroTitle {
+  margin: 0 0 var(--space-4);
+  font-size: 5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.heroDescription {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+/* Intro */
+.intro {
+  padding: var(--space-8) var(--space-5);
+  background: var(--now-cream);
+  text-align: center;
+}
+
+.introHeading {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 2.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.introImage {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  margin: var(--space-6) auto;
+  border-radius: var(--space-2);
+}
+
+/* Features */
+.features {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+/* 필터·앱 프로모·구매·discover 섹션(07~10)은 모두 같은 어두운 풀블리드 사진("Section BG Photo")을 배경으로 쓴다 */
+.darkSection {
+  background-image: linear-gradient(rgba(10, 8, 5, 0.35), rgba(10, 8, 5, 0.55)), url('../../../assets/cameras/now/dark-section-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+/* Filters */
+.filters {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+}
+
+.filters .sectionHeading {
+  color: #fff;
+}
+
+.filterPreview {
+  max-width: 400px;
+  margin: var(--space-6) auto;
+  border-radius: var(--space-2);
+}
+
+.filterList {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filterDisc {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--now-ink);
+}
+
+.filterDiscFeatured {
+  width: 60px;
+  height: 60px;
+}
+
+.filterLabel {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* App promo */
+.appPromo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  align-items: center;
+  gap: var(--space-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.appCopy .eyebrow,
+.appCopy .sectionHeading {
+  text-align: left;
+  margin-left: 0;
+}
+
+.appPromo .sectionHeading {
+  color: #fff;
+}
+
+.appDescription {
+  margin: var(--space-4) 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+}
+
+.appPhone {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 9 / 19;
+  object-fit: cover;
+  border-radius: var(--space-4);
+}
+
+/* Purchase CTA */
+.purchase {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+}
+
+.purchaseHeading {
+  margin: 0 auto var(--space-2);
+  max-width: 600px;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.purchaseGallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  max-width: 900px;
+  margin: var(--space-6) auto;
+}
+
+.purchaseGallery img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--space-2);
+}
+
+.purchaseButton {
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--now-ink);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Discover more */
+.discover {
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+}
+
+.discoverHeading {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 var(--space-4);
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.discoverDescription {
+  max-width: 560px;
+  margin: 0 auto var(--space-7);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+.discoverGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 160px));
+  justify-content: center;
+  gap: var(--space-6) var(--space-4);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma의 3+2 지그재그 배치(위 3개 / 아래 2개, 절반씩 엇갈림)를 그대로 재현한다 */
+.discoverGrid > li:nth-child(1) {
+  grid-column: 1 / span 2;
+}
+.discoverGrid > li:nth-child(2) {
+  grid-column: 3 / span 2;
+}
+.discoverGrid > li:nth-child(3) {
+  grid-column: 5 / span 2;
+}
+.discoverGrid > li:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+.discoverGrid > li:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.discoverCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.discoverCard img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--space-2);
+}
+
+.discoverLabel {
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+@media (max-width: 860px) {
+  .heroTitle {
+    font-size: 3rem;
+  }
+
+  .introHeading {
+    font-size: 2rem;
+  }
+
+  .appPromo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .purchaseGallery {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .discoverGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .discoverGrid > li:nth-child(1),
+  .discoverGrid > li:nth-child(2),
+  .discoverGrid > li:nth-child(3),
+  .discoverGrid > li:nth-child(4),
+  .discoverGrid > li:nth-child(5) {
+    grid-column: 1 / -1;
+  }
 }
