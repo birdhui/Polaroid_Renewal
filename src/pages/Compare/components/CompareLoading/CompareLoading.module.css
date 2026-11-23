@@ -1,5 +1,230 @@
-/* 시안(Frame 165): 높이 1095, 배경은 채팅 섹션과 같은 베이지. --u 는 ComparePage.module.css 참고. */
+/*
+ * 로딩 화면 — Figma 1583:303 (1920×1080 기준, --u 는 ComparePage.module.css 참고)
+ * 장면(data-phase)마다 아래 변수 값이 바뀌고, 요소들이 그 값을 향해 transition 한다.
+ * 숫자(--w1-x 등)는 1920 기준 px 이고 var(--s) 를 곱해 화면에 맞게 줄어든다.
+ * 이동·크기 값은 Figma 프레임 1583:293(한 줄) / 1583:297(가로 크롭) / 1583:287(정사각형)에서 가져왔고,
+ * 시간·곡선은 레퍼런스(refinerypro.framer.ai/sequence)를 측정한 임시값이다.
+ */
 .loading {
-  height: max(calc(1095 * var(--u)), 560px);
-  background: var(--compare-beige);
+  --s: clamp(0.6px, var(--u), 1px);
+  --loading-ease: cubic-bezier(0.22, 1, 0.36, 1); /* 레퍼런스가 쓰는 ease-out */
+  --loading-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* 기본(= intro 이전) 값 */
+  --word-o: 0;
+  --w1-x: -99;
+  --w1-y: 34;
+  --w2-x: 113;
+  --w2-y: -34;
+  --box-w: 0;
+  --box-h: 0;
+  --wide-o: 1;
+  --sq-o: 0;
+
+  position: relative;
+  height: max(calc(1080 * var(--u)), 560px);
+  overflow: hidden;
+  background: #17100a;
+}
+
+/* 한 줄 텍스트가 나타남 — 가운데에서 좌우로 24px 안쪽으로 모이며 떠오른다 */
+.loading[data-phase='intro'] {
+  --word-o: 1;
+  --w1-x: -75;
+  --w2-x: 89;
+}
+
+/* 텍스트가 위/아래로 갈라지고 가로 크롭(248×118)이 열린다 */
+.loading[data-phase='split'] {
+  --word-o: 1;
+  --w1-x: 0;
+  --w1-y: 0;
+  --w2-x: 0;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 118;
+}
+
+/* 정사각형(248×248)으로 확장 */
+.loading[data-phase='square'] {
+  --word-o: 1;
+  --w1-x: 0;
+  --w1-y: 0;
+  --w2-x: 0;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 248;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+/* 텍스트가 사진 오른쪽 위 / 왼쪽 아래 모서리에 정렬된다 */
+.loading[data-phase='slide'],
+.loading[data-phase='rest'] {
+  --word-o: 1;
+  --w1-x: 38;
+  --w1-y: 0;
+  --w2-x: -52;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 248;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+/* 닫히며 한 줄로 모였다가 사라진다 */
+.loading[data-phase='exit'] {
+  --word-o: 0;
+  --w1-x: -75;
+  --w1-y: 34;
+  --w2-x: 89;
+  --w2-y: -34;
+  --box-w: 0;
+  --box-h: 0;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* [위 텍스트] [사진] [아래 텍스트] 세로 묶음 — 사진이 커지면 텍스트가 자동으로 밀려난다 */
+.column {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(10 * var(--s));
+  transform: translate(-50%, -50%);
+}
+
+.word {
+  margin: 0;
+  height: calc(48 * var(--s));
+  font-family: 'Compare Outfit', 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: calc(32 * var(--s));
+  line-height: calc(48 * var(--s));
+  letter-spacing: calc(-0.32 * var(--s));
+  color: #fff;
+  white-space: nowrap;
+  transition: transform 800ms var(--loading-ease);
+  will-change: transform;
+}
+
+/*
+ * 글자 하나씩 나타나고 사라지는 모션 — Framer 'AnimatedTextRotator' 의 기본값(blur 전환)을 따른다.
+ * 나타남: 0.45s easeOut, 글자마다 0.06s 씩 늦게 시작(앞 글자부터) / 사라짐: 0.35s easeIn, 간격은 0.6배(0.036s)
+ * 흐림(blur)은 8px → 0. 값은 아래 변수만 바꾸면 된다.
+ */
+.loading {
+  --char-in: 450ms;
+  --char-out: 350ms;
+  --char-stagger: 60ms;
+  --char-blur: 8px;
+}
+
+.char {
+  display: inline-block;
+  opacity: var(--word-o);
+  filter: blur(calc((1 - var(--word-o)) * var(--char-blur)));
+  transition:
+    opacity var(--char-in) cubic-bezier(0, 0, 0.58, 1) calc(var(--i) * var(--char-stagger)),
+    filter var(--char-in) cubic-bezier(0, 0, 0.58, 1) calc(var(--i) * var(--char-stagger));
+}
+
+.loading[data-phase='exit'] .char {
+  transition:
+    opacity var(--char-out) cubic-bezier(0.42, 0, 1, 1) calc(var(--i) * var(--char-stagger) * 0.6),
+    filter var(--char-out) cubic-bezier(0.42, 0, 1, 1) calc(var(--i) * var(--char-stagger) * 0.6);
+}
+
+.word1 {
+  transform: translate(calc(var(--w1-x) * var(--s)), calc(var(--w1-y) * var(--s)));
+}
+
+.word2 {
+  transform: translate(calc(var(--w2-x) * var(--s)), calc(var(--w2-y) * var(--s)));
+}
+
+.loading[data-phase='slide'] .word {
+  transition-duration: 500ms;
+}
+
+.loading[data-phase='exit'] .word {
+  transition: transform 900ms var(--loading-ease-in-out);
+}
+
+.box {
+  position: relative;
+  width: calc(var(--box-w) * var(--s));
+  height: calc(var(--box-h) * var(--s));
+  border-radius: calc(20 * var(--s));
+  overflow: hidden;
+  transition:
+    width 800ms var(--loading-ease),
+    height 800ms var(--loading-ease);
+}
+
+.loading[data-phase='square'] .box {
+  transition-duration: 800ms, 1000ms;
+}
+
+.loading[data-phase='exit'] .box {
+  transition-duration: 900ms;
+  transition-timing-function: var(--loading-ease-in-out);
+}
+
+/* 사진 레이어는 박스가 커져도 늘어나지 않고 가운데에 고정된 크기로 놓인다 */
+.wide,
+.square {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+.wide {
+  width: calc(248 * var(--s));
+  height: calc(118 * var(--s));
+  object-position: 50% 35%;
+  opacity: var(--wide-o);
+  transition: opacity 700ms var(--loading-ease);
+}
+
+.square {
+  width: calc(248 * var(--s));
+  height: calc(248 * var(--s));
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.08); /* 레퍼런스의 사진 확대(1.08)에서 제자리로 돌아오는 효과 */
+  transition:
+    opacity 600ms var(--loading-ease),
+    transform 900ms var(--loading-ease);
+}
+
+.square[data-active='true'] {
+  opacity: var(--sq-o);
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word,
+  .char,
+  .box,
+  .wide,
+  .square {
+    transition: none;
+  }
 }

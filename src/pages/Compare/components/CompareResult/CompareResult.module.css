@@ -1,6 +1,6 @@
 /* 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고. */
 .result {
-  background: #fff;
+  background: var(--compare-beige); /* 시안: #fff9e8 */
   color: #000;
 }
 
@@ -10,22 +10,74 @@
 
 /* 선택한 조건과 다시 선택하기 — 카드 열과 같은 좌우 여백을 쓴다 */
 
-/* 시안: 카메라 3열(폭 454), 왼쪽 129 부터 오른쪽 끝 1828 까지 */
+/* 시안: 카메라 3열(폭 454), 열 사이 간격 132 — 가운데에 모아 둔다 */
 .inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: calc(132 * var(--u)); /* 카메라 사이 간격 (시안 값) */
   max-width: 1920px;
-  min-height: calc(900 * var(--u));
+  min-height: calc(1080 * var(--u)); /* 1920×1080 한 화면 높이 (카드 열은 위에서부터 시안 위치대로) */
   margin: 0 auto;
-  padding: calc(60 * var(--u)) calc(92 * var(--u)) calc(120 * var(--u)) calc(129 * var(--u));
+  padding: calc(60 * var(--u)) calc(92 * var(--u)) calc(120 * var(--u));
 }
 
+/*
+ * 카드별 크기 값 — Figma "카메라 추천"(1590:548)의 카메라마다 다른 값을 그대로 옮겼다. 숫자는 1920 기준 px.
+ * 기본값은 Go 카드 값이고, 아래 data-product 규칙이 Now · Flip 카드 값으로 덮어쓴다.
+ *   --gap-img / --gap-colors / --gap-specs : 이미지→소개, 소개→색상, 색상→사양표 간격
+ *   --img-y : 이미지가 카드 위쪽에서 내려오는 거리 (시안에서 카메라마다 높이를 조금씩 달리 둔 값)
+ *   --f-name · --f-price · --f-desc : 이름 · 가격 · 소개 글씨 크기
+ *   --f-rNl / --f-rNv : 사양표 N번째 줄의 항목(label) · 내용(value) 글씨 크기
+ * 시안에 없는 모델(Now+ · Mod · i-2)은 기본값(Go)을 쓴다.
+ */
 .product {
+  --gap-img: 40;
+  --gap-colors: 40;
+  --gap-specs: 40;
+  --img-y: 0;
+  --f-name: 24;
+  --f-price: 16;
+  --f-desc: 18;
+  --f-r1l: 16;
+  --f-r1v: 16;
+  --f-r2l: 16;
+  --f-r2v: 16;
+  --f-r3l: 16;
+  --f-r3v: 16;
+  --f-r4l: 16;
+  --f-r4v: 16;
+
   display: flex;
   flex: none;
   flex-direction: column;
   gap: calc(40 * var(--u));
   width: calc(454 * var(--u));
+}
+
+.product[data-product='now'] {
+  --gap-img: 36;
+  --gap-colors: 36;
+  --gap-specs: 36;
+  --img-y: 11;
+  --f-r2l: 18;
+  --f-r2v: 18;
+  --f-r3l: 18;
+}
+
+.product[data-product='flip'] {
+  --gap-img: 38;
+  --gap-colors: 41;
+  --gap-specs: 36;
+  --img-y: 7;
+  --f-desc: 16;
+  --f-r1l: 18;
+  --f-r1v: 18;
+  --f-r2l: 18;
+  --f-r2v: 18;
+  --f-r3l: 18;
+  --f-r3v: 18;
+  --f-r4l: 18;
+  --f-r4v: 18;
 }
 
 .imageSlot {
@@ -43,8 +95,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(216 * var(--u));
-  height: calc(217 * var(--u));
+  width: calc(159 * var(--u));
+  height: calc(159 * var(--u));
   border: 1px dashed var(--compare-line);
   border-radius: calc(15 * var(--u));
   color: #7b8188;
@@ -76,7 +128,7 @@
 
 .name {
   font-family: var(--compare-font-en);
-  font-size: max(calc(40 * var(--u)), 24px);
+  font-size: max(calc(var(--f-name) * var(--u)), 20px);
   font-weight: 600;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -84,7 +136,7 @@
 
 .price {
   font-family: var(--compare-font-ko);
-  font-size: max(calc(20 * var(--u)), 14px);
+  font-size: max(calc(var(--f-price) * var(--u)), 13px);
   font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -99,7 +151,7 @@
 
 .description {
   font-family: var(--compare-font-ko);
-  font-size: max(calc(20 * var(--u)), 14px);
+  font-size: max(calc(var(--f-desc) * var(--u)), 13px);
   font-weight: 500;
   letter-spacing: -0.02em;
   word-break: keep-all;
@@ -192,8 +244,8 @@
 
 .compare {
   padding: calc(12 * var(--u)) calc(28 * var(--u));
-  border-radius: calc(15 * var(--u));
-  background: var(--compare-btn-next);
+  border-radius: 0; /* 시안: 각진 모서리 */
+  background: #151515; /* 시안: Figma 1590:548 "제품 보러가기" */
   color: #fff;
   font-family: var(--compare-font-ko);
   font-size: max(calc(20 * var(--u)), 14px);
@@ -204,8 +256,7 @@
 }
 
 .compareDisabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  cursor: not-allowed; /* 상세페이지 연결 전 — 모양은 시안 그대로 두고 커서와 aria-disabled 로만 알린다 */
 }
 
 .compare:focus-visible {
@@ -221,6 +272,74 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* 데스크톱: 카드별 시안 간격 · 사양표 글씨 · 버튼 크기 (모바일은 아래 규칙을 그대로 쓴다) */
+@media (min-width: 1101px) {
+  .product {
+    gap: 0;
+  }
+
+  .imageSlot {
+    align-items: flex-start;
+    height: auto;
+    padding-top: calc(var(--img-y) * var(--u));
+  }
+
+  .summary {
+    margin-top: calc(var(--gap-img) * var(--u));
+  }
+
+  .colors {
+    margin-top: calc(var(--gap-colors) * var(--u));
+  }
+
+  .details {
+    margin-top: calc(var(--gap-specs) * var(--u));
+  }
+
+  .spec:nth-child(1) {
+    --fl: var(--f-r1l);
+    --fv: var(--f-r1v);
+  }
+
+  .spec:nth-child(2) {
+    --fl: var(--f-r2l);
+    --fv: var(--f-r2v);
+  }
+
+  .spec:nth-child(3) {
+    --fl: var(--f-r3l);
+    --fv: var(--f-r3v);
+  }
+
+  .spec:nth-child(4) {
+    --fl: var(--f-r4l);
+    --fv: var(--f-r4v);
+  }
+
+  .spec dt {
+    font-size: max(calc(var(--fl) * var(--u)), 13px);
+  }
+
+  .spec dd {
+    font-size: max(calc(var(--fv) * var(--u)), 13px);
+  }
+
+  .spec .reason {
+    line-height: 1.3;
+  }
+
+  .compare {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: max(calc(137 * var(--u)), 112px);
+    height: max(calc(41 * var(--u)), 36px);
+    padding: 0;
+    font-size: max(calc(14 * var(--u)), 12px);
+    letter-spacing: max(calc(-1 * var(--u)), -1px);
+  }
 }
 
 @media (max-width: 1100px) {
@@ -305,7 +424,6 @@
 
   .compare {
     padding: 12px 28px;
-    border-radius: 15px;
     font-size: 18px;
   }
 }

@@ -10,7 +10,7 @@ function ProductCard({ rank, product }) {
   const currentImage = selectedColor?.image ?? product.image;
 
   return (
-    <article className={styles.product} aria-label={`${rank}순위 ${product.name}`}>
+    <article className={styles.product} data-product={product.id} aria-label={`${rank}순위 ${product.name}`}>
       <div className={styles.imageSlot}>
         {currentImage ? (
           <img

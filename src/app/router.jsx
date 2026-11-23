@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: ROUTES.history, element: <HistoryPage /> },
       { path: ROUTES.cameras, element: <CamerasPage /> },
-      { path: ROUTES.compare, element: <ComparePage />, handle: { headerOverlay: true } },
+      { path: ROUTES.compare, element: <ComparePage />, handle: { hideHeader: true } },
       { path: ROUTES.film, element: <FilmPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

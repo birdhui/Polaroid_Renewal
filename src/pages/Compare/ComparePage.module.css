@@ -23,7 +23,15 @@
   src: url('../../assets/compare/fonts/dm-sans-latin-600.woff2') format('woff2');
 }
 
-/* 히어로 제목용. 시안의 영문 글꼴이다. */
+/* 히어로·채팅 안내 제목용. 시안의 영문 글꼴이다. */
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-500.woff2') format('woff2');
+}
+
 @font-face {
   font-family: 'Compare Outfit';
   font-weight: 400;
@@ -41,6 +49,14 @@
 }
 
 /* subset 은 완성형 한글 2,350자를 포함한다. 그 밖의 글자는 아래 fallback 폰트로 표시된다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-light.subset.woff2') format('woff2');
+}
+
 @font-face {
   font-family: 'Compare Pretendard';
   font-weight: 400;
@@ -66,9 +82,10 @@
 }
 
 /*
- * 레이아웃 배율: Figma 시안은 1920px 기준이다.
- * --u 는 "시안의 1px"이 현재 화면에서 몇 px인지를 나타낸다. 1920px 이상에서는 1px(시안 그대로),
- * 그보다 좁으면 비율로 줄어든다. 하위 컴포넌트는 calc(시안값 * var(--u)) 로 시안 수치를 그대로 쓴다.
+ * 레이아웃 배율: Figma 시안은 1920×1080 한 화면 기준이고, 섹션 하나가 한 화면 높이(1080)다.
+ * --u 는 "시안의 1px"이 현재 화면에서 몇 px인지를 나타낸다. 1920×1080 이상에서는 1px(시안 그대로),
+ * 화면 폭이나 높이가 그보다 작으면 둘 중 더 작은 쪽 비율로 줄어서, 섹션 하나가 한 화면에 들어온다.
+ * 하위 컴포넌트는 calc(시안값 * var(--u)) 로 시안 수치를 그대로 쓴다.
  */
 /* 가격(₩ 와 숫자)에만 쓰는 Bold. 필요한 글자만 담은 작은 subset 이다. */
 @font-face {
@@ -94,11 +111,16 @@
   --compare-bubble: #3a3b3c;
   --compare-bubble-text: #fefefe;
   --compare-orange: #f0a137;
-  --compare-orange-soft: rgb(240 161 55 / 0.5);
+  --compare-chip: #f2f2f2;
+  --compare-card: rgb(255 255 255 / 0.8);
+  --compare-card-stroke: rgb(21 21 21 / 0.5);
+  --compare-bar-outline: #f3f3f3;
+  --compare-bar-border: #e1e4ea;
+  --compare-bar-text: #99a0ae;
   --compare-font-en: 'Compare DM Sans', var(--font-sans);
   --compare-font-display: 'Compare Outfit', var(--font-sans);
   --compare-font-ko: 'Compare Pretendard', var(--font-sans);
-  --u: min(calc(100cqw / 1920), 1px);
+  --u: min(calc(100cqw / 1920), calc(100svh / 1080), 1px);
 
   container-type: inline-size;
   background: var(--compare-bg);
