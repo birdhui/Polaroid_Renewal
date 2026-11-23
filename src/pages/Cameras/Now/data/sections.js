@@ -37,6 +37,13 @@ export const intro = {
 
 export const featuresHeading = '모든 순간을 특별하게 남기는 세 가지 방법.';
 
+/**
+ * Figma의 모든 섹션 하단에 공통으로 깔리는 큰 영문 배경 레이블("Three ways to make
+ * every moment count"). 원본은 스크롤에 따라 다음 섹션으로 걸치며 보이는 모션이지만,
+ * 정적 구현에서는 각 섹션 하단에 옅은 투명도의 고정 배경 문구로만 표현한다.
+ */
+export const backgroundLabel = ['Three ways to make', 'every moment count'];
+
 export const features = [
   {
     id: 'two-lens-autofocus',

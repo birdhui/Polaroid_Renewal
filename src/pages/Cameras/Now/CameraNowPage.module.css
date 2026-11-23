@@ -105,10 +105,35 @@
   line-height: 1.4;
 }
 
-/* Intro */
+/*
+ * 04 Feature Showcase ~ 10 Discover More 구간의 그라데이션.
+ * Figma 원본 프레임 색(#fff9e8)에서 시작해서, oryzo.ai 참고(따뜻한 나무 책상 톤
+ * 비네트)처럼 "밝은 황갈색 → 나무색 브라운 → 어두운 브라운" 으로 자연스럽게 이어진다.
+ * 02 Intro·03 Features Heading은 #fff9e8 단색이고, 이 그라데이션의 시작색과
+ * 같은 값이라 경계가 보이지 않는다.
+ */
+.connectedBg {
+  background: linear-gradient(
+    180deg,
+    #fff9e8 0%,
+    #d4af7a 14%,
+    #b3864f 28%,
+    #8a6239 42%,
+    #6b4a2c 55%,
+    #4a3220 68%,
+    #2e2013 82%,
+    #1c140c 100%
+  );
+}
+
+/* 02 Intro · 03 Features Heading — Figma 원본 프레임 색 그대로 단색 */
+.intro,
+.featuresHeading {
+  background: #fff9e8;
+}
+
 .intro {
   padding: var(--space-6) var(--space-5);
-  background: var(--now-cream);
   text-align: center;
 }
 
@@ -121,6 +146,12 @@
   letter-spacing: -0.03em;
 }
 
+/* 03 Features Heading — Figma에서 Intro와 분리된 독립 풀스크린 섹션 */
+.featuresHeading {
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+}
+
 .introImage {
   display: block;
   width: 100%;
@@ -129,11 +160,8 @@
   border-radius: var(--space-2);
 }
 
-/* 필터·앱 프로모·구매·discover 섹션(07~10)은 모두 같은 어두운 풀블리드 사진("Section BG Photo")을 배경으로 쓴다 */
+/* 필터·앱 프로모·구매·discover(07~10)는 배경 없이, .connectedBg 그라데이션 위에서 흰 글씨만 쓴다 */
 .darkSection {
-  background-image: linear-gradient(rgba(10, 8, 5, 0.35), rgba(10, 8, 5, 0.55)), url('../../../assets/cameras/now/dark-section-bg.jpg');
-  background-size: cover;
-  background-position: center;
   color: #fff;
 }
 
@@ -231,18 +259,6 @@
 .purchase {
   padding: var(--space-6) var(--space-5);
   text-align: center;
-}
-
-/* oryzo.ai 참고 — 사진이 아니라 따뜻한 브라운 톤 그라데이션 비네트 (저작권 이슈 없는 CSS 그라데이션) */
-.purchaseBg {
-  background-image: radial-gradient(
-    120% 120% at 28% 18%,
-    #cda772 0%,
-    #8a5a34 38%,
-    #3a2416 72%,
-    #120b07 100%
-  );
-  color: #fff;
 }
 
 .purchaseHeading {

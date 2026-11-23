@@ -1,3 +1,4 @@
+/* 배경은 CameraNowPage.module.css의 .connectedBg(Intro~Discover 공통 그라데이션)가 담당한다 */
 .section {
   position: relative;
   display: flex;
@@ -7,9 +8,6 @@
   min-height: 56.25vw;
   overflow: hidden;
   box-sizing: border-box;
-  background-image: url('../../../../assets/cameras/now/feature-bg.jpg');
-  background-size: cover;
-  background-position: center;
   color: #151515;
 }
 
