@@ -1,7 +1,11 @@
-/* 1. Hero (시안 1920×1080) */
+/*
+ * 1. Hero — 화면 한 장을 꽉 채운다 (1920×1080 화면에서 정확히 1920×1080).
+ * 화면 비율이 16:9 와 달라도 영상은 잘리면서(cover) 빈 곳 없이 채운다.
+ */
 .hero {
   position: relative;
-  aspect-ratio: 1920 / 1080;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
   background: #28251a;
 }
@@ -17,7 +21,8 @@
 .title {
   position: absolute;
   left: calc(81 * var(--px));
-  top: calc(816 * var(--px));
+  /* 시안: 로고 y 816, 'Instant Cameras' 아래 끝 약 984 → 화면 아래에서 96px 위. 화면 높이가 달라도 아래 기준으로 둔다 */
+  bottom: calc(96 * var(--px));
   margin: 0;
   font: inherit;
 }
@@ -43,12 +48,10 @@
 
 @media (max-width: 1023px) {
   .hero {
-    aspect-ratio: auto;
     height: min(80svh, 640px);
   }
 
   .title {
-    top: auto;
     left: 24px;
     bottom: 32px;
   }

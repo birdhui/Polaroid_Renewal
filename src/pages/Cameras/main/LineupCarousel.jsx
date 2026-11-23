@@ -16,6 +16,8 @@ import styles from './LineupCarousel.module.css';
  */
 const SLOT_X = { '-2': -870.8, '-1': 38.6, 0: 948, 1: 1866.4, 2: 2784.8 };
 const AUTOPLAY_MS = 3000;
+/** 무대 축소 비율 — LineupCarousel.module.css 의 .stage --s 와 같은 값 */
+const STAGE_SCALE = 0.8;
 const DRAG_START_PX = 6;
 
 export default function LineupCarousel({ lineup, reducedMotion }) {
@@ -88,7 +90,7 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
   /** 옆 자리까지의 화면 거리(px) */
   const slotDistance = () => {
     const w = stageRef.current?.getBoundingClientRect().width ?? 1920;
-    return ((SLOT_X[1] - SLOT_X[0]) * w) / 1920;
+    return ((SLOT_X[1] - SLOT_X[0]) * STAGE_SCALE * w) / 1920;
   };
 
   const onPointerDown = (e) => {

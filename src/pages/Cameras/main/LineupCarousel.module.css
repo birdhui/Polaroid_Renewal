@@ -21,9 +21,12 @@
 /*
  * 프레임·카메라 무대: 시안(y 446 ~ 1114)을 --k 배로 줄였다.
  * 제목 · 카메라 · 모델 이름 줄이 한 화면(시안 기준 약 870px)에 들어오도록 크기와 위아래 간격을 줄였다.
+ * --s: 무대 전체(가로 간격 · 높이 · 카메라 · 프레임)를 가운데(x 948) 기준으로 한 번 더 줄이는 비율.
+ *      JS(LineupCarousel.jsx 의 STAGE_SCALE)와 같은 값이어야 끌기 거리가 맞는다.
  */
 .stage {
-  --k: 0.72;
+  --s: 0.8;
+  --k: calc(0.72 * var(--s));
   position: relative;
   height: calc(668 * var(--k) * var(--px));
   margin-top: calc(60 * var(--px));
@@ -63,12 +66,13 @@
   left: 0;
   /* 세로 중심 y 738 = 무대 위쪽(446) + 292 (무대와 같은 비율로 줄인다) */
   top: calc(292 * var(--k) * var(--px));
-  width: calc(var(--w) * var(--px));
-  height: calc(var(--h) * var(--px));
+  width: calc(var(--w) * var(--s) * var(--px));
+  height: calc(var(--h) * var(--s) * var(--px));
   padding: 0;
   border: 0;
   background: none;
-  transform: translate3d(calc(var(--cx) * var(--px) + var(--drag, 0px) - 50%), -50%, 0);
+  /* 자리 간격도 가운데(948) 기준으로 --s 배 */
+  transform: translate3d(calc((948 + (var(--cx) - 948) * var(--s)) * var(--px) + var(--drag, 0px) - 50%), -50%, 0);
   will-change: transform;
   backface-visibility: hidden;
   transition:
