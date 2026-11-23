@@ -12,7 +12,7 @@
   color: #151515;
   font-family: var(--cm-font-text);
   font-weight: 600;
-  font-size: max(26px, calc(56 * var(--px)));
+  font-size: max(26px, calc(40 * var(--px)));
   line-height: 1.15;
   letter-spacing: -0.036em;
   text-align: center;
@@ -144,7 +144,7 @@
   color: #000;
   font-family: var(--cm-font-eng);
   font-weight: 600;
-  font-size: max(40px, calc(96 * var(--px)));
+  font-size: max(40px, calc(64 * var(--px)));
   line-height: 1.26;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -170,7 +170,7 @@
   margin-top: calc(30 * var(--px));
   color: #000;
   font-family: var(--cm-font-eng);
-  font-size: max(15px, calc(32 * var(--px)));
+  font-size: max(15px, calc(24 * var(--px)));
   letter-spacing: -0.06em;
   text-decoration: none;
   white-space: nowrap;
@@ -178,7 +178,7 @@
 
 .link img {
   display: block;
-  width: max(32px, calc(57 * var(--px)));
+  width: max(32px, calc(40 * var(--px)));
   height: auto;
   transition: transform 0.25s ease;
 }
