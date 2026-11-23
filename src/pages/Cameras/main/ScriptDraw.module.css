@@ -24,12 +24,3 @@
     opacity 0s linear var(--delay);
 }
 
-/* 다 그린 뒤 겹쳐 띄우는 원본 — 마스크가 못 덮은 붓끝까지 부드럽게 채운다 */
-.finish {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.finishOn {
-  opacity: 1;
-}
