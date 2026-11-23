@@ -13,7 +13,7 @@ import styles from './ScriptDraw.module.css';
  */
 const TOTAL_MS = 1800;
 /** 펜 끝의 부드러운 정도 — 클수록 경계가 또렷하다 */
-const K = 160;
+const K = 520;
 
 const interceptAt = (t) => 1 - K * (1 - t);
 
