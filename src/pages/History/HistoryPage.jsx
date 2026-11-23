@@ -1,37 +1,44 @@
 import { useLayoutEffect, useRef } from 'react';
 import styles from './HistoryPage.module.css';
 import { initHistoryStory } from './historyStory.js';
-import { asset3, asset4, asset5, asset6, asset7, asset8, asset9 } from './storyAssets.js';
+import { asset7, asset8, asset9, asset29, asset30, asset31, asset32, asset33 } from './storyAssets.js';
 
 export default function HistoryPage() {
  const root = useRef(null);
  useLayoutEffect(() => initHistoryStory(root.current), []);
  return <section ref={root} className={styles.page} aria-label="Polaroid History">
+{/* 폰트 파일 서버에 미리 연결해 웹폰트 표시를 앞당긴다 (React 19 가 <head> 로 올린다) */}
+<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,500&amp;display=swap" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
 <section className="pin" id="story">
 <div className="stage" id="stage">
-<div className="glow"></div>
+{/* 1~5번 장면(인트로·제목·필름·문구·섬광) 공통 배경: 왼쪽 아래 따뜻한 빛이 스크롤할수록 진해진다 */}
+<div className="glow" aria-hidden="true"><i className="warm" id="warm"></i></div>
 <div className="scene" id="sHero">
 <div className="frame" id="heroFrame">
-<div className="ph" data-x="182" data-y="166" data-w="352" data-h="352" data-f="1.25"><div className="card"><img src={asset3} alt="차창 너머의 꽃을 든 사람" /></div></div>
-<div className="ph" data-kind="camera" data-x="1138" data-y="125" data-w="191" data-h="185" data-f="1.45"><div className="card"><img src={asset4} alt="손에 든 폴라로이드 카메라" /></div></div>
-<div className="ph" data-x="1355" data-y="382" data-w="391" data-h="522" data-f="1.05"><div className="card"><img src={asset5} alt="함께한 저녁 식사" /></div></div>
-<div className="ph" data-x="220" data-y="682" data-w="347" data-h="255" data-f="1.3"><div className="card"><img src={asset6} alt="창밖으로 바라본 노을" /></div></div>
+{/* 폴라로이드 사진 4장: Figma 1705:3464 의 image 101(왼쪽 위) · 108(오른쪽 위) · 107(오른쪽) · 133(왼쪽 아래)
+    원본 이미지의 투명 여백을 뺀 실제 사진 영역 좌표 (1920×1080 기준) */}
+<div className="ph" data-x="195.2" data-y="232.3" data-w="269.6" data-h="328.5"><div className="card"><img src={asset29} alt="책장 앞에서 서로 손을 맞잡은 두 사람의 폴라로이드 사진" width="863" height="1053" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="1106.7" data-y="151.8" data-w="158.6" data-h="190.1"><div className="card"><img src={asset30} alt="카페 창가에서 카메라를 들고 사진을 찍는 사람의 폴라로이드 사진" width="885" height="1063" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="1395.5" data-y="397.7" data-w="351.1" data-h="429.5"><div className="card"><img src={asset31} alt="카페 테라스에 마주 앉아 웃는 두 사람의 폴라로이드 사진" width="867" height="1060" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="417.7" data-y="661.9" data-w="217.5" data-h="271.8"><div className="card"><img src={asset32} alt="강가 다리 위에서 마주 보는 두 사람의 폴라로이드 사진" width="897" height="1121" fetchPriority="high" decoding="async" /></div></div>
 </div>
-<div className="hero-copy" id="heroCopy">
-<div className="yblock" id="yblock"><h1 className="odo" id="odo" aria-label="1937년부터 2026년까지"></h1>
-<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해"}<br />{"사진 너머의 추억을 만들어왔습니다."}</p></div>
+<div className="hero-copy">
+{/* 인트로: Figma 1705:3492 — 흐릿한 상태에서 초점이 맞춰지고, 스크롤하면 다시 흐려진다 */}
+<p className="hero-mark" id="heroMark" lang="en"><span className="mark-since">{"Since"}</span><span className="mark-year">{"1937"}</span></p>
+{/* 이어지는 화면: Figma 1705:3464 — 제목 + 소개 문구, 주변으로 폴라로이드 사진 4장 */}
+<div className="yblock" id="yblock"><h1 className="hero-title" id="heroTitle" lang="en">{"The Act of Creating Memories"}</h1>
+<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지, "}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
 </div>
-<div className="scroll-cue" id="cue">{"SCROLL"}</div>
+<div className="scroll-cue" id="cue" aria-hidden="true">{"SCROLL"}</div>
 </div>
 <div className="scene film" id="sFilm">
-<div className="glow"></div>
 <div className="frame">
-<div className="still"><img src={asset7} alt="폴라로이드 카메라로 사진을 찍는 사람" /><i className="dim"></i></div>
+<div className="still"><img src={asset7} alt="폴라로이드 카메라로 사진을 찍는 사람" decoding="async" /><i className="dim"></i></div>
 </div>
-<div className="film-titles">
+<div className="film-titles" lang="en">
 <p className="big l"><span className="ln"><span className="w">{"A"}</span>{" "}
 <span className="w">{"day"}</span>{" "}
 <span className="w">{"we"}</span>{" "}
@@ -45,27 +52,32 @@ export default function HistoryPage() {
 </div>
 </div>
 <div className="pre" id="pre"><p>{"지나간 순간을, 손에 남는 한 장으로"}</p></div>
-<div className="flash" id="flash"><img src={asset8} width="1604" height="1604" alt="" /></div>
+<div className="flash" id="flash" aria-hidden="true"><img src={asset8} width="1604" height="1604" alt="" fetchPriority="low" decoding="async" /></div>
 <div className="pop" id="pop"></div>
 <div className="ivory" id="ivory"></div>
-<div className="intro" id="intro"><p className="quote">{"Why can’t I see the picture"}<br />{"right now?"}</p></div>
+<div className="intro" id="intro"><p className="quote" lang="en">{"Why can’t I see the picture right now?"}</p></div>
 <div className="hist" id="hist" data-year="1937">
 <div className="dial" id="dial" role="slider" tabIndex="0" aria-label="연도 다이얼"><div className="ticks" id="ticks"></div><div className="yr" id="yr"></div></div>
+{/* Figma 1705:3122 — 왼쪽: The Polaroid Story · 구분선 · 연도 / 오른쪽: 제목 · 본문 · 사진 */}
 <div className="row" id="row">
 <div className="txt">
+<p className="eyebrow" lang="en">{"The Polaroid Story"}</p>
+<div className="rule" id="rule"><img id="ruleAsset" src={asset33} alt="" width="563" decoding="async" /></div>
 <div className="stack" id="titles"></div>
-<div className="rule" id="rule"><img id="ruleAsset" alt="" width="532" height="1" /></div>
-<div className="stack" id="bodies"></div>
 </div>
+<div className="side">
+<div className="stack" id="bodies"></div>
 <div className="pics stack" id="pics"></div>
+</div>
 </div>
 </div>
 <div className="scene quote-sec" id="sQuote">
 <i className="q-grad" id="qGrad"></i>
 <div className="frame">
-<p className="marq" id="marq">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
-<div className="land" id="land"><img src={asset9} alt="SX-70 카메라와 사진을 들어 보이는 에드윈 랜드" /></div>
-<p className="q-en" id="qEn">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
+{/* 흐르는 대형 문구는 아래 인용문(q-en)과 같은 내용이라 스크린 리더에서는 한 번만 읽히게 숨긴다 */}
+<p className="marq" id="marq" lang="en" aria-hidden="true">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
+<div className="land" id="land"><img src={asset9} alt="SX-70 카메라와 사진을 들어 보이는 에드윈 랜드" fetchPriority="low" decoding="async" /></div>
+<p className="q-en" id="qEn" lang="en">{"“Don’t undertake a project unless it’s manifestly important, and nearly impossible.”"}</p>
 <p className="q-kr" id="qKr">{"“정말 중요한 일이라면, 불가능해 보여도 도전하라.”"}<br />{"— Edwin Land · 폴라로이드 창립자"}</p>
 </div>
 </div>

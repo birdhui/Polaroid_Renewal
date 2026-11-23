@@ -1,31 +1,26 @@
-import asset0 from '@/assets/history/story/story-177a75b74589.svg';
-import asset1 from '@/assets/history/story/story-a5730efc09e7.svg';
-import asset2 from '@/assets/history/story/story-2e80470a19b8.svg';
-import asset3 from '@/assets/history/story/story-8c966e9a6c42.webp';
-import asset4 from '@/assets/history/story/story-bd62172642f6.webp';
-import asset5 from '@/assets/history/story/story-c358931b2fa9.webp';
-import asset6 from '@/assets/history/story/story-5cc48060760e.webp';
+/**
+ * History 스토리에서 실제로 쓰는 이미지만 import 한다.
+ * import 한 파일은 모두 빌드 결과(dist)에 포함되므로, 쓰지 않는 이미지는 여기에 두지 않는다.
+ * 헤더 로고(story-177a75b74589.svg)는 HistoryPage.module.css 에서 url()로 직접 참조한다.
+ */
+// 제목 화면 폴라로이드 사진 4장 (Figma 1705:3464 — image 101 · 108 · 107 · 133)
+import asset29 from '@/assets/history/story/story-title-polaroid-101.jpg';
+import asset30 from '@/assets/history/story/story-title-polaroid-108.jpg';
+import asset31 from '@/assets/history/story/story-title-polaroid-107.jpg';
+import asset32 from '@/assets/history/story/story-title-polaroid-133.jpg';
+// Film 장면 컷 · 섬광 · 인용(에드윈 랜드)
 import asset7 from '@/assets/history/story/story-2512f4475ca0.webp';
 import asset8 from '@/assets/history/story/story-ef085c62181d.svg';
 import asset9 from '@/assets/history/story/story-92ea69d22d38.webp';
-import asset10 from '@/assets/history/story/story-dcdcc7119adc.webp';
-import asset11 from '@/assets/history/story/story-a8f9df4f2c35.webp';
+// 연도 챕터 이미지 (1937 · 1943 · 1948 · 1981 · 2008 · 2017 · 2026)
 import asset12 from '@/assets/history/story/story-6be59fa3d3ec.webp';
-import asset13 from '@/assets/history/story/story-7f777917fd53.webp';
-import asset14 from '@/assets/history/story/story-2e3406a9b9bb.webp';
-import asset15 from '@/assets/history/story/story-80f0395e8d6d.webp';
-import asset16 from '@/assets/history/story/story-18807f576403.webp';
-import asset17 from '@/assets/history/story/story-29214c6f55b8.webp';
-import asset18 from '@/assets/history/story/story-32a8c99089f2.webp';
-import asset19 from '@/assets/history/story/story-3dc25c7f25d1.svg';
-import asset21 from '@/assets/history/story/story-1943-figma.webp';
-import asset22 from '@/assets/history/story/story-2026-figma.webp';
 import asset23 from '@/assets/history/story/story-1943-figma-full.webp';
 import asset24 from '@/assets/history/story/story-1948-figma-full.webp';
 import asset25 from '@/assets/history/story/story-1981-figma-full.webp';
 import asset26 from '@/assets/history/story/story-2008-figma-full.webp';
 import asset27 from '@/assets/history/story/story-2017-figma-full.webp';
 import asset28 from '@/assets/history/story/story-2026-figma-full.webp';
-import asset20 from '@/assets/history/story/story-d80f25d19259.svg';
-export const storyAssets = { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20, asset21, asset22, asset23, asset24, asset25, asset26, asset27, asset28 };
-export { asset0, asset1, asset2, asset3, asset4, asset5, asset6, asset7, asset8, asset9, asset10, asset11, asset12, asset13, asset14, asset15, asset16, asset17, asset18, asset19, asset20, asset21, asset22, asset23, asset24, asset25, asset26, asset27, asset28 };
+// 연도 구분선 (Figma 1705:3165 — Line 15, 563px)
+import asset33 from '@/assets/history/story/story-year-rule.svg';
+
+export { asset7, asset8, asset9, asset12, asset23, asset24, asset25, asset26, asset27, asset28, asset29, asset30, asset31, asset32, asset33 };

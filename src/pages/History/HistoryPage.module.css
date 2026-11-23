@@ -12,28 +12,37 @@
 .page :global(.pin){position:relative}
 .page :global(.stage){position:sticky;top:0;height:100vh;overflow:hidden}
 .page :global(.glow){position:absolute;inset:0;background:var(--dark)}
+/* 1~5번 장면 공통 배경(oryzo.ai 참고): 왼쪽 아래의 따뜻한 빛이 스크롤할수록 진해지며 번진다. 세로 화면에서도 빛이 보이도록 왼쪽 아래 기준 */
+.page :global(.warm){position:absolute;inset:0;background:url('../../assets/history/story/story-warm-bg.webp') left bottom/cover no-repeat;opacity:0;transform-origin:left bottom;will-change:opacity,transform}
 .page :global(.frame){position:absolute;left:50%;top:50%;width:calc(1920 * var(--u));height:calc(1080 * var(--u));transform:translate(-50%,-50%)}
-.page :global(.scroll-cue){opacity:0;position:absolute;left:0;right:0;bottom:calc(46 * var(--u));text-align:center;font:400 12px/1 var(--en);letter-spacing:2.88px;color:#fff}
+/* Figma 1705:3496 — SCROLL: Outfit 13px, 자간 3.12px, 하단 30px */
+.page :global(.scroll-cue){opacity:0;position:absolute;left:0;right:0;bottom:calc(30 * var(--u));text-align:center;font:400 13px/16px var(--en);letter-spacing:3.12px;color:#fff}
 .page :global(.ph){position:absolute;will-change:transform,opacity}
 .page :global(.card){position:relative;width:100%;height:100%;overflow:hidden;opacity:0;will-change:transform,opacity}
-.page :global(.card img){width:100%;height:100%;object-fit:cover;transform:translate3d(0,var(--iy,0),0) scale(1.18);will-change:transform}
-.page :global(.hero-copy){position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cream);will-change:filter,opacity;z-index:2}
-.page :global(.hero-copy .yblock){display:flex;flex-direction:column;align-items:center;gap:calc(24 * var(--u));color:#fff}
-.page :global(.odo){display:flex;font:600 max(90px,calc(220 * var(--u)))/1 var(--en);letter-spacing:calc(-3 * var(--u));color:#fff;margin:0;font-variant-numeric:tabular-nums}
-.page :global(.odo .dg){height:1em;overflow:hidden}
-.page :global(.odo .col){display:flex;flex-direction:column}
-.page :global(.odo .col span){height:1em}
-.page :global(.hero-copy .sub){text-align:center;font:300 max(13px,calc(20 * var(--u)))/1.55 var(--kr);letter-spacing:-.8px;margin:0;opacity:0;color:#fff;white-space:nowrap}
-.page :global(.scroll-cue){line-height:16px}
-.page :global(.film .big){position:absolute;z-index:2;margin:0;font:600 calc(96 * var(--u))/1.2 var(--en);letter-spacing:-1px;color:rgba(255,255,255,.4);white-space:nowrap;will-change:transform,opacity}
+/* 폴라로이드는 흰 테두리까지 한 장의 이미지이므로 확대·안쪽 이동 없이 그대로 보여 준다 */
+.page :global(.card img){display:block;width:100%;height:100%;object-fit:cover}
+/* 인트로(Since 1937)와 제목 블록을 화면 정중앙 같은 자리에 겹쳐 두고, 스크롤에 따라 차례로 보여 준다 */
+.page :global(.hero-copy){position:absolute;inset:0;display:grid;place-items:center;color:#fff;z-index:2}
+.page :global(.hero-copy>*){grid-area:1/1}
+/* Figma 1705:3492 — "Since"(Outfit ExtraLight 30px)는 연도 왼쪽 끝에 맞춰 위에 두고, 연도는 Outfit Bold 145px */
+.page :global(.hero-mark){display:flex;flex-direction:column;align-items:flex-start;margin:0;opacity:0;will-change:filter,opacity,transform}
+.page :global(.mark-since){font:200 max(16px,calc(30 * var(--u)))/1.26 var(--en);margin-bottom:calc(-13 * var(--u))}
+.page :global(.mark-year){font:700 max(56px,calc(145 * var(--u)))/1 var(--en);letter-spacing:-1px}
+/* Figma 1705:3470 — 제목과 소개 문구 간격 31px */
+.page :global(.hero-copy .yblock){display:flex;flex-direction:column;align-items:center;gap:calc(31 * var(--u));will-change:filter,opacity,transform}
+/* Figma 1705:3471 — Outfit SemiBold 48px, 행간 1 */
+.page :global(.hero-title){margin:0;text-align:center;font:600 max(24px,calc(50 * var(--u)))/1 var(--en);opacity:0}
+/* Figma 1705:3472 — Pretendard Light 16px, 행간 1.55, 자간 -0.8px */
+.page :global(.hero-copy .sub){text-align:center;font:300 max(13px,calc(16 * var(--u)))/1.55 var(--kr);letter-spacing:-.8px;margin:0;opacity:0;color:#fff;white-space:nowrap}
+/* Figma 1705:3481 / 3482 — 왼쪽 문장 Outfit Medium 96px, 오른쪽 문장 Outfit Regular 82px */
+.page :global(.film .big){position:absolute;z-index:2;margin:0;font:500 calc(96 * var(--u))/1.2 var(--en);letter-spacing:-1px;color:rgba(255,255,255,.4);white-space:nowrap;will-change:transform,opacity}
 .page :global(.film-titles){position:absolute;inset:0;pointer-events:none}
-.page :global(.film .l){left:var(--page-gutter);top:calc(50% - 408 * var(--u))}
-.page :global(.film .r){right:var(--page-gutter);top:calc(50% + 179 * var(--u));text-align:right}
-/* Figma 1396:5598 — 715×446, 중심 (50% - 20.5px, 50% - 17px) */
-.page :global(.film .still){position:absolute;left:calc(582 * var(--u));top:calc(300 * var(--u));width:calc(715 * var(--u));height:calc(446 * var(--u));will-change:transform,filter}
+.page :global(.film .l){left:var(--page-gutter);top:calc(50% - 392 * var(--u))}
+.page :global(.film .r){right:var(--page-gutter);top:calc(50% + 195 * var(--u));text-align:right;font-weight:400;font-size:calc(82 * var(--u))}
+/* Figma 1705:3480 — 674×420, 화면 정중앙 */
+.page :global(.film .still){position:absolute;left:calc(623 * var(--u));top:calc(330 * var(--u));width:calc(674 * var(--u));height:calc(420 * var(--u));overflow:hidden;will-change:transform,filter}
 .page :global(.film .ln){display:block}
 .page :global(.film .w){display:inline-block;will-change:opacity,filter,transform}
-.page :global(.film .still){overflow:hidden}
 .page :global(.film .still img){position:absolute;left:.02%;top:0;width:99.96%;height:100.05%;max-width:none}
 .page :global(.film .dim){position:absolute;inset:0;background:#000;pointer-events:none}
 .page :global(.scene){position:absolute;inset:0;visibility:hidden}
@@ -41,15 +50,17 @@
 .page :global(#sFilm){z-index:2}
 .page :global(#sHero),.page :global(#sFilm){will-change:transform}
 .page :global(.pre){position:absolute;inset:0;z-index:5;display:grid;place-items:center;visibility:hidden}
-.page :global(.pre p){position:relative;left:calc(.5 * var(--u));margin:0;text-align:center;color:#fff;font:600 max(18px,calc(55 * var(--u)))/1.2 var(--kr);letter-spacing:calc(-1.1 * var(--u));white-space:nowrap}
+/* Figma 1705:3463 — Pretendard Medium 42px, 행간 1.2, 자간 -0.336px, 화면 정중앙 */
+.page :global(.pre p){margin:0;text-align:center;color:#fff;font:500 max(18px,calc(42 * var(--u)))/1.2 var(--kr);letter-spacing:calc(-.336 * var(--u));white-space:nowrap}
 .page :global(.flash){position:absolute;left:50%;top:50%;width:1604px;height:1604px;margin:-802px 0 0 -802px;z-index:4;pointer-events:none;transform:scale(0);opacity:0;transform-origin:center;will-change:transform,opacity}
 .page :global(.flash img){display:block;max-width:none}
 .page :global(.pop){position:absolute;inset:0;z-index:6;background:#fff;opacity:0;pointer-events:none}
 .page :global(.ivory){position:absolute;inset:0;z-index:5;background:#fff9e8;opacity:0;pointer-events:none}
 .page :global(.intro){position:absolute;inset:0;z-index:6;display:grid;place-items:center;opacity:0;will-change:filter,opacity}
-.page :global(.quote){margin:0;padding:0 24px;text-align:center;color:#151515;font:700 max(30px,calc(75 * var(--u)))/1.3 var(--en);letter-spacing:-1px}
+/* Figma 1705:3454 — 한 줄, Outfit SemiBold 47px, 행간 1.3, 자간 -1px */
+.page :global(.quote){margin:0;padding:0 24px;text-align:center;color:#151515;font:600 max(22px,calc(47 * var(--u)))/1.3 var(--en);letter-spacing:-1px}
 .page :global(.hist){--ink:#151515;position:absolute;inset:0;z-index:7;opacity:0;color:var(--ink);background:#fffaec;overflow:hidden}
-.page :global(.dial){position:absolute;left:calc(50 * var(--u));top:50%;width:calc(120 * var(--u));height:calc(388 * var(--u));min-height:240px;transform:translateY(-50%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5}
+.page :global(.dial){position:absolute;left:var(--page-gutter);top:50%;width:calc(120 * var(--u));height:calc(388 * var(--u));min-height:240px;transform:translateY(-50%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5}
 .page :global(.dial::before){content:"";position:absolute;inset:-24px -12px -24px -30px}
 .page :global(.dial.drag){cursor:grabbing}
 .page :global(.dial:focus-visible){outline:none}
@@ -61,50 +72,51 @@
 .page :global(.yr .dg){height:1.15em;overflow:hidden}
 .page :global(.yr .col){display:flex;flex-direction:column;transition:transform .75s cubic-bezier(.25,.9,.3,1.15)}
 .page :global(.yr .col span){height:1.15em;line-height:1.15em}
-.page :global(.row){position:absolute;display:flex;align-items:center;gap:calc(143 * var(--u))}
-.page :global(.txt){flex:none;width:calc(520 * var(--u));display:flex;flex-direction:column;justify-content:center}
-.page :global(.pics){flex:none}
+/* ---------- 연도 섹션: Figma 1705:3122 ----------
+   왼쪽 칸(563px): The Polaroid Story → 구분선 → 연도 (간격 30px)
+   오른쪽 칸(777px): 제목·본문 → 32px → 사진 777×553. 두 칸 사이 74px, 오른쪽 칸 왼쪽 끝이 화면 가운데에 온다.
+   두 칸의 윗선은 화면 위에서 204px(1920×1080 기준). 제목·본문은 모두 같은 칸(.stack)에 겹쳐 두어,
+   챕터가 바뀌어도 사진 위치가 흔들리지 않는다 (본문이 가장 긴 연도에 맞춰 칸 높이가 정해짐). */
+.page :global(.row){position:absolute;left:calc(50% - 637 * var(--u));top:calc(50% - 336 * var(--u));display:flex;align-items:flex-start;gap:calc(74 * var(--u))}
+.page :global(.txt){flex:none;width:calc(563 * var(--u));display:flex;flex-direction:column}
+.page :global(.side){flex:none;width:calc(777 * var(--u));display:flex;flex-direction:column}
 .page :global(.stack){display:grid}
 .page :global(.stack>*){grid-area:1/1}
 .page :global(.ch){pointer-events:none;opacity:0;will-change:filter,opacity,transform}
 .page :global(.ch.on){pointer-events:auto;opacity:1}
-.page :global(.since){margin:0;font:500 calc(32 * var(--u))/1 var(--en);letter-spacing:-1px;color:var(--ink)}
-.page :global(.year){margin:calc(4 * var(--u)) 0 0;font:800 calc(100 * var(--u))/.89 var(--en);color:var(--ink)}
-.page :global(.year){display:flex;font-variant-numeric:tabular-nums}
-.page :global(.year .dg){display:block;height:.89em;overflow:hidden}
-.page :global(.year .col){display:flex;flex-direction:column;transition:transform .75s cubic-bezier(.25,.9,.3,1.15)}
-.page :global(.year .col span){display:block;height:.89em;line-height:.89em}
-@media (prefers-reduced-motion:reduce){.page :global(.year .col){transition:none}}
-.page :global(.rule){height:0;position:relative;margin:calc(22 * var(--u)) 0 calc(59 * var(--u))}
-.page :global(.rule img){position:absolute;left:0;top:-1px;transform-origin:top left}
-.page :global(.hl){margin:0;font:800 calc(50 * var(--u))/1.3 var(--kr);letter-spacing:-1px;color:rgba(0,0,0,.8);white-space:nowrap}
-.page :global(.bd){white-space:nowrap;margin:calc(36 * var(--u)) 0 0;font:300 calc(16 * var(--u))/1.6 var(--kr);letter-spacing:-.8px;color:#151515}
-.page :global(.pics){width:calc(757 * var(--u));height:calc(589 * var(--u))}
+/* Figma 1705:3164 — Outfit Regular 32px, 행간 0.89, 자간 -0.8px */
+.page :global(.eyebrow){margin:0;font:400 calc(32 * var(--u))/.89 var(--en);letter-spacing:calc(-.8 * var(--u));color:var(--ink)}
+/* Figma 1753:4167 — 연도: Outfit SemiBold 107px, 행간 0.89 */
+.page :global(.year){display:flex;margin:0;font:600 calc(107 * var(--u))/.89 var(--en);color:var(--ink);font-variant-numeric:tabular-nums}
+/* 연도 앞 두 자리 / 뒤 두 자리: 같은 칸에 겹쳐 두고, 바뀔 때 새 숫자가 아래에서 밀고 올라온다 (위아래만 잘라 블러는 옆으로 번지게) */
+.page :global(.year .yg){display:grid;height:.89em;clip-path:inset(0 -.3em)}
+.page :global(.year .yg>span){grid-area:1/1;display:block;line-height:.89em;opacity:0;will-change:transform,opacity,filter}
+/* Figma: 문구 → 구분선 30px, 구분선 → 연도 30px (구분선 0.5px) */
+.page :global(.rule){height:0;position:relative;margin:calc(30 * var(--u)) 0}
+.page :global(.rule img){position:absolute;left:0;top:-.5px;transform-origin:top left}
+/* Figma 1705:3166 — Pretendard Bold 29px, 행간 1.3, 자간 -2px */
+.page :global(.hl){margin:0;font:700 calc(29 * var(--u))/1.3 var(--kr);letter-spacing:calc(-2 * var(--u));color:#151515;white-space:nowrap}
+/* Figma 1705:3167 — 제목과 14px 간격, Pretendard Light 14px, 행간 1.5, 자간 -0.5px */
+.page :global(.bd){white-space:nowrap;margin:calc(14 * var(--u)) 0 0;font:300 calc(14 * var(--u))/1.5 var(--kr);letter-spacing:calc(-.5 * var(--u));color:#151515}
+/* Figma 1705:3168 — 글 아래 32px, 사진 777×553
+   흘러 올라가는 사진은 사진 칸 위쪽 끝에서 가려, 고정된 제목·본문을 덮지 않게 한다 (아래쪽은 화면 끝까지 보임) */
+.page :global(.pics){flex:none;width:100%;height:calc(553 * var(--u));margin-top:calc(32 * var(--u));clip-path:inset(0 -100vw -100vh -100vw)}
 .page :global(.pic){position:relative;opacity:0;overflow:hidden;will-change:filter,opacity,transform}
 .page :global(.pic.on){opacity:1;z-index:2}
-.page :global(.pic img){width:100%;height:100%;object-fit:cover}
-.page :global(#bodies){position:relative;display:block;height:calc(242.8 * var(--u))}
-.page :global(#bodies>.ch){position:absolute;left:0;top:0;width:100%}
-.page :global(.hist[data-year="1937"] #bodies),.page :global(.hist[data-year="2008"] #bodies){height:calc(217.2 * var(--u))}
-.page :global(.hist[data-year="1937"] .txt){min-height:calc(544 * var(--u))}
-.page :global(.hist[data-year="1937"] .pics){height:calc(590 * var(--u))}
-.page :global(.hist[data-year="1937"] .hl),.page :global(.hist[data-year="1937"] .bd){color:#151515}
-.page :global(.hist[data-year="2026"] .bd){letter-spacing:calc(-.128 * var(--u))}
-.page :global(.pic img){position:absolute;inset:0;max-width:none}
-.page :global(.pic[data-year="1937"] img){inset:auto;width:101.8%;height:102.51%;left:-1.01%;top:-1.19%;object-fit:fill}
-.page :global(.ph[data-kind="camera"] img){object-position:50% 40%}
-.page :global(.pic[data-year="1981"]){background:#fff}
-.page :global(.pic[data-year="1981"] img){inset:auto;width:92.25%;height:78.5%;left:4.01%;top:12.24%;object-fit:fill}
-.page :global(#sQuote){z-index:8;background:var(--dark)}
+.page :global(.pic img){position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover}
+.page :global(.pic[data-year="1948"] img){object-position:50% 20%}   /* 시안처럼 인물 머리가 잘리지 않게 위쪽을 더 보여 준다 */
+/* Figma 1705:3116 — 아래는 어둡고 위로 갈수록 살짝 밝아지는 배경 */
+.page :global(#sQuote){z-index:8;background:linear-gradient(to top,#151515 63.472%,#fffaf2 200.05%)}
 .page :global(.q-grad){position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(#fffaec 5.3%,#363534 117%)}
-.page :global(.marq){position:absolute;left:calc(82 * var(--u));top:calc(437 * var(--u));margin:0;white-space:nowrap;font:600 calc(128 * var(--u))/1.6 var(--en);letter-spacing:-1.92px;color:#fff;will-change:transform;z-index:1}
-.page :global(.land){position:absolute;left:calc(322 * var(--u));top:calc(81 * var(--u));width:calc(1515 * var(--u));z-index:2;will-change:transform,opacity}
+.page :global(.marq){position:absolute;left:calc(82 * var(--u));top:calc(437 * var(--u));margin:0;white-space:nowrap;font:600 calc(128 * var(--u))/1.6 var(--en);letter-spacing:-1.92px;color:#fff;will-change:transform;z-index:2}
+.page :global(.land){position:absolute;left:calc(322 * var(--u));top:calc(81 * var(--u));width:calc(1515 * var(--u));z-index:1;will-change:transform,opacity}
 .page :global(.land img){width:100%}
 .page :global(.q-en),.page :global(.q-kr){position:absolute;left:0;right:0;text-align:center;color:#d4d3d2;z-index:3;margin:0}
 .page :global(.q-en){top:calc(682 * var(--u));font:500 max(14px,calc(24 * var(--u)))/1.6 var(--en);letter-spacing:-.36px}
 .page :global(.q-kr){top:calc(738 * var(--u));font:400 max(12px,calc(15 * var(--u)))/1.5 var(--kr);letter-spacing:-.375px;transform:translateX(calc(-8 * var(--u)))}
 .page :global(.closing){z-index:9;display:grid;place-items:center;background:var(--dark)}
-.page :global(.closing p){margin:0;text-align:center;font:400 max(18px,calc(33 * var(--u)))/1.55 var(--kr);letter-spacing:-1px;color:#fff;padding:0 20px}
+/* Figma 1705:3115 — Pretendard Regular 28px, 행간 1.55, 자간 -1px */
+.page :global(.closing p){margin:0;text-align:center;font:400 max(18px,calc(28 * var(--u)))/1.55 var(--kr);letter-spacing:-1px;color:#fff;padding:0 20px}
 .page :global(.closing span){display:block;will-change:filter,opacity}
 @media (max-width:820px){.page{--u:calc(100vw / 820);--page-gutter:18px}
 .page :global(.hero-copy .sub){white-space:normal;padding:0 20px}
@@ -112,19 +124,15 @@
 .page :global(.film .frame),.page :global(.quote-sec .frame){left:0;top:0;width:100%;height:100%;transform:none}
 .page :global(.film .big){font-size:34px}
 .page :global(.film .l){left:var(--page-gutter);top:18vh}
-.page :global(.film .r){right:var(--page-gutter);top:auto;bottom:16vh;font-size:30px}
+.page :global(.film .r){right:var(--page-gutter);top:auto;bottom:16vh;font-size:min(30px,7.4vw)}   /* 좁은 화면에서도 긴 둘째 줄이 화면 안에 들어오게 */
 .page :global(.film .still){left:50%;top:50%;width:84vw;height:52vw;transform:translate(-50%,-50%)}
 .page :global(.row){flex-direction:column;align-items:flex-start;gap:20px}
-.page :global(.pics){width:calc(100vw - 92px);height:calc((100vw - 92px) * .72)}
-.page :global(.txt){width:calc(100vw - 92px);min-width:0}
-.page :global(.hist[data-year] .txt){min-height:0}
-.page :global(.hist[data-year] #bodies){display:grid;height:auto}
-.page :global(#bodies>.ch){position:relative}
-.page :global(.hist[data-year] .pics){height:calc((100vw - 92px) * .778)}
-.page :global(.since){font-size:18px}
+.page :global(.pics){height:calc((100vw - 92px) * 553 / 777)}
+.page :global(.txt),.page :global(.side){width:calc(100vw - 92px);min-width:0}
+.page :global(.eyebrow){font-size:20px}
 .page :global(.year){font-size:56px}
-.page :global(.hl){white-space:normal;font-size:24px}
-.page :global(.bd){margin-top:16px;font-size:13px;white-space:normal}
+.page :global(.hl){white-space:normal;font-size:22px}
+.page :global(.bd){margin-top:10px;font-size:13px;white-space:normal}
 .page :global(.bd br){display:none}
 .page :global(.dial){left:10px;height:240px}
 .page :global(.yr){display:none}
@@ -135,9 +143,9 @@
 }
 @media (prefers-reduced-motion:reduce){}
 
-:global(header):has(+ :global(main) > .page){position:fixed;inset:0 0 auto;height:80px;padding:0 var(--page-gutter,50px);z-index:100;display:flex;align-items:center;justify-content:space-between;background:transparent;border:0;color:#fff}
+:global(header):has(+ :global(main) > .page){position:fixed;inset:0 0 auto;height:71px;padding:0 var(--page-gutter,50px);z-index:100;display:flex;align-items:center;justify-content:space-between;background:transparent;border:0;color:#fff}
 :global(header):has(+ :global(main) > .page) > :global(a:first-child){display:block;width:91px;height:25px;font-size:0;background:currentColor;mask:url('../../assets/history/story/story-177a75b74589.svg') center/contain no-repeat}
-:global(header):has(+ :global(main) > .page) :global(nav){width:361px}
+:global(header):has(+ :global(main) > .page) :global(nav){width:386px}
 :global(header):has(+ :global(main) > .page) :global(nav ul){display:flex;justify-content:space-between;align-items:center;gap:0}
 :global(header):has(+ :global(main) > .page) :global(nav a){position:relative;color:inherit;display:inline-flex;align-items:center;justify-content:center;height:23.5px;padding:0 3px;font:500 14px/1 'DM Sans',var(--font-sans);letter-spacing:-.154px}
 :global(header):has(+ :global(main) > .page) :global(nav li:last-child a){font-family:'Outfit',var(--font-sans);font-weight:400}
@@ -152,16 +160,7 @@
 
 .page{position:relative;background:var(--dark);color:#fff;font-family:var(--kr);overflow-x:clip;isolation:isolate}
 .page :global(img){max-width:none}
-
-
-/* ---------- 연도 섹션: Figma 1396:9917 / 1396:10663 (이미지 오른쪽 절반 풀블리드) ---------- */
-@media (min-width:821px){
-  .page :global(.row){inset:0;display:block}
-  .page :global(.txt){position:absolute;left:calc(50% - 8.854167% - 532 * var(--u));   /* 구분선 끝 ~ 이미지 간격 170px (1920 기준, 화면 너비 비율) */top:50%;transform:translateY(-50%);min-height:0}
-  .page :global(.hist[data-year="1937"] .txt){min-height:0}
-  .page :global(.pics),.page :global(.hist[data-year] .pics){position:absolute;left:50%;right:var(--page-gutter);top:80px;bottom:80px;width:auto;height:auto}   /* 이미지: 헤더(80px) 바로 아래부터 아래 80px까지, 오른쪽 50px — Figma 1396:9928 */
-  .page :global(.pic img),.page :global(.pic[data-year] img){inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
-  .page :global(.pic[data-year="1981"]){background:none}
-  .page :global(.pic[data-year="1937"] img){object-position:71.6% 50%}
-  .page :global(.dial){left:var(--page-gutter)}
-}
+/* 한글 문장이 좁은 화면에서 음절 단위로 끊기지 않도록 어절 단위로 줄바꿈 (데스크톱 nowrap 문구에는 영향 없음) */
+.page{word-break:keep-all;overflow-wrap:break-word}
+/* 화면에는 보이지 않고 스크린 리더만 읽는 텍스트 */
+.page :global(.sr-only){position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
