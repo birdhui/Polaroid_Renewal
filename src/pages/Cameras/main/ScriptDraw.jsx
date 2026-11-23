@@ -4,7 +4,9 @@ import styles from './ScriptDraw.module.css';
 /**
  * 손글씨 모델명 — 화면에 들어오면 펜으로 쓰듯 그려진다 (담당: 정준혁)
  * 원본 이미지(script-*.webp)를 그대로 쓰고, 펜 경로(strokes.paths)를 따라 굵은 선을 그어 나가는 마스크로 드러낸다.
- * 펜 경로는 ./scriptStrokes.js (이미지에서 뽑은 뼈대) 를 쓴다.
+ * 펜 경로는 ./scriptStrokes.js 를 쓴다 — 왼쪽 끝에서 출발해 글자를 차례로 '한 붓 그리기' 순서로 이어 따라간다.
+ * 선 끝은 평평하게(butt) 그어, 조각이 시작될 때 둥근 점이 먼저 툭 튀어나오지 않게 한다.
+ * 다 그린 뒤에는 원본 이미지를 살짝 겹쳐 띄워(0.3초) 마스크가 못 덮은 붓끝까지 자연스럽게 채운다.
  *
  * play: true 가 되는 순간 그리기 시작 / reducedMotion: 동작 줄이기 설정이면 처음부터 다 보인다.
  */
@@ -15,14 +17,14 @@ export default function ScriptDraw({ src, strokes, play, reducedMotion, classNam
   const [done, setDone] = useState(false);
   const { w, h, sw, paths } = strokes;
 
-  // 다 그린 뒤에는 마스크를 걷어 원본 이미지를 그대로 보여준다 (마스크 선이 미처 못 덮은 픽셀까지)
+  // 다 그린 직후 원본 이미지를 겹쳐 띄운다
   useEffect(() => {
     if (!play || reducedMotion) return undefined;
-    const t = setTimeout(() => setDone(true), TOTAL_MS + 150);
+    const t = setTimeout(() => setDone(true), TOTAL_MS);
     return () => clearTimeout(t);
   }, [play, reducedMotion]);
 
-  const showAll = reducedMotion || done;
+  const showAll = reducedMotion;
   const total = paths.reduce((sum, p) => sum + p.len, 0);
   let elapsed = 0;
 
@@ -56,6 +58,7 @@ export default function ScriptDraw({ src, strokes, play, reducedMotion, classNam
         </defs>
       )}
       <image href={src} width={w} height={h} mask={showAll ? undefined : `url(#${maskId})`} />
+      {!showAll && <image className={`${styles.finish} ${done ? styles.finishOn : ''}`} href={src} width={w} height={h} />}
     </svg>
   );
 }

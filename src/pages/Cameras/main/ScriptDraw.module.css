@@ -7,7 +7,8 @@
 .stroke {
   fill: none;
   stroke: #fff;
-  stroke-linecap: round;
+  /* 평평한 끝: 조각이 시작될 때 둥근 점이 먼저 나타나지 않는다 */
+  stroke-linecap: butt;
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
@@ -21,4 +22,14 @@
   transition:
     stroke-dashoffset var(--dur) linear var(--delay),
     opacity 0s linear var(--delay);
+}
+
+/* 다 그린 뒤 겹쳐 띄우는 원본 — 마스크가 못 덮은 붓끝까지 부드럽게 채운다 */
+.finish {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.finishOn {
+  opacity: 1;
 }
