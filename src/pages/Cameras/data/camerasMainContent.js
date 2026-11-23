@@ -39,9 +39,11 @@ export const MAIN_HERO = {
 /**
  * 2. 카메라 라인업 (뷰파인더 프레임 속 가운데 카메라 + 양옆 흐린 카메라)
  * 6개 모델이 차례로 가운데에 온다. 이미지는 아래 모델 섹션의 카메라 이미지를 그대로 쓴다.
- * size: 화면 크기 [w, h] — 시안의 가운데 카메라(Now, 514×583)와 비슷하도록 560×580 안에 비율을 지켜 맞춘 값
+ * size: 화면 크기 [w, h] — 400×415 안에 비율을 지켜 맞춘 값
+ *       (시안 가운데 카메라 514×583 보다 작게: 제목·카메라·모델 이름이 한 화면에 들어오도록)
+ * shadow: 카메라 아래 바닥 그림자. I-2 는 이미지에 그림자가 들어 있어 따로 넣지 않는다.
  */
-const LINEUP_FIT = [560, 580];
+const LINEUP_FIT = [400, 415];
 const fit = ([, , w, h]) => {
   const k = Math.min(LINEUP_FIT[0] / w, LINEUP_FIT[1] / h);
   return [Math.round(w * k), Math.round(h * k)];
@@ -74,7 +76,6 @@ export const MOMENTS = {
  * 4~9. 모델별 섹션
  * side: 글이 놓이는 쪽(left: 왼쪽 정렬 / right: 오른쪽 정렬), edge: 글 기준선(left 면 왼쪽 x, right 면 오른쪽 x), top: 첫 줄 y
  * script: 손글씨 모델명 이미지, camera: 제품 이미지, cameraOnTop: 카메라가 손글씨 위에 놓이는지
- * weight: 본문 글자 굵기 (시안 그대로)
  * to: 사이트 안 상세페이지 / href: 상세페이지가 없으면 polaroid.com 제품 페이지(새 창)
  */
 export const MODELS = [
@@ -84,7 +85,6 @@ export const MODELS = [
     tag: '입문자용',
     title: ['눈앞의 순간을,', '빨간 셔터 한 번으로.'],
     body: ['가까운 얼굴도, 그 너머의 풍경도.', 'Now가 거리에 맞는 렌즈를 골라 초점을 맞춰줘요.'],
-    weight: 300,
     side: 'left',
     edge: 320,
     top: 348,
@@ -98,7 +98,6 @@ export const MODELS = [
     name: 'Now+',
     title: ['카메라는 저기에,', '셔터는 내 손안에.'],
     body: ['Now+를 세워두고 친구들 곁에 서 보세요.', '폴라로이드 앱으로 셔터를 누르면', '찍는 사람까지 한 장에 담겨요.'],
-    weight: 300,
     side: 'right',
     edge: 1534,
     top: 361,
@@ -116,7 +115,6 @@ export const MODELS = [
       'Flip의 소나 자동초점이 피사체와의 거리를 살피고,',
       '촬영 전 빛이 적절한지도 알려줘요.',
     ],
-    weight: 400,
     side: 'left',
     edge: 381,
     top: 364,
@@ -134,7 +132,6 @@ export const MODELS = [
       '다이얼을 돌려 라이트 페인팅 모드를 선택하면,',
       '빛의 움직임도 한 장의 사진이 됩니다.',
     ],
-    weight: 400,
     side: 'right',
     edge: 1585,
     top: 384,
@@ -153,7 +150,6 @@ export const MODELS = [
       '조리개와 셔터 속도를 직접 조절해 보세요.',
       'I-2가 당신의 시선을 한 장의 사진으로 완성해 줍니다.',
     ],
-    weight: 400,
     side: 'left',
     edge: 373,
     top: 379,
@@ -171,7 +167,6 @@ export const MODELS = [
       '작은 Go를 꺼내 셀피 미러로 구도를 맞추면,',
       '손안에 쏙 들어오는 사진으로 남길 수 있어요.',
     ],
-    weight: 400,
     side: 'right',
     edge: 1585,
     top: 349,
@@ -191,6 +186,7 @@ LINEUP.items = MODELS.map((m) => ({
   src: m.camera.src,
   alt: m.camera.alt,
   size: fit(m.camera.box),
+  shadow: m.id !== 'i2',
 }));
 
 /** 10. 마지막 안내 (왼쪽 어두운 면: Compare / 오른쪽 밝은 면: Support) */

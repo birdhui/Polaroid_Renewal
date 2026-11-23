@@ -2,8 +2,8 @@
 .section {
   position: relative;
   overflow: hidden;
-  /* 제목 위 227 / 카메라 이름 줄 아래 348 */
-  padding: calc(227 * var(--px)) 0 calc(348 * var(--px));
+  /* 제목 위 150 / 카메라 이름 줄 아래 200 (시안 227 / 348 에서 줄여 한 화면에 가깝게) */
+  padding: calc(150 * var(--px)) 0 calc(200 * var(--px));
   background: #fff9e8;
 }
 
@@ -18,11 +18,15 @@
   text-align: center;
 }
 
-/* 프레임·카메라 무대: 시안 y 446 ~ 1114 */
+/*
+ * 프레임·카메라 무대: 시안(y 446 ~ 1114)을 --k 배로 줄였다.
+ * 제목 · 카메라 · 모델 이름 줄이 한 화면(시안 기준 약 870px)에 들어오도록 크기와 위아래 간격을 줄였다.
+ */
 .stage {
+  --k: 0.72;
   position: relative;
-  height: calc(668 * var(--px));
-  margin-top: calc(90 * var(--px));
+  height: calc(668 * var(--k) * var(--px));
+  margin-top: calc(60 * var(--px));
   outline: none;
   cursor: grab;
   user-select: none;
@@ -40,12 +44,12 @@
   outline-offset: 8px;
 }
 
-/* 프레임 선 두께(8)만큼 바깥으로 4px 큰 SVG */
+/* 프레임 선 두께(8)만큼 바깥으로 4px 큰 SVG — 가운데(x 948)를 기준으로 줄인다 */
 .frame {
   position: absolute;
-  left: calc(497 * var(--px));
-  top: calc(-4 * var(--px));
-  width: calc(902 * var(--px));
+  left: calc((948 - 451 * var(--k)) * var(--px));
+  top: calc(-4 * var(--k) * var(--px));
+  width: calc(902 * var(--k) * var(--px));
   height: auto;
   pointer-events: none;
 }
@@ -54,8 +58,8 @@
   position: absolute;
   /* --drag: 끄는 동안 손을 따라 움직이는 거리 */
   left: calc(var(--cx) * var(--px) + var(--drag, 0px));
-  /* 세로 중심 y 738 = 무대 위쪽(446) + 292 */
-  top: calc(292 * var(--px));
+  /* 세로 중심 y 738 = 무대 위쪽(446) + 292 (무대와 같은 비율로 줄인다) */
+  top: calc(292 * var(--k) * var(--px));
   width: calc(var(--w) * var(--px));
   height: calc(var(--h) * var(--px));
   padding: 0;
@@ -68,10 +72,25 @@
 }
 
 .camera img {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+/* 바닥 그림자 (I-2 처럼 카메라 아래에 은은하게) */
+.shadow::before {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -5%;
+  height: 12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(21, 21, 21, 0.32), rgba(21, 21, 21, 0.12) 55%, transparent);
+  filter: blur(calc(6 * var(--px)));
+  pointer-events: none;
 }
 
 .center {
@@ -106,7 +125,7 @@
   align-items: center;
   justify-content: center;
   gap: calc(87 * var(--px));
-  margin-top: calc(181 * var(--px));
+  margin-top: calc(80 * var(--px));
   /* 시안에서 이름 줄 묶음의 중심은 화면 중앙보다 26px 오른쪽 */
   transform: translateX(calc(26 * var(--px)));
 }

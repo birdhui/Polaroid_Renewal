@@ -72,7 +72,7 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
           <br />
           {model.title[1]}
         </h2>
-        <p className={styles.body} style={{ fontWeight: model.weight }}>
+        <p className={styles.body}>
           {model.body.map((line, i) => (
             <span key={line}>
               {i > 0 && <br />}

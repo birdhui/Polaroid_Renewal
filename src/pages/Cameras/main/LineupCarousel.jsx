@@ -164,7 +164,12 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
           const isCenter = slot === 0;
           const isSide = slot === -1 || slot === 1;
           const style = { '--cx': slotX(slot), '--w': item.size[0], '--h': item.size[1] };
-          const cls = [styles.camera, isCenter ? styles.center : styles.side, wraps ? styles.wrap : '']
+          const cls = [
+            styles.camera,
+            isCenter ? styles.center : styles.side,
+            item.shadow ? styles.shadow : '',
+            wraps ? styles.wrap : '',
+          ]
             .filter(Boolean)
             .join(' ');
           return (

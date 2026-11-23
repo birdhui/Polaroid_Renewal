@@ -94,10 +94,12 @@
 .body {
   margin: calc(24 * var(--px)) 0 0;
   color: #151515;
+  /* 'Every Moment Has Its Camera' 소개 문구와 같은 규격 */
   font-family: var(--cm-font-text);
-  font-size: max(13px, calc(16 * var(--px)));
-  line-height: 1.2;
-  letter-spacing: -0.125em;
+  font-weight: 300;
+  font-size: max(13px, calc(20 * var(--px)));
+  line-height: 1.19;
+  letter-spacing: -0.05em;
 }
 
 .button {
@@ -165,7 +167,6 @@
   .body {
     margin-top: 16px;
     line-height: 1.5;
-    letter-spacing: -0.04em;
   }
 
   .button {

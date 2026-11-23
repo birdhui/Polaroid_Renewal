@@ -12,7 +12,7 @@ import styles from './CamerasPage.module.css';
  * precedence 를 주지 않는다: 주면 React 가 로드를 기다리고, 실패(오프라인·CDN 차단) 시 오류를 던진다.
  * 로드에 실패해도 공통 기본 글꼴로 표시된다.
  */
-const FONT_OUTFIT = 'https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600&display=swap';
+const FONT_OUTFIT = 'https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;500;600&display=swap';
 const FONT_PRETENDARD =
   'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css';
 
