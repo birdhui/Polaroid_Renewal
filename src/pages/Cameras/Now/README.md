@@ -1,9 +1,10 @@
 # Cameras › Polaroid Now 상세 페이지
 
+- 담당: 임희지
 - 브랜치: `feat/cameras-now` (`main` 기준으로 생성)
 - 경로: `/cameras/now` (`src/app/routes.js` 의 `ROUTES.camerasNow`)
 - 작업 폴더: `src/pages/Cameras/Now/` (컴포넌트 `components/`, 훅 `hooks/`, 데이터 `data/`)
-- 에셋: `src/assets/cameras/`, `public/assets/cameras/`
+- 에셋: `src/assets/cameras/now/`, `public/assets/cameras/now/` (Cameras 공통 에셋 폴더 안의 `now/` 하위만 사용)
 
 ## 처음 시작할 때
 

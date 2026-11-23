@@ -25,6 +25,7 @@
 | 손다은 | `feat/film` | `src/pages/Film/`, `src/assets/film/` |
 | 모진아 | `feat/history` | `src/pages/History/`, `src/assets/history/` |
 | 이나라 | `feat/archive` | `src/pages/Archive/`, `src/assets/archive/` |
+| 임희지 | `feat/cameras-now` | `src/pages/Cameras/Now/`, `src/assets/cameras/now/` |
 
 | 담당자 | 주 담당 범위 | 추가 책임 |
 | --- | --- | --- |

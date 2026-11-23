@@ -21,6 +21,7 @@
 | 04 | `feat/film` | 손다은 | `src/pages/Film/`, `src/assets/film/` |
 | 05 | `feat/history` | 모진아 | `src/pages/History/`, `src/assets/history/` |
 | 06 | `feat/archive` | 이나라 | `src/pages/Archive/`, `src/assets/archive/` |
+| 07 | `feat/cameras-now` | 임희지 | `src/pages/Cameras/Now/`, `src/assets/cameras/now/` |
 
 ### 공통 작업용 브랜치
 
@@ -54,6 +55,7 @@ git merge origin/develop      # 충돌이 나면 직접 해결하고 커밋 (어
 | `feat/film` | Film 페이지의 화면과 데이터 |
 | `feat/history` | History 페이지의 화면과 데이터 |
 | `feat/archive` | Archive 페이지와 사진 편집 기능 |
+| `feat/cameras-now` | Cameras › Polaroid Now 상세 페이지의 화면과 데이터 |
 | `style/design-system` | `docs/styleguide.md`, `src/shared/styles/`, 공통 로고·파비콘 |
 | `chore/project-structure` | `src/app/`, 프로젝트 초기 설정, 공통 라우팅, 개발 문서 |
 

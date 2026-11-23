@@ -40,6 +40,7 @@ Polaroid_Renewal/
 | 손다은 | `feat/film` | `src/pages/Film/` | `public/assets/film/`, `src/assets/film/` |
 | 모진아 | `feat/history` | `src/pages/History/` | `public/assets/history/`, `src/assets/history/` |
 | 이나라 | `feat/archive` | `src/pages/Archive/` | `public/assets/archive/`, `src/assets/archive/` |
+| 임희지 | `feat/cameras-now` | `src/pages/Cameras/Now/` | `public/assets/cameras/now/`, `src/assets/cameras/now/` |
 
 ### 역할과 추가 책임
 
