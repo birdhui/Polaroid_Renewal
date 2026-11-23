@@ -233,6 +233,18 @@
   text-align: center;
 }
 
+/* oryzo.ai 참고 — 사진이 아니라 따뜻한 브라운 톤 그라데이션 비네트 (저작권 이슈 없는 CSS 그라데이션) */
+.purchaseBg {
+  background-image: radial-gradient(
+    120% 120% at 28% 18%,
+    #cda772 0%,
+    #8a5a34 38%,
+    #3a2416 72%,
+    #120b07 100%
+  );
+  color: #fff;
+}
+
 .purchaseHeading {
   margin: 0 auto var(--space-2);
   max-width: 600px;

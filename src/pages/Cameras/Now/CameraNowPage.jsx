@@ -77,7 +77,7 @@ export default function CameraNowPage() {
         </div>
       </section>
 
-      <section className={`${styles.purchase} ${styles.screen} ${styles.darkSection}`}>
+      <section className={`${styles.purchase} ${styles.screen} ${styles.purchaseBg}`}>
         <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
         <p className={styles.wordmark}>{purchaseCta.wordmark}</p>
         <div className={styles.purchaseGallery}>
