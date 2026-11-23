@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import styles from './HistoryPage.module.css';
 import { initHistoryStory } from './historyStory.js';
-import { asset3, asset4, asset5, asset6, asset7, asset8, asset9 } from './storyAssets.js';
+import { asset7, asset8, asset9, asset32, asset33, asset34, asset35 } from './storyAssets.js';
 
 export default function HistoryPage() {
  const root = useRef(null);
@@ -14,16 +14,14 @@ export default function HistoryPage() {
 <div className="stage" id="stage">
 <div className="glow"></div>
 <div className="scene" id="sHero">
+<div className="frame origin" id="origin"><p className="origin-since">{"Since"}</p><h1 className="origin-year">{"1937"}</h1></div>
 <div className="frame" id="heroFrame">
-<div className="ph" data-x="182" data-y="166" data-w="352" data-h="352" data-f="1.25"><div className="card"><img src={asset3} alt="차창 너머의 꽃을 든 사람" /></div></div>
-<div className="ph" data-kind="camera" data-x="1138" data-y="125" data-w="191" data-h="185" data-f="1.45"><div className="card"><img src={asset4} alt="손에 든 폴라로이드 카메라" /></div></div>
-<div className="ph" data-x="1355" data-y="382" data-w="391" data-h="522" data-f="1.05"><div className="card"><img src={asset5} alt="함께한 저녁 식사" /></div></div>
-<div className="ph" data-x="220" data-y="682" data-w="347" data-h="255" data-f="1.3"><div className="card"><img src={asset6} alt="창밖으로 바라본 노을" /></div></div>
+<div className="ph" data-x="174" data-y="232" data-w="272" data-h="335" data-depth="0.6" data-rot="-3" data-start="0.05"><div className="card"><img src={asset32} alt="서점에서 손을 맞잡은 두 사람의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="1102" data-y="154" data-w="161" data-h="194" data-depth="0.25" data-rot="2.5" data-start="0.2"><div className="card"><img src={asset34} alt="카페 거울에 비친 사람의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="1389" data-y="401" data-w="357" data-h="432" data-depth="0.9" data-rot="2" data-start="0.32"><div className="card"><img src={asset35} alt="거리 카페에 마주 앉은 두 사람의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="480" data-y="698" data-w="183" data-h="228" data-depth="0.45" data-rot="-2.5" data-start="0.44"><div className="card"><img src={asset33} alt="다리 위에서 마주 보는 두 사람의 폴라로이드 사진" /></div></div>
 </div>
-<div className="hero-copy" id="heroCopy">
-<div className="yblock" id="yblock"><h1 className="odo" id="odo" aria-label="1937년부터 2026년까지"></h1>
-<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지,"}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해"}<br />{"사진 너머의 추억을 만들어왔습니다."}</p></div>
-</div>
+<div className="moments-copy" id="momentsCopy"><h2>{"폴라로이드가 순간을 간직하는 방식"}</h2><p>{"소중한 사람과 그 순간을 직접 찍고, 기다리고, 손에 쥐는 과정."}<br />{"우리는 디지털 이미지와는 다른 방식으로 실제 경험과 기억을 남겨왔습니다."}</p></div>
 <div className="scroll-cue" id="cue">{"SCROLL"}</div>
 </div>
 <div className="scene film" id="sFilm">
@@ -44,20 +42,16 @@ export default function HistoryPage() {
 <span className="w">{"back."}</span></span></p>
 </div>
 </div>
-<div className="pre" id="pre"><p>{"지나간 순간을, 손에 남는 한 장으로"}</p></div>
+<div className="pre" id="pre"><div className="pre-a" id="preA"><h2>{"작은 바램에서 시작해, 우리의 일상으로"}</h2><p>{"찍은 사진을 바로 보고 싶다는 작은 바램에서 폴라로이드의 이야기가 시작됐습니다."}<br />{"오늘도 폴라로이드는 우리의 일상 속 한순간을 한 장의 사진으로 남깁니다."}</p></div></div>
 <div className="flash" id="flash"><img src={asset8} width="1604" height="1604" alt="" /></div>
 <div className="pop" id="pop"></div>
 <div className="ivory" id="ivory"></div>
-<div className="intro" id="intro"><p className="quote">{"Why can’t I see the picture"}<br />{"right now?"}</p></div>
+<div className="intro" id="intro"><p className="quote" id="quote">{"“Why can’t I see the picture right now?”"}</p></div>
 <div className="hist" id="hist" data-year="1937">
 <div className="dial" id="dial" role="slider" tabIndex="0" aria-label="연도 다이얼"><div className="ticks" id="ticks"></div><div className="yr" id="yr"></div></div>
 <div className="row" id="row">
-<div className="txt">
-<div className="stack" id="titles"></div>
-<div className="rule" id="rule"><img id="ruleAsset" alt="" width="532" height="1" /></div>
-<div className="stack" id="bodies"></div>
-</div>
-<div className="pics stack" id="pics"></div>
+<div className="txt"><div className="stack" id="titles"></div></div>
+<div className="col-r"><div className="track" id="track"></div></div>
 </div>
 </div>
 <div className="scene quote-sec" id="sQuote">
