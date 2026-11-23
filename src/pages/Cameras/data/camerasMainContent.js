@@ -6,7 +6,8 @@
  * - box: [left, top, width, height] — 섹션(또는 무대) 왼쪽 위 기준
  */
 import { ROUTES } from '@/app/routes.js';
-import heroPhoto from '@/assets/cameras/main/hero-photo.webp';
+import heroVideo from '@/assets/cameras/main/hero-video.mp4';
+import heroPoster from '@/assets/cameras/main/hero-poster.webp';
 import logoWhite from '@/assets/cameras/main/polaroid-logo-white.svg';
 import momentRiversideDog from '@/assets/cameras/main/moment-riverside-dog.webp';
 import momentSunlitAlley from '@/assets/cameras/main/moment-sunlit-alley.webp';
@@ -29,9 +30,10 @@ import scriptFindAnswers from '@/assets/cameras/main/script-find-answers.webp';
 
 const POLAROID_US = 'https://www.polaroid.com/en_us';
 
-/** 1. Hero */
+/** 1. Hero — 배경 영상 + 로고 */
 export const MAIN_HERO = {
-  photo: { src: heroPhoto, alt: '폴라로이드 즉석카메라 뷰파인더를 들여다보며 촬영하는 사람' },
+  /** 배경 영상 (소리 없음 · 반복). poster: 영상이 준비되기 전·동작 줄이기 설정일 때 보이는 첫 장면 */
+  video: { src: heroVideo, poster: heroPoster },
   logo: { src: logoWhite, alt: 'Polaroid' },
   title: 'Instant Cameras',
 };

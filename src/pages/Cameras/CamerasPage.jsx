@@ -31,7 +31,7 @@ export default function CamerasPage() {
       <link rel="stylesheet" href={FONT_OUTFIT} />
       <link rel="stylesheet" href={FONT_PRETENDARD} />
 
-      <MainHero hero={MAIN_HERO} />
+      <MainHero hero={MAIN_HERO} reducedMotion={reducedMotion} />
       <LineupCarousel lineup={LINEUP} reducedMotion={reducedMotion} />
       <MomentsIntro moments={MOMENTS} reducedMotion={reducedMotion} />
       {MODELS.map((model) => (

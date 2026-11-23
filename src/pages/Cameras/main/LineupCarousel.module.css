@@ -56,8 +56,11 @@
 
 .camera {
   position: absolute;
-  /* --drag: 끄는 동안 손을 따라 움직이는 거리 */
-  left: calc(var(--cx) * var(--px) + var(--drag, 0px));
+  /*
+   * 위치는 transform 으로만 옮긴다 (left 를 바꾸면 매 프레임 흐림 효과를 다시 그려 끊겨 보인다).
+   * --cx: 자리의 가로 중심(시안 px), --drag: 끄는 동안 손을 따라 움직이는 거리
+   */
+  left: 0;
   /* 세로 중심 y 738 = 무대 위쪽(446) + 292 (무대와 같은 비율로 줄인다) */
   top: calc(292 * var(--k) * var(--px));
   width: calc(var(--w) * var(--px));
@@ -65,9 +68,11 @@
   padding: 0;
   border: 0;
   background: none;
-  transform: translate(-50%, -50%);
+  transform: translate3d(calc(var(--cx) * var(--px) + var(--drag, 0px) - 50%), -50%, 0);
+  will-change: transform;
+  backface-visibility: hidden;
   transition:
-    left 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
     filter 0.7s ease;
 }
 

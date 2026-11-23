@@ -69,12 +69,31 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, paused]);
 
-  /* ---------- 잡고 끌기 (마우스 · 터치 · 펜) ---------- */
-  const setDragOffset = (px) => stageRef.current?.style.setProperty('--drag', `${px}px`);
+  /* ---------- 잡고 끌기 (마우스 · 터치 · 펜) ----------
+   * - 위치는 화면 다시 그리기 직전(requestAnimationFrame)에 한 번만 반영해 끊김 없이 손을 따라온다.
+   * - 한 칸(옆 자리까지의 거리)을 넘어서 끌면 고무줄처럼 저항이 생긴다.
+   * - 놓을 때 충분히 끌었거나, 짧아도 빠르게 튕기면 그 방향으로 넘어간다.
+   */
+  const raf = useRef(0);
+  const flushDrag = () => {
+    raf.current = 0;
+    const d = drag.current;
+    stageRef.current?.style.setProperty('--drag', `${d ? d.offset : 0}px`);
+  };
+  const scheduleDrag = () => {
+    if (!raf.current) raf.current = requestAnimationFrame(flushDrag);
+  };
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  /** 옆 자리까지의 화면 거리(px) */
+  const slotDistance = () => {
+    const w = stageRef.current?.getBoundingClientRect().width ?? 1920;
+    return ((SLOT_X[1] - SLOT_X[0]) * w) / 1920;
+  };
 
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    drag.current = { id: e.pointerId, x: e.clientX, dx: 0, moving: false };
+    drag.current = { id: e.pointerId, x: e.clientX, dx: 0, offset: 0, moving: false, samples: [] };
   };
 
   const onPointerMove = (e) => {
@@ -85,10 +104,19 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
       if (Math.abs(d.dx) < DRAG_START_PX) return;
       // 실제로 끌기 시작했을 때만 포인터를 잡는다 (그냥 누르기는 양옆 카메라 클릭으로 처리)
       d.moving = true;
+      d.x = e.clientX; // 시작 문턱(6px)만큼 튀지 않도록 여기서부터 잰다
+      d.dx = 0;
       stageRef.current?.setPointerCapture?.(e.pointerId);
       setDragging(true);
     }
-    setDragOffset(d.dx);
+    const S = slotDistance();
+    const abs = Math.abs(d.dx);
+    d.offset = Math.sign(d.dx) * (abs <= S ? abs : S + (abs - S) * 0.25);
+    // 최근 100ms 의 움직임으로 놓는 순간의 속도를 잰다
+    const now = performance.now();
+    d.samples.push([now, e.clientX]);
+    while (d.samples.length > 2 && now - d.samples[0][0] > 100) d.samples.shift();
+    scheduleDrag();
   };
 
   const endDrag = (e, cancelled = false) => {
@@ -101,12 +129,18 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
     setTimeout(() => {
       suppressClick.current = false;
     }, 0);
-    const width = stageRef.current?.getBoundingClientRect().width ?? 1000;
-    const threshold = Math.max(50, width * 0.05);
+    const [t0, x0] = d.samples[0] ?? [0, 0];
+    const [t1, x1] = d.samples[d.samples.length - 1] ?? [0, 0];
+    const velocity = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0; // px/ms
+    const S = slotDistance();
+    const far = Math.abs(d.offset) > S * 0.18;
+    const flick = Math.abs(velocity) > 0.45 && Math.sign(velocity) === Math.sign(d.offset);
     // 끈 위치에서 새 자리로 이어서 움직이도록 오프셋 해제와 넘기기를 같은 프레임에 한다
-    setDragOffset(0);
+    cancelAnimationFrame(raf.current);
+    raf.current = 0;
+    stageRef.current?.style.setProperty('--drag', '0px');
     setDragging(false);
-    if (!cancelled && Math.abs(d.dx) > threshold) go(d.dx < 0 ? 1 : -1);
+    if (!cancelled && (far || flick)) go(d.offset < 0 ? 1 : -1);
   };
 
   const onKeyDown = (e) => {
