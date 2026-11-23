@@ -12,15 +12,15 @@ import asset32 from '@/assets/history/story/story-title-polaroid-133.jpg';
 import asset7 from '@/assets/history/story/story-2512f4475ca0.webp';
 import asset8 from '@/assets/history/story/story-ef085c62181d.svg';
 import asset9 from '@/assets/history/story/story-92ea69d22d38.webp';
-// 연도 챕터 이미지 (1937 · 1943 · 1948 · 1981 · 2008 · 2017 · 2026)
+// 연도 챕터 이미지 (1937 · 1943 · 1948 · 1981 · 2008 · 2017 · 2026) — Figma 1705:3122, 1849:5276 · 5431 · 5738 · 5583 · 5896 · 6055
 import asset12 from '@/assets/history/story/story-6be59fa3d3ec.webp';
-import asset23 from '@/assets/history/story/story-1943-figma-full.webp';
-import asset24 from '@/assets/history/story/story-1948-figma-full.webp';
-import asset25 from '@/assets/history/story/story-1981-figma-full.webp';
-import asset26 from '@/assets/history/story/story-2008-figma-full.webp';
-import asset27 from '@/assets/history/story/story-2017-figma-full.webp';
-import asset28 from '@/assets/history/story/story-2026-figma-full.webp';
-// 연도 구분선 (Figma 1705:3165 — Line 15, 563px)
+import asset23 from '@/assets/history/story/story-year-1943.jpg';
+import asset24 from '@/assets/history/story/story-year-1948.jpg';
+import asset25 from '@/assets/history/story/story-year-1981.jpg';
+import asset26 from '@/assets/history/story/story-year-2008.jpg';
+import asset27 from '@/assets/history/story/story-year-2017.jpg';
+import asset28 from '@/assets/history/story/story-year-2026.jpg';
+// 연도 구분선 (Figma 1705:3165 — Line 15, 576px)
 import asset33 from '@/assets/history/story/story-year-rule.svg';
 
 export { asset7, asset8, asset9, asset12, asset23, asset24, asset25, asset26, asset27, asset28, asset29, asset30, asset31, asset32, asset33 };

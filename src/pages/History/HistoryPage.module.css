@@ -28,12 +28,12 @@
 .page :global(.hero-mark){display:flex;flex-direction:column;align-items:flex-start;margin:0;opacity:0;will-change:filter,opacity,transform}
 .page :global(.mark-since){font:200 max(16px,calc(30 * var(--u)))/1.26 var(--en);margin-bottom:calc(-13 * var(--u))}
 .page :global(.mark-year){font:700 max(56px,calc(145 * var(--u)))/1 var(--en);letter-spacing:-1px}
-/* Figma 1705:3470 — 제목과 소개 문구 간격 31px */
-.page :global(.hero-copy .yblock){display:flex;flex-direction:column;align-items:center;gap:calc(31 * var(--u));will-change:filter,opacity,transform}
-/* Figma 1705:3471 — Outfit SemiBold 48px, 행간 1 */
-.page :global(.hero-title){margin:0;text-align:center;font:600 max(24px,calc(50 * var(--u)))/1 var(--en);opacity:0}
-/* Figma 1705:3472 — Pretendard Light 16px, 행간 1.55, 자간 -0.8px */
-.page :global(.hero-copy .sub){text-align:center;font:300 max(13px,calc(16 * var(--u)))/1.55 var(--kr);letter-spacing:-.8px;margin:0;opacity:0;color:#fff;white-space:nowrap}
+/* Figma 1834:4690 — 제목과 소개 문구 간격 29px */
+.page :global(.hero-copy .yblock){display:flex;flex-direction:column;align-items:center;gap:calc(29 * var(--u));will-change:filter,opacity,transform}
+/* Figma 1834:4691 — SemiBold 40px, 행간 1.3, 자간 -0.8px (시안 글꼴 Outfit 에는 한글이 없어 한글 글꼴 Pretendard 로 표시) */
+.page :global(.hero-title){margin:0;text-align:center;font:600 max(24px,calc(40 * var(--u)))/1.3 var(--kr);letter-spacing:-.8px;opacity:0}
+/* Figma 1834:4692 — Pretendard Light 18px, 행간 1.55, 자간 -0.8px */
+.page :global(.hero-copy .sub){text-align:center;font:300 max(13px,calc(18 * var(--u)))/1.55 var(--kr);letter-spacing:-.8px;margin:0;opacity:0;color:#fff;white-space:nowrap}
 /* Figma 1705:3481 / 3482 — 왼쪽 문장 Outfit Medium 96px, 오른쪽 문장 Outfit Regular 82px */
 .page :global(.film .big){position:absolute;z-index:2;margin:0;font:500 calc(96 * var(--u))/1.2 var(--en);letter-spacing:-1px;color:rgba(255,255,255,.4);white-space:nowrap;will-change:transform,opacity}
 .page :global(.film-titles){position:absolute;inset:0;pointer-events:none}
@@ -56,8 +56,8 @@
 .page :global(.flash img){display:block;max-width:none}
 .page :global(.pop){position:absolute;inset:0;z-index:6;background:#fff;opacity:0;pointer-events:none}
 .page :global(.ivory){position:absolute;inset:0;z-index:5;background:#fff9e8;opacity:0;pointer-events:none}
-.page :global(.intro){position:absolute;inset:0;z-index:6;display:grid;place-items:center;opacity:0;will-change:filter,opacity}
-/* Figma 1705:3454 — 한 줄, Outfit SemiBold 47px, 행간 1.3, 자간 -1px */
+.page :global(.intro){position:absolute;inset:0;z-index:6;display:grid;place-items:center;opacity:0;will-change:opacity}
+/* Figma 1834:4671 — 한 줄, Outfit SemiBold 47px, 행간 1.3, 자간 -1px. 왼쪽부터 드러나는 효과는 historyStory.js 의 mask 로 처리 */
 .page :global(.quote){margin:0;padding:0 24px;text-align:center;color:#151515;font:600 max(22px,calc(47 * var(--u)))/1.3 var(--en);letter-spacing:-1px}
 .page :global(.hist){--ink:#151515;position:absolute;inset:0;z-index:7;opacity:0;color:var(--ink);background:#fffaec;overflow:hidden}
 .page :global(.dial){position:absolute;left:var(--page-gutter);top:50%;width:calc(120 * var(--u));height:calc(388 * var(--u));min-height:240px;transform:translateY(-50%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5}
@@ -72,39 +72,43 @@
 .page :global(.yr .dg){height:1.15em;overflow:hidden}
 .page :global(.yr .col){display:flex;flex-direction:column;transition:transform .75s cubic-bezier(.25,.9,.3,1.15)}
 .page :global(.yr .col span){height:1.15em;line-height:1.15em}
-/* ---------- 연도 섹션: Figma 1705:3122 ----------
-   왼쪽 칸(563px): The Polaroid Story → 구분선 → 연도 (간격 30px)
-   오른쪽 칸(777px): 제목·본문 → 32px → 사진 777×553. 두 칸 사이 74px, 오른쪽 칸 왼쪽 끝이 화면 가운데에 온다.
-   두 칸의 윗선은 화면 위에서 204px(1920×1080 기준). 제목·본문은 모두 같은 칸(.stack)에 겹쳐 두어,
-   챕터가 바뀌어도 사진 위치가 흔들리지 않는다 (본문이 가장 긴 연도에 맞춰 칸 높이가 정해짐). */
-.page :global(.row){position:absolute;left:calc(50% - 637 * var(--u));top:calc(50% - 336 * var(--u));display:flex;align-items:flex-start;gap:calc(74 * var(--u))}
-.page :global(.txt){flex:none;width:calc(563 * var(--u));display:flex;flex-direction:column}
-.page :global(.side){flex:none;width:calc(777 * var(--u));display:flex;flex-direction:column}
+/* ---------- 연도 섹션: Figma 1705:3122 · 1849:5276 · 5431 · 5738 · 5583 · 5896 · 6055 (1920×1080) ----------
+   왼쪽 칸(576px): The Polaroid Story → 구분선 → 연도 (간격 30px)
+   오른쪽 칸(777px): 연도별 묶음(.slide) = 제목 → 14px → 본문 2줄 → 32px → 사진 758×402. 두 칸 사이 110px.
+   전체 묶음(1463×538)은 왼쪽 271px, 위쪽 271px 에서 시작한다 (화면 세로 가운데).
+   연도별 묶음은 같은 자리(.stack)에 겹쳐 두고, 스크롤에 따라 묶음째 위로 흘러간다 (historyStory.js flowUpdate). */
+.page :global(.row){position:absolute;left:calc(50% - 689 * var(--u));top:calc(50% - 269 * var(--u));display:flex;align-items:flex-start;gap:calc(110 * var(--u))}
+.page :global(.txt){flex:none;width:calc(576 * var(--u));display:flex;flex-direction:column}
+.page :global(.side){flex:none;width:calc(777 * var(--u))}
+.page :global(.slide){display:flex;flex-direction:column;will-change:transform}
 .page :global(.stack){display:grid}
 .page :global(.stack>*){grid-area:1/1}
 .page :global(.ch){pointer-events:none;opacity:0;will-change:filter,opacity,transform}
 .page :global(.ch.on){pointer-events:auto;opacity:1}
-/* Figma 1705:3164 — Outfit Regular 32px, 행간 0.89, 자간 -0.8px */
-.page :global(.eyebrow){margin:0;font:400 calc(32 * var(--u))/.89 var(--en);letter-spacing:calc(-.8 * var(--u));color:var(--ink)}
-/* Figma 1753:4167 — 연도: Outfit SemiBold 107px, 행간 0.89 */
-.page :global(.year){display:flex;margin:0;font:600 calc(107 * var(--u))/.89 var(--en);color:var(--ink);font-variant-numeric:tabular-nums}
+/* Figma 1705:3164 — Outfit Regular 34px, 행간 0.89, 자간 -0.8px */
+.page :global(.eyebrow){margin:0;font:400 calc(34 * var(--u))/.89 var(--en);letter-spacing:calc(-.8 * var(--u));color:var(--ink)}
+/* Figma 1753:4167 — 연도: Outfit SemiBold 118px, 행간 0.89, 자간 -1px */
+.page :global(.year){display:flex;margin:0;font:600 calc(118 * var(--u))/.89 var(--en);letter-spacing:calc(-1 * var(--u));color:var(--ink);font-variant-numeric:tabular-nums}
 /* 연도 앞 두 자리 / 뒤 두 자리: 같은 칸에 겹쳐 두고, 바뀔 때 새 숫자가 아래에서 밀고 올라온다 (위아래만 잘라 블러는 옆으로 번지게) */
 .page :global(.year .yg){display:grid;height:.89em;clip-path:inset(0 -.3em)}
 .page :global(.year .yg>span){grid-area:1/1;display:block;line-height:.89em;opacity:0;will-change:transform,opacity,filter}
 /* Figma: 문구 → 구분선 30px, 구분선 → 연도 30px (구분선 0.5px) */
 .page :global(.rule){height:0;position:relative;margin:calc(30 * var(--u)) 0}
 .page :global(.rule img){position:absolute;left:0;top:-.5px;transform-origin:top left}
-/* Figma 1705:3166 — Pretendard Bold 29px, 행간 1.3, 자간 -2px */
-.page :global(.hl){margin:0;font:700 calc(29 * var(--u))/1.3 var(--kr);letter-spacing:calc(-2 * var(--u));color:#151515;white-space:nowrap}
-/* Figma 1705:3167 — 제목과 14px 간격, Pretendard Light 14px, 행간 1.5, 자간 -0.5px */
-.page :global(.bd){white-space:nowrap;margin:calc(14 * var(--u)) 0 0;font:300 calc(14 * var(--u))/1.5 var(--kr);letter-spacing:calc(-.5 * var(--u));color:#151515}
-/* Figma 1705:3168 — 글 아래 32px, 사진 777×553
-   흘러 올라가는 사진은 사진 칸 위쪽 끝에서 가려, 고정된 제목·본문을 덮지 않게 한다 (아래쪽은 화면 끝까지 보임) */
-.page :global(.pics){flex:none;width:100%;height:calc(553 * var(--u));margin-top:calc(32 * var(--u));clip-path:inset(0 -100vw -100vh -100vw)}
-.page :global(.pic){position:relative;opacity:0;overflow:hidden;will-change:filter,opacity,transform}
-.page :global(.pic.on){opacity:1;z-index:2}
+/* Figma 1705:3166 — Pretendard Bold 32px, 행간 1.3, 자간 -2px */
+.page :global(.hl){margin:0;font:700 calc(32 * var(--u))/1.3 var(--kr);letter-spacing:calc(-2 * var(--u));color:#151515;white-space:nowrap}
+/* Figma 1705:3167 — 제목과 14px 간격, Pretendard Regular 16px, 행간 1.5, 자간 -0.5px */
+.page :global(.bd){white-space:nowrap;margin:calc(14 * var(--u)) 0 0;font:400 calc(16 * var(--u))/1.5 var(--kr);letter-spacing:calc(-.5 * var(--u));color:#151515}
+/* Figma image 233 — 글 아래 32px, 사진 758×402. 연도별 사진 맞춤 위치는 시안의 이미지 채움 값을 그대로 옮긴 것 */
+.page :global(.pic){position:relative;overflow:hidden;width:calc(758 * var(--u));height:calc(402 * var(--u));margin-top:calc(32 * var(--u))}
 .page :global(.pic img){position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover}
-.page :global(.pic[data-year="1948"] img){object-position:50% 20%}   /* 시안처럼 인물 머리가 잘리지 않게 위쪽을 더 보여 준다 */
+.page :global(.pic[data-year="1937"] img){object-position:50% 61.3%}
+.page :global(.pic[data-year="1948"] img){object-position:50% 18.1%}
+/* 1943 · 2008 · 2017 · 2026: 시안처럼 사진 전체를 칸(758×402)에 맞춰 채운다 (잘라내지 않음) */
+.page :global(.pic[data-year="1943"] img),.page :global(.pic[data-year="2008"] img),.page :global(.pic[data-year="2017"] img),.page :global(.pic[data-year="2026"] img){object-fit:fill}
+/* 1981: 흰 바탕 위에 광고 이미지를 가운데 둔다 (가로 69.88%, 세로 87.26%) */
+.page :global(.pic[data-year="1981"]){background:#fff}
+.page :global(.pic[data-year="1981"] img){left:15%;top:6.38%;width:69.88%;height:87.26%}
 /* Figma 1705:3116 — 아래는 어둡고 위로 갈수록 살짝 밝아지는 배경 */
 .page :global(#sQuote){z-index:8;background:linear-gradient(to top,#151515 63.472%,#fffaf2 200.05%)}
 .page :global(.q-grad){position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(#fffaec 5.3%,#363534 117%)}
@@ -127,8 +131,10 @@
 .page :global(.film .r){right:var(--page-gutter);top:auto;bottom:16vh;font-size:min(30px,7.4vw)}   /* 좁은 화면에서도 긴 둘째 줄이 화면 안에 들어오게 */
 .page :global(.film .still){left:50%;top:50%;width:84vw;height:52vw;transform:translate(-50%,-50%)}
 .page :global(.row){flex-direction:column;align-items:flex-start;gap:20px}
-.page :global(.pics){height:calc((100vw - 92px) * 553 / 777)}
+.page :global(.pic){width:100%;height:calc((100vw - 92px) * 402 / 758)}
 .page :global(.txt),.page :global(.side){width:calc(100vw - 92px);min-width:0}
+/* 모바일은 묶음이 연도 아래에 있으므로, 흘러 올라가는 묶음은 오른쪽 칸 위쪽 끝에서 가려 고정된 연도를 덮지 않게 한다 */
+.page :global(.side){clip-path:inset(0 -100vw -100vh -100vw)}
 .page :global(.eyebrow){font-size:20px}
 .page :global(.year){font-size:56px}
 .page :global(.hl){white-space:normal;font-size:22px}

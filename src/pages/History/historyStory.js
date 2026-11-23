@@ -15,17 +15,17 @@ const CH = [
   { year: 1937, img: asset12, hl: ['편광 기술에서 시작된', '혁신의 역사'],
     bd: '1937년, 에드윈 랜드는 편광 기술을 기반으로 폴라로이드 코퍼레이션을 출범시켰습니다.<br>빛을 연구하던 작은 시작은 훗날 사진의 역사를 바꾸는 혁신으로 이어졌습니다.' },
   { year: 1943, img: asset23, hl: ['작은 바램에서 시작된', '순간을 담는 새로운 방식'],
-    bd: '“찍은 사진을 왜 바로 볼 수 없나요?” 딸의 질문에서 영감을 얻은 에드윈 랜드는<br>촬영한 사진을 그 자리에서 볼 수 있는 새로운 방식을 구상했습니다.<br>그렇게 즉석사진을 향한 폴라로이드의 여정이 시작됐습니다.' },
+    bd: '“찍은 사진을 왜 바로 볼 수 없나요?” 딸의 질문에서 영감을 얻은 에드윈 랜드는 촬영한 사진을<br>그 자리에서 볼 수 있는 새로운 방식을 구상했습니다. 그렇게 즉석사진을 향한 폴라로이드의 여정이 시작됐습니다.' },
   { year: 1948, img: asset24, hl: ['폴라로이드', '즉석사진의 탄생'],
-    bd: '에드윈 랜드와 조지 휠라이트가 세운 연구소는 1937년 폴라로이드의 설립으로 이어졌습니다.<br>1947년 즉석사진 기술을 공개한 데 이어, 이듬해 첫 상용 카메라인 랜드 카메라 모델 95를<br>선보였습니다. 촬영한 자리에서 사진을 확인할 수 있는, 즉석사진의 시대가 열린 것입니다.' },
+    bd: '1947년 즉석사진 기술을 공개한 데 이어, 이듬해 첫 상용 카메라인 랜드 카메라 모델 95를 선보였습니다.<br>촬영한 자리에서 사진을 확인할 수 있는, 즉석사진의 시대가 열린 것입니다.' },
   { year: 1981, img: asset25, hl: ['사람들의 일상으로', '이어진 즉석사진의 혁신'],
-    bd: '1963년 컬러 즉석사진에 이어, 1972년에는 필름을 분리할 필요 없는<br>SX-70이 등장했습니다. 이후 One Stop과 600시리즈는 즉석사진의 경험을 넓혔습니다.<br>폴라로이드는 일상의 추억을 남기는 카메라이자, 예술가들의 표현 도구로 자리 잡았습니다.' },
+    bd: '1972년, 필름을 분리할 필요 없는 SX-70이 등장 후 One Stop과 600시리즈는 즉석사진의 경험을 넓혔습니다.<br>폴라로이드는 일상의 추억을 남기는 카메라이자, 예술가들의 표현 도구로 자리 잡았습니다.' },
   { year: 2008, img: asset26, hl: ['시대의 변화 속', '멈춰 선 폴라로이드'],
-    bd: '디지털 사진의 확산 속에서 폴라로이드는 2001년 파산보호를 신청하고 2008년 즉석필름<br>생산을 중단했습니다. 오랜 시간 이어온 폴라로이드 즉석사진의 미래는 불확실해졌습니다.' },
+    bd: '디지털 사진의 확산 속에서 폴라로이드는 2001년 파산보호를 신청하고 2008년 즉석필름 생산을 중단했습니다.<br>오랜 시간 이어온 폴라로이드 즉석사진의 미래는 불확실해졌습니다.' },
   { year: 2017, img: asset27, hl: ['한 장의 사진을', '포기하지 않은 사람들'],
-    bd: '2008년, 즉석사진을 지키려는 사람들이 ‘임파서블 프로젝트’라는 이름으로 네덜란드의<br>마지막 폴라로이드 필름 공장을 살렸습니다. 끊어진 생산 기반 속에서 필름을 다시 개발한<br>이들의 도전은 2017년 폴라로이드 오리지널스의 출범으로 이어졌습니다.' },
+    bd: '2008년, ‘임파서블 프로젝트’는 네덜란드의 마지막 폴라로이드 필름 공장을 되살리고 필름 재개발에 도전했습니다.<br>그 노력은 2017년 ‘폴라로이드 오리지널스’의 출범으로 이어졌습니다.' },
   { year: 2026, img: asset28, hl: ['다시 쓰는 폴라로이드 역사', '그리고 NOW'],
-    bd: '2020년, 폴라로이드 오리지널스는 다시 폴라로이드라는 이름으로 돌아와<br>Now를 선보였습니다. 사진이 서서히 나타나는 기다림과 손에 남는 한 장의 감각.<br>폴라로이드의 이야기는 오늘 우리가 남기는 순간 속에서 계속됩니다.' }
+    bd: '2020년, 폴라로이드는 본래의 이름으로 돌아와 ‘Now’를 선보였습니다.<br>사진을 기다리는 설렘과 한 장의 추억을 남기는 감성은 오늘날에도 이어지고 있습니다.' }
 ];
 const n = CH.length;
 const header = root.closest('main')?.previousElementSibling;
@@ -48,12 +48,11 @@ const lines = html => html.replace(/\s*<br>\s*/g, ' <br>');
 // 연도는 앞 두 자리(19/20)와 뒤 두 자리로 나눠, 바뀌는 쪽만 아래에서 밀고 올라온다.
 const YEAR_PARTS = [y => String(y).slice(0, 2), y => String(y).slice(2)];
 $('titles').innerHTML = `<div class="ch on title-fixed"><p class="year" id="titleYear" aria-label="${CH[0].year}">${YEAR_PARTS.map(part => `<span class="yg" aria-hidden="true">${[...new Set(CH.map(c => part(c.year)))].map(v => `<span>${v}</span>`).join('')}</span>`).join('')}</p></div>`;
-// 제목은 한 줄로 쓴다 (Figma 1705:3166 — 사진 위 제목 한 줄)
-$('bodies').innerHTML = CH.map((c, i) => `<div class="ch${i ? '' : ' on'}"><h2 class="hl">${c.hl.join(' ')}</h2><p class="bd">${lines(c.bd)}</p></div>`).join('');
+// 연도별 제목·본문·사진을 한 묶음(.slide)으로 만든다. 제목은 한 줄로 쓴다 (Figma 1705:3166 — 사진 위 제목 한 줄)
 // 연도 이미지는 스크롤 중간에 보이므로 첫 화면 이미지보다 늦게 받아도 된다.
-$('pics').innerHTML = CH.map((c, i) => `<div class="pic${i ? '' : ' on'}" data-year="${c.year}"><img src="${c.img}" alt="${c.year}년 아카이브 사진" decoding="async" fetchpriority="low"></div>`).join('');
+$('slides').innerHTML = CH.map((c, i) => `<article class="slide${i ? '' : ' on'}"><h2 class="hl">${c.hl.join(' ')}</h2><p class="bd">${lines(c.bd)}</p><div class="pic" data-year="${c.year}"><img src="${c.img}" alt="${c.year}년 아카이브 사진" decoding="async" fetchpriority="low"></div></article>`).join('');
 const yearParts = [...$('titleYear').querySelectorAll('.yg')].map((el, k) => ({ spans: [...el.children], at: i => YEAR_PARTS[k](CH[i].year) }));
-const bodies = [...$('bodies').children], pics = [...$('pics').children];
+const slides = [...$('slides').children];
 const yrCols = [...$('yr').querySelectorAll('.col')];
 $('dial').setAttribute('aria-valuemin', 0); $('dial').setAttribute('aria-valuemax', n - 1);
 // 첫 챕터는 change()를 거치지 않으므로 현재 값을 처음부터 알려 준다 (role="slider" 필수 속성).
@@ -97,8 +96,8 @@ function layout() {
   const row = $('row');                 // 모바일: 텍스트+이미지 세로 배치를 정수 px로 중앙에 둔다
   if (vw <= 820) { row.style.left = '72px'; row.style.top = Math.round(Math.max(90, (vh - row.offsetHeight) / 2)) + 'px'; }
   else { row.style.left = row.style.top = ''; }   // 데스크톱: CSS(Figma 1705:3122) 위치를 그대로 쓴다
-  // 구분선(Figma Line 15, 563px)을 왼쪽 글 칸 너비에 맞춘다
-  $('ruleAsset').style.transform = `scale(${($('rule').offsetWidth / 563).toFixed(4)})`;
+  // 구분선(Figma Line 15, 576px)을 왼쪽 글 칸 너비에 맞춘다
+  $('ruleAsset').style.transform = `scale(${($('rule').offsetWidth / 576).toFixed(4)})`;
   marqW = $('marq').scrollWidth;
   lastCur = 99; dirty = true;
 }
@@ -277,7 +276,7 @@ function bgUpdate(sy) {
 }
 
 /* ================= 3. 질문 → 플래시 → Why ================= */
-let focusIn = 0, reveal = 0, preIn = 0;
+let reveal = 0, preIn = 0;
 const easeOutBack2 = t => t <= 0 ? 0 : 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 function applyFlash(f) {
   // Figma 1396:4280 → 4283: 선명한 두 줄 문구 뒤로 원형 섬광이 번진다.
@@ -299,7 +298,15 @@ function applyFlash(f) {
   pp.style.color = f > 0 ? '#fff9e8' : '#fff';
   show($('pre'), preIn > 0 && f < 0.81);
   show(fl, !reduced && f > 0 && f < 0.95);
-  focusIn = easeOut(clamp((f - 0.8) / 0.2));
+}
+/* Why 문구 등장 (Figma 1834:4671): 왼쪽부터 오른쪽으로 스르르 드러난다.
+   시안의 그라데이션(#151515 0.8% → 배경색 95.6%)처럼 넓고 부드러운 경계가 왼쪽에서 오른쪽으로 지나간다.
+   스크롤 속도와 상관없이 같은 빠르기로 보이도록 시간으로 진행하고, 위로 되돌아가면 오른쪽부터 다시 지워진다. */
+const SWEEP_AT = 0.85, SWEEP_IN = 1800, SWEEP_OUT = 600, FEATHER = 94.8;
+let sweep = 0, lastSweep = -1;
+function sweepUpdate(f, dt) {
+  const want = f >= SWEEP_AT ? 1 : 0;
+  if (sweep !== want) sweep = clamp(sweep + (want ? dt / SWEEP_IN : -dt / SWEEP_OUT));
 }
 // 선명한 Why 문구를 읽는 시간과 퇴장 시간을 스크롤 진행과 분리한다.
 const WHY_HOLD = 5000, WHY_OUT = 1200, WHY_STEPS = 3;   // 5초가 지나거나 아래로 스크롤 3번 하면 다음으로
@@ -322,7 +329,8 @@ function updateWhy(now, sy) {
     return sy;
   }
   if (why.started === null) why.started = now;
-  if (why.leaveAt === null && (now - why.started >= WHY_HOLD || why.count >= WHY_STEPS)) why.leaveAt = now;
+  // 문구가 끝까지 드러난 뒤에만 다음 화면으로 넘어간다.
+  if (why.leaveAt === null && sweep >= 1 && (now - why.started >= WHY_HOLD || why.count >= WHY_STEPS)) why.leaveAt = now;
   why.progress = why.leaveAt === null ? 0 : clamp((now - why.leaveAt) / WHY_OUT);
   if (why.progress >= 1) {
     why.done = true;
@@ -335,13 +343,15 @@ function updateWhy(now, sy) {
   return start;
 }
 function applyIntro(t) {
-  // Why 문구: 포커스 인 → 2초 읽기 → 1.2초에 걸쳐 역사 화면으로 전환
+  // Why 문구: 왼쪽부터 스르르 등장 → 읽기 → 1.2초에 걸쳐 역사 화면으로 전환
   const qFade = easeInOut(clamp((t - 0.08) / 0.65));
-  const q = $('intro');
-  q.style.filter = focusIn < 1 ? `blur(${(18 * (1 - focusIn) * B).toFixed(2)}px)` : 'none';
-  q.style.transform = `scale(${(1 + 0.05 * (1 - focusIn) * B).toFixed(4)})`;
-  q.style.opacity = Math.min(clamp(focusIn * 1.6), 1 - qFade).toFixed(3);
-  q.style.visibility = (qFade >= 1 || focusIn <= 0) ? 'hidden' : 'visible';
+  const q = $('intro'), qp = q.firstElementChild;
+  // 동작 줄이기 설정에서는 지나가는 경계 없이 제자리에서 서서히 나타나기만 한다.
+  const s = easeInOut(sweep), edge = -FEATHER + s * (100 + FEATHER);
+  qp.style.maskImage = qp.style.webkitMaskImage = reduced || s >= 1 ? 'none'
+    : `linear-gradient(90deg,#000 ${edge.toFixed(2)}%,transparent ${(edge + FEATHER).toFixed(2)}%)`;
+  q.style.opacity = Math.min(reduced ? s : 1, 1 - qFade).toFixed(3);
+  q.style.visibility = (qFade >= 1 || sweep <= 0) ? 'hidden' : 'visible';
   const a = clamp((t - 0.3) / 0.3), h = $('hist');
   h.style.opacity = a;
   h.style.filter = a >= 1 ? 'none' : `blur(${(14 * (1 - a) * B).toFixed(2)}px)`;
@@ -372,10 +382,10 @@ const setYear = y => {
 };
 
 /* ================= 연도 흐름 (레퍼런스: ILKW about — chapters of Light) =================
-   연도·구분선·제목·본문과 다이얼은 제자리에 고정하고, 연도별 사진만 스크롤과 똑같은 속도로 위로 흘러간다.
-   연도는 바뀌는 자리(앞 두 자리 / 뒤 두 자리)만 새 숫자가 아래에서 밀고 올라오며 이전 숫자를 위로 밀어낸다.
-   제목·본문은 같은 시점에 제자리에서 이전 글이 흐려지며 사라진 뒤 새 글이 선명해진다 (겹쳐 보이지 않게). */
-// 두 연도 사이 진행: a → b 로 바뀌는 정도 q (가운데쯤에서 바뀜). 연도 숫자와 글이 같은 값을 쓴다.
+   왼쪽(The Polaroid Story·구분선·연도)과 다이얼은 제자리에 고정하고,
+   오른쪽 연도별 묶음(제목·본문·사진)은 스크롤과 똑같은 속도로 함께 위로 흘러간다.
+   연도는 바뀌는 자리(앞 두 자리 / 뒤 두 자리)만 새 숫자가 아래에서 밀고 올라오며 이전 숫자를 위로 밀어낸다. */
+// 두 연도 사이 진행: a → b 로 바뀌는 정도 q (가운데쯤에서 바뀜).
 const phase = c => {
   const a = Math.min(Math.floor(c), n - 1);
   return { a, b: Math.min(a + 1, n - 1), q: easeInOut(clamp((c - a - 0.15) / 0.7)) };
@@ -387,22 +397,12 @@ function change(from, to) {
   setYear(CH[to].year);
   $('dial').setAttribute('aria-valuenow', to);
   $('dial').setAttribute('aria-valuetext', CH[to].year + '년');
-  [bodies, pics].forEach(g => g.forEach((e, i) => e.classList.toggle('on', i === to)));
+  slides.forEach((e, i) => e.classList.toggle('on', i === to));
 }
 function flowUpdate(c) {
   const D = step;                                              // 연도 하나 사이 간격 = 스크롤 거리 (1:1로 흐름)
-  const { a, b, q } = phase(c);
-  bodies.forEach((el, i) => {
-    let o = 0;
-    if (i === a) o = 1 - easeOut(clamp(q / 0.5));               // 앞 절반: 이전 글이 흐려지며 사라짐
-    if (i === b && b !== a) o = easeOut(clamp((q - 0.5) / 0.5)); // 뒤 절반: 새 글이 선명해짐
-    el.style.opacity = o.toFixed(3);
-    el.style.filter = o > 0 && o < 1 && B ? `blur(${((1 - o) * 10).toFixed(2)}px)` : 'none';
-    show(el, o > 0);
-  });
-  pics.forEach((el, i) => {
+  slides.forEach((el, i) => {
     el.style.transform = `translate3d(0,${((i - c) * D).toFixed(1)}px,0)`;
-    el.style.opacity = 1;
     show(el, Math.abs(i - c) < 1.5);
   });
 }
@@ -494,9 +494,10 @@ function frame() {
     preIn = sk > FILM_OUT ? 1 : 0;                                // 문구는 처음부터 선명하게, 위치만 아래에서 올라옴
   }
   const f = clamp((sy - F0) / flashLen), t = why.active ? why.progress : clamp((sy - F0 - flashLen) / introLen);
+  sweepUpdate(f, dt);
   const fc = dirty || !near(f, lastF) || preIn !== lastPre;
   if (fc) { applyFlash(f); lastF = f; lastPre = preIn; }
-  if (fc || why.active || !near(t, lastT)) { applyIntro(t); lastT = t; }
+  if (fc || why.active || sweep !== lastSweep || !near(t, lastT)) { applyIntro(t); lastT = t; lastSweep = sweep; }
   show($('hist'), t > 0.3 && sy < Q0 + vh);
   // 연도 흐름은 스크롤 위치를 그대로 따른다 (부드러움은 ss 보간이 담당). 화면 높이가 순간 0이면 NaN 이 되므로 막는다.
   const target = clamp((sy - chStart) / step, 0, n - 1);

@@ -18,19 +18,19 @@ export default function HistoryPage() {
 <div className="glow" aria-hidden="true"><i className="warm" id="warm"></i></div>
 <div className="scene" id="sHero">
 <div className="frame" id="heroFrame">
-{/* 폴라로이드 사진 4장: Figma 1705:3464 의 image 101(왼쪽 위) · 108(오른쪽 위) · 107(오른쪽) · 133(왼쪽 아래)
+{/* 폴라로이드 사진 4장: Figma 1834:4684 의 image 101(왼쪽 위) · 108(오른쪽 위) · 107(오른쪽) · 133(왼쪽 아래)
     원본 이미지의 투명 여백을 뺀 실제 사진 영역 좌표 (1920×1080 기준) */}
-<div className="ph" data-x="195.2" data-y="232.3" data-w="269.6" data-h="328.5"><div className="card"><img src={asset29} alt="책장 앞에서 서로 손을 맞잡은 두 사람의 폴라로이드 사진" width="863" height="1053" fetchPriority="high" decoding="async" /></div></div>
-<div className="ph" data-x="1106.7" data-y="151.8" data-w="158.6" data-h="190.1"><div className="card"><img src={asset30} alt="카페 창가에서 카메라를 들고 사진을 찍는 사람의 폴라로이드 사진" width="885" height="1063" fetchPriority="high" decoding="async" /></div></div>
-<div className="ph" data-x="1395.5" data-y="397.7" data-w="351.1" data-h="429.5"><div className="card"><img src={asset31} alt="카페 테라스에 마주 앉아 웃는 두 사람의 폴라로이드 사진" width="867" height="1060" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="195.2" data-y="232.1" data-w="269.6" data-h="329"><div className="card"><img src={asset29} alt="책장 앞에서 서로 손을 맞잡은 두 사람의 폴라로이드 사진" width="863" height="1053" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="1106.7" data-y="151.6" data-w="158.6" data-h="190.5"><div className="card"><img src={asset30} alt="카페 창가에서 카메라를 들고 사진을 찍는 사람의 폴라로이드 사진" width="885" height="1063" fetchPriority="high" decoding="async" /></div></div>
+<div className="ph" data-x="1395.4" data-y="397.7" data-w="351.3" data-h="429.5"><div className="card"><img src={asset31} alt="카페 테라스에 마주 앉아 웃는 두 사람의 폴라로이드 사진" width="867" height="1060" fetchPriority="high" decoding="async" /></div></div>
 <div className="ph" data-x="417.7" data-y="661.9" data-w="217.5" data-h="271.8"><div className="card"><img src={asset32} alt="강가 다리 위에서 마주 보는 두 사람의 폴라로이드 사진" width="897" height="1121" fetchPriority="high" decoding="async" /></div></div>
 </div>
 <div className="hero-copy">
 {/* 인트로: Figma 1705:3492 — 흐릿한 상태에서 초점이 맞춰지고, 스크롤하면 다시 흐려진다 */}
 <p className="hero-mark" id="heroMark" lang="en"><span className="mark-since">{"Since"}</span><span className="mark-year">{"1937"}</span></p>
-{/* 이어지는 화면: Figma 1705:3464 — 제목 + 소개 문구, 주변으로 폴라로이드 사진 4장 */}
-<div className="yblock" id="yblock"><h1 className="hero-title" id="heroTitle" lang="en">{"The Act of Creating Memories"}</h1>
-<p className="sub" id="heroSub">{"찍은 사진을 바로 보고 싶었던 작은 바람에서 오늘에 이르기까지, "}<br />{"폴라로이드는 함께 찍고, 기다리고, 마주 보는 시간을 통해 사진 너머의 추억을 만들어왔습니다."}</p></div>
+{/* 이어지는 화면: Figma 1834:4684 — 제목 + 소개 문구, 주변으로 폴라로이드 사진 4장 */}
+<div className="yblock" id="yblock"><h1 className="hero-title" id="heroTitle">{"우리가 순간을 간직하는 방식"}</h1>
+<p className="sub" id="heroSub">{"소중한 사람과 그 순간을 직접 찍고, 기다리고, 손에 쥐는 과정. "}<br />{"우리는 디지털 이미지와는 다른 방식으로 실제 경험과 기억을 남겨왔습니다."}</p></div>
 </div>
 <div className="scroll-cue" id="cue" aria-hidden="true">{"SCROLL"}</div>
 </div>
@@ -55,20 +55,18 @@ export default function HistoryPage() {
 <div className="flash" id="flash" aria-hidden="true"><img src={asset8} width="1604" height="1604" alt="" fetchPriority="low" decoding="async" /></div>
 <div className="pop" id="pop"></div>
 <div className="ivory" id="ivory"></div>
-<div className="intro" id="intro"><p className="quote" lang="en">{"Why can’t I see the picture right now?"}</p></div>
+{/* Figma 1834:4671 — 따옴표가 있는 문구, 왼쪽부터 스르르 드러남 */}
+<div className="intro" id="intro"><p className="quote" lang="en">{"“Why can’t I see the picture right now?”"}</p></div>
 <div className="hist" id="hist" data-year="1937">
 <div className="dial" id="dial" role="slider" tabIndex="0" aria-label="연도 다이얼"><div className="ticks" id="ticks"></div><div className="yr" id="yr"></div></div>
-{/* Figma 1705:3122 — 왼쪽: The Polaroid Story · 구분선 · 연도 / 오른쪽: 제목 · 본문 · 사진 */}
+{/* Figma 1705:3122 — 왼쪽(고정): The Polaroid Story · 구분선 · 연도 / 오른쪽(연도별 한 묶음으로 흐름): 제목 · 본문 · 사진 */}
 <div className="row" id="row">
 <div className="txt">
 <p className="eyebrow" lang="en">{"The Polaroid Story"}</p>
-<div className="rule" id="rule"><img id="ruleAsset" src={asset33} alt="" width="563" decoding="async" /></div>
+<div className="rule" id="rule"><img id="ruleAsset" src={asset33} alt="" width="576" decoding="async" /></div>
 <div className="stack" id="titles"></div>
 </div>
-<div className="side">
-<div className="stack" id="bodies"></div>
-<div className="pics stack" id="pics"></div>
-</div>
+<div className="side stack" id="slides"></div>
 </div>
 </div>
 <div className="scene quote-sec" id="sQuote">
