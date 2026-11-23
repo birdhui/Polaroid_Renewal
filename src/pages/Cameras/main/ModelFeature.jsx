@@ -2,41 +2,22 @@ import { Link } from 'react-router';
 import useInView from '../hooks/useInView.js';
 import ScriptDraw from './ScriptDraw.jsx';
 import SCRIPT_STROKES from './scriptStrokes.js';
-import { percentBox, unionBox } from './layout.js';
 import styles from './ModelFeature.module.css';
 
 /**
- * 4~9. 모델 섹션 — 한쪽에 소개 글, 반대쪽에 손글씨 모델명 + 제품 이미지 (시안 1920×1095)
- * 손글씨·카메라는 둘을 감싸는 상자(visual) 안에 % 로 배치해, 좁은 화면에서도 같은 구도를 유지한다.
+ * 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080)
+ * - 한쪽: 손글씨 모델명 + 헤드라인 · 설명 · 버튼
+ * - 반대쪽: 626×626 제품 카드(배경색이 들어간 사진) + 'POLAROID CAMERA - 00N' 라벨
  * 손글씨 모델명은 섹션이 화면에 들어오면 펜으로 쓰듯 그려진다(ScriptDraw).
  * 메인 헤드라인은 처음에 흐릿하게 있다가, 드로잉이 시작되는 순간 초점이 맞듯 선명해진다.
  */
+const TOTAL = 6;
+const pad = (n, len = 2) => String(n).padStart(len, '0');
+
 export default function ModelFeature({ model, linkLabel, reducedMotion }) {
   const [sectionRef, inView] = useInView({ threshold: 0.35 });
-  const visualBox = unionBox([model.script.box, model.camera.box]);
-  const [vl, vt, vw, vh] = visualBox;
-
-  const script = (
-    <ScriptDraw
-      key="script"
-      className={styles.script}
-      style={percentBox(model.script.box, visualBox)}
-      src={model.script.src}
-      strokes={SCRIPT_STROKES[model.id]}
-      play={inView}
-      reducedMotion={reducedMotion}
-    />
-  );
-  const camera = (
-    <img
-      key="camera"
-      className={styles.camera}
-      style={percentBox(model.camera.box, visualBox)}
-      src={model.camera.src}
-      alt={model.camera.alt}
-      loading="lazy"
-    />
-  );
+  const [cl, ct, cw, ch] = model.card.box;
+  const [sl, st, sw, sh] = model.script.box;
 
   const linkContent = (
     <>
@@ -54,20 +35,36 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
       style={{ '--sh': model.height ?? 1095 }}
       aria-labelledby={`model-${model.id}-title`}
     >
-      <div
-        className={styles.visual}
-        style={{ '--l': vl, '--t': vt, '--w': vw, '--h': vh, aspectRatio: `${vw} / ${vh}` }}
+      <figure
+        className={styles.card}
+        data-tone={model.card.tone}
+        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch }}
       >
-        {model.cameraOnTop ? [script, camera] : [camera, script]}
-      </div>
+        <img className={styles.cardImage} src={model.card.src} alt={model.card.alt} loading="lazy" />
+        <figcaption className={styles.cardLabels} aria-hidden="true">
+          <span className={styles.labelTopLeft}>POLAROID CAMERA - {pad(model.card.index, 3)}</span>
+          <span className={styles.labelTopRight}>01 / 02</span>
+          <span className={styles.labelBottom}>
+            {pad(model.card.index)} / {pad(TOTAL)}
+          </span>
+        </figcaption>
+      </figure>
+
+      <ScriptDraw
+        className={styles.script}
+        style={{ '--l': sl, '--t': st, '--w': sw, '--h': sh }}
+        src={model.script.src}
+        strokes={SCRIPT_STROKES[model.id]}
+        play={inView}
+        reducedMotion={reducedMotion}
+      />
 
       <div
         className={`${styles.copy} ${inView || reducedMotion ? styles.focused : ''}`}
         style={{ '--edge': model.edge, '--top': model.top }}
       >
-        {model.tag && <span className={styles.tag}>{model.tag}</span>}
-        <p className={styles.name}>{model.name}</p>
         <h2 id={`model-${model.id}-title`} className={styles.title}>
+          <span className={styles.srOnly}>Polaroid {model.name} — </span>
           {model.title[0]}
           <br />
           {model.title[1]}

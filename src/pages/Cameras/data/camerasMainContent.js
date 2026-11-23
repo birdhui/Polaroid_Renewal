@@ -24,6 +24,12 @@ import cameraFlip from '@/assets/cameras/main/camera-flip.webp';
 import cameraMod from '@/assets/cameras/main/camera-mod.webp';
 import cameraI2 from '@/assets/cameras/main/camera-i2.webp';
 import cameraGo from '@/assets/cameras/main/camera-go.webp';
+import cardNow from '@/assets/cameras/main/card-now.webp';
+import cardNowPlus from '@/assets/cameras/main/card-now-plus.webp';
+import cardFlip from '@/assets/cameras/main/card-flip.webp';
+import cardMod from '@/assets/cameras/main/card-mod.webp';
+import cardI2 from '@/assets/cameras/main/card-i2.webp';
+import cardGo from '@/assets/cameras/main/card-go.webp';
 import helpCamera from '@/assets/cameras/main/help-camera-split.webp';
 import scriptFindCamera from '@/assets/cameras/main/script-find-camera.webp';
 import scriptFindAnswers from '@/assets/cameras/main/script-find-answers.webp';
@@ -76,8 +82,10 @@ export const MOMENTS = {
 
 /**
  * 4~9. 모델별 섹션
- * side: 글이 놓이는 쪽(left: 왼쪽 정렬 / right: 오른쪽 정렬), edge: 글 기준선(left 면 왼쪽 x, right 면 오른쪽 x), top: 첫 줄 y
- * script: 손글씨 모델명 이미지, camera: 제품 이미지, cameraOnTop: 카메라가 손글씨 위에 놓이는지
+ * side: 글이 놓이는 쪽(left: 왼쪽 정렬 / right: 오른쪽 정렬), edge: 글 기준선(left 면 왼쪽 x, right 면 오른쪽 x), top: 헤드라인 첫 줄 y
+ * script: 손글씨 모델명 이미지 (글과 같은 쪽, 헤드라인 위)
+ * card: 반대쪽 626×626 제품 카드(배경색이 들어간 사진). tone: 카드 위 라벨 글자색(dark: 검정 / light: 흰색), index: 카드 번호
+ * camera: 배경 없는 제품 이미지 — 위쪽 카메라 라인업에서 쓴다
  * to: 사이트 안 상세페이지 / href: 상세페이지가 없으면 polaroid.com 제품 페이지(새 창)
  */
 export const MODELS = [
@@ -88,11 +96,11 @@ export const MODELS = [
     title: ['눈앞의 순간을,', '빨간 셔터 한 번으로.'],
     body: ['가까운 얼굴도, 그 너머의 풍경도.', 'Now가 거리에 맞는 렌즈를 골라 초점을 맞춰줘요.'],
     side: 'left',
-    edge: 320,
-    top: 348,
-    script: { src: scriptNow, box: [1107, 151, 546, 294] },
+    edge: 393,
+    top: 448,
+    script: { src: scriptNow, box: [317, 231, 446, 240] },
     camera: { src: cameraNow, alt: 'Polaroid Now 즉석카메라, 화이트와 퍼플 바디', box: [1206, 320, 348, 393] },
-    cameraOnTop: true,
+    card: { src: cardNow, alt: '퍼플 바디의 Polaroid Now 즉석카메라', box: [1040, 235, 626, 626], tone: 'dark', index: 1 },
     to: ROUTES.camerasNow,
   },
   {
@@ -101,11 +109,11 @@ export const MODELS = [
     title: ['카메라는 저기에,', '셔터는 내 손안에.'],
     body: ['Now+를 세워두고 친구들 곁에 서 보세요.', '폴라로이드 앱으로 셔터를 누르면', '찍는 사람까지 한 장에 담겨요.'],
     side: 'right',
-    edge: 1534,
-    top: 361,
-    script: { src: scriptNowPlus, box: [197, 172, 520, 268] },
+    edge: 1584,
+    top: 520,
+    script: { src: scriptNowPlus, box: [1220, 290, 474, 245] },
     camera: { src: cameraNowPlus, alt: 'Polaroid Now+ 즉석카메라, 화이트 바디', box: [377, 325, 366, 414] },
-    cameraOnTop: true,
+    card: { src: cardNowPlus, alt: '세이지 그린 바디의 Polaroid Now+ 즉석카메라', box: [261, 235, 626, 626], tone: 'dark', index: 2 },
     to: ROUTES.camerasNowPlus,
   },
   {
@@ -118,11 +126,11 @@ export const MODELS = [
       '촬영 전 빛이 적절한지도 알려줘요.',
     ],
     side: 'left',
-    edge: 381,
-    top: 364,
-    script: { src: scriptFlip, box: [1186, 114, 495, 279] },
+    edge: 354,
+    top: 516,
+    script: { src: scriptFlip, box: [283, 281, 461, 260] },
     camera: { src: cameraFlip, alt: 'Polaroid Flip 즉석카메라, 화이트 바디에 오렌지 패널', box: [1107, 315, 448, 426] },
-    cameraOnTop: true,
+    card: { src: cardFlip, alt: '블랙·오렌지 패널의 Polaroid Flip 즉석카메라', box: [1047, 251, 626, 626], tone: 'dark', index: 3 },
     href: `${POLAROID_US}/cameras/flip-camera`,
   },
   {
@@ -135,11 +143,11 @@ export const MODELS = [
       '빛의 움직임도 한 장의 사진이 됩니다.',
     ],
     side: 'right',
-    edge: 1585,
-    top: 384,
-    script: { src: scriptMod, box: [164, 109, 604, 368] },
+    edge: 1595,
+    top: 523,
+    script: { src: scriptMod, box: [1220, 286, 499, 304] },
     camera: { src: cameraMod, alt: 'Polaroid Mod 즉석카메라, 그래파이트 바디', box: [352, 307, 396, 449] },
-    cameraOnTop: true,
+    card: { src: cardMod, alt: '그래파이트 바디의 Polaroid Mod 즉석카메라', box: [262, 235, 626, 626], tone: 'light', index: 4 },
     href: `${POLAROID_US}/cameras/mod-camera`,
   },
   {
@@ -154,10 +162,10 @@ export const MODELS = [
     ],
     side: 'left',
     edge: 373,
-    top: 379,
-    script: { src: scriptI2, box: [1134, 170, 531, 323] },
+    top: 436,
+    script: { src: scriptI2, box: [293, 245, 394, 239] },
     camera: { src: cameraI2, alt: 'Polaroid I-2 즉석카메라, 블랙 바디', box: [1151, 355, 468, 377] },
-    cameraOnTop: false,
+    card: { src: cardI2, alt: '블랙 바디의 Polaroid I-2 즉석카메라', box: [1014, 235, 626, 626], tone: 'light', index: 5 },
     href: `${POLAROID_US}/cameras/i2-camera`,
   },
   {
@@ -170,12 +178,12 @@ export const MODELS = [
       '손안에 쏙 들어오는 사진으로 남길 수 있어요.',
     ],
     side: 'right',
-    edge: 1585,
-    top: 349,
+    edge: 1606,
+    top: 519,
     height: 1080,
-    script: { src: scriptGo, box: [263, 161, 508, 429] },
+    script: { src: scriptGo, box: [1316, 271, 346, 292] },
     camera: { src: cameraGo, alt: 'Polaroid Go 즉석카메라, 라이트 블루 바디', box: [383, 395, 415, 367] },
-    cameraOnTop: true,
+    card: { src: cardGo, alt: '라이트 블루 바디의 Polaroid Go 즉석카메라', box: [277, 228, 626, 626], tone: 'light', index: 6 },
     href: `${POLAROID_US}/cameras/go-camera`,
   },
 ];

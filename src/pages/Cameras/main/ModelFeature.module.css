@@ -1,28 +1,88 @@
-/* 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080 — 배경 #fffaec) */
+/* 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080 — 배경 #fff9e8) */
 .section {
   position: relative;
   height: calc(var(--sh) * var(--px));
   overflow: hidden;
-  background: #fffaec;
+  background: #fff9e8;
 }
 
-/* 손글씨 + 카메라 묶음 */
-.visual {
+/* 시안 좌표(--l, --t, --w, --h)에 놓이는 요소 */
+.card,
+.script {
   position: absolute;
   left: calc(var(--l) * var(--px));
   top: calc(var(--t) * var(--px));
   width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
 }
 
-.script,
-.camera {
+/* 제품 카드: 626×626, 모서리 30, 배경색이 들어간 제품 사진 + 라벨 */
+.card {
+  margin: 0;
+  overflow: hidden;
+  border-radius: calc(30 * var(--px));
+}
+
+.cardImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardLabels {
   position: absolute;
-  object-fit: contain;
+  inset: 0;
+  color: #151515;
+  font-family: var(--cm-font-eng);
+  font-weight: 500;
+  font-size: max(10px, calc(12 * var(--px)));
+  line-height: 1.26;
+  pointer-events: none;
 }
 
-/* 소개 글 묶음 — 시안 기준선(--edge)과 첫 줄(--top)에 맞춘다 */
+.card[data-tone='light'] .cardLabels {
+  color: #fff;
+}
+
+.cardLabels > span {
+  position: absolute;
+  white-space: nowrap;
+}
+
+/* 시안: 위 라벨 카드 위에서 28 · 왼쪽 33 · 오른쪽 31, 아래 라벨 카드 아래에서 21 */
+.labelTopLeft {
+  top: calc(28 * var(--px));
+  left: calc(33 * var(--px));
+}
+
+.labelTopRight {
+  top: calc(28 * var(--px));
+  right: calc(31 * var(--px));
+}
+
+.labelBottom {
+  bottom: calc(21 * var(--px));
+}
+
+/* 아래 번호는 카드의 바깥쪽 모서리(글 반대편)에 둔다 */
+.section[data-side='left'] .labelBottom {
+  right: calc(31 * var(--px));
+}
+
+.section[data-side='right'] .labelBottom {
+  left: calc(31 * var(--px));
+}
+
+/* 손글씨는 헤드라인 뒤에 깔린다 */
+.script {
+  z-index: 0;
+}
+
+/* 소개 글 묶음 — 시안 기준선(--edge)과 헤드라인 첫 줄(--top)에 맞춘다 */
 .copy {
   position: absolute;
+  z-index: 1;
   top: calc(var(--top) * var(--px));
   display: flex;
   flex-direction: column;
@@ -54,31 +114,6 @@
 .focused .title {
   filter: blur(0);
   opacity: 1;
-}
-
-/* 입문자용 · 전문가용 */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: max(52px, calc(63 * var(--px)));
-  height: max(18px, calc(22 * var(--px)));
-  margin-bottom: calc(8 * var(--px));
-  border: 1px solid #fff;
-  background: #f0a137;
-  color: #fff;
-  font-family: var(--cm-font-text);
-  font-weight: 500;
-  font-size: max(10px, calc(10 * var(--px)));
-  letter-spacing: -0.1em;
-}
-
-.name {
-  margin: 0;
-  color: #151515;
-  font-family: var(--cm-font-eng);
-  font-size: max(16px, calc(24 * var(--px)));
-  line-height: 1.2;
 }
 
 .title {
@@ -134,22 +169,58 @@
   white-space: nowrap;
 }
 
-/* 좁은 화면: 이미지 → 글 순서로 세로로 쌓는다 */
+/* 좁은 화면: 카드 → 손글씨 → 글 순서로 세로로 쌓는다 */
 @media (max-width: 1023px) {
   .section {
     height: auto;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 20px;
     padding: 56px 24px 72px;
   }
 
-  .visual {
+  .card,
+  .script {
     position: relative;
     left: auto;
     top: auto;
+  }
+
+  .card {
     width: min(100%, 520px);
-    margin: 0 auto;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto 12px;
+    border-radius: 20px;
+  }
+
+  .cardLabels {
+    font-size: 11px;
+  }
+
+  .labelTopLeft,
+  .labelTopRight {
+    top: 16px;
+  }
+
+  .labelTopLeft {
+    left: 18px;
+  }
+
+  .labelTopRight,
+  .section[data-side] .labelBottom {
+    right: 18px;
+    left: auto;
+  }
+
+  .labelBottom {
+    bottom: 14px;
+  }
+
+  .script {
+    width: min(70%, 320px);
+    height: auto;
+    margin-bottom: -28px;
   }
 
   .copy,
@@ -158,10 +229,6 @@
     position: static;
     align-items: flex-start;
     text-align: left;
-  }
-
-  .tag {
-    margin-bottom: 8px;
   }
 
   .body {
