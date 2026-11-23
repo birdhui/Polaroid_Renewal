@@ -21,13 +21,67 @@
   margin: 0;
   overflow: hidden;
   border-radius: calc(30 * var(--px));
+  background: var(--card-bg);
+  /* 사파리에서 둥근 모서리 밖으로 확대된 그림이 새지 않게 */
+  isolation: isolate;
 }
 
+/* 처음엔 흐릿하게, 글이 보이기 시작하면(.focused) 선명하게 — 헤드라인과 같은 타이밍 */
+.cardMedia {
+  position: absolute;
+  inset: 0;
+  filter: blur(max(6px, calc(16 * var(--px))));
+  opacity: 0.45;
+  transform: scale(1.04);
+  transition:
+    filter 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    opacity 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    transform 1.2s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.focused .cardMedia {
+  filter: blur(0);
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * 마우스를 올리면: 원래 사진(.base)은 흐려지며 사라지고, 바뀐 모습(.alt)이 흐림에서 선명하게 들어온다.
+ * 마우스를 떼면 반대로 원래 사진으로 돌아온다. (레퍼런스: Framer Hover Blur Cards)
+ */
 .cardImage {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform-origin: var(--hover-origin, 50% 50%);
+  transition:
+    opacity 0.6s ease,
+    filter 0.6s ease,
+    transform 0.9s cubic-bezier(0.22, 0.7, 0.2, 1);
+  will-change: opacity, filter, transform;
+}
+
+.alt {
+  opacity: 0;
+  filter: blur(calc(12 * var(--px)));
+  transform: var(--hover-from, none);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .base {
+    opacity: 0;
+    filter: blur(calc(12 * var(--px)));
+    transform: var(--base-to, none);
+  }
+
+  .card:hover .alt {
+    opacity: 1;
+    filter: blur(0);
+    transform: var(--hover-to, none);
+  }
 }
 
 .cardLabels {
@@ -242,6 +296,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cardMedia,
+  .cardImage {
+    transition: none;
+  }
+
+  .cardMedia {
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+
   .copy .title {
     filter: none;
     opacity: 1;

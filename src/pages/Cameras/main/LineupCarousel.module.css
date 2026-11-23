@@ -59,10 +59,7 @@
 
 .camera {
   position: absolute;
-  /*
-   * 위치는 transform 으로만 옮긴다 (left 를 바꾸면 매 프레임 흐림 효과를 다시 그려 끊겨 보인다).
-   * --cx: 자리의 가로 중심(시안 px), --drag: 끄는 동안 손을 따라 움직이는 거리
-   */
+  /* 가로 위치·흐림 정도·겹침 순서는 JS(LineupCarousel.jsx 의 render)가 매 프레임 transform · --blur-mix · z-index 로 정한다 */
   left: 0;
   /* 세로 중심 y 738 = 무대 위쪽(446) + 292 (무대와 같은 비율로 줄인다) */
   top: calc(292 * var(--k) * var(--px));
@@ -71,16 +68,34 @@
   padding: 0;
   border: 0;
   background: none;
-  /* 자리 간격도 가운데(948) 기준으로 --s 배 */
-  transform: translate3d(calc((948 + (var(--cx) - 948) * var(--s)) * var(--px) + var(--drag, 0px) - 50%), -50%, 0);
+  transform: translate(-50%, -50%);
   will-change: transform;
   backface-visibility: hidden;
-  transition:
-    transform 0.7s cubic-bezier(0.22, 0.7, 0.2, 1),
-    filter 0.7s ease;
+  cursor: inherit;
 }
 
-.camera img {
+.camera:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 4px;
+}
+
+/* 선명한 그림과 미리 흐리게 그린 그림을 겹쳐 두고 투명도만 바꾼다 */
+.layer {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.layer:first-child {
+  opacity: calc(1 - var(--blur-mix, 0));
+}
+
+.blurred {
+  opacity: var(--blur-mix, 0);
+  filter: blur(calc(4 * var(--px)));
+}
+
+.layer img {
   position: relative;
   display: block;
   width: 100%;
@@ -88,8 +103,8 @@
   object-fit: contain;
 }
 
-/* 바닥 그림자 (I-2 처럼 카메라 아래에 은은하게) */
-.shadow::before {
+/* 바닥 그림자 (I-2 처럼 카메라 아래에 은은하게) — 흐린 그림에도 같이 들어가 함께 흐려진다 */
+.shadow .layer::before {
   content: '';
   position: absolute;
   left: 6%;
@@ -100,32 +115,6 @@
   background: radial-gradient(closest-side, rgba(21, 21, 21, 0.32), rgba(21, 21, 21, 0.12) 55%, transparent);
   filter: blur(calc(6 * var(--px)));
   pointer-events: none;
-}
-
-.center {
-  z-index: 2;
-  cursor: inherit;
-}
-
-.side {
-  z-index: 1;
-  filter: blur(calc(4 * var(--px)));
-  cursor: inherit;
-}
-
-.side:focus-visible {
-  outline: 2px solid #151515;
-  outline-offset: 4px;
-}
-
-/* 끄는 동안에는 손을 바로 따라오게 위치 전환을 끈다 */
-.dragging .camera {
-  transition: filter 0.7s ease;
-}
-
-/* 화면 밖 한쪽 끝에서 반대쪽 끝으로 옮겨 가는 카메라는 가로지르지 않고 바로 옮긴다 */
-.wrap {
-  transition: none;
 }
 
 /* 이름 줄: 시안 'Now'(x717, y1295) · '제품 보러가기'(x998) · 화살표(x1199) */
@@ -213,7 +202,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .camera,
   .link img {
     transition: none;
   }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import frameSvg from '@/assets/cameras/main/viewfinder-frame.svg';
 import arrowSvg from '@/assets/cameras/main/arrow-circle.svg';
 import styles from './LineupCarousel.module.css';
@@ -11,43 +11,117 @@ import styles from './LineupCarousel.module.css';
  * - 카메라를 마우스·손가락으로 잡고 좌우로 끌어서 넘길 수 있다. 양옆 카메라를 누르거나 ←/→ 키로도 넘긴다.
  * - 아래 모델 이름과 '제품 보러가기'(→ 아래 해당 모델 섹션 #model-{id})가 가운데 카메라에 맞춰 바뀐다.
  *
- * 시안 좌표: 무대(프레임 영역) 위쪽 = y 446. 보이는 세 자리의 가로 중심 x = 38.6 / 948 / 1866.4, 세로 중심 y = 738.
- * 나머지 카메라는 양쪽 화면 밖(-870.8 / 2784.8)에서 기다리다가 차례가 되면 미끄러져 들어온다.
+ * 움직임 구조 (끊김·순간이동 방지)
+ * - 위치는 하나의 연속값 pos(가운데에 온 카메라 번호, 소수 포함)로만 관리한다.
+ *   넘기기·끌기·자동 넘기기 모두 pos 를 바꾸고, requestAnimationFrame 이 매 프레임 pos 를 목표값으로 부드럽게 따라가게 한다.
+ *   그래서 넘어가는 도중에 다시 잡아도 지금 보이는 자리에서 그대로 이어진다.
+ * - 카메라는 transform 으로만 옮기고, 흐림은 미리 흐리게 그려 둔 복사본의 투명도만 바꿔 표현한다(매 프레임 흐림을 다시 그리지 않는다).
+ *
+ * 시안 좌표: 무대(프레임 영역) 위쪽 = y 446, 가운데 x = 948, 옆 자리 간격 913.9, 세로 중심 y = 738.
  */
-const SLOT_X = { '-2': -870.8, '-1': 38.6, 0: 948, 1: 1866.4, 2: 2784.8 };
-const AUTOPLAY_MS = 3000;
+const CENTER_X = 948;
+const SLOT_GAP = 913.9;
 /** 무대 축소 비율 — LineupCarousel.module.css 의 .stage --s 와 같은 값 */
 const STAGE_SCALE = 0.8;
+const AUTOPLAY_MS = 3000;
 const DRAG_START_PX = 6;
+/** 목표 자리로 따라가는 시간 상수(ms) — 작을수록 빠르다. 약 3배 시간이면 거의 도착 */
+const EASE_MS = 150;
 
 export default function LineupCarousel({ lineup, reducedMotion }) {
   const { items } = lineup;
   const n = items.length;
-  const [{ active, prev }, setState] = useState({ active: lineup.initial, prev: lineup.initial });
+  const [active, setActive] = useState(lineup.initial);
   const [dragging, setDragging] = useState(false);
   const [focused, setFocused] = useState(false);
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
+  const camRefs = useRef([]);
+  const motion = useRef({ pos: lineup.initial, target: lineup.initial, raf: 0, last: 0 });
   const drag = useRef(null);
   const suppressClick = useRef(false);
 
-  /** 아이템 i 의 자리: 0 가운데 · -1 왼쪽 · 1 오른쪽 · 그 밖은 화면 밖 (-n/2 초과 ~ n/2 이하) */
-  const slotOf = (i, a) => {
-    let r = (((i - a) % n) + n) % n;
-    if (r > n / 2) r -= n;
+  const mod = (v) => ((v % n) + n) % n;
+  /** pos 기준 아이템 i 의 자리(-n/2 이상 n/2 미만): 0 가운데 · -1 왼쪽 · 1 오른쪽 */
+  const offsetOf = (i, pos) => {
+    let r = mod(i - pos);
+    if (r >= n / 2) r -= n;
     return r;
   };
-  const slotX = (r) => SLOT_X[Math.max(-2, Math.min(2, r))];
 
-  const go = (dir) => setState((s) => ({ active: (s.active + dir + n) % n, prev: s.active }));
+  /* ---------- 화면에 그리기 ---------- */
+  const render = () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const scale = stage.clientWidth / 1920;
+    const { pos } = motion.current;
+    items.forEach((_, i) => {
+      const el = camRefs.current[i];
+      if (!el) return;
+      const r = offsetOf(i, pos);
+      const x = (CENTER_X + r * SLOT_GAP * STAGE_SCALE) * scale;
+      el.style.transform = `translate3d(${x}px, 0, 0) translate(-50%, -50%)`;
+      el.style.setProperty('--blur-mix', Math.min(1, Math.abs(r)).toFixed(3));
+      el.style.zIndex = String(10 - Math.round(Math.abs(r) * 2));
+      // 화면 밖(2칸 넘게 떨어진 자리)은 그리지 않는다 — 반대편 끝으로 옮겨 가는 순간도 보이지 않는다
+      el.style.visibility = Math.abs(r) > 2.2 ? 'hidden' : 'visible';
+    });
+    const center = mod(Math.round(pos));
+    setActive((a) => (a === center ? a : center));
+  };
+
+  const tick = (now) => {
+    const m = motion.current;
+    const dt = m.last ? Math.min(64, now - m.last) : 16;
+    m.last = now;
+    if (!drag.current?.moving) {
+      m.pos = m.target + (m.pos - m.target) * Math.exp(-dt / EASE_MS);
+      if (Math.abs(m.pos - m.target) < 0.0005) m.pos = m.target;
+    }
+    render();
+    if (m.pos !== m.target || drag.current?.moving) {
+      m.raf = requestAnimationFrame(tick);
+    } else {
+      m.raf = 0;
+      m.last = 0;
+    }
+  };
+
+  const kick = () => {
+    const m = motion.current;
+    if (reducedMotion && !drag.current?.moving) m.pos = m.target;
+    if (!m.raf) m.raf = requestAnimationFrame(tick);
+  };
+
+  /** 지금 목표에서 dir 칸 이동 */
+  const go = (dir) => {
+    const m = motion.current;
+    m.target = Math.round(m.target) + dir;
+    kick();
+  };
+
+  // 처음 배치 + 화면 폭이 바뀌면 다시 배치
+  useLayoutEffect(() => {
+    render();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => render()) : null;
+    if (ro && stageRef.current) ro.observe(stageRef.current);
+    const m = motion.current;
+    return () => {
+      ro?.disconnect();
+      cancelAnimationFrame(m.raf);
+      m.raf = 0;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const select = (i) => {
     if (suppressClick.current) {
       suppressClick.current = false;
       return;
     }
-    const s = slotOf(i, active);
-    if (s === -1 || s === 1) go(s);
+    const r = Math.round(offsetOf(i, motion.current.target));
+    if (r === -1 || r === 1) go(r);
   };
 
   // 섹션이 화면에 보일 때만 자동으로 넘긴다
@@ -71,57 +145,36 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, paused]);
 
-  /* ---------- 잡고 끌기 (마우스 · 터치 · 펜) ----------
-   * - 위치는 화면 다시 그리기 직전(requestAnimationFrame)에 한 번만 반영해 끊김 없이 손을 따라온다.
-   * - 한 칸(옆 자리까지의 거리)을 넘어서 끌면 고무줄처럼 저항이 생긴다.
-   * - 놓을 때 충분히 끌었거나, 짧아도 빠르게 튕기면 그 방향으로 넘어간다.
-   */
-  const raf = useRef(0);
-  const flushDrag = () => {
-    raf.current = 0;
-    const d = drag.current;
-    stageRef.current?.style.setProperty('--drag', `${d ? d.offset : 0}px`);
-  };
-  const scheduleDrag = () => {
-    if (!raf.current) raf.current = requestAnimationFrame(flushDrag);
-  };
-  useEffect(() => () => cancelAnimationFrame(raf.current), []);
-
+  /* ---------- 잡고 끌기 (마우스 · 터치 · 펜) ---------- */
   /** 옆 자리까지의 화면 거리(px) */
-  const slotDistance = () => {
-    const w = stageRef.current?.getBoundingClientRect().width ?? 1920;
-    return ((SLOT_X[1] - SLOT_X[0]) * STAGE_SCALE * w) / 1920;
-  };
+  const slotPx = () => ((stageRef.current?.clientWidth ?? 1920) / 1920) * SLOT_GAP * STAGE_SCALE;
 
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    drag.current = { id: e.pointerId, x: e.clientX, dx: 0, offset: 0, moving: false, samples: [] };
+    drag.current = { id: e.pointerId, x: e.clientX, startPos: 0, moving: false, samples: [] };
   };
 
   const onPointerMove = (e) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
-    d.dx = e.clientX - d.x;
     if (!d.moving) {
-      if (Math.abs(d.dx) < DRAG_START_PX) return;
+      if (Math.abs(e.clientX - d.x) < DRAG_START_PX) return;
       // 실제로 끌기 시작했을 때만 포인터를 잡는다 (그냥 누르기는 양옆 카메라 클릭으로 처리)
       d.moving = true;
-      d.x = e.clientX; // 시작 문턱(6px)만큼 튀지 않도록 여기서부터 잰다
-      d.dx = 0;
+      d.x = e.clientX;
+      // 넘어가는 중이었다면 지금 보이는 위치에서 바로 잡는다
+      d.startPos = motion.current.pos;
       stageRef.current?.setPointerCapture?.(e.pointerId);
       setDragging(true);
+      kick();
     }
-    const S = slotDistance();
-    const abs = Math.abs(d.dx);
-    d.offset = Math.sign(d.dx) * (abs <= S ? abs : S + (abs - S) * 0.25);
-    // 최근 100ms 의 움직임으로 놓는 순간의 속도를 잰다
+    motion.current.pos = d.startPos - (e.clientX - d.x) / slotPx();
     const now = performance.now();
     d.samples.push([now, e.clientX]);
     while (d.samples.length > 2 && now - d.samples[0][0] > 100) d.samples.shift();
-    scheduleDrag();
   };
 
-  const endDrag = (e, cancelled = false) => {
+  const endDrag = (e) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
@@ -133,16 +186,16 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
     }, 0);
     const [t0, x0] = d.samples[0] ?? [0, 0];
     const [t1, x1] = d.samples[d.samples.length - 1] ?? [0, 0];
-    const velocity = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0; // px/ms
-    const S = slotDistance();
-    const far = Math.abs(d.offset) > S * 0.18;
-    const flick = Math.abs(velocity) > 0.45 && Math.sign(velocity) === Math.sign(d.offset);
-    // 끈 위치에서 새 자리로 이어서 움직이도록 오프셋 해제와 넘기기를 같은 프레임에 한다
-    cancelAnimationFrame(raf.current);
-    raf.current = 0;
-    stageRef.current?.style.setProperty('--drag', '0px');
+    const v = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0; // px/ms
+    const m = motion.current;
+    // 놓는 순간의 속도만큼 조금 더 나아간 곳에서 가장 가까운 자리로 (지금 자리에서 최대 한 칸)
+    const base = Math.round(m.pos);
+    const projected = Math.round(m.pos - (v * 180) / slotPx());
+    m.target = Math.max(base - 1, Math.min(base + 1, projected));
+    // 조금만 끌었어도 빠르게 튕겼다면 그 방향으로 한 칸
+    if (m.target === Math.round(d.startPos) && Math.abs(v) > 0.45) m.target += v < 0 ? 1 : -1;
     setDragging(false);
-    if (!cancelled && (far || flick)) go(d.offset < 0 ? 1 : -1);
+    kick();
   };
 
   const onKeyDown = (e) => {
@@ -189,37 +242,35 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={(e) => endDrag(e)}
-        onPointerCancel={(e) => endDrag(e, true)}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
       >
         <img className={styles.frame} src={frameSvg} alt="" width="902" height="676" draggable={false} />
         {items.map((item, i) => {
-          const slot = slotOf(i, active);
-          // 화면 밖 한쪽 끝에서 반대쪽 끝으로 옮겨 가는 카메라는 움직임 없이 바로 옮긴다
-          const wraps = Math.abs(slotOf(i, prev) - slot) > 1;
-          const isCenter = slot === 0;
-          const isSide = slot === -1 || slot === 1;
-          const style = { '--cx': slotX(slot), '--w': item.size[0], '--h': item.size[1] };
-          const cls = [
-            styles.camera,
-            isCenter ? styles.center : styles.side,
-            item.shadow ? styles.shadow : '',
-            wraps ? styles.wrap : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
+          const r = Math.round(offsetOf(i, active));
+          const isCenter = r === 0;
+          const isSide = r === -1 || r === 1;
           return (
             <button
               key={item.id}
+              ref={(el) => {
+                camRefs.current[i] = el;
+              }}
               type="button"
-              className={cls}
-              style={style}
+              className={`${styles.camera} ${item.shadow ? styles.shadow : ''}`}
+              style={{ '--w': item.size[0], '--h': item.size[1] }}
               onClick={() => select(i)}
               tabIndex={isSide ? 0 : -1}
               aria-hidden={!isSide}
-              aria-label={`${slot < 0 ? '이전' : '다음'} 카메라: ${item.name}`}
+              aria-label={`${r < 0 ? '이전' : '다음'} 카메라: ${item.name}`}
             >
-              <img src={item.src} alt={isCenter ? item.alt : ''} draggable={false} />
+              {/* 선명한 그림 + 미리 흐리게 그린 그림을 겹쳐 두고, 가운데에서 멀어질수록 흐린 쪽이 보인다 */}
+              <span className={styles.layer}>
+                <img src={item.src} alt={isCenter ? item.alt : ''} draggable={false} />
+              </span>
+              <span className={`${styles.layer} ${styles.blurred}`} aria-hidden="true">
+                <img src={item.src} alt="" draggable={false} />
+              </span>
             </button>
           );
         })}

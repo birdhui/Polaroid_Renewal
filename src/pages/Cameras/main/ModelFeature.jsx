@@ -8,16 +8,33 @@ import styles from './ModelFeature.module.css';
  * 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080)
  * - 한쪽: 손글씨 모델명 + 헤드라인 · 설명 · 버튼
  * - 반대쪽: 626×626 제품 카드(배경색이 들어간 사진) + 'POLAROID CAMERA - 00N' 라벨
- * 손글씨 모델명은 섹션이 화면에 들어오면 펜으로 쓰듯 그려진다(ScriptDraw).
- * 메인 헤드라인은 처음에 흐릿하게 있다가, 드로잉이 시작되는 순간 초점이 맞듯 선명해진다.
+ * 글 묶음이 화면에 어느 정도(60%) 보이면 한꺼번에:
+ *   손글씨 모델명이 펜으로 쓰듯 그려지고(ScriptDraw), 흐릿하던 헤드라인과 제품 카드가 초점이 맞듯 선명해진다.
+ * 제품 카드에 마우스를 올리면 모델별 모습으로 바뀌고(hover), 떼면 원래 사진으로 돌아온다.
  */
+/** 마우스를 올렸을 때의 모습 → 카드에 넘길 CSS 변수 (--hover-to: 바뀐 모습, --hover-from: 바뀐 그림이 시작하는 모습) */
+function hoverVars(hover) {
+  if (hover.kind === 'tilt') {
+    const deg = hover.dir === 'left' ? -14 : 14;
+    const t = `perspective(1400px) rotateY(${deg}deg) scale(1.12)`;
+    return { '--hover-to': t, '--hover-from': 'none', '--base-to': t };
+  }
+  if (hover.kind === 'zoom') {
+    const t = `scale(${hover.scale})`;
+    return { '--hover-to': t, '--hover-from': 'none', '--base-to': t, '--hover-origin': hover.origin };
+  }
+  // image: 원래 사진은 살짝 확대되며 흐려지고, 바뀐 사진은 조금 큰 상태에서 제자리로 들어온다
+  return { '--hover-to': 'none', '--hover-from': 'scale(1.12)', '--base-to': 'scale(1.12)' };
+}
+
 const TOTAL = 6;
 const pad = (n, len = 2) => String(n).padStart(len, '0');
 
 export default function ModelFeature({ model, linkLabel, reducedMotion }) {
-  const [sectionRef, inView] = useInView({ threshold: 0.35 });
+  const [copyRef, inView] = useInView({ threshold: 0.6 });
   const [cl, ct, cw, ch] = model.card.box;
   const [sl, st, sw, sh] = model.script.box;
+  const { hover } = model.card;
 
   const linkContent = (
     <>
@@ -28,7 +45,6 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
 
   return (
     <section
-      ref={sectionRef}
       id={`model-${model.id}`}
       className={styles.section}
       data-side={model.side}
@@ -36,11 +52,22 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
       aria-labelledby={`model-${model.id}-title`}
     >
       <figure
-        className={styles.card}
+        className={`${styles.card} ${inView || reducedMotion ? styles.focused : ''}`}
         data-tone={model.card.tone}
-        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch }}
+        data-hover={hover.kind}
+        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch, '--card-bg': model.card.bg, ...hoverVars(hover) }}
       >
-        <img className={styles.cardImage} src={model.card.src} alt={model.card.alt} loading="lazy" />
+        <div className={styles.cardMedia}>
+          <img className={`${styles.cardImage} ${styles.base}`} src={model.card.src} alt={model.card.alt} loading="lazy" />
+          <img
+            className={`${styles.cardImage} ${styles.alt}`}
+            src={hover.src ?? model.card.src}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            style={hover.kind === 'image' ? { objectFit: hover.fit, objectPosition: hover.position ?? '50% 50%' } : undefined}
+          />
+        </div>
         <figcaption className={styles.cardLabels} aria-hidden="true">
           <span className={styles.labelTopLeft}>POLAROID CAMERA - {pad(model.card.index, 3)}</span>
           <span className={styles.labelTopRight}>01 / 02</span>
@@ -60,6 +87,7 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
       />
 
       <div
+        ref={copyRef}
         className={`${styles.copy} ${inView || reducedMotion ? styles.focused : ''}`}
         style={{ '--edge': model.edge, '--top': model.top }}
       >
