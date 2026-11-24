@@ -21,7 +21,7 @@
   --chat-options-delay: 300ms; /* 질문 말풍선이 다 올라온 뒤 선택지가 나오기까지 */
   --chat-options-stagger: 80ms; /* 선택지 사이 간격 */
   --chat-shift-duration: 550ms; /* 새 질문이 붙을 때 앞 말풍선들이 위로 밀려 올라가는 시간 */
-  --chat-intro-exit-duration: 600ms; /* 첫 질문이 뜰 때 안내 문구가 위로 올라가며 사라지는 시간 */
+  --chat-intro-exit-duration: 400ms; /* 첫 질문이 뜰 때 안내 문구가 위로 올라가며 사라지는 시간 (첫 질문이 올라오는 시간과 같게 둬서 동시에 바뀐다) */
   --chat-intro-exit-distance: 56px; /* 안내 문구가 올라가는 거리 */
   --chat-intro-rise: 600ms; /* 안내 제목·설명 글이 아래에서 올라오는 시간 */
   --chat-intro-rise-distance: 28px; /* 올라오기 전에 아래로 내려가 있는 거리 */
@@ -88,7 +88,7 @@
   text-align: center;
   pointer-events: none;
   transition:
-    opacity var(--chat-intro-exit-duration) ease,
+    opacity 250ms ease, /* 문구는 말풍선이 자리를 잡기 전에 거의 다 옅어진다 */
     transform var(--chat-intro-exit-duration) var(--chat-ease-out),
     visibility 0s linear var(--chat-intro-exit-duration);
 }
@@ -172,8 +172,8 @@
 }
 
 /*
- * 말풍선들 — 입력창 바로 위에 붙어서 위로 쌓인다. 입력창 아래로 올라오는 모션이 입력창 뒤에서 나오도록 z-index 를 낮게 둔다.
- * 대화가 길어지면 이 영역 안에서 스크롤된다(스크롤바는 숨김). 위쪽 가장자리는 살짝 흐려진다.
+ * 말풍선들 — 카드 위쪽에서부터 아래로 차례로 쌓인다. 입력창 쪽으로 내려오는 모션이 입력창 뒤에서 나오도록 z-index 를 낮게 둔다.
+ * 대화가 길어서 이 영역을 넘치면 안에서 스크롤되고(스크롤바는 숨김) 새 메시지가 보이게 맨 아래로 이동한다. 위쪽 가장자리는 살짝 흐려진다.
  */
 .stack {
   position: relative;
@@ -182,7 +182,8 @@
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
-  /* 시안: 칩 아래 → 입력창 위 45 */
+  /* 위쪽: 첫 말풍선이 위쪽 흐림(mask)에 가리지 않게 / 시안: 칩 아래 → 입력창 위 45 */
+  padding-top: calc(28 * var(--s));
   padding-bottom: calc(45 * var(--s));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -192,11 +193,6 @@
 
 .stack::-webkit-scrollbar {
   display: none;
-}
-
-/* 말풍선이 적을 땐 아래(입력창 쪽)에 붙고, 많아지면 위로 스크롤된다 */
-.stack > :first-child {
-  margin-top: auto;
 }
 
 .stack > * + * {
