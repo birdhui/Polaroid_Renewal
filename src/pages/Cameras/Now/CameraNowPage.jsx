@@ -10,6 +10,7 @@ import {
   filterShowcase,
   appPromo,
   purchaseCta,
+  goFilm,
   discoverMore,
 } from './data/sections.js';
 import styles from './CameraNowPage.module.css';
@@ -34,6 +35,16 @@ function Lines({ lines }) {
       {line}
     </span>
   ));
+}
+
+/** Figma 이미지 자리: 파일이 아직 없으면 점선 자리표시자를 보여준다 */
+function FilmImage({ image, className, alt }) {
+  if (image.src) return <img className={className} src={image.src} alt={alt} />;
+  return (
+    <span className={`${className} ${styles.imageSlot}`} role="img" aria-label={alt}>
+      {image.file}
+    </span>
+  );
 }
 
 /** Figma "Section BG Photo" 좌표(x, y, 너비, 높이) */
@@ -196,7 +207,37 @@ export default function CameraNowPage() {
         </button>
       </section>
 
-      {/* 10 Discover More */}
+      {/* 10 Polaroid Go Film */}
+      <section className={`${styles.screen} ${styles.goFilm}`}>
+        <img className={styles.bg} style={bgBox(0, 0, 1920, 1080)} src={sectionBackground} alt="" />
+        <p className={styles.goFilmEyebrow}>{goFilm.eyebrow}</p>
+        <h3 className={styles.goFilmTitle}>
+          <Lines lines={goFilm.title} />
+        </h3>
+        <p className={styles.goFilmDescription}>
+          {goFilm.description.map((line) => (
+            <span key={line.map((part) => part.text).join('')} className={styles.line}>
+              {line.map((part) => (part.bold ? <strong key={part.text}>{part.text}</strong> : part.text))}
+            </span>
+          ))}
+        </p>
+        <button type="button" className={styles.goFilmButton}>
+          {goFilm.ctaLabel}
+        </button>
+
+        <p className={styles.goFilmTab}>{goFilm.tabLabel}</p>
+        <div className={styles.goFilmPanel} />
+        <FilmImage image={goFilm.images.pack} className={styles.goFilmPack} alt="Color Film Double Pack 제품 이미지" />
+        <p className={styles.goFilmCaption}>{goFilm.caption}</p>
+
+        <span className={styles.goFilmThumbTile} style={{ '--y': 377 }} aria-hidden="true" />
+        <span className={styles.goFilmThumbTile} style={{ '--y': 521 }} aria-hidden="true" />
+        <FilmImage image={goFilm.images.thumb1} className={styles.goFilmThumb1} alt="Color Film Double Pack 썸네일" />
+        <CornerBrackets className={styles.goFilmThumbFrame} />
+        <FilmImage image={goFilm.images.thumb2} className={styles.goFilmThumb2} alt="Color Film 썸네일" />
+      </section>
+
+      {/* 11 Discover More */}
       <section className={`${styles.screen} ${styles.discover}`}>
         <img className={styles.bg} style={bgBox(-22, -10, 1964, 1105)} src={sectionBackground} alt="" />
         <span className={styles.discoverBgBorder} aria-hidden="true" />

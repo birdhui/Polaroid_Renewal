@@ -1,3 +1,38 @@
+/* 스크롤 구간: 기능 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
+.track {
+  position: relative;
+  height: calc((var(--count) + 1) * 100vh);
+}
+
+.track {
+  background: #fff9e8;
+}
+
+/* 화면 비율(1920×1080)이 뷰포트와 달라도 세로 가운데에 고정 */
+.track > .section {
+  position: sticky;
+  top: calc((100vh - 56.25vw) / 2);
+}
+
+.fade {
+  animation: featureFade 0.5s ease both;
+}
+
+@keyframes featureFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade {
+    animation: none;
+  }
+}
+
 /* 04~06 Feature 프레임 (1920×1080) — 배경 사진은 Figma "Feature BG Photo"(1920×1088) */
 .section {
   composes: screen from './stage.module.css';
@@ -27,7 +62,7 @@
 /* Vector 49 */
 .frame {
   --x: 194;
-  --y: 180;
+  --y: var(--fy);
   --w: 766;
   --h: 766;
   --arm: 176;
@@ -40,7 +75,7 @@
 .tagPill {
   composes: pos size from './stage.module.css';
   --x: 1091;
-  --y: 602;
+  --y: calc(602 + var(--dy));
   --w: 129;
   --h: 24.1;
   border: calc(0.571 * var(--u)) solid #151515;
@@ -50,7 +85,7 @@
 .tagCode {
   composes: pos text center from './stage.module.css';
   --x: 1155.55;
-  --y: 608;
+  --y: calc(608 + var(--dy));
   --fs: 12;
   --ls: 0.5;
   line-height: calc(12 * var(--u));
@@ -62,7 +97,7 @@
 .tagLabel {
   composes: pos text center from './stage.module.css';
   --x: 1324;
-  --y: 605;
+  --y: calc(605 + var(--dy));
   --fs: 14;
   --ls: 0.3;
   line-height: calc(18 * var(--u));
@@ -74,7 +109,7 @@
 .headline {
   composes: pos text from './stage.module.css';
   --x: 1091;
-  --y: 643;
+  --y: calc(643 + var(--dy));
   --fs: 40;
   --ls: -0.9;
   font-family: var(--f-pre);
@@ -91,11 +126,11 @@
 }
 
 .ruleTop {
-  --y: 713.5;
+  --y: calc(713.5 + var(--dy));
 }
 
 .ruleBottom {
-  --y: 832;
+  --y: calc(832 + var(--dy));
   --x: 1092;
 }
 
@@ -120,9 +155,9 @@
 }
 
 .ghostFirst {
-  --y: 750;
+  --y: calc(750 + var(--dy));
 }
 
 .ghostSecond {
-  --y: 867.99;
+  --y: calc(867.99 + var(--dy));
 }

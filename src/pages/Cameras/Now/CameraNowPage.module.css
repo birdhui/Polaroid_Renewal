@@ -155,6 +155,7 @@
 .filters,
 .appPromo,
 .purchase,
+.goFilm,
 .discover {
   background: #1c140c;
   color: #fff;
@@ -556,7 +557,164 @@
   cursor: pointer;
 }
 
-/* ───────── 10 Discover More ───────── */
+/* ───────── 10 Polaroid Go Film ───────── */
+.goFilmEyebrow {
+  composes: pos text from './components/stage.module.css';
+  --x: 408.5;
+  --y: 320;
+  --fs: 18;
+  line-height: calc(18 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 500;
+  color: var(--now-accent);
+}
+
+.goFilmTitle {
+  composes: pos text from './components/stage.module.css';
+  --x: 408.5;
+  --y: 356;
+  --fs: 47;
+  line-height: 1.1;
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #fff;
+}
+
+.goFilmDescription {
+  composes: pos text from './components/stage.module.css';
+  --x: 408.5;
+  --y: 488;
+  --fs: 16;
+  --ls: -0.8;
+  width: calc(288 * var(--u));
+  line-height: 1.5;
+  font-family: var(--f-pre);
+  font-weight: 300;
+  color: #fff;
+}
+
+.goFilmDescription strong {
+  font-weight: 600;
+}
+
+.goFilmButton {
+  composes: pos size from './components/stage.module.css';
+  --x: 408.5;
+  --y: 612;
+  --w: 160;
+  --h: 48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  color: #fff;
+  font-family: var(--f-pre);
+  font-size: calc(14 * var(--u));
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* "Go Film" 탭: 아래 2px 포인트색 밑줄 */
+.goFilmTab {
+  composes: pos text from './components/stage.module.css';
+  --x: 923;
+  --y: 305;
+  --fs: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(52 * var(--u));
+  padding: calc(10 * var(--u)) calc(15 * var(--u));
+  border-bottom: calc(2 * var(--u)) solid var(--now-accent);
+  line-height: 1;
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #fff;
+}
+
+.goFilmPanel {
+  composes: pos size from './components/stage.module.css';
+  --x: 923;
+  --y: 377;
+  --w: 455;
+  --h: 419;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.goFilmPack {
+  composes: pos size from './components/stage.module.css';
+  --x: 990.04;
+  --y: 430;
+  --w: 322.43;
+  --h: 269.5;
+  max-width: none;
+  object-fit: contain;
+}
+
+.goFilmCaption {
+  composes: pos text center from './components/stage.module.css';
+  --x: 1151;
+  --y: 726;
+  --fs: 18;
+  font-family: var(--f-pre);
+  font-weight: 400;
+  color: #fff;
+}
+
+.goFilmThumbTile {
+  composes: pos size from './components/stage.module.css';
+  --x: 1391;
+  --w: 131;
+  --h: 131;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.goFilmThumb1 {
+  composes: pos size from './components/stage.module.css';
+  --x: 1417;
+  --y: 409;
+  --w: 79;
+  --h: 67;
+  max-width: none;
+  object-fit: contain;
+}
+
+/* Group 120 — 선택된 썸네일의 모서리 브래킷. TODO: Figma SVG(08ab6)로 교체 */
+.goFilmThumbFrame {
+  --x: 1391;
+  --y: 377;
+  --w: 131;
+  --h: 131;
+  --arm: 22;
+  --stroke: 1.5;
+  --bracket-color: rgba(255, 255, 255, 0.85);
+}
+
+.goFilmThumb2 {
+  composes: pos size from './components/stage.module.css';
+  --x: 1417.35;
+  --y: 554.4;
+  --w: 79;
+  --h: 66.3;
+  max-width: none;
+  object-fit: contain;
+}
+
+/* 이미지 파일이 아직 없을 때 보이는 자리표시자 */
+.imageSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--f-mono);
+  font-size: calc(11 * var(--u));
+  text-align: center;
+  word-break: break-all;
+}
+
+/* ───────── 11 Discover More ───────── */
 .discover {
   aspect-ratio: 1920 / 1095;
 }

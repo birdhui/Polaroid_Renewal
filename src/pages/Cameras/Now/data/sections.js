@@ -46,7 +46,8 @@ export const featureBackground = featureBackgroundImage;
 /**
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
  * 선택한 기능이 위(진하게)에 오고, 나머지 둘이 ghosts 순서·투명도대로 아래에 흐리게 나온다.
- * imageTop/imageSize: 06 선명도 이미지만 762px(y 184)이고 나머지는 766px(y 180)이다.
+ * 프레임마다 y 좌표가 달라서(04 / 05·06) textShift(기준 대비 텍스트 이동량), imageTop/imageSize(이미지), frameTop(브래킷)을 따로 둔다.
+ * 06 선명도 이미지만 762px이다.
  */
 export const features = [
   {
@@ -55,7 +56,9 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
     image: featureAutofocusImage,
-    imageTop: 180,
+    textShift: -19,
+    frameTop: 161,
+    imageTop: 161,
     imageSize: 766,
     ghosts: [
       { id: 'double-exposure', opacity: 0.2 },
@@ -68,7 +71,9 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
-    imageTop: 180,
+    textShift: -23,
+    frameTop: 157,
+    imageTop: 157,
     imageSize: 766,
     ghosts: [
       { id: 'sharpness', opacity: 0.1 },
@@ -81,7 +86,9 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,
-    imageTop: 184,
+    textShift: -23,
+    frameTop: 157,
+    imageTop: 161,
     imageSize: 762,
     ghosts: [
       { id: 'two-lens-autofocus', opacity: 0.2 },
@@ -133,6 +140,39 @@ export const purchaseCta = {
     { src: purchaseShot3Image, x: 673, w: 573 },
     { src: purchaseShot2Image, x: 1367, w: 622 },
   ],
+};
+
+/*
+ * 10 Polaroid Go Film (Figma 1938:970).
+ * 필름 사진 3장은 Figma에서 PNG(2x, 투명 배경)로 내보내 src/assets/cameras/now/ 에 아래 이름으로 넣으면 자동으로 나타난다.
+ *   go-film-pack.png    큰 필름 팩 (Color i-Type, 322.4×269.5 자리)
+ *   go-film-thumb-1.png 선택된 작은 썸네일 — 큰 팩과 같은 사진 (79×67 자리)
+ *   go-film-thumb-2.png 두 번째 썸네일 (B&W i-Type, 79×66 자리)
+ * 배경이 투명한 PNG다. 파일이 없으면 점선 자리표시자가 보인다.
+ */
+const goFilmImages = import.meta.glob('../../../../assets/cameras/now/go-film-*.png', {
+  eager: true,
+  import: 'default',
+});
+const goFilmImage = (name) => goFilmImages[`../../../../assets/cameras/now/${name}`];
+
+export const goFilm = {
+  eyebrow: 'Compatibility',
+  title: ['Polaroid Go', 'Film'],
+  // bold: Pretendard SemiBold
+  description: [
+    [{ text: '배터리 없이 더 가볍고 합리적인 ' }, { text: 'i-Type 필름', bold: true }, { text: '부터,' }],
+    [{ text: '클래식한 감성의 ' }, { text: '600 필름', bold: true }, { text: '까지.' }],
+    [{ text: '원하는 필름을 골라 바로 촬영을 시작해 보세요.' }],
+  ],
+  ctaLabel: '모든 필름 보기',
+  tabLabel: 'Go Film',
+  caption: 'Color Film Double Pack',
+  images: {
+    pack: { src: goFilmImage('go-film-pack.png'), file: 'go-film-pack.png' },
+    thumb1: { src: goFilmImage('go-film-thumb-1.png'), file: 'go-film-thumb-1.png' },
+    thumb2: { src: goFilmImage('go-film-thumb-2.png'), file: 'go-film-thumb-2.png' },
+  },
 };
 
 export const discoverMore = {
