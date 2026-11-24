@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import frameSvg from '@/assets/cameras/main/viewfinder-frame.svg';
-import arrowSvg from '@/assets/cameras/main/arrow-circle.svg';
 import styles from './LineupCarousel.module.css';
 
 /**
@@ -9,7 +8,8 @@ import styles from './LineupCarousel.module.css';
  * - 3초마다 오른쪽 카메라가 가운데로 들어오며 오른쪽 → 왼쪽으로 넘어간다.
  *   (끌고 있는 동안, 키보드로 조작하는 동안, 화면 밖에 있을 때, 동작 줄이기 설정이면 멈춘다)
  * - 카메라를 마우스·손가락으로 잡고 좌우로 끌어서 넘길 수 있다. 양옆 카메라를 누르거나 ←/→ 키로도 넘긴다.
- * - 아래 모델 이름과 '제품 보러가기'(→ 아래 해당 모델 섹션 #model-{id})가 가운데 카메라에 맞춰 바뀐다.
+ * - 제목 아래 모델 이름 줄(카테고리)에서 가운데 카메라의 이름이 진하게 바뀌고, 이름을 누르면 그 카메라로 넘어간다.
+ * - 아래 모델 이름과 'View More'(→ 아래 해당 모델 섹션 #model-{id})가 가운데 카메라에 맞춰 바뀐다.
  *
  * 움직임 구조 (끊김·순간이동 방지)
  * - 위치는 하나의 연속값 pos(가운데에 온 카메라 번호, 소수 포함)로만 관리한다.
@@ -99,6 +99,12 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
     const m = motion.current;
     m.target = Math.round(m.target) + dir;
     kick();
+  };
+
+  /** 카테고리에서 고른 카메라 i 로 — 가까운 쪽으로 돌아간다 */
+  const goTo = (i) => {
+    const r = Math.round(offsetOf(i, motion.current.target));
+    if (r !== 0) go(r);
   };
 
   // 처음 배치 + 화면 폭이 바뀌면 다시 배치
@@ -225,6 +231,21 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
         {lineup.title[1]}
       </h2>
 
+      <ul className={styles.categories} aria-label="카메라 모델">
+        {items.map((item, i) => (
+          <li key={item.id}>
+            <button
+              type="button"
+              className={`${styles.category} ${i === active ? styles.categoryActive : ''}`}
+              aria-current={i === active ? 'true' : undefined}
+              onClick={() => goTo(i)}
+            >
+              {item.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+
       <div
         ref={stageRef}
         className={`${styles.stage} ${dragging ? styles.dragging : ''}`}
@@ -258,7 +279,15 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
               }}
               type="button"
               className={`${styles.camera} ${item.shadow ? styles.shadow : ''}`}
-              style={{ '--w': item.size[0], '--h': item.size[1] }}
+              style={{
+                '--w': item.size[0],
+                '--h': item.size[1],
+                ...(item.shadow && {
+                  '--sb': item.shadow.base,
+                  '--sl': item.shadow.left,
+                  '--sr': item.shadow.right,
+                }),
+              }}
               onClick={() => select(i)}
               tabIndex={isSide ? 0 : -1}
               aria-hidden={!isSide}
@@ -282,9 +311,9 @@ export default function LineupCarousel({ lineup, reducedMotion }) {
             {current.name}
           </span>
         </p>
-        <a className={styles.link} href={`#model-${current.id}`} onClick={toModel}>
-          <span>{lineup.linkLabel}</span>
-          <img src={arrowSvg} alt="" width="57" height="57" />
+        <a className={styles.viewMore} href={`#model-${current.id}`} onClick={toModel}>
+          {lineup.linkLabel}
+          <span className={styles.visuallyHidden}> — {current.name}</span>
         </a>
       </div>
     </section>

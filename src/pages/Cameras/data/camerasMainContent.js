@@ -47,9 +47,12 @@ export const MAIN_HERO = {
 /**
  * 2. 카메라 라인업 (뷰파인더 프레임 속 가운데 카메라 + 양옆 흐린 카메라)
  * 6개 모델이 차례로 가운데에 온다. 이미지는 아래 모델 섹션의 카메라 이미지를 그대로 쓴다.
+ * 제목 아래 모델 이름 줄(카테고리)과 같은 순서로 넘어가며, 가운데 모델의 이름이 진하게 바뀐다.
  * size: 화면 크기 [w, h] — 400×415 안에 비율을 지켜 맞춘 값
  *       (시안 가운데 카메라 514×583 보다 작게: 제목·카메라·모델 이름이 한 화면에 들어오도록)
- * shadow: 카메라 아래 바닥 그림자. I-2 는 이미지에 그림자가 들어 있어 따로 넣지 않는다.
+ * shadow: 카메라가 바닥에 닿은 그림자. I-2 는 이미지에 그림자가 들어 있어 따로 넣지 않는다.
+ *         I-2 그림자처럼 바닥 선에 붙어 좌우로 퍼지도록, 이미지마다 바닥 선 위치와 몸체 좌우 끝을 잰 값
+ *         (base: 위에서부터 바닥 선까지 이미지 높이 대비 비율, left·right: 몸체 바깥 여백 비율)
  */
 const LINEUP_FIT = [400, 415];
 const fit = ([, , w, h]) => {
@@ -57,9 +60,28 @@ const fit = ([, , w, h]) => {
   return [Math.round(w * k), Math.round(h * k)];
 };
 
+/** 카테고리 줄 순서·표기 (시안 그대로: Now | Now+ | Go | MOD | Flip | I-2) — 라인업도 이 순서로 넘어간다 */
+const LINEUP_ORDER = [
+  ['now', 'Now'],
+  ['now-plus', 'Now+'],
+  ['go', 'Go'],
+  ['mod', 'MOD'],
+  ['flip', 'Flip'],
+  ['i2', 'I-2'],
+];
+
+/** 바닥 그림자 위치 (이미지 알파값에서 잰 값) */
+const LINEUP_SHADOW = {
+  now: { base: 0.9466, left: 0.092, right: 0.0905 },
+  'now-plus': { base: 0.9469, left: 0.0915, right: 0.0902 },
+  flip: { base: 0.9448, left: 0.1395, right: 0.1406 },
+  mod: { base: 0.9465, left: 0.0934, right: 0.0934 },
+  go: { base: 0.9387, left: 0.1169, right: 0.1157 },
+};
+
 export const LINEUP = {
   title: ['일상의 모든 순간,', '폴라로이드와 함께.'],
-  linkLabel: '제품 보러가기',
+  linkLabel: 'View More',
   initial: 0,
   /** MODELS 아래에서 채운다 */
   items: [],
@@ -191,14 +213,18 @@ export const MODELS = [
 
 export const MODEL_LINK_LABEL = '제품 보러가기';
 
-LINEUP.items = MODELS.map((m) => ({
-  id: m.id,
-  name: m.name,
-  src: m.camera.src,
-  alt: m.camera.alt,
-  size: fit(m.camera.box),
-  shadow: m.id !== 'i2',
-}));
+LINEUP.items = LINEUP_ORDER.map(([id, label]) => {
+  const m = MODELS.find((model) => model.id === id);
+  return {
+    id: m.id,
+    name: m.name,
+    label,
+    src: m.camera.src,
+    alt: m.camera.alt,
+    size: fit(m.camera.box),
+    shadow: LINEUP_SHADOW[m.id] ?? null,
+  };
+});
 
 /** 10. 마지막 안내 (왼쪽 어두운 면: Compare / 오른쪽 밝은 면: Support) */
 export const HELP = {
