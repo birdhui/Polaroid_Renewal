@@ -7,10 +7,12 @@ import styles from './ModelFeature.module.css';
 /**
  * 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080)
  * - 한쪽: 손글씨 모델명 + 헤드라인 · 설명 · 버튼
- * - 반대쪽: 626×626 제품 카드(배경색이 들어간 사진) + 'POLAROID CAMERA - 00N' 라벨
+ * - 반대쪽: 626×626 제품 카드(배경 없는 투명 사진) + 'POLAROID CAMERA - 00N' 라벨
  * 글 묶음이 화면에 어느 정도(60%) 보이면 한꺼번에:
  *   손글씨 모델명이 펜으로 쓰듯 그려지고(ScriptDraw), 흐릿하던 헤드라인과 제품 카드가 초점이 맞듯 선명해진다.
- * 제품 카드에 마우스를 올리면 사진이 살짝 커지고, 떼면 원래 크기로 돌아온다.
+ * 제품 카드에 마우스를 올리면(또는 키보드로 카드에 머물면) 두 번째 사진으로 바뀐다 (framer 'Hover Blur Cards' 참고):
+ *   지금 사진은 오른쪽으로 살짝 밀리며 흐려지고, 다음 사진은 왼쪽에서 흐린 채 들어와 선명해진다(약 0.35초).
+ *   오른쪽 위 번호도 01 / 02 → 02 / 02 로 바뀐다. 떼면 거꾸로 돌아온다.
  */
 const TOTAL = 6;
 const pad = (n, len = 2) => String(n).padStart(len, '0');
@@ -37,15 +39,27 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
     >
       <figure
         className={`${styles.card} ${inView || reducedMotion ? styles.focused : ''}`}
-        data-tone={model.card.tone}
-        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch, '--card-bg': model.card.bg }}
+        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch }}
+        tabIndex={model.card.hover ? 0 : undefined}
+        aria-label={model.card.hover ? `${model.card.alt} — 다른 각도 사진 보기` : undefined}
       >
         <div className={styles.cardMedia}>
-          <img className={styles.cardImage} src={model.card.src} alt={model.card.alt} loading="lazy" />
+          <img className={`${styles.cardImage} ${styles.cardFirst}`} src={model.card.src} alt={model.card.alt} loading="lazy" />
+          {model.card.hover && (
+            <img
+              className={`${styles.cardImage} ${styles.cardSecond}`}
+              src={model.card.hover.src}
+              alt={model.card.hover.alt}
+              loading="lazy"
+            />
+          )}
         </div>
         <figcaption className={styles.cardLabels} aria-hidden="true">
           <span className={styles.labelTopLeft}>POLAROID CAMERA - {pad(model.card.index, 3)}</span>
-          <span className={styles.labelTopRight}>01 / 02</span>
+          <span className={styles.labelTopRight}>
+            <span className={styles.countFirst}>01 / 02</span>
+            {model.card.hover && <span className={styles.countSecond}>02 / 02</span>}
+          </span>
           <span className={styles.labelBottom}>
             {pad(model.card.index)} / {pad(TOTAL)}
           </span>
