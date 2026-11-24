@@ -539,7 +539,7 @@
   --h: 79;
   --arm: 27;
   --stroke: 2;
-  --bracket-color: #fff;
+  --bracket-color: #19140c;
 }
 
 .purchaseWordmark {
@@ -551,7 +551,7 @@
   line-height: calc(50 * var(--u));
   font-family: var(--f-out);
   font-weight: 600;
-  color: #fff;
+  color: #19140c;
 }
 
 .purchaseHeading {
@@ -563,14 +563,15 @@
   line-height: calc(50 * var(--u));
   font-family: var(--f-pre);
   font-weight: 300;
-  color: #fff;
+  color: #19140c;
 }
 
 /* 스크롤 구간: 화면 높이 + 사진 줄이 지나가는 만큼. 안쪽 화면은 sticky 로 고정한다 */
 .purchaseTrack {
   position: relative;
   height: 260vh;
-  color: #fff; /* 배경은 07~11 공통 고정 갈색 그라데이션이 비쳐 보인다 */
+  background: #fff9e8; /* Figma 09: 크림색 배경(Rectangle 1), 배경 사진은 끔 */
+  color: #19140c;
 }
 
 .purchaseSticky {
@@ -617,8 +618,8 @@
   height: calc(41 * var(--u));
   padding: 0 calc(60 * var(--u));
   transform: translateX(-50%);
-  background: #fff;
-  color: #19140c;
+  background: #19140c;
+  color: #fff;
   font-family: var(--f-pre);
   font-size: calc(14 * var(--u));
   font-weight: 500;
