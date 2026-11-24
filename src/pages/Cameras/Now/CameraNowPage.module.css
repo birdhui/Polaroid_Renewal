@@ -50,9 +50,9 @@
 
 .heroTitle {
   composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 795;
-  --fs: 128;
+  --x: 90;
+  --y: 601;
+  --fs: 170;
   --ls: -2;
   font-family: var(--f-out);
   font-weight: 800;
@@ -61,14 +61,25 @@
 
 .heroDescription {
   composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 956;
+  --x: 90;
+  --y: 818;
   --fs: 24;
-  --ls: -0.48;
-  line-height: 1.1;
+  --ls: -0.36;
+  line-height: 1.4;
   font-family: var(--f-pre);
-  font-weight: 200;
+  font-weight: 400;
   color: #fff;
+}
+
+/* Figma gradation_bg: 아래쪽 458px 가 투명 → 검정 60% 로 짙어져 글자가 잘 보이게 한다 */
+.heroGradient {
+  position: absolute;
+  left: 0;
+  top: calc(622 * var(--u));
+  width: 100%;
+  height: calc(458 * var(--u));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+  pointer-events: none;
 }
 
 /* ───────── 02 Intro ───────── */
@@ -891,6 +902,16 @@
 .page [data-reveal][data-in] {
   opacity: 1;
   filter: blur(0);
+  translate: 0 0;
+}
+
+/* 01 Hero 그라데이션: 글자와 같은 타이밍으로 아래에서 올라오며 나타난다 */
+.page .heroGradient[data-reveal] {
+  filter: none;
+  translate: 0 calc(90 * var(--u));
+}
+
+.page .heroGradient[data-reveal][data-in] {
   translate: 0 0;
 }
 

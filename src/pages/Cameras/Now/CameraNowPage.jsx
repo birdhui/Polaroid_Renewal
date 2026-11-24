@@ -43,6 +43,7 @@ function Lines({ lines }) {
  * 화면을 벗어나면 다시 숨겨서, 다시 스크롤해 들어올 때마다 반복된다.
  */
 const REVEAL_TARGETS = [
+  'heroGradient',
   'heroTitle',
   'heroDescription',
   'introHeading',
@@ -216,6 +217,7 @@ export default function CameraNowPage() {
       {/* 01 Hero */}
       <section className={styles.screen}>
         <img className={styles.heroImage} src={hero.image} alt="" />
+        <div className={styles.heroGradient} aria-hidden="true" />
         <h1 id="camera-now-title" className={styles.heroTitle}>
           {hero.title}
         </h1>
