@@ -20,12 +20,6 @@
 .card {
   margin: 0;
   isolation: isolate;
-  outline: none;
-}
-
-.card:focus-visible {
-  outline: 2px solid #151515;
-  outline-offset: 6px;
 }
 
 /* 처음엔 흐릿하게, 글이 보이기 시작하면(.focused) 선명하게 — 헤드라인과 같은 타이밍 */
@@ -47,12 +41,6 @@
   transform: none;
 }
 
-/*
- * 사진 전환 (framer 'Hover Blur Cards' 영상 분석: 약 0.3초 동안 두 사진이 겹치며
- * 지금 사진은 옆으로 번지듯 흐려지며 사라지고, 다음 사진은 흐린 상태에서 선명해진다)
- *  - 지금 사진: 오른쪽으로 3% 밀리고 가로로 살짝 늘어나며 blur 10px · 투명
- *  - 다음 사진: 왼쪽 3% 에서 흐린 채 시작해 제자리로 오며 선명
- */
 .cardImage {
   position: absolute;
   inset: 0;
@@ -60,66 +48,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition:
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity, filter, transform;
-}
-
-.cardSecond {
-  opacity: 0;
-  filter: blur(10px);
-  transform: translateX(-3%) scaleX(1.04);
-}
-
-.card:hover .cardFirst,
-.card:focus-visible .cardFirst {
-  opacity: 0;
-  filter: blur(10px);
-  transform: translateX(3%) scaleX(1.04);
-}
-
-.card:hover .cardSecond,
-.card:focus-visible .cardSecond {
-  opacity: 1;
-  filter: blur(0);
-  transform: none;
-}
-
-/* 오른쪽 위 번호 01 / 02 ↔ 02 / 02 — 아래에서 올라오며 바뀐다 */
-.labelTopRight {
-  /* 위아래로만 잘라 번호가 올라오며 바뀌게 (가로는 '02 / 02' 가 조금 더 넓어도 잘리지 않게) */
-  clip-path: inset(0 -2em);
-}
-
-.countFirst,
-.countSecond {
-  display: block;
-  transition:
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.35s ease;
-}
-
-.countSecond {
-  position: absolute;
-  top: 0;
-  right: 0;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translateY(100%);
-}
-
-.card:hover .countFirst,
-.card:focus-visible .countFirst {
-  opacity: 0;
-  transform: translateY(-100%);
-}
-
-.card:hover .countSecond,
-.card:focus-visible .countSecond {
-  opacity: 1;
-  transform: none;
 }
 
 .cardLabels {
@@ -331,9 +259,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cardMedia,
-  .cardImage,
-  .countFirst,
-  .countSecond {
+  .cardImage {
     transition: none;
   }
 
