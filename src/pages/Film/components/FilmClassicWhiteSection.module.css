@@ -1,11 +1,3 @@
-@font-face {
-  font-family: 'Film Stock Outfit';
-  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-}
-
 .section {
   position: relative;
   min-block-size: 550svh;

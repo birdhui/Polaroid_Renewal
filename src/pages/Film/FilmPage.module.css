@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Film Stock Outfit';
+  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
 /* Pretendard subset for the Film introduction's Korean copy. */
 @font-face {
   font-family: 'Film Intro Sans';
@@ -8,10 +16,10 @@
 }
 
 @font-face {
-  font-family: 'Film Outfit';
-  src: url('@/assets/film/fonts/outfit-bold.woff2') format('woff2');
+  font-family: 'Film Intro Sans';
+  src: url('@/assets/film/fonts/faq-pretendard.woff2') format('woff2');
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300;
   font-display: swap;
 }
 
@@ -98,21 +106,22 @@
 
 .title {
   font-size: clamp(30px, 2.865cqw, 73.333px);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.23;
   letter-spacing: -0.055em;
   word-break: keep-all;
 }
 
 .brand {
-  font-family: 'Film Outfit', var(--font-sans);
-  font-weight: 700;
+  font-family: 'Film Stock Outfit', var(--font-sans);
+  font-weight: 600;
 }
 
 .description {
   margin-block-start: clamp(var(--space-5), 2.604cqw, 66.667px);
-  font-size: clamp(16px, 1.25cqw, 32px);
-  line-height: 1.333;
+  font-size: clamp(16px, 1.145833cqw, 29.333px);
+  font-weight: 300;
+  line-height: 1.363636;
   letter-spacing: clamp(-2.667px, -0.104cqw, -0.5px);
   word-break: keep-all;
 }

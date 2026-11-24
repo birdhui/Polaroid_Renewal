@@ -185,13 +185,14 @@
 
 .spec dt {
   font-family: 'Film Stock Sans', var(--font-sans);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .spec dd {
   position: relative;
   padding-inline-start: 1.55em;
   font-family: 'Film Stock Outfit', var(--font-sans);
+  font-weight: 300;
 }
 
 .spec dd::before {
@@ -200,7 +201,6 @@
   inline-size: 1em;
   block-size: 0.075em;
   background: url('@/assets/film/go/spec-divider.svg') center / contain no-repeat;
-  opacity: 0.72;
   transform: translate(-50%, -50%) rotate(90deg);
   content: '';
 }
