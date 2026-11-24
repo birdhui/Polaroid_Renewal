@@ -1,439 +1,647 @@
-/**
- * Figma "Cameras - NOW" 프레임 색상(크림 #fff9e8, 잉크 #151515, 포인트 #f0a137)은
- * 아직 variables.css 공통 토큰으로 확정되지 않아 이 페이지 스코프 변수로만 선언한다.
- * 토큰이 확정되면 모진아(style/design-system)가 올리는 공통 값으로 교체한다.
+/*
+ * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
+ * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
+ * 화면 너비에 비례해 커지고 작아진다. 색상: 크림 #fff9e8, 잉크 #151515, 포인트 #f0a137.
  */
 .page {
   --now-cream: #fff9e8;
   --now-ink: #151515;
   --now-accent: #f0a137;
-  --now-muted: rgba(21, 21, 21, 0.6);
+  --f-pre: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --f-out: 'Outfit', 'Pretendard', sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --f-arch: 'Archivo', 'Pretendard', sans-serif;
 
+  background: var(--now-cream);
   color: var(--now-ink);
-  background: var(--color-bg);
+  font-family: var(--f-pre);
+  overflow-x: clip;
 }
 
-/* Figma 기준 18px, Outfit Medium, letter-spacing 0.7px — 1920px 기준 비율로 스케일 */
-.eyebrow {
-  margin: 0 0 var(--space-2);
-  font-size: clamp(0.75rem, 1vw, 1.125rem);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--now-accent);
-  text-align: center;
-}
-
-.sectionHeading {
-  max-width: 720px;
-  margin: 0 auto;
-  font-size: clamp(1.25rem, 2.6vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  text-align: center;
-}
-
-.wordmark {
-  margin: var(--space-2) 0;
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  text-align: center;
-}
-
-/*
- * Figma의 각 섹션 프레임은 1920×1080(한 섹션 = 풀스크린 한 장) 기준으로 설계됐다.
- * min-height를 그 비율(56.25vw)로 맞춰 "화면 한 장" 느낌을 유지하되,
- * 실제 콘텐츠가 더 필요하면 잘리지 않고 자연스럽게 늘어나게 한다.
- */
 .screen {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 56.25vw;
-  overflow: hidden;
-  box-sizing: border-box;
+  composes: screen from './components/stage.module.css';
 }
 
-/* Hero */
-.hero {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: flex-start;
-  color: #fff;
+.line {
+  display: block;
 }
 
-.hero::after {
-  content: '';
+/* 섹션 배경 사진: --bx --by --bw --bh 는 Figma "Section BG Photo" 좌표 */
+.bg {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.05) 55%);
-}
-
-.heroImage {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
+  left: calc(var(--bx) * var(--u));
+  top: calc(var(--by) * var(--u));
+  width: calc(var(--bw) * var(--u));
+  height: calc(var(--bh) * var(--u));
+  max-width: none;
   object-fit: cover;
 }
 
-.heroCopy {
-  position: relative;
-  z-index: 1;
-  padding: var(--space-8) var(--space-6);
-  max-width: 760px;
+/* ───────── 01 Hero ───────── */
+.heroImage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(1081 * var(--u));
+  max-width: none;
+  object-fit: cover;
 }
 
 .heroTitle {
-  margin: 0 0 var(--space-4);
-  font-size: clamp(2.5rem, 7vw, 5rem);
+  composes: pos text from './components/stage.module.css';
+  --x: 64;
+  --y: 795;
+  --fs: 128;
+  --ls: -2;
+  font-family: var(--f-out);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  color: #fff;
 }
 
 .heroDescription {
-  margin: 0;
-  max-width: 44rem;
-  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
-  font-weight: 300;
-  line-height: 1.4;
+  composes: pos text from './components/stage.module.css';
+  --x: 64;
+  --y: 956;
+  --fs: 24;
+  --ls: -0.48;
+  line-height: 1.1;
+  font-family: var(--f-pre);
+  font-weight: 200;
+  color: #fff;
+}
+
+/* ───────── 02 Intro ───────── */
+.intro,
+.featuresHeading {
+  background: var(--now-cream);
+}
+
+/* Vector 48 */
+.introBrackets {
+  --x: 591;
+  --y: 236;
+  --w: 738;
+  --h: 200;
+  --arm: 58;
+  --stroke: 5;
+  --bracket-color: #151515;
+}
+
+.introHeading {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 271;
+  --fs: 56;
+  --ls: -2;
+  line-height: calc(64.4 * var(--u));
+  font-family: var(--f-pre);
+  font-weight: 600;
+  color: var(--now-ink);
+}
+
+.introWordmark {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960.5;
+  --y: 592;
+  --fs: 200;
+  --ls: 0.7;
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #000;
+}
+
+.introEyebrow {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 595;
+  --fs: 18;
+  --ls: 0.7;
+  line-height: calc(18 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 500;
+  color: var(--now-accent);
 }
 
 /*
- * 04 Feature Showcase ~ 10 Discover More 구간의 그라데이션.
- * Figma 원본 프레임 색(#fff9e8)에서 시작해서, oryzo.ai 참고(따뜻한 나무 책상 톤
- * 비네트)처럼 "밝은 황갈색 → 나무색 브라운 → 어두운 브라운" 으로 자연스럽게 이어진다.
- * 02 Intro·03 Features Heading은 #fff9e8 단색이고, 이 그라데이션의 시작색과
- * 같은 값이라 경계가 보이지 않는다.
+ * Figma의 제품 사진은 배경이 투명한 PNG다. 지금 에셋은 흰 배경 JPG라서
+ * multiply로 크림 배경에 녹여 흰 박스가 보이지 않게 한다. TODO: 투명 PNG(7ae68)로 교체.
  */
-.connectedBg {
-  background: linear-gradient(
-    180deg,
-    #fff9e8 0%,
-    #d4af7a 14%,
-    #b3864f 28%,
-    #8a6239 42%,
-    #6b4a2c 55%,
-    #4a3220 68%,
-    #2e2013 82%,
-    #1c140c 100%
-  );
-}
-
-/* 02 Intro · 03 Features Heading — Figma 원본 프레임 색 그대로 단색 */
-.intro,
-.featuresHeading {
-  background: #fff9e8;
-}
-
-.intro {
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-}
-
-/* Figma 기준 56px, Pretendard SemiBold, letter-spacing -2px — 1920px 기준 비율로 스케일 */
-.introHeading {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  font-size: clamp(1.5rem, 2.92vw, 3.5rem);
-  font-weight: 600;
-  letter-spacing: -0.036em;
-}
-
-/* Figma: 헤드라인과 eyebrow+워드마크 그룹(브래킷 포함) 사이 간격(1920px 기준 195px → 10.16vw) */
-.introBrackets {
-  margin-top: 10.16vw;
-}
-
-.introWordmarkGroup .eyebrow {
-  margin-bottom: 0;
-}
-
-/* Figma 기준 200px, Outfit SemiBold, letter-spacing 0.7px — 1920px 기준 비율로 스케일 */
-.introWordmark {
-  margin: 0;
-  font-size: clamp(4rem, 10.42vw, 12.5rem);
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 1;
-  color: #000;
-  text-align: center;
-}
-
-/* 03 Features Heading — Figma에서 Intro와 분리된 독립 풀스크린 섹션 */
-.featuresHeading {
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-}
-
-/* Figma 기준 720px(프레임 너비의 37.5%) */
 .introImage {
-  display: block;
-  width: 100%;
-  max-width: 37.5vw;
-  margin: var(--space-3) auto 0;
-  border-radius: var(--space-2);
+  composes: pos size from './components/stage.module.css';
+  --x: 600;
+  --y: 745;
+  --w: 720;
+  --h: 347.4;
+  max-width: none;
+  object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
-/* 필터·앱 프로모·구매·discover(07~10)는 배경 없이, .connectedBg 그라데이션 위에서 흰 글씨만 쓴다 */
-.darkSection {
+/* ───────── 03 Features Heading ───────── */
+.featuresHeadingText {
+  composes: pos text center from './components/stage.module.css';
+  --x: 959.5;
+  --y: 498;
+  --fs: 36;
+  --ls: -2;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-pre);
+  font-weight: 700;
+  color: var(--now-ink);
+}
+
+/* ───────── 07 Filter Showcase ───────── */
+.filters,
+.appPromo,
+.purchase,
+.discover {
+  background: #1c140c;
   color: #fff;
 }
 
-/* Filters */
-.filters {
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
+.filterEyebrow {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 148;
+  --fs: 18;
+  line-height: calc(18 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 500;
+  color: var(--now-accent);
 }
 
-.filters .sectionHeading {
+.filterHeading {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 180;
+  --fs: 36;
+  --ls: -3;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-pre);
+  font-weight: 600;
   color: #fff;
+}
+
+.filterDescription {
+  composes: pos text from './components/stage.module.css';
+  --x: 316;
+  --y: 480;
+  --fs: 26;
+  --ls: -0.4;
+  width: calc(1287 * var(--u));
+  line-height: calc(33.8 * var(--u));
+  white-space: pre-wrap;
+  font-family: var(--f-out);
+  font-weight: 200;
+  color: #fff;
+}
+
+/* filterPrint (폴라로이드 인화지) — 설명 문단 위를 덮는다 */
+.filterPrint {
+  composes: pos size from './components/stage.module.css';
+  --x: 762;
+  --y: 322;
+  --w: 396;
+  --h: 482;
+  background: #f3f1ec;
 }
 
 .filterPreview {
-  max-width: min(400px, 22vw);
-  margin: var(--space-4) auto;
-  border-radius: var(--space-2);
+  composes: pos size from './components/stage.module.css';
+  --x: 785;
+  --y: 349;
+  --w: 351;
+  --h: 351;
+  max-width: none;
+  object-fit: cover;
 }
 
-.filterList {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-4);
-  margin: var(--space-6) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.filterItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
+.filterCardLabel {
+  composes: pos text center from './components/stage.module.css';
+  --x: 959.5;
+  --y: 745;
+  --fs: 17;
+  --ls: 1.4;
+  line-height: calc(17 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 400;
+  color: #1c1c1c;
 }
 
 .filterDisc {
-  width: 46px;
-  height: 46px;
+  composes: pos from './components/stage.module.css';
+  width: calc(var(--d) * var(--u));
+  height: calc(var(--d) * var(--u));
+  border: calc(4.571 * var(--u)) solid #181818;
   border-radius: 50%;
-  border: 1px solid var(--now-ink);
 }
 
-.filterDiscFeatured {
-  width: 60px;
-  height: 60px;
-}
-
-.filterLabel {
-  font-size: 11px;
+.filterSelectedLabel {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 920.4;
+  --fs: 12;
+  --ls: 1;
+  line-height: calc(12 * var(--u));
+  font-family: var(--f-out);
   font-weight: 500;
-  letter-spacing: 0.05em;
+  color: #eceef0;
 }
 
-/* App promo */
-.appPromo {
-  padding: var(--space-6) var(--space-5);
+/* ───────── 08 App Promo ───────── */
+.appEyebrow {
+  composes: pos text from './components/stage.module.css';
+  --x: 1419;
+  --y: 348;
+  --fs: 18;
+  line-height: calc(18 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 500;
+  color: var(--now-accent);
 }
 
-.appPromoInner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
-  align-items: center;
-  gap: var(--space-8);
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.appCopy .eyebrow,
-.appCopy .sectionHeading {
-  text-align: left;
-  margin-left: 0;
-}
-
-.appPromo .sectionHeading {
+/* 오른쪽 끝 1528px에 맞춰 오른쪽 정렬 */
+.appHeading,
+.appDescription {
+  position: absolute;
+  right: calc((1920 - 1528) * var(--u));
+  text-align: right;
   color: #fff;
 }
 
-.appDescription {
-  margin: var(--space-4) 0 0;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.6;
-}
-
-.appPhone {
-  width: 100%;
-  max-width: min(320px, 17vw);
-  aspect-ratio: 9 / 19;
-  object-fit: cover;
-  border-radius: var(--space-4);
-}
-
-/* Purchase CTA */
-.purchase {
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-}
-
-.purchaseHeading {
-  margin: 0 auto var(--space-2);
-  max-width: 600px;
-  font-size: clamp(1rem, 1.8vw, 1.5rem);
-  font-weight: 300;
-}
-
-/*
- * Figma 원본: 왼쪽·가운데 컷은 573×573 정사각형, 오른쪽 컷만 622×573으로 더 넓다.
- * 또한 왼쪽 컷이 프레임 왼쪽 끝에 딱 붙어 시작해서(인셋 없음) 화면 끝까지 꽉 차는
- * 구성이라, 섹션 좌우 패딩을 상쇄해 엣지투엣지로 배치한다.
- */
-.purchaseGallery {
-  display: grid;
-  grid-template-columns: 573fr 573fr 622fr;
-  align-items: stretch;
-  gap: 5vw;
-  width: calc(100% + 2 * var(--space-5));
-  margin: var(--space-4) calc(-1 * var(--space-5)) 0;
-}
-
-.purchaseGallery img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--space-2);
-}
-
-.purchaseGallery img:nth-child(1),
-.purchaseGallery img:nth-child(2) {
-  aspect-ratio: 1 / 1;
-}
-
-.purchaseGallery img:nth-child(3) {
-  aspect-ratio: 622 / 573;
-}
-
-.purchaseButton {
-  padding: var(--space-3) var(--space-6);
-  border: none;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--now-ink);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-/* Discover more */
-.discover {
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-}
-
-.discoverHeading {
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 var(--space-3);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
+.appHeading {
+  composes: text from './components/stage.module.css';
+  top: calc(376 * var(--u));
+  --fs: 36;
+  --ls: -3;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-pre);
   font-weight: 600;
 }
 
-.discoverDescription {
-  max-width: 560px;
-  margin: 0 auto var(--space-5);
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-}
-
-.discoverGrid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 120px));
-  justify-content: center;
-  gap: var(--space-4) var(--space-3);
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-}
-
-/* Figma의 3+2 지그재그 배치(위 3개 / 아래 2개, 절반씩 엇갈림)를 그대로 재현한다 */
-.discoverGrid > li:nth-child(1) {
-  grid-column: 1 / span 2;
-}
-.discoverGrid > li:nth-child(2) {
-  grid-column: 3 / span 2;
-}
-.discoverGrid > li:nth-child(3) {
-  grid-column: 5 / span 2;
-}
-.discoverGrid > li:nth-child(4) {
-  grid-column: 2 / span 2;
-}
-.discoverGrid > li:nth-child(5) {
-  grid-column: 4 / span 2;
-}
-
-.discoverCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.discoverCard img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: contain;
-  padding: var(--space-4);
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: var(--space-2);
-}
-
-.discoverLabel {
-  font-size: 1.25rem;
+.appDescription {
+  composes: text from './components/stage.module.css';
+  top: calc(486 * var(--u));
+  --fs: 15;
+  --ls: -2;
+  font-family: var(--f-pre);
   font-weight: 300;
 }
 
-@media (max-width: 860px) {
-  /* 좁은 화면에서는 "화면 한 장" 느낌보다 콘텐츠가 읽히는 게 우선이라 최소 높이를 낮춘다 */
-  .screen {
-    min-height: 0;
-    padding-top: var(--space-7);
-    padding-bottom: var(--space-7);
-  }
+.storeIcon {
+  composes: pos size from './components/stage.module.css';
+  --y: 688;
+  --w: 60;
+  --h: 60;
+  border-radius: calc(13.278 * var(--u));
+  background: #fdf4e3;
+}
 
-  .introImage,
-  .filterPreview,
-  .appPhone,
-  .purchaseGallery {
-    max-width: 100%;
-  }
+.storeIconApple {
+  --x: 1382;
+}
 
-  .appPromoInner {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.storeIconGoogle {
+  --x: 1472;
+}
 
-  .purchaseGallery {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-  }
+.storeGlyph {
+  width: 100%;
+  height: 100%;
+}
 
-  .discoverGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.storeLabel {
+  composes: pos text from './components/stage.module.css';
+  --y: 767;
+  --fs: 13;
+  --ls: 0.5;
+  line-height: calc(13 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 400;
+  color: #cfc9bf;
+}
 
-  .discoverGrid > li:nth-child(1),
-  .discoverGrid > li:nth-child(2),
-  .discoverGrid > li:nth-child(3),
-  .discoverGrid > li:nth-child(4),
-  .discoverGrid > li:nth-child(5) {
-    grid-column: 1 / -1;
-  }
+.storeDownload {
+  --x: 1301;
+}
+
+.storeIos {
+  --x: 1412.8;
+}
+
+.storeDivider {
+  --x: 1449.8;
+  font-family: var(--f-mono);
+  opacity: 0.5;
+}
+
+.storeAndroid {
+  --x: 1470.1;
+}
+
+/* phone — Figma 1827:3823 */
+.phoneBody {
+  composes: pos size from './components/stage.module.css';
+  --x: 457;
+  --y: 180;
+  --w: 340;
+  --h: 736.7;
+  border-radius: calc(52 * var(--u));
+  background: #1b1b1d;
+}
+
+.phoneScreen {
+  composes: pos size from './components/stage.module.css';
+  --x: 467;
+  --y: 190;
+  --w: 320;
+  --h: 716.7;
+  border-radius: calc(44 * var(--u));
+  background: #111;
+}
+
+.phoneStory {
+  composes: pos size from './components/stage.module.css';
+  --x: 467;
+  --y: 190;
+  --w: 320;
+  --h: 716.7;
+  max-width: none;
+  object-fit: cover;
+  border-radius: calc(44 * var(--u));
+}
+
+.storyBar {
+  composes: pos from './components/stage.module.css';
+  --x: 483;
+  --y: 241.2;
+  width: calc(288 * var(--u));
+  height: calc(2.6 * var(--u));
+  border-radius: calc(1.3 * var(--u));
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.storyProgress {
+  composes: pos from './components/stage.module.css';
+  --x: 483;
+  --y: 241.2;
+  width: calc(79.2 * var(--u));
+  height: calc(2.6 * var(--u));
+  background: #fff;
+}
+
+.avatar {
+  composes: pos from './components/stage.module.css';
+  --x: 483;
+  --y: 254;
+  width: calc(25.6 * var(--u));
+  height: calc(25.6 * var(--u));
+  border-radius: calc(12.8 * var(--u));
+  background-image: linear-gradient(
+    180deg,
+    rgb(227, 65, 43) 0%,
+    rgb(255, 130, 0) 20%,
+    rgb(246, 194, 67) 40%,
+    rgb(116, 181, 68) 60%,
+    rgb(29, 146, 210) 80%,
+    rgb(227, 65, 43) 100%
+  );
+}
+
+.profileName {
+  composes: pos text from './components/stage.module.css';
+  --x: 516.3;
+  --y: 258.9;
+  --fs: 13.44;
+  line-height: calc(13.4 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #fff;
+}
+
+.profileDot {
+  composes: pos from './components/stage.module.css';
+  --x: 583.6;
+  --y: 264.2;
+  width: calc(5.1 * var(--u));
+  height: calc(5.1 * var(--u));
+  border-radius: calc(2.55 * var(--u));
+  background: #fff;
+}
+
+.storyMore {
+  composes: pos text from './components/stage.module.css';
+  --x: 735.9;
+  --y: 258.9;
+  --fs: 13.44;
+  line-height: calc(13.4 * var(--u));
+  font-family: var(--f-arch);
+  font-weight: 700;
+  color: #fff;
+}
+
+.storyClose {
+  composes: pos text from './components/stage.module.css';
+  --x: 757;
+  --y: 254.4;
+  --fs: 22.4;
+  line-height: calc(22.4 * var(--u));
+  font-family: var(--f-arch);
+  font-weight: 300;
+  color: #fff;
+}
+
+.island {
+  composes: pos from './components/stage.module.css';
+  --x: 576;
+  --y: 209.1;
+  width: calc(102 * var(--u));
+  height: calc(26.5 * var(--u));
+  border-radius: calc(13.25 * var(--u));
+  background: #000;
+}
+
+.messageBox {
+  composes: pos from './components/stage.module.css';
+  --x: 483;
+  --y: 851.2;
+  width: calc(201.6 * var(--u));
+  height: calc(33 * var(--u));
+  border: calc(1.143 * var(--u)) solid rgba(15, 15, 15, 0.6);
+  border-radius: calc(16.5 * var(--u));
+}
+
+.messageText {
+  composes: pos text from './components/stage.module.css';
+  --x: 496.9;
+  --y: 861.4;
+  --fs: 11.52;
+  line-height: calc(11.5 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 400;
+  color: #000;
+}
+
+.phoneIcon {
+  composes: pos from './components/stage.module.css';
+  --y: 858.1;
+  width: calc(19.2 * var(--u));
+  height: calc(19.2 * var(--u));
+  color: #0f0f0f;
+}
+
+/* ───────── 09 Purchase CTA ───────── */
+.purchaseBrackets {
+  --x: 836;
+  --y: 122;
+  --w: 246;
+  --h: 79;
+  --arm: 27;
+  --stroke: 2;
+  --bracket-color: #fff;
+}
+
+.purchaseWordmark {
+  composes: pos text center from './components/stage.module.css';
+  --x: 959;
+  --y: 137;
+  --fs: 64;
+  --ls: -3.2;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #fff;
+}
+
+.purchaseHeading {
+  composes: pos text center from './components/stage.module.css';
+  --x: 960;
+  --y: 209;
+  --fs: 20;
+  --ls: -3;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-pre);
+  font-weight: 300;
+  color: #fff;
+}
+
+.purchaseShot {
+  composes: pos from './components/stage.module.css';
+  --y: 300;
+  width: calc(var(--w) * var(--u));
+  height: calc(573 * var(--u));
+  max-width: none;
+  object-fit: cover;
+}
+
+.purchaseButton {
+  position: absolute;
+  left: calc(50% - 1.5 * var(--u));
+  top: calc(927 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(137 * var(--u));
+  height: calc(41 * var(--u));
+  padding: 0 calc(60 * var(--u));
+  transform: translateX(-50%);
+  background: #fff;
+  color: #19140c;
+  font-family: var(--f-pre);
+  font-size: calc(14 * var(--u));
+  font-weight: 500;
+  letter-spacing: calc(-1 * var(--u));
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* ───────── 10 Discover More ───────── */
+.discover {
+  aspect-ratio: 1920 / 1095;
+}
+
+/* Figma "Section BG Photo"에 붙어 있는 1px 흰 테두리(50%)까지 그대로 옮긴다 */
+.discoverBgBorder {
+  position: absolute;
+  left: calc(-22 * var(--u));
+  top: calc(-10 * var(--u));
+  width: calc(1964 * var(--u));
+  height: calc(1105 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.discoverHeading {
+  composes: pos text from './components/stage.module.css';
+  --x: 215;
+  --y: 225;
+  --fs: 40;
+  --ls: -2;
+  line-height: calc(50 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 600;
+  color: #fff;
+}
+
+.discoverDescription {
+  composes: pos text from './components/stage.module.css';
+  --x: 215;
+  --y: 341;
+  --fs: 15;
+  --ls: -1;
+  font-family: var(--f-pre);
+  font-weight: 300;
+  color: #fff;
+}
+
+.discoverCard {
+  composes: pos from './components/stage.module.css';
+  width: calc(262 * var(--u));
+  height: calc(295 * var(--u));
+  --bracket-color: rgba(255, 255, 255, 0.5);
+}
+
+.discoverCardActive {
+  --bracket-color: #fff;
+}
+
+/* Vector 53 · 57 (카드 모서리 브래킷) */
+.cardFrame {
+  --x: 0;
+  --y: 0;
+  --w: 262;
+  --h: 243;
+  --arm: 56;
+  --stroke: 2;
+}
+
+.cardLabel {
+  composes: text center from './components/stage.module.css';
+  position: absolute;
+  left: calc(131 * var(--u));
+  top: calc(265 * var(--u));
+  --fs: 24;
+  font-family: var(--f-out);
+  font-weight: 300;
+  color: #fff;
+}
+
+.cardLabelActive {
+  font-weight: 500;
+}
+
+.cardPhoto {
+  position: absolute;
+  left: calc(var(--px) * var(--u));
+  top: calc(var(--py) * var(--u));
+  width: calc(var(--pw) * var(--u));
+  height: calc(var(--ph) * var(--u));
+  max-width: none;
+  object-fit: contain;
+  opacity: 0.5;
+}
+
+.cardPhotoActive {
+  opacity: 1;
 }
