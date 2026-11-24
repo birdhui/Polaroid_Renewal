@@ -111,12 +111,36 @@ export default function FeatureShowcase({ heading, features }) {
       if (!frame) frame = requestAnimationFrame(tick);
     };
 
+    // 스크롤이 멈추면 가장 가까운 기능 위치로 스크롤을 맞춘다 → 문구가 두 점선 사이에 딱 들어간다
+    let idleTimer = 0;
+    const snap = () => {
+      const track = trackRef.current;
+      if (!track) return;
+      const goal = readTarget();
+      const nearest = Math.round(goal);
+      if (Math.abs(goal - nearest) < 0.02) return;
+      const rect = track.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if (scrollable <= 0) return;
+      const top = rect.top + window.scrollY;
+      window.scrollTo({
+        top: top + ((nearest + 0.5) / count) * scrollable,
+        behavior: reduceMotion ? 'auto' : 'smooth',
+      });
+    };
+    const onScroll = () => {
+      wake();
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(snap, 150);
+    };
+
     current = readTarget();
     setPos(settle(current));
-    window.addEventListener('scroll', wake, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', wake);
     return () => {
-      window.removeEventListener('scroll', wake);
+      window.clearTimeout(idleTimer);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', wake);
       if (frame) cancelAnimationFrame(frame);
     };
