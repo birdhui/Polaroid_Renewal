@@ -160,12 +160,14 @@
 .darkZone {
   position: relative;
   color: #fff;
+  /*
+   * ORYZO(oryzo.ai) 배경 분석: 바탕은 거의 검정에 가까운 따뜻한 #1a1613 이고,
+   * 화면 왼쪽 아래 모서리(#654026)에서 갈색 빛이 번져 올라와 위·오른쪽으로 갈수록 사라진다.
+   * 스크롤해도 움직이지 않고 화면에 고정(fixed) — 섹션이 바뀌어도 하나로 이어진다.
+   */
   background:
-    radial-gradient(ellipse 55% 30% at 94% 14%, rgba(201, 124, 54, 0.26), transparent 70%),
-    radial-gradient(ellipse 50% 30% at 6% 46%, rgba(176, 102, 42, 0.26), transparent 70%),
-    radial-gradient(ellipse 55% 30% at 90% 82%, rgba(201, 124, 54, 0.24), transparent 70%),
-    linear-gradient(180deg, #151515 0%, #130b05 35%, #100904 70%, #1a1008 100%);
-  /* 배경은 스크롤해도 움직이지 않고 화면에 고정 — 섹션이 바뀌어도 배경은 하나로 이어진다 */
+    radial-gradient(ellipse 62% 78% at 0% 100%, rgb(106, 67, 39) 0%, rgba(86, 54, 33, 0.72) 28%, rgba(54, 37, 27, 0.38) 58%, rgba(26, 22, 19, 0) 100%),
+    #1a1613;
   background-attachment: fixed;
 }
 
@@ -537,7 +539,7 @@
   --h: 79;
   --arm: 27;
   --stroke: 2;
-  --bracket-color: #19140c;
+  --bracket-color: #fff;
 }
 
 .purchaseWordmark {
@@ -549,7 +551,7 @@
   line-height: calc(50 * var(--u));
   font-family: var(--f-out);
   font-weight: 600;
-  color: #19140c;
+  color: #fff;
 }
 
 .purchaseHeading {
@@ -561,15 +563,14 @@
   line-height: calc(50 * var(--u));
   font-family: var(--f-pre);
   font-weight: 300;
-  color: #19140c;
+  color: #fff;
 }
 
 /* 스크롤 구간: 화면 높이 + 사진 줄이 지나가는 만큼. 안쪽 화면은 sticky 로 고정한다 */
 .purchaseTrack {
   position: relative;
   height: 260vh;
-  background: #fff; /* Figma 09: Section BG Photo 를 끄고 흰 배경 */
-  color: #19140c;
+  color: #fff; /* 배경은 07~11 공통 고정 갈색 그라데이션이 비쳐 보인다 */
 }
 
 .purchaseSticky {
@@ -616,8 +617,8 @@
   height: calc(41 * var(--u));
   padding: 0 calc(60 * var(--u));
   transform: translateX(-50%);
-  background: #19140c;
-  color: #fff;
+  background: #fff;
+  color: #19140c;
   font-family: var(--f-pre);
   font-size: calc(14 * var(--u));
   font-weight: 500;
