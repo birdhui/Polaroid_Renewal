@@ -51,7 +51,7 @@
 .heroTitle {
   composes: pos text from './components/stage.module.css';
   --x: 90;
-  --y: 601;
+  --y: 675;
   --fs: 170;
   --ls: -2;
   font-family: var(--f-out);
@@ -62,10 +62,10 @@
 .heroDescription {
   composes: pos text from './components/stage.module.css';
   --x: 90;
-  --y: 818;
+  --y: 892;
   --fs: 24;
-  --ls: -0.36;
-  line-height: 1.4;
+  --ls: -0.24;
+  line-height: 1.45;
   font-family: var(--f-pre);
   font-weight: 400;
   color: #fff;
