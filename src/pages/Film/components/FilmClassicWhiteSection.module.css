@@ -1,6 +1,6 @@
 .section {
   position: relative;
-  min-block-size: 550svh;
+  min-block-size: 800svh;
   color: #fff;
 }
 
@@ -15,6 +15,7 @@
 
 .stage {
   --frame-position: -1;
+  --reveal-progress: clamp(0, calc((var(--frame-position) + 1) / 0.42), 1);
 
   position: sticky;
   inset-block-start: 0;
@@ -36,12 +37,14 @@
 }
 
 .photo {
+
   position: absolute;
-  inset: calc(50% - 20.560748cqw) auto auto 39.906542%;
+  inset: calc(50% - 20.560748cqw) auto auto 31.542056%;
   inline-size: 36.915888%;
   block-size: 41.028037cqw;
   overflow: hidden;
   isolation: isolate;
+  scale: var(--reveal-progress);
 }
 
 .print,
@@ -56,23 +59,25 @@
 
 .tint,
 .photoLayer {
-  --enter: clamp(0, calc((var(--frame-position) - var(--frame-index) + 0.42) / 0.84), 1);
-  --exit: clamp(0, calc((var(--frame-position) - var(--frame-index) - 0.58) / 0.84), 1);
-}
-
-.tint,
-.photoLayer {
-  clip-path: inset(calc((1 - var(--enter)) * 100%) 0 calc(var(--exit) * 100%));
+  --phase: calc(var(--frame-position) - var(--frame-index));
+  --enter: clamp(0, calc((var(--phase) + 0.20) / 0.36), 1);
 }
 
 .tint {
+  --exit: clamp(0, calc((var(--phase) - 0.80) / 0.36), 1);
+
+  opacity: calc(var(--enter) * (1 - var(--exit)));
   mix-blend-mode: multiply;
 }
 
-.tint:last-child,
-.photoLayer[data-final] {
+.tint:last-child {
   --exit: 0;
 }
+
+.photoLayer {
+  opacity: var(--enter);
+}
+
 
 .photoWindow {
   position: absolute;
@@ -119,22 +124,27 @@
 }
 
 .label {
-  --appear: clamp(0, calc((var(--frame-position) - var(--frame-index) + 0.04) / 0.5), 1);
-  --disappear: clamp(0, calc((var(--frame-position) - var(--frame-index) - 0.52) / 0.4), 1);
-  --focus: calc(var(--appear) * (1 - var(--disappear)));
-
   position: absolute;
   inset: 0;
-  opacity: var(--focus);
-  filter: blur(calc(7px * (1 - var(--focus))));
 }
 
-.label:first-child {
-  --appear: 1;
+.scrambleWord {
+  position: relative;
+  display: inline-block;
 }
 
-.label:last-child {
-  --disappear: 0;
+.wordWidth {
+  visibility: hidden;
+}
+
+.scrambleLetters {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+.leftWord .scrambleLetters {
+  inset-inline: auto 0;
 }
 
 .introFocus,
@@ -156,37 +166,55 @@
   letter-spacing: -0.093458cqw;
 }
 
+.leftWord,
+.openBracket {
+  translate: calc((1 - var(--reveal-progress)) * 18cqw) 0;
+}
+
+.rightWord,
+.closeBracket {
+  translate: calc((1 - var(--reveal-progress)) * -18cqw) 0;
+}
+
 .leftWord {
-  inset-inline-end: 65.794393%;
+  inset-inline-end: 74.158879%;
 }
 
 .openBracket {
-  inset-inline-start: 35.794393%;
+  inset-inline-start: 27.429907%;
 }
 
 .closeBracket {
-  inset-inline-start: 78.130841%;
+  inset-inline-start: 69.766355%;
 }
 
 .rightWord {
-  inset-inline-start: 82.523364%;
+  inset-inline-start: 74.158878%;
 }
 
 
 @media (max-width: 959px) {
+  .labels {
+    font-size: 6.2cqw;
+  }
+
   .composition {
     width: min(calc(100% - 2 * var(--space-5)), 650px, 110svh);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tint,
-  .photoLayer {
-    clip-path: inset(calc((1 - round(var(--enter), 1)) * 100%) 0 calc(round(var(--exit), 1) * 100%));
+  .stage {
+    --reveal-progress: 1;
   }
 
-  .label {
-    opacity: calc((1 - round(var(--disappear), 1)) * round(var(--appear), 1));
-    filter: none;
+
+  .tint {
+    opacity: calc(round(var(--enter), 1) * (1 - round(var(--exit), 1)));
   }
+
+  .photoLayer {
+    opacity: round(var(--enter), 1);
+  }
+
 }

@@ -4,7 +4,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .title > span {
-    --line-focus: clamp(0, calc(var(--focus-progress, 1) / 0.6), 1);
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6)), 1);
 
     filter: blur(calc(4px * (1 - var(--line-focus))));
     opacity: clamp(0, calc(var(--focus-progress, 1) * 4), 1);
@@ -12,11 +12,11 @@
   }
 
   .title > span:only-child {
-    --line-focus: var(--focus-progress, 1);
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6) / 1.6), 1);
   }
 
   .title > span + span {
-    --line-focus: clamp(0, calc((var(--focus-progress, 1) - 0.4) / 0.6), 1);
+    --line-focus: clamp(0, calc((var(--focus-progress, 1.6) - 0.4) / 1.2), 1);
   }
 
   .title[data-focus-on-load] > span {

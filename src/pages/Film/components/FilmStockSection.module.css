@@ -139,6 +139,10 @@
   white-space: nowrap;
 }
 
+.section[data-film-stock='go'] .caption {
+  text-align: center;
+}
+
 .caption strong {
   font-weight: 600;
 }

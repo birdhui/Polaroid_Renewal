@@ -119,10 +119,10 @@
 
 .description {
   margin-block-start: clamp(var(--space-5), 2.604cqw, 66.667px);
-  font-size: clamp(16px, 1.145833cqw, 29.333px);
+  font-size: clamp(16px, 1.09375cqw, 28px);
   font-weight: 300;
-  line-height: 1.363636;
-  letter-spacing: clamp(-2.667px, -0.104cqw, -0.5px);
+  line-height: 1.380952;
+  letter-spacing: clamp(-1.333px, -0.052083cqw, -0.5px);
   word-break: keep-all;
 }
 

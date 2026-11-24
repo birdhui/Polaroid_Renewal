@@ -1,5 +1,5 @@
 import aquaPhoto from '@/assets/film/film-aqua-tide-photo.png';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import accordionPlayer from '@/assets/film/film-choose-accordion-player.png';
 import midnightPhoto from '@/assets/film/film-midnight-black-photo.png';
 import sunflowerPhoto from '@/assets/film/film-sunflower-yellow-photo.png';
@@ -43,9 +43,52 @@ const frames = [
   },
 ];
 
+const introName = ['Polaroid', 'Film'];
+const scrambleDuration = 900;
+
+function ScrambleWord({ word }) {
+  const [step, setStep] = useState(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 18 : 0,
+  );
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    const startedAt = performance.now();
+    let animationFrame;
+
+    function tick(now) {
+      const nextStep = Math.min(18, Math.floor((now - startedAt) / (scrambleDuration / 18)));
+      setStep(nextStep);
+      if (nextStep < 18) animationFrame = requestAnimationFrame(tick);
+    }
+
+    animationFrame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animationFrame);
+  }, []);
+
+  const settledLength = Math.floor((step / 18) * word.length);
+  const scrambled = [...word].map((letter, index) => {
+    if (index < settledLength) return letter;
+
+    // Keep capitalization and refresh the unsettled letters on each step.
+    const offset = 1 + ((step * 11 + index * 7) % 25);
+    const base = index === 0 ? 65 : 97;
+    return String.fromCharCode(base + (letter.charCodeAt(0) - base + offset) % 26);
+  }).join('');
+
+  return (
+    <span className={styles.scrambleWord}>
+      <span className={styles.wordWidth} aria-hidden="true">{word}</span>
+      <span className={styles.scrambleLetters} aria-hidden="true">{scrambled}</span>
+    </span>
+  );
+}
+
 export default function FilmClassicWhiteSection() {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -56,7 +99,9 @@ export default function FilmClassicWhiteSection() {
       frame = null;
       const distance = section.offsetHeight - stage.offsetHeight;
       const progress = Math.max(0, Math.min(1, -section.getBoundingClientRect().top / Math.max(1, distance)));
-      stage.style.setProperty('--frame-position', progress * (frames.length + 1) - 1);
+      const position = progress * (frames.length + 1) - 1;
+      stage.style.setProperty('--frame-position', position);
+      setActiveIndex(Math.min(frames.length - 1, Math.floor(position + 0.02)));
     }
 
     function scheduleUpdate() {
@@ -88,7 +133,7 @@ export default function FilmClassicWhiteSection() {
                 height={2740}
               />
               {frames.map(({ name, photo }, index) => photo && (
-                <div className={styles.photoLayer} key={name[0]} data-final={index === frames.length - 1 || undefined} style={{ '--frame-index': index }}>
+                <div className={styles.photoLayer} key={name[0]} style={{ '--frame-index': index }}>
                   <div className={styles.photoWindow}>
                     <img
                       src={photo.src}
@@ -111,29 +156,31 @@ export default function FilmClassicWhiteSection() {
                 </div>
               ))}
             </div>
-            <ul className={styles.labels} lang="en">
-              {[{ name: ['Polaroid', 'Film'] }, ...frames].map(({ name }, index) => {
-                const title = (
+            <div className={styles.labels} lang="en">
+              <span className={styles.visuallyHidden}>
+                {activeIndex < 0 ? 'Choose your Polaroid Film' : frames[activeIndex].name.join(' ')}
+              </span>
+              <div className={styles.label} aria-hidden="true" key={activeIndex}>
+                {activeIndex < 0 ? (
+                  <FocusTitle as="div" className={styles.introFocus}>
+                    <span>
+                      <span className={styles.leftWord}>
+                        <span className={styles.lead}>Choose your </span>
+                        {introName[0]}
+                      </span>
+                      <span className={styles.rightWord}>{introName[1]}</span>
+                    </span>
+                  </FocusTitle>
+                ) : (
                   <>
-                    {index === 0 && <span className={styles.lead}>Choose your </span>}
-                    <span className={styles.leftWord}>{name[0]}</span>{' '}
-                    <span className={styles.openBracket} aria-hidden="true">(</span>
-                    <span className={styles.closeBracket} aria-hidden="true">)</span>{' '}
-                    <span className={styles.rightWord}>{name[1]}</span>
+                    <span className={styles.leftWord}><ScrambleWord word={frames[activeIndex].name[0]} /></span>
+                    <span className={styles.rightWord}><ScrambleWord word={frames[activeIndex].name[1]} /></span>
                   </>
-                );
-
-                return (
-                  <li className={styles.label} key={name[0]} style={{ '--frame-index': index - 1 }}>
-                    {index === 0 ? (
-                      <FocusTitle as="div" className={styles.introFocus}>
-                        <span>{title}</span>
-                      </FocusTitle>
-                    ) : title}
-                  </li>
-                );
-              })}
-            </ul>
+                )}
+              </div>
+              <span className={styles.openBracket} aria-hidden="true">(</span>
+              <span className={styles.closeBracket} aria-hidden="true">)</span>
+            </div>
           </div>
         </div>
       </div>

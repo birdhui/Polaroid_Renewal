@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import calendar from '@/assets/film/film-recap-calendar.png';
-import windowPhoto from '@/assets/film/film-recap-photo.png';
+import FilmRecapImage from './FilmRecapImage.jsx';
 import styles from './FilmNovemberRecapSection.module.css';
 
 function anchorToButton(button) {
@@ -11,7 +10,7 @@ function anchorToButton(button) {
 
 export default function FilmRecapPhotoPreview({ selection, calendarRef, onClose }) {
   const previewRef = useRef(null);
-  const { day, column, row, trigger, pointer } = selection;
+  const { photo, trigger, pointer } = selection;
 
   useLayoutEffect(() => {
     const preview = previewRef.current;
@@ -90,24 +89,11 @@ export default function FilmRecapPhotoPreview({ selection, calendarRef, onClose 
 
   return createPortal(
     <div className={styles.preview} ref={previewRef} aria-hidden="true">
-      {day === 4 ? (
-        <img className={styles.originalPrint} src={windowPhoto} alt="" width={829} height={1002} />
-      ) : (
-        <div className={styles.print}>
-          <div className={styles.printCrop}>
-            <img
-              src={calendar}
-              alt=""
-              width={1920}
-              height={1080}
-              style={{
-                '--crop-x': 380 + column * 174,
-                '--crop-y': 187 + row * 146,
-              }}
-            />
-          </div>
+      <div className={styles.print}>
+        <div className={styles.printCrop}>
+          <FilmRecapImage photo={photo} />
         </div>
-      )}
+      </div>
     </div>,
     document.body,
   );
