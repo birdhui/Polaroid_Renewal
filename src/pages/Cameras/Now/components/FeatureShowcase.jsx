@@ -24,6 +24,15 @@ const ALPHA_AT = [
   [1, 0.2],
   [2, 0],
 ];
+// 활성 문구에서 멀어질수록 초점이 풀린다(KINORIA처럼 올라가면서 흐려진다). 단위는 Figma px
+const BLUR_AT = [
+  [-3, 10],
+  [-2, 6],
+  [-1, 2.5],
+  [0, 0],
+  [1, 2.5],
+  [2, 6],
+];
 
 const lerp = (from, to, t) => from + (to - from) * t;
 
@@ -171,6 +180,7 @@ export default function FeatureShowcase({ heading, features }) {
                   else videoRefs.current.delete(feature.id);
                 }}
                 className={className}
+                style={feature.size ? { width: `calc(${feature.size} * var(--u))`, height: `calc(${feature.size - 1} * var(--u))` } : undefined}
                 src={feature.video}
                 poster={feature.image}
                 autoPlay
@@ -197,6 +207,7 @@ export default function FeatureShowcase({ heading, features }) {
             const d = i - pos;
             const y = sample(Y_AT, d, true);
             const alpha = sample(ALPHA_AT, d, false);
+            const blur = sample(BLUR_AT, d, false);
             return (
               <button
                 key={feature.id}
@@ -205,6 +216,7 @@ export default function FeatureShowcase({ heading, features }) {
                 style={{
                   '--y': y,
                   color: `rgba(255, 255, 255, ${alpha})`,
+                  filter: blur > 0.05 ? `blur(calc(${blur} * var(--u)))` : undefined,
                   pointerEvents: alpha < 0.05 ? 'none' : undefined,
                 }}
                 aria-current={i === index}

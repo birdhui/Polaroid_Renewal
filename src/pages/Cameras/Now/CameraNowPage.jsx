@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import FeatureShowcase from './components/FeatureShowcase.jsx';
 import CornerBrackets from './components/CornerBrackets.jsx';
 import {
@@ -36,6 +36,116 @@ function Lines({ lines }) {
   ));
 }
 
+/**
+ * KINORIA(kinoria.studio/details)의 글자 등장 효과.
+ * 글자는 opacity 0 · blur(10px) · 아래 1em에서 시작해, 화면에 들어오면 1.4s easeOutQuart
+ * (cubic-bezier(.165,.84,.44,1))로 또렷해지며 제자리로 올라온다. 줄마다 0.1s씩 늦게 시작하고 4번째 줄에서 처음으로 돌아간다.
+ * 화면을 벗어나면 다시 숨겨서, 다시 스크롤해 들어올 때마다 반복된다.
+ */
+const REVEAL_TARGETS = [
+  'heroTitle',
+  'heroDescription',
+  'introHeading',
+  'introWordmark',
+  'introEyebrow',
+  'featuresHeadingText',
+  'filterEyebrow',
+  'filterHeading',
+  'filterDescription',
+  'appEyebrow',
+  'appHeading',
+  'appDescription',
+  'purchaseWordmark',
+  'purchaseHeading',
+  'goFilmEyebrow',
+  'goFilmTitle',
+  'goFilmDescription',
+  'discoverHeading',
+  'discoverDescription',
+];
+
+// 작은 프레임이 0 → 원래 크기로 커지면서 그 안의 글자가 나온다 (02 Intro · 09 Purchase CTA)
+const FRAME_REVEALS = [
+  { frame: 'introBrackets', text: 'introHeading' },
+  { frame: 'purchaseBrackets', text: 'purchaseWordmark' },
+];
+const FRAME_TEXT_DELAY = 0.35; // 프레임이 커지기 시작한 뒤 글자가 나오기까지(초)
+
+function useTextReveal(rootRef) {
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof IntersectionObserver === 'undefined') return undefined;
+    const perSection = new Map();
+    const groups = [];
+    REVEAL_TARGETS.forEach((name) => {
+      // composes 를 쓰는 클래스는 "a b c" 문자열이라 첫 번째(자기 자신) 클래스만 선택자로 쓴다
+      const className = styles[name]?.split(' ')[0];
+      if (!className) return;
+      root.querySelectorAll(`.${className}`).forEach((element) => {
+        const lines = element.querySelectorAll(`:scope > .${styles.line}`);
+        const units = lines.length ? [...lines] : [element];
+        const section = element.closest('section');
+        units.forEach((unit) => {
+          const n = perSection.get(section) ?? 0;
+          perSection.set(section, n + 1);
+          unit.dataset.reveal = '';
+          unit.style.setProperty('--rv-delay', `${(n % 4) * 0.1}s`);
+        });
+        groups.push({ element, units });
+      });
+    });
+    // 프레임 연출: 프레임과 글자를 한 묶음으로 보고, 글자는 프레임이 커지는 동안 조금 늦게 나온다
+    const frameUnits = [];
+    FRAME_REVEALS.forEach(({ frame, text }) => {
+      const frameClass = styles[frame]?.split(' ')[0];
+      const textClass = styles[text]?.split(' ')[0];
+      if (!frameClass || !textClass) return;
+      const frameElement = root.querySelector(`.${frameClass}`);
+      const textElement = root.querySelector(`.${textClass}`);
+      const group = groups.find((item) => item.element === textElement);
+      if (!frameElement || !group) return;
+      frameElement.dataset.frame = '';
+      group.units.forEach((unit, i) => {
+        // 글자 상자 자체가 가운데 정렬 transform(translateX(-50%))을 쓰면 scale 속성이 그 이동까지 줄여서
+        // 옆에서 커지는 것처럼 보인다 → transform 안에서 함께 처리한다(data-pop="self")
+        unit.dataset.pop = unit === group.element || unit === textElement ? 'self' : '';
+        unit.style.setProperty('--rv-delay', `${FRAME_TEXT_DELAY + i * 0.1}s`);
+      });
+      // 프레임이 화면에 들어올 때 프레임과 글자를 같이 켠다
+      group.element = frameElement;
+      frameUnits.push({ frameElement, units: group.units });
+    });
+    const byElement = new Map(groups.map((group) => [group.element, [...group.units, ...(group.element.hasAttribute('data-frame') ? [group.element] : [])]]));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          byElement.get(entry.target)?.forEach((unit) => {
+            if (entry.isIntersecting) unit.dataset.in = '';
+            else delete unit.dataset.in;
+          });
+        });
+      },
+      { threshold: 0.3, rootMargin: '0px 0px -8% 0px' },
+    );
+    groups.forEach(({ element }) => observer.observe(element));
+    return () => {
+      observer.disconnect();
+      frameUnits.forEach(({ frameElement }) => {
+        delete frameElement.dataset.frame;
+        delete frameElement.dataset.in;
+      });
+      groups.forEach(({ units }) =>
+        units.forEach((unit) => {
+          delete unit.dataset.reveal;
+          delete unit.dataset.pop;
+          delete unit.dataset.in;
+          unit.style.removeProperty('--rv-delay');
+        }),
+      );
+    };
+  }, [rootRef]);
+}
+
 /** Figma 이미지 자리: 파일이 아직 없으면 점선 자리표시자를 보여준다 */
 function FilmImage({ image, className, alt }) {
   if (image.src) return <img className={className} src={image.src} alt={alt} />;
@@ -48,14 +158,58 @@ function FilmImage({ image, className, alt }) {
 
 /** Figma "Section BG Photo" 좌표(x, y, 너비, 높이) */
 
+// 09 photo list: 6장(573·573·622 ×2)과 간격 99px. 줄 끝이 화면 오른쪽 끝(1920)에 닿을 때까지 움직이는 거리
+const PURCHASE_LIST_TRAVEL = (573 * 4 + 622 * 2) + 99 * 5 - 1920;
+
+// 스크롤 진행도(0~1)에 맞춰 photo list 를 왼쪽으로 민다. 끝까지 다 보이면 그 다음부터 화면이 내려간다.
+function usePurchaseScroll(trackRef) {
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let frame = 0;
+    let current = 0;
+    const read = () => {
+      const rect = track.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      const raw = scrollable > 0 ? -rect.top / scrollable : 0;
+      // 앞뒤로 잠깐 멈춤: 처음 6% 는 그대로, 마지막 10% 는 다 보인 채로 머문다
+      return Math.min(Math.max((raw - 0.06) / 0.84, 0), 1);
+    };
+    const tick = () => {
+      const goal = read();
+      current = reduceMotion ? goal : current + (goal - current) * 0.14;
+      if (Math.abs(goal - current) < 0.0005) current = goal;
+      track.style.setProperty('--p', current.toFixed(4));
+      frame = Math.abs(goal - current) > 0 ? requestAnimationFrame(tick) : 0;
+    };
+    const wake = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+    wake();
+    window.addEventListener('scroll', wake, { passive: true });
+    window.addEventListener('resize', wake);
+    return () => {
+      window.removeEventListener('scroll', wake);
+      window.removeEventListener('resize', wake);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [trackRef]);
+}
+
 export default function CameraNowPage() {
+  const pageRef = useRef(null);
+  const purchaseTrackRef = useRef(null);
+  useTextReveal(pageRef);
+  usePurchaseScroll(purchaseTrackRef);
+  const purchaseListTravel = PURCHASE_LIST_TRAVEL;
   const [selectedId, setSelectedId] = useState(
     () => filterShowcase.items.find((item) => item.selected).id,
   );
   const selectedFilter = filterShowcase.items.find((item) => item.id === selectedId);
 
   return (
-    <article className={styles.page} aria-labelledby="camera-now-title">
+    <article ref={pageRef} className={styles.page} aria-labelledby="camera-now-title">
       {FONT_STYLESHEETS.map((href) => (
         <link key={href} rel="stylesheet" href={href} precedence="default" />
       ))}
@@ -204,24 +358,31 @@ export default function CameraNowPage() {
         </svg>
       </section>
 
-      {/* 09 Purchase CTA */}
-      <section className={`${styles.screen} ${styles.purchase}`}>
-        <CornerBrackets className={styles.purchaseBrackets} />
-        <p className={styles.purchaseWordmark}>{purchaseCta.wordmark}</p>
-        <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
-        {purchaseCta.images.map((image, index) => (
-          <img
-            key={image.src}
-            className={styles.purchaseShot}
-            style={{ '--x': image.x, '--w': image.w }}
-            src={image.src}
-            alt={`Polaroid Now 제품컷 ${index + 1}`}
-          />
-        ))}
-        <button type="button" className={styles.purchaseButton}>
-          {purchaseCta.ctaLabel}
-        </button>
-      </section>
+      {/* 09 Purchase CTA — 스크롤하면 photo list 가 먼저 가로로 끝까지 지나가고, 그 다음에 화면이 내려간다 */}
+      <div ref={purchaseTrackRef} className={styles.purchaseTrack}>
+        <div className={styles.purchaseSticky}>
+          <section className={`${styles.screen} ${styles.purchase}`}>
+            <CornerBrackets className={styles.purchaseBrackets} />
+            <p className={styles.purchaseWordmark}>{purchaseCta.wordmark}</p>
+            <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
+            <div className={styles.purchaseList} style={{ '--gap': purchaseCta.gap, '--travel': purchaseListTravel }}>
+              {purchaseCta.images.map((image, index) => (
+                <img
+                  key={index}
+                  className={styles.purchaseShot}
+                  style={{ '--w': image.w }}
+                  src={image.src}
+                  alt={index < 3 ? `Polaroid Now 제품컷 ${index + 1}` : ''}
+                  aria-hidden={index < 3 ? undefined : 'true'}
+                />
+              ))}
+            </div>
+            <button type="button" className={styles.purchaseButton}>
+              {purchaseCta.ctaLabel}
+            </button>
+          </section>
+        </div>
+      </div>
 
       {/* 10 Polaroid Go Film */}
       <section className={`${styles.screen} ${styles.goFilm}`}>

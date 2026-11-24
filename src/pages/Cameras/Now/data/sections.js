@@ -10,7 +10,7 @@ import introProductImage from '../../../../assets/cameras/now/intro-product.jpg'
 import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus-poster.png';
 import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.webm';
 import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure-poster.png';
-import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.webm';
+import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.mp4';
 import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness-poster.png';
 import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.webm';
 import sectionBackgroundImage from '../../../../assets/cameras/now/dark-section-bg.jpg';
@@ -64,7 +64,7 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
-    video: featureDoubleExposureVideo,
+    video: featureDoubleExposureVideo, // Figma 05 v.2 — 자막 제거 영상을 875×875 영역(x0,y31)으로 크롭, 766×766
   },
   {
     id: 'sharpness',
@@ -117,11 +117,16 @@ export const purchaseCta = {
   heading: '오늘의 어떤 순간을 첫 장으로 남길까요?',
   wordmark: 'Now',
   ctaLabel: '구매하기',
-  // Figma 좌→우: Shot 1(0, 573×573) → Shot 3(673, 573×573) → Shot 2(1367, 622×573, 프레임 밖으로 잘림)
+  // Figma "photo list"(2095:1295): 좌→우 Shot 1·3·2 가 한 번 더 반복되는 6장, 간격 99px.
+  // 가로로 쭉 이어지는 줄이라 스크롤하면 이 줄이 먼저 끝까지 지나간 뒤에 화면이 내려간다.
+  gap: 99,
   images: [
-    { src: purchaseShot1Image, x: 0, w: 573 },
-    { src: purchaseShot3Image, x: 673, w: 573 },
-    { src: purchaseShot2Image, x: 1367, w: 622 },
+    { src: purchaseShot1Image, w: 573 },
+    { src: purchaseShot3Image, w: 573 },
+    { src: purchaseShot2Image, w: 622 },
+    { src: purchaseShot1Image, w: 573 },
+    { src: purchaseShot3Image, w: 573 },
+    { src: purchaseShot2Image, w: 622 },
   ],
 };
 
