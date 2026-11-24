@@ -155,20 +155,19 @@
 /*
  * 07~11 공통 배경 — ORYZO(oryzo.ai)의 거의 검정에 가까운 따뜻한 갈색(#100904) 바탕에
  * 코르크색 주황빛이 번지는 느낌을 CSS 그라데이션으로 옮겼다. 섹션 경계 없이 한 화면처럼 이어진다.
- * 위쪽은 06 Feature 배경의 어두운 하단과 자연스럽게 이어지도록 조금 더 밝은 갈색에서 시작한다.
+ * 위쪽은 06 Feature 배경(#151515)과 이어지도록 같은 색에서 시작해 갈색으로 넘어간다.
  */
 .darkZone {
   position: relative;
   color: #fff;
   background:
-    radial-gradient(ellipse 60% 7% at 50% 0%, #533a1c, transparent 100%),
     radial-gradient(ellipse 55% 9% at 94% 13%, rgba(201, 124, 54, 0.30), transparent 70%),
     radial-gradient(ellipse 50% 9% at 6% 24%, rgba(176, 102, 42, 0.30), transparent 70%),
     radial-gradient(ellipse 55% 9% at 94% 42%, rgba(201, 124, 54, 0.30), transparent 70%),
     radial-gradient(ellipse 50% 9% at 4% 60%, rgba(176, 102, 42, 0.28), transparent 70%),
     radial-gradient(ellipse 55% 9% at 90% 78%, rgba(201, 124, 54, 0.28), transparent 70%),
     radial-gradient(ellipse 60% 10% at 30% 98%, rgba(176, 102, 42, 0.26), transparent 70%),
-    linear-gradient(180deg, #23190f 0%, #170e06 8%, #100904 22%, #130b05 50%, #100904 78%, #1a1008 100%);
+    linear-gradient(180deg, #151515 0%, #140d07 6%, #100904 22%, #130b05 50%, #100904 78%, #1a1008 100%);
 }
 
 .filters,

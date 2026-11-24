@@ -4,7 +4,6 @@ import {
   hero,
   intro,
   featuresHeading,
-  featureBackground,
   features,
   filterShowcase,
   appPromo,
@@ -89,7 +88,6 @@ export default function CameraNowPage() {
       <FeatureShowcase
         heading={featuresHeading.join(' ')}
         features={features}
-        background={featureBackground}
       />
 
       {/* 07~11: 하나의 갈색 그라데이션 배경으로 이어서 보이도록 묶는다 (ORYZO 참고) */}

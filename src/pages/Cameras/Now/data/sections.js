@@ -7,7 +7,6 @@
  */
 import heroImage from '../../../../assets/cameras/now/hero.jpg';
 import introProductImage from '../../../../assets/cameras/now/intro-product.jpg';
-import featureBackgroundImage from '../../../../assets/cameras/now/feature-bg.jpg';
 import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus.jpg';
 import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure.jpg';
 import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness.jpg';
@@ -41,14 +40,11 @@ export const intro = {
 
 export const featuresHeading = ['모든 순간을 특별하게 남기는', '세 가지 방법.'];
 
-export const featureBackground = featureBackgroundImage;
-
 /**
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
- * 문구 목록은 스크롤에 따라 위로 올라가고, 아래에는 다음 기능만 흐리게 보인다(KINORIA 방식).
- * 프레임마다 문구 레이아웃이 달라서(Figma 04 / 05 / 06) layout(x, 글자 크기, 태그·문구 y, 문구 간격, 점선 간격·길이)과
- * imageTop/imageSize(이미지), frameTop(브래킷)을 프레임별로 둔다. 스크롤에 따라 이 값들이 프레임 사이에서 이어진다.
- * 06 선명도 이미지만 762px이다.
+ * Figma 현재 디자인: 배경 #151515, 세 프레임이 같은 레이아웃이고 문구 목록의 활성 위치만 다르다.
+ * 문구 목록은 스크롤에 따라 위로 올라간다(KINORIA 방식).
+ * 세 기능의 tag/tagLabel이 모두 "FUNCTION — 01 / TWO-LENS AUTOFOCUS"인 것은 Figma 원본 값 그대로다(디자인 담당자 확인 필요).
  */
 export const features = [
   {
@@ -57,10 +53,6 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
     image: featureAutofocusImage,
-    layout: { x: 1045, fs: 45, tagY: 400, mainY: 441, pitch1: 96, pitch2: 96, gap: 21, lineW: 717, below1: 0.2, below2: 0.1 },
-    frameTop: 161,
-    imageTop: 161,
-    imageSize: 766,
   },
   {
     id: 'double-exposure',
@@ -68,10 +60,6 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
-    layout: { x: 1091, fs: 50, tagY: 579, mainY: 620, pitch1: 107, pitch2: 118, gap: 36.5, lineW: 634, below1: 0.1, below2: 0.1 },
-    frameTop: 157,
-    imageTop: 157,
-    imageSize: 766,
   },
   {
     id: 'sharpness',
@@ -79,10 +67,6 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,
-    layout: { x: 1091, fs: 40, tagY: 579, mainY: 620, pitch1: 107, pitch2: 118, gap: 36.5, lineW: 634, below1: 0.2, below2: 0.1 },
-    frameTop: 157,
-    imageTop: 161,
-    imageSize: 762,
   },
 ];
 
