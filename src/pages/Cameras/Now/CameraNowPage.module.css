@@ -269,7 +269,7 @@
   outline-offset: calc(3 * var(--u));
 }
 
-/* 원 아래 라벨 — 선택된 필터는 밝게, 나머지는 흐리게 */
+/* 원 아래 라벨 — Figma처럼 선택된 필터의 이름만 보인다 */
 .filterDiscLabel {
   composes: pos text center from './components/stage.module.css';
   --y: 920.4;
@@ -280,7 +280,7 @@
   font-family: var(--f-out);
   font-weight: 500;
   color: #eceef0;
-  opacity: 0.45;
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
