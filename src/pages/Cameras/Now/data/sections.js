@@ -45,8 +45,9 @@ export const featureBackground = featureBackgroundImage;
 
 /**
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
- * 선택한 기능이 위(진하게)에 오고, 나머지 둘이 ghosts 순서·투명도대로 아래에 흐리게 나온다.
- * 프레임마다 y 좌표가 달라서(04 / 05·06) textShift(기준 대비 텍스트 이동량), imageTop/imageSize(이미지), frameTop(브래킷)을 따로 둔다.
+ * 문구 목록은 스크롤에 따라 위로 올라가고, 아래에는 다음 기능만 흐리게 보인다(KINORIA 방식).
+ * 프레임마다 문구 레이아웃이 달라서(Figma 04 / 05 / 06) layout(x, 글자 크기, 태그·문구 y, 문구 간격, 점선 간격·길이)과
+ * imageTop/imageSize(이미지), frameTop(브래킷)을 프레임별로 둔다. 스크롤에 따라 이 값들이 프레임 사이에서 이어진다.
  * 06 선명도 이미지만 762px이다.
  */
 export const features = [
@@ -56,14 +57,10 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
     image: featureAutofocusImage,
-    textShift: -19,
+    layout: { x: 1045, fs: 45, tagY: 400, mainY: 441, pitch1: 96, pitch2: 96, gap: 21, lineW: 717, below1: 0.2, below2: 0.1 },
     frameTop: 161,
     imageTop: 161,
     imageSize: 766,
-    ghosts: [
-      { id: 'double-exposure', opacity: 0.2 },
-      { id: 'sharpness', opacity: 0.1 },
-    ],
   },
   {
     id: 'double-exposure',
@@ -71,14 +68,10 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
-    textShift: -23,
+    layout: { x: 1091, fs: 50, tagY: 579, mainY: 620, pitch1: 107, pitch2: 118, gap: 36.5, lineW: 634, below1: 0.1, below2: 0.1 },
     frameTop: 157,
     imageTop: 157,
     imageSize: 766,
-    ghosts: [
-      { id: 'sharpness', opacity: 0.1 },
-      { id: 'two-lens-autofocus', opacity: 0.2 },
-    ],
   },
   {
     id: 'sharpness',
@@ -86,14 +79,10 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,
-    textShift: -23,
+    layout: { x: 1091, fs: 40, tagY: 579, mainY: 620, pitch1: 107, pitch2: 118, gap: 36.5, lineW: 634, below1: 0.2, below2: 0.1 },
     frameTop: 157,
     imageTop: 161,
     imageSize: 762,
-    ghosts: [
-      { id: 'two-lens-autofocus', opacity: 0.2 },
-      { id: 'double-exposure', opacity: 0.2 },
-    ],
   },
 ];
 

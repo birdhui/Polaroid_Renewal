@@ -4,52 +4,42 @@
   height: calc((var(--count) + 1) * 100vh);
 }
 
-.track {
+/* 고정되는 동안 배경 사진은 화면 전체를 채우고(그라데이션 사진이라 늘려도 티가 나지 않음),
+   1920×1080 스테이지는 그 위 가운데에 놓인다 */
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   background: #fff9e8;
 }
 
-/* 화면 비율(1920×1080)이 뷰포트와 달라도 세로 가운데에 고정 */
-.track > .section {
-  position: sticky;
-  top: calc((100vh - 56.25vw) / 2);
-}
-
-.fade {
-  animation: featureFade 0.5s ease both;
-}
-
-@keyframes featureFade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade {
-    animation: none;
-  }
+/* 이미지는 겹쳐 두고 활성 이미지만 보인다 */
+.image.on {
+  opacity: 1;
 }
 
 /* 04~06 Feature 프레임 (1920×1080) — 배경 사진은 Figma "Feature BG Photo"(1920×1088) */
 .section {
   composes: screen from './stage.module.css';
-  background: #fff9e8;
+  position: relative;
+  width: min(100%, calc(100vh * 1920 / 1080));
 }
 
 .background {
   position: absolute;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100%;
-  height: calc(1088 * var(--u));
+  height: 100%;
   max-width: none;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .image {
+  opacity: 0;
+  transition: opacity 0.7s ease, top 0.6s ease;
   composes: pos from './stage.module.css';
   --x: 194;
   --y: var(--iy);
@@ -74,8 +64,8 @@
 /* featTag */
 .tagPill {
   composes: pos size from './stage.module.css';
-  --x: 1091;
-  --y: calc(602 + var(--dy));
+  --x: var(--lx);
+  --y: var(--ltag);
   --w: 129;
   --h: 24.1;
   border: calc(0.571 * var(--u)) solid #151515;
@@ -84,8 +74,8 @@
 
 .tagCode {
   composes: pos text center from './stage.module.css';
-  --x: 1155.55;
-  --y: calc(608 + var(--dy));
+  --x: calc(var(--lx) + 64.55);
+  --y: calc(var(--ltag) + 6);
   --fs: 12;
   --ls: 0.5;
   line-height: calc(12 * var(--u));
@@ -96,8 +86,8 @@
 
 .tagLabel {
   composes: pos text center from './stage.module.css';
-  --x: 1324;
-  --y: calc(605 + var(--dy));
+  --x: calc(var(--lx) + 233);
+  --y: calc(var(--ltag) + 3);
   --fs: 14;
   --ls: 0.3;
   line-height: calc(18 * var(--u));
@@ -106,38 +96,17 @@
   color: #151515;
 }
 
-.headline {
-  composes: pos text from './stage.module.css';
-  --x: 1091;
-  --y: calc(643 + var(--dy));
-  --fs: 40;
-  --ls: -0.9;
-  font-family: var(--f-pre);
-  font-weight: 700;
-  color: #151515;
-}
-
-/* Line 15 · Line 16 (점선) — TODO: Figma SVG 원본으로 교체 */
 .rule {
   composes: pos from './stage.module.css';
-  --x: 1092;
-  width: calc(634 * var(--u));
+  --x: var(--lx);
+  width: calc(var(--lw) * var(--u));
   border-top: calc(1.5 * var(--u)) dotted rgba(21, 21, 21, 0.45);
 }
 
-.ruleTop {
-  --y: calc(713.5 + var(--dy));
-}
-
-.ruleBottom {
-  --y: calc(832 + var(--dy));
-  --x: 1092;
-}
-
-.ghost {
+/* 문구 3개 — 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */
+.headline {
   composes: pos text from './stage.module.css';
-  --x: 1091;
-  --fs: 40;
+  --x: var(--lx);
   --ls: -0.9;
   padding: 0;
   border: 0;
@@ -146,18 +115,25 @@
   font-weight: 700;
   text-align: left;
   cursor: pointer;
-  transition: color 0.2s ease;
-}
+  }
 
-.ghost:hover,
-.ghost:focus-visible {
+.headline:not(.current):hover,
+.headline:not(.current):focus-visible {
   color: rgba(21, 21, 21, 0.5) !important;
 }
 
-.ghostFirst {
-  --y: calc(750 + var(--dy));
+.current {
+  cursor: default;
 }
 
-.ghostSecond {
-  --y: calc(867.99 + var(--dy));
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .headline,
+  .tagPill,
+  .tagCode,
+  .tagLabel,
+  .rule,
+  .frame {
+    transition: none !important;
+  }
 }

@@ -6,7 +6,6 @@ import {
   featuresHeading,
   featureBackground,
   features,
-  sectionBackground,
   filterShowcase,
   appPromo,
   purchaseCta,
@@ -48,7 +47,6 @@ function FilmImage({ image, className, alt }) {
 }
 
 /** Figma "Section BG Photo" 좌표(x, y, 너비, 높이) */
-const bgBox = (bx, by, bw, bh) => ({ '--bx': bx, '--by': by, '--bw': bw, '--bh': bh });
 
 export default function CameraNowPage() {
   const selectedFilter = filterShowcase.items.find((item) => item.selected);
@@ -94,9 +92,10 @@ export default function CameraNowPage() {
         background={featureBackground}
       />
 
+      {/* 07~11: 하나의 갈색 그라데이션 배경으로 이어서 보이도록 묶는다 (ORYZO 참고) */}
+      <div className={styles.darkZone}>
       {/* 07 Filter Showcase */}
       <section className={`${styles.screen} ${styles.filters}`}>
-        <img className={styles.bg} style={bgBox(-17, -2, 1954, 1099)} src={sectionBackground} alt="" />
         <p className={styles.filterEyebrow}>{filterShowcase.eyebrow}</p>
         <h3 className={styles.filterHeading}>
           <Lines lines={filterShowcase.heading} />
@@ -125,7 +124,6 @@ export default function CameraNowPage() {
 
       {/* 08 App Promo */}
       <section className={`${styles.screen} ${styles.appPromo}`}>
-        <img className={styles.bg} style={bgBox(-15, -2, 1954, 1099)} src={sectionBackground} alt="" />
 
         <p className={styles.appEyebrow}>{appPromo.eyebrow}</p>
         <h3 className={styles.appHeading}>
@@ -189,7 +187,6 @@ export default function CameraNowPage() {
 
       {/* 09 Purchase CTA */}
       <section className={`${styles.screen} ${styles.purchase}`}>
-        <img className={styles.bg} style={bgBox(-22, -10, 1964, 1105)} src={sectionBackground} alt="" />
         <CornerBrackets className={styles.purchaseBrackets} />
         <p className={styles.purchaseWordmark}>{purchaseCta.wordmark}</p>
         <h3 className={styles.purchaseHeading}>{purchaseCta.heading}</h3>
@@ -209,7 +206,6 @@ export default function CameraNowPage() {
 
       {/* 10 Polaroid Go Film */}
       <section className={`${styles.screen} ${styles.goFilm}`}>
-        <img className={styles.bg} style={bgBox(0, 0, 1920, 1080)} src={sectionBackground} alt="" />
         <p className={styles.goFilmEyebrow}>{goFilm.eyebrow}</p>
         <h3 className={styles.goFilmTitle}>
           <Lines lines={goFilm.title} />
@@ -239,8 +235,6 @@ export default function CameraNowPage() {
 
       {/* 11 Discover More */}
       <section className={`${styles.screen} ${styles.discover}`}>
-        <img className={styles.bg} style={bgBox(-22, -10, 1964, 1105)} src={sectionBackground} alt="" />
-        <span className={styles.discoverBgBorder} aria-hidden="true" />
         <h3 className={styles.discoverHeading}>
           <Lines lines={discoverMore.heading} />
         </h3>
@@ -273,6 +267,7 @@ export default function CameraNowPage() {
           ))}
         </ul>
       </section>
+      </div>
     </article>
   );
 }
