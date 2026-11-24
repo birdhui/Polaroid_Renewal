@@ -1,10 +1,9 @@
 import FeatureShowcase from './components/FeatureShowcase.jsx';
-import BackgroundLabel from './components/BackgroundLabel.jsx';
+import CornerBrackets from './components/CornerBrackets.jsx';
 import {
   hero,
   intro,
   featuresHeading,
-  backgroundLabel,
   features,
   filterShowcase,
   appPromo,
@@ -46,17 +45,17 @@ export default function CameraNowPage() {
               <span key={line}>{line}</span>
             ))}
           </h2>
-          <div className={styles.introWordmarkGroup}>
-            <p className={styles.eyebrow}>{intro.eyebrow}</p>
-            <p className={styles.introWordmark}>{intro.wordmark}</p>
-          </div>
+          <CornerBrackets className={styles.introBrackets}>
+            <div className={styles.introWordmarkGroup}>
+              <p className={styles.eyebrow}>{intro.eyebrow}</p>
+              <p className={styles.introWordmark}>{intro.wordmark}</p>
+            </div>
+          </CornerBrackets>
           <img className={styles.introImage} src={intro.image} alt="Polaroid Now 제품 이미지" />
-          <BackgroundLabel lines={backgroundLabel} />
         </section>
 
         <section className={`${styles.featuresHeading} ${styles.screen}`}>
           <h3 className={styles.sectionHeading}>{featuresHeading}</h3>
-          <BackgroundLabel lines={backgroundLabel} />
         </section>
 
         <FeatureShowcase heading={featuresHeading} features={features} />

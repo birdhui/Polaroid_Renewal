@@ -148,8 +148,8 @@
   letter-spacing: -0.036em;
 }
 
-/* Figma: 헤드라인과 eyebrow+워드마크 그룹 사이 간격(frame 1920px 기준 195px → 10.16vw) */
-.introWordmarkGroup {
+/* Figma: 헤드라인과 eyebrow+워드마크 그룹(브래킷 포함) 사이 간격(1920px 기준 195px → 10.16vw) */
+.introBrackets {
   margin-top: 10.16vw;
 }
 
