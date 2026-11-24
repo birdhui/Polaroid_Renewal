@@ -12,6 +12,7 @@ Landing의 Polaroid Now 3D 모델과 카메라 인터랙션 전용 영역입니�
 CameraExperience.jsx      진입점 — Landing 이 import 하는 유일한 컴포넌트
 CameraExperience.module.css
 cameraContract.js         Landing ↔ 카메라 공통 인터페이스 (상수·기본값·타입)
+engine/polaroidScene.js   3D 장면 엔진 (아티팩트 프로토타입 1차 이식본 — 아래 '현재 상태' 참고)
 components/               3D 장면, 모델, 조명 등
 animations/               셔터·필름 출력·컬러 전환 등 애니메이션
 interactions/             Autofocus · Double Exposure · Self-Timer
@@ -57,6 +58,15 @@ hooks/                    3D 전용 훅
 
 ## 아직 정하지 않은 것
 
-- 3D 라이브러리: `three` 또는 React Three Fiber. 설치 전 PM 승인이 필요합니다.
+- 3D 라이브러리: `three`(0.170)로 1차 이식. React Three Fiber 전환 여부는 계약 분리 작업 때 정합니다.
 - 모델 파일과 컬러 목록, 장면별 pose 값
 - 위 항목이 정해지기 전까지 `CameraExperience`는 빈 레이어만 렌더링합니다.
+
+## 현재 상태 (프로토타입 1차 이식)
+
+- `engine/polaroidScene.js`는 아티팩트 프로토타입(Polaroid Renewal)의 three.js 장면을 그대로 옮긴 것입니다.
+  히어로 카메라, 플래시·사진 출력·낙하·상승, 레이어 블러, NOW 도면 정합, 8가지 컬러 회전을 그립니다.
+- Landing(`src/pages/Landing/LandingPage.jsx`)이 `mountPolaroidScene(signal)`로 한 번만 붙이고, 페이지를 떠날 때 정리합니다.
+- **연결 규칙 4번과 다른 점**: 프로토타입 구조를 유지하느라 지금은 window 스크롤을 직접 읽고, `window.__*` 값으로 Landing UI 엔진과 주고받습니다.
+  `CameraExperience` + `cameraContract.js` props 계약으로 나누는 작업은 다음 단계에서 진행합니다.
+- 사용 에셋: `/assets/landing-camera/polaroid-now.glb`, `/assets/landing-camera/draco/draco_decoder.js`, `/assets/landing-camera/print-photo.jpg`
