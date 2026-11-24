@@ -55,6 +55,21 @@ export default function FeatureShowcase({ heading, features }) {
   const index = Math.round(pos);
   const active = features[index];
 
+  // 영상은 해당 기능이 활성이 될 때마다 처음(0초)부터 재생하고, 비활성이 되면(크로스페이드가 끝난 뒤) 멈춘다.
+  const videoRefs = useRef(new Map());
+  useEffect(() => {
+    const timers = [];
+    videoRefs.current.forEach((video, id) => {
+      if (id === active.id) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      } else {
+        timers.push(setTimeout(() => video.pause(), 750));
+      }
+    });
+    return () => timers.forEach(clearTimeout);
+  }, [active.id]);
+
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame = 0;
@@ -121,14 +136,29 @@ export default function FeatureShowcase({ heading, features }) {
       <div className={styles.sticky}>
         <section className={styles.section} aria-label={heading}>
           {/* 이미지는 겹쳐 두고 투명도만 바꿔서 서로 자연스럽게 교차(크로스페이드)한다 */}
-          {features.map((feature) => (
-            <img
-              key={feature.id}
-              className={`${styles.image} ${feature.id === active.id ? styles.on : ''}`}
-              src={feature.image}
-              alt={feature.id === active.id ? feature.headline : ''}
-            />
-          ))}
+          {features.map((feature) => {
+            const on = feature.id === active.id;
+            const className = `${styles.image} ${on ? styles.on : ''}`;
+            return feature.video ? (
+              <video
+                key={feature.id}
+                ref={(node) => {
+                  if (node) videoRefs.current.set(feature.id, node);
+                  else videoRefs.current.delete(feature.id);
+                }}
+                className={className}
+                src={feature.video}
+                poster={feature.image}
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-hidden="true"
+              />
+            ) : (
+              <img key={feature.id} className={className} src={feature.image} alt={on ? feature.headline : ''} />
+            );
+          })}
           <CornerBrackets className={styles.frame} />
 
           <div className={styles.tagPill} aria-hidden="true" />

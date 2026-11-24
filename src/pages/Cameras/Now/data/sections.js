@@ -7,9 +7,12 @@
  */
 import heroImage from '../../../../assets/cameras/now/hero.jpg';
 import introProductImage from '../../../../assets/cameras/now/intro-product.jpg';
-import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus.jpg';
-import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure.jpg';
-import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness.jpg';
+import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus-poster.png';
+import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.webm';
+import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure-poster.png';
+import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.webm';
+import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness-poster.png';
+import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.webm';
 import sectionBackgroundImage from '../../../../assets/cameras/now/dark-section-bg.jpg';
 import filterPreviewImage from '../../../../assets/cameras/now/filter-preview.jpg';
 import appStoryImage from '../../../../assets/cameras/now/app-story.jpg';
@@ -53,6 +56,7 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
     image: featureAutofocusImage,
+    video: featureAutofocusVideo, // 배경이 투명한(알파) WebM — image는 poster/대체 이미지
   },
   {
     id: 'double-exposure',
@@ -60,6 +64,7 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
+    video: featureDoubleExposureVideo,
   },
   {
     id: 'sharpness',
@@ -67,6 +72,7 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,
+    video: featureSharpnessVideo,
   },
 ];
 
