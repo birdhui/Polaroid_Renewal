@@ -1,4 +1,21 @@
 /* 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고. */
+
+/*
+ * 채팅 → 로딩 → 결과가 같은 자리에서 바뀌는 한 화면 크기의 무대.
+ * 화면 높이(100svh)를 꽉 채우고, 각 화면(시안 1920×1080 비율)은 그 안에서 세로 가운데에 놓인다.
+ * 로딩 화면만 어두운 배경이라 무대 배경도 같이 바꿔 가장자리가 어색하게 보이지 않게 한다.
+ */
+.stage {
+  display: grid;
+  align-content: center;
+  min-height: 100svh;
+  background: var(--compare-beige);
+  transition: background-color 400ms ease; /* 채팅(밝음) → 로딩(어두움)으로 넘어갈 때 칼같이 바뀌지 않게 */
+}
+
+.stage[data-stage='loading'] {
+  background: #17100a;
+}
 .finder {
   /* 시안: 히어로(1080) 아래 540 만큼 어두운 여백을 두고 STEP 섹션(1080)이 시작한다 */
   padding-top: calc(540 * var(--u));
@@ -65,5 +82,11 @@
 
   .description {
     font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    transition: none;
   }
 }

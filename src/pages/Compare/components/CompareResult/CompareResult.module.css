@@ -232,14 +232,14 @@
   word-break: keep-all;
 }
 
-/* "i-Type / " 는 영문 폰트, 숫자는 한글 폰트로 표시한 시안을 따른다 */
 .reason {
   font-size: max(calc(16 * var(--u)), 13px);
   line-height: 1.5;
 }
 
 .film {
-  font-family: var(--compare-font-en), var(--compare-font-ko);
+  /* 영문("i-Type /", "Go")은 Outfit, 숫자("600")와 한글("전용")은 Pretendard */
+  font-family: 'Compare Outfit Letters', 'Compare Pretendard', var(--font-sans);
 }
 
 .compare {

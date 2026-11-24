@@ -13,17 +13,24 @@
    */
   --chat-rise-distance: 96px; /* 질문 말풍선이 아래에서 올라오는 거리 */
   --chat-rise-duration: 650ms;
+  --chat-first-rise-duration: 400ms; /* 맨 처음 질문 말풍선이 올라오는 시간 */
   --chat-drop-distance: 10px; /* 선택지가 말풍선 안에서 위에서 내려오는 거리 */
   --chat-drop-duration: 480ms;
-  --chat-options-delay: 320ms; /* 질문이 뜬 뒤 선택지가 나오기까지 */
+  --chat-pick-fade: 250ms; /* 답변을 누르면 나머지 선택지가 사라지는 시간 (다음 질문으로 넘어가기 전 대기 300ms 안에 끝난다) */
+  --chat-next-delay: 400ms; /* 앞 대화가 자리 잡기 시작한 뒤 다음 질문이 올라오기 시작하기까지 */
+  --chat-options-delay: 300ms; /* 질문 말풍선이 다 올라온 뒤 선택지가 나오기까지 */
   --chat-options-stagger: 80ms; /* 선택지 사이 간격 */
   --chat-shift-duration: 550ms; /* 새 질문이 붙을 때 앞 말풍선들이 위로 밀려 올라가는 시간 */
-  --chat-intro-exit-duration: 500ms; /* 선택지를 누르면 안내 문구가 위로 올라가며 사라지는 시간 */
-  --chat-intro-exit-distance: 32px; /* 안내 문구가 올라가는 거리 */
+  --chat-intro-exit-duration: 600ms; /* 첫 질문이 뜰 때 안내 문구가 위로 올라가며 사라지는 시간 */
+  --chat-intro-exit-distance: 56px; /* 안내 문구가 올라가는 거리 */
+  --chat-intro-rise: 600ms; /* 안내 제목·설명 글이 아래에서 올라오는 시간 */
+  --chat-intro-rise-distance: 28px; /* 올라오기 전에 아래로 내려가 있는 거리 */
   --chat-msg-rise: 28px; /* 보낸 말·챗봇 답변이 아래에서 올라오는 거리 */
   --chat-msg-duration: 420ms;
   --chat-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* 살짝 튕기며 자리 잡는 이징 */
   --chat-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --chat-answer: #f2ca95; /* 답변 말풍선 기본(연한 주황) */
+  --chat-answer-strong: #f3a133; /* 답변 호버·선택, 직접 입력 점선 (진한 주황) */
 
   /* 시안 치수: 입력창 높이 143, 카드 아래 여백 53 (--s 를 곱한다) */
   --s: clamp(0.6px, var(--u), 1px);
@@ -102,8 +109,53 @@
   text-wrap: balance;
 }
 
+/* 타이핑 중 아직 안 쓴 글자: 자리만 차지하고 보이지 않는다 */
+.typeRest {
+  visibility: hidden;
+}
+
+/* 커서: 폭 0 인 자리표시자 안에 얇은 막대를 띄워서 글자 위치를 밀지 않는다 (Typewriter 의 0.06em × 0.9em 막대) */
+.typeCursor {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.typeCursor::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0.08em;
+  width: 0.06em;
+  height: 0.9em;
+  background: currentcolor;
+  transform: translateY(-50%);
+  animation: type-cursor-blink 1s steps(1, end) infinite;
+}
+
+/* 타이핑 중에는 깜빡이지 않고 켜 둔다 */
+.typeCursor[data-typing='true']::after {
+  animation: none;
+}
+
+@keyframes type-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
 .introText {
   margin-top: calc(18 * var(--s));
+  transition:
+    opacity var(--chat-intro-rise) var(--chat-ease-out),
+    transform var(--chat-intro-rise) var(--chat-ease-out);
   font-family: var(--compare-font-ko);
   font-size: max(calc(16 * var(--s)), 13px);
   font-weight: 300;
@@ -111,6 +163,12 @@
   letter-spacing: -0.02em;
   color: #000;
   word-break: keep-all;
+}
+
+/* 제목 타이핑이 끝나면 설명 글이 아래에서 위로 올라오며 나타난다 */
+.introText[data-shown='false'] {
+  opacity: 0;
+  transform: translateY(var(--chat-intro-rise-distance));
 }
 
 /*
@@ -150,10 +208,19 @@
 }
 
 .step {
+  /* 이 질문 말풍선이 올라오는 시간 — 선택지는 이 시간이 지난 뒤 --chat-options-delay 만큼 더 있다가 나온다 */
+  --question-rise: var(--chat-rise-duration);
+  --question-delay: var(--chat-next-delay); /* 앞 질문에 답한 뒤 이어지는 질문은 잠깐 있다가 올라온다 */
+
   display: flex;
   flex: none;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.step[data-first='true'] {
+  --question-rise: var(--chat-first-rise-duration);
+  --question-delay: 0ms;
 }
 
 /* 질문 사이 간격 — 시안에 없어 이전 값을 그대로 둔다. */
@@ -162,80 +229,150 @@
 }
 
 /*
- * 질문 말풍선 — 검정. 안에 질문과 선택지 칩이 들어간다.
- * 시안: 폭 283(글 240 + 좌우 22)·높이 101 / 왼쪽 위·오른쪽 위·오른쪽 아래 28.385, 왼쪽 아래 5.677
- * 글 위 18 → 칩 위 53(글과 칩 사이 17) → 칩 아래 17 / 칩 사이 11
+ * 질문 말풍선 — 검정, 왼쪽. 시안(1603:292): 왼쪽 위·오른쪽 위·오른쪽 아래 28.385, 왼쪽 아래 5.677 / 안쪽 여백 위아래 16·좌우 21
+ * 글 Pretendard Medium 15 / 자간 -0.3 / 카드 안쪽 왼쪽 선(입력창 왼쪽)에서 10 안으로 들어가 있다.
  */
-.bubble {
+.question {
   width: fit-content;
   max-width: 100%;
-  padding: calc(18 * var(--s)) calc(22 * var(--s)) calc(17 * var(--s));
+  margin-left: calc(10 * var(--s));
+  padding: calc(16 * var(--s)) calc(21 * var(--s));
   border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s));
   background: var(--compare-bubble);
   color: var(--compare-bubble-text);
-  /* backwards: 시작 전(지연 중)에는 첫 장면(숨김)을 유지하고, 끝나면 기본 스타일로 돌아온다 */
-  animation: rise var(--chat-rise-duration) var(--chat-ease-bounce) backwards;
-}
-
-/* 질문 글 — Pretendard Medium 15 */
-.question {
   font-family: var(--compare-font-ko);
   font-size: max(calc(15 * var(--s)), 12px);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: normal;
   letter-spacing: -0.02em;
   word-break: keep-all;
+  /* backwards: 시작 전(지연 중)에는 첫 장면(숨김)을 유지하고, 끝나면 기본 스타일로 돌아온다 */
+  animation: rise var(--chat-rise-duration) var(--chat-ease-bounce) backwards;
+  animation-delay: var(--question-delay);
 }
 
-.options {
-  display: flex;
-  gap: calc(11 * var(--s));
-  margin-top: calc(17 * var(--s));
+/* 맨 처음 질문 말풍선 — 올라오는 시간을 따로 정한다 */
+.firstQuestion {
+  animation-duration: var(--chat-first-rise-duration);
 }
 
-/* 대답 칩 — 기본은 회색, 호버·포커스·선택하면 주황. 시안: 폭 95·높이 31·모서리 10 / Pretendard Regular 14 / 질문 다음에 말풍선 안에서 나타난다 */
-.option {
+/*
+ * 문장형 답변들 — 질문 아래 오른쪽 끝에 세로로 한 개씩. 글 길이에 따라 폭이 달라진다.
+ * 시안: 질문과의 간격 22 / 답변 사이 16 / 오른쪽 끝은 카드 안쪽 오른쪽 선에서 69 안쪽
+ */
+.answers {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-end;
+  align-self: flex-end;
+  max-width: 100%;
+  margin-top: calc(22 * var(--s));
+  margin-right: calc(69 * var(--s));
+  gap: calc(16 * var(--s));
+}
+
+/*
+ * 답변 말풍선 — 기본은 연한 주황(#f2ca95), 호버·포커스하면 진한 주황(#f3a133), 글자는 항상 흰색.
+ * 시안: 안쪽 여백 위아래 11.354·좌우 22 / 왼쪽 위·왼쪽 아래·오른쪽 위 28.385, 오른쪽 아래 5.677 / Pretendard Regular 14 · 자간 -0.28
+ * 질문 다음에 아래에서 살짝 올라오며 나타난다. reveal 은 나타나기 전(지연 시간)에 누르거나 포커스되지 않도록 숨겨 둔다.
+ */
+.answer {
+  --answer-delay: calc(
+    var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger)
+  );
+
   flex: none;
-  width: calc(95 * var(--s));
-  height: calc(31 * var(--s));
-  border-radius: calc(10 * var(--s));
-  background: var(--compare-chip);
-  color: #000;
+  max-width: 100%;
+  margin: 0;
+  padding: calc(11.354 * var(--s)) calc(22 * var(--s));
+  border: 0;
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
+  background: var(--chat-answer);
+  color: #fff;
   font-family: var(--compare-font-ko);
   font-size: max(calc(14 * var(--s)), 12px);
   font-weight: 400;
+  line-height: calc(17 * var(--s));
   letter-spacing: -0.02em;
+  text-align: right;
   white-space: nowrap;
-  transition:
-    background-color 200ms ease,
-    color 200ms ease;
-  /* 질문 다음에 위에서 아래로 내려온다. reveal 은 나타나기 전(지연 시간)에 누르거나 포커스되지 않도록 숨겨 둔다. */
+  cursor: pointer;
+  transition: background-color 200ms ease;
   animation:
-    drop var(--chat-drop-duration) var(--chat-ease-bounce) backwards,
+    message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards,
     reveal 10ms linear backwards;
-  animation-delay:
-    calc(var(--chat-options-delay) + var(--i) * var(--chat-options-stagger)),
-    calc(var(--chat-options-delay) + var(--i) * var(--chat-options-stagger));
-}
-
-.selected {
-  background: var(--compare-orange);
-  color: #fff;
+  animation-delay: var(--answer-delay), var(--answer-delay);
 }
 
 @media (hover: hover) {
-  .option:hover {
-    background: var(--compare-orange);
-    color: #fff;
+  .answer:hover {
+    background: var(--chat-answer-strong);
   }
 }
 
-.option:focus-visible {
-  background: var(--compare-orange);
-  color: #fff;
+.answer:focus-visible {
+  background: var(--chat-answer-strong);
+  outline: 2px solid var(--compare-ink);
+  outline-offset: 3px;
+}
+
+/* 방금 누른 답변: 나머지 선택지가 옅어져 사라지는 동안 진한 주황으로 남는다 */
+.answer[data-state='picked'] {
+  background: var(--chat-answer-strong);
+  cursor: default;
+  pointer-events: none;
+}
+
+.answer[data-state='fading'],
+.direct[data-state='fading'] {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--chat-pick-fade) ease,
+    background-color 200ms ease;
+}
+
+/* 고른 답변 — 진한 주황으로 대화 기록에 남는다 (누를 수 없다) */
+.sent {
+  background: var(--chat-answer-strong);
+  cursor: default;
+  animation: none;
+}
+
+/* 직접 입력해서 답변하기 — 배경 없이 주황 점선 테두리와 주황 글자. 시안: 테두리 #f3a133 1 · 글자 #f0a137 / 모양·크기는 답변과 같다 */
+.direct {
+  flex: none;
+  max-width: 100%;
+  margin: 0;
+  padding: calc(10.354 * var(--s)) calc(21 * var(--s));
+  border: 1px dashed var(--chat-answer-strong);
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
+  background: transparent;
+  color: var(--compare-orange);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(14 * var(--s)), 12px);
+  font-weight: 400;
+  line-height: calc(17 * var(--s));
+  letter-spacing: -0.02em;
+  text-align: right;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+  animation:
+    message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards,
+    reveal 10ms linear backwards;
+  animation-delay:
+    calc(var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger)),
+    calc(var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger));
+}
+
+@media (hover: hover) {
+  .direct:hover {
+    background: rgb(243 161 51 / 8%);
+  }
+}
+
+.direct:focus-visible {
   outline: 2px solid var(--compare-ink);
   outline-offset: 3px;
 }
@@ -252,28 +389,39 @@
 
 .message[data-role='user'] {
   justify-content: flex-end;
+  /* 선택지 답변과 같은 세로선에 맞춘다 (오른쪽 끝이 .answers 와 같다) */
+  padding-right: calc(69 * var(--s));
 }
 
+/* 챗봇 말풍선(되묻기) — 질문 말풍선과 같은 크기·위치 */
 .messageText {
   max-width: min(100%, calc(560 * var(--s)));
-  padding: calc(14 * var(--s)) calc(22 * var(--s));
+  margin: 0 0 0 calc(10 * var(--s));
+  padding: calc(16 * var(--s)) calc(21 * var(--s));
   border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s));
   background: var(--compare-bubble);
   color: var(--compare-bubble-text);
   font-family: var(--compare-font-ko);
   font-size: max(calc(15 * var(--s)), 12px);
   font-weight: 500;
-  line-height: 1.4;
+  line-height: normal;
   letter-spacing: -0.02em;
   word-break: keep-all;
   overflow-wrap: anywhere;
   animation: message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards;
 }
 
+/* 직접 입력한 답 — 선택지로 고른 답변(.answer/.sent)과 같은 크기·색·모양 */
 .message[data-role='user'] .messageText {
+  margin: 0;
+  padding: calc(11.354 * var(--s)) calc(22 * var(--s));
   border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
-  background: var(--compare-orange);
+  background: var(--chat-answer-strong);
   color: #fff;
+  font-size: max(calc(14 * var(--s)), 12px);
+  font-weight: 400;
+  line-height: calc(17 * var(--s));
+  text-align: right;
 }
 
 /* 챗봇이 답을 쓰는 중 — 점 세 개가 차례로 깜빡인다 */
@@ -519,46 +667,88 @@
   .chat {
     --s: 1px;
 
-    padding: 112px 16px 72px;
+    padding: 96px 16px 40px;
   }
 
   .title {
-    top: 72px;
+    top: 56px;
   }
 
+  /*
+   * 폰 한 화면에 들어가도록 화면이 낮으면 카드 높이를 줄인다 (위 96 + 아래 40).
+   * 안내 문구와 질문이 겹치지 않게 600 아래로는 줄이지 않는다. 그만큼 낮은 화면에서는 한 화면에 안 들어가므로 스크롤을 잠그지 않는다.
+   */
   .card {
-    height: 640px;
+    height: min(640px, max(600px, calc(100svh - 136px)));
     padding-right: 16px;
     padding-left: 16px;
   }
 
   .messageText {
     max-width: 88%;
+    margin-left: 0;
   }
 
-  .options {
-    display: grid;
-    grid-template-columns: repeat(2, 95px);
+  .message[data-role='user'] {
+    padding-right: 0;
+  }
+
+  .message[data-role='user'] .messageText {
+    max-width: 92%;
+  }
+
+  /* 좁은 화면: 말풍선이 잘리지 않도록 안쪽 여백을 없애고, 긴 문장은 줄바꿈한다 */
+  .question {
+    max-width: 88%;
+    margin-left: 0;
+  }
+
+  .answers {
+    margin-right: 0;
+    max-width: 92%;
+  }
+
+  .answer,
+  .direct {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
 }
 
 /* 모션 줄이기: 움직임 없이 나타나기만 한다. (reset.css 가 애니메이션 시간도 거의 0 으로 줄인다) */
 @media (prefers-reduced-motion: reduce) {
-  .bubble {
+  .question {
     animation: fade 150ms linear backwards;
+    animation-delay: 0ms;
   }
 
-  .option,
+  .answer,
+  .direct,
   .messageText {
     animation: fade 150ms linear backwards;
+    animation-delay: 0ms;
     transition: none;
+  }
+
+  .sent {
+    animation: none;
   }
 
   .typingDots span {
     animation: none;
   }
 
-  .intro {
+  .intro,
+  .introText {
     transition: none;
+  }
+
+  .introText {
+    transition: none;
+  }
+
+  .typeCursor::after {
+    animation: none;
   }
 }

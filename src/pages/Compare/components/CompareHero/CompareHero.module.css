@@ -9,6 +9,12 @@
   overflow: hidden;
   background: #fff;
   color: #000;
+  transition: opacity 350ms ease; /* ComparePage.jsx 의 HERO_LEAVE_DURATION 과 같게 */
+}
+
+/* "찾아보기"를 누르면 이 자리에서 사라지고, 그 자리에 채팅 화면이 나타난다 */
+.hero[data-leaving='true'] {
+  opacity: 0;
 }
 
 /*

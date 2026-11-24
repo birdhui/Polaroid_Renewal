@@ -33,9 +33,13 @@ const COMPILED = Object.fromEntries(
   ]),
 );
 
-/** 선택지 이름 그대로 입력한 경우("비용", "촬영 결과") 를 가장 먼저 알아본다. */
+/** 선택지 이름("비용", "촬영 결과")이나 화면에 보이는 문장 그대로 입력한 경우를 가장 먼저 알아본다. */
 function matchExactLabel(step, normalized) {
-  return step.options.find((option) => normalizeText(option.label) === normalized) ?? null;
+  return (
+    step.options.find(
+      (option) => normalizeText(option.label) === normalized || (option.answer && normalizeText(option.answer) === normalized),
+    ) ?? null
+  );
 }
 
 function scoreOption(entries, normalized, dismissible) {
