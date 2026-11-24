@@ -84,13 +84,17 @@ export const filterShowcase = {
   description:
     "The world is your laboratory and the filters are your test tubes. Pull up your sleeves and start experimenting with starburst, red vignette, orange, blue, and yellow effects with your Polaroid Now or Now+ Generation 3 camera. And when you're done protect your lens with included lens cap. See the world through different colored glasses. Not compatible with Polaroid Now Generation 1 or 2  cameras.",
   previewImage: filterPreviewImage,
-  // x·y·size: Figma 좌표(px). 선택된 필터는 STARBURST이고, 노랑·주황은 opacity 0.4다.
+  // cx·cy: 원의 중심 좌표(Figma px). 선택된 원은 selectedSize, 나머지는 size로 그린다.
+  // 노랑·주황은 선택되지 않았을 때 opacity 0.4다. paper는 인화지 색(없으면 color를 쓴다).
+  size: 46,
+  selectedSize: 60.7,
+  cy: 881.75,
   items: [
-    { id: 'yellow', label: 'YELLOW', color: '#e9de62', x: 745, y: 858.7, size: 46, opacity: 0.4 },
-    { id: 'blue', label: 'BLUE', color: '#5f93c8', x: 841, y: 858.7, size: 46, opacity: 1 },
-    { id: 'starburst', label: 'STARBURST', color: '#d7dbdf', x: 929.6, y: 851.4, size: 60.7, opacity: 1, selected: true },
-    { id: 'red-vignette', label: 'RED VIGNETTE', color: '#c8423b', x: 1033, y: 858.7, size: 46, opacity: 1 },
-    { id: 'orange', label: 'ORANGE', color: '#e39a52', x: 1129, y: 858.7, size: 46, opacity: 0.4 },
+    { id: 'yellow', label: 'YELLOW', color: '#e9de62', cx: 768, opacity: 0.4 },
+    { id: 'blue', label: 'BLUE', color: '#5f93c8', cx: 864, opacity: 1 },
+    { id: 'starburst', label: 'STARBURST', color: '#d7dbdf', paper: '#f3f1ec', cx: 959.95, opacity: 1, selected: true },
+    { id: 'red-vignette', label: 'RED VIGNETTE', color: '#c8423b', cx: 1056, opacity: 1 },
+    { id: 'orange', label: 'ORANGE', color: '#e39a52', cx: 1152, opacity: 0.4 },
   ],
 };
 

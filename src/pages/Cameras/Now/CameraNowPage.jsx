@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import FeatureShowcase from './components/FeatureShowcase.jsx';
 import CornerBrackets from './components/CornerBrackets.jsx';
 import {
@@ -48,7 +49,10 @@ function FilmImage({ image, className, alt }) {
 /** Figma "Section BG Photo" 좌표(x, y, 너비, 높이) */
 
 export default function CameraNowPage() {
-  const selectedFilter = filterShowcase.items.find((item) => item.selected);
+  const [selectedId, setSelectedId] = useState(
+    () => filterShowcase.items.find((item) => item.selected).id,
+  );
+  const selectedFilter = filterShowcase.items.find((item) => item.id === selectedId);
 
   return (
     <article className={styles.page} aria-labelledby="camera-now-title">
@@ -99,25 +103,42 @@ export default function CameraNowPage() {
           <Lines lines={filterShowcase.heading} />
         </h3>
         <p className={styles.filterDescription}>{filterShowcase.description}</p>
-        <div className={styles.filterPrint} />
+        <div className={styles.filterPrint} style={{ backgroundColor: selectedFilter.paper ?? selectedFilter.color }} />
         <img className={styles.filterPreview} src={filterShowcase.previewImage} alt="필터 적용 예시 사진" />
         <p className={styles.filterCardLabel}>{selectedFilter.label}</p>
+        {filterShowcase.items.map((item) => {
+          // 선택된 필터 원은 크게(60.7), 나머지는 46. 원의 중심은 그대로 둔다.
+          const isSelected = item.id === selectedId;
+          const size = isSelected ? filterShowcase.selectedSize : filterShowcase.size;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={styles.filterDisc}
+              style={{
+                '--x': item.cx - size / 2,
+                '--y': filterShowcase.cy - size / 2,
+                '--d': size,
+                backgroundColor: item.color,
+                opacity: isSelected ? 1 : item.opacity,
+              }}
+              onClick={() => setSelectedId(item.id)}
+              aria-label={item.label}
+              aria-pressed={isSelected}
+              title={item.label}
+            />
+          );
+        })}
         {filterShowcase.items.map((item) => (
-          <span
+          <p
             key={item.id}
-            className={styles.filterDisc}
-            style={{
-              '--x': item.x,
-              '--y': item.y,
-              '--d': item.size,
-              backgroundColor: item.color,
-              opacity: item.opacity,
-            }}
-            title={item.label}
+            className={`${styles.filterDiscLabel} ${item.id === selectedId ? styles.filterDiscLabelOn : ''}`}
+            style={{ '--x': item.cx }}
             aria-hidden="true"
-          />
+          >
+            {item.label}
+          </p>
         ))}
-        <p className={styles.filterSelectedLabel}>{selectedFilter.label}</p>
       </section>
 
       {/* 08 App Promo */}

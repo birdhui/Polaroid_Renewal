@@ -224,6 +224,7 @@
   --w: 396;
   --h: 482;
   background: #f3f1ec;
+  transition: background-color 0.4s ease;
 }
 
 .filterPreview {
@@ -254,18 +255,37 @@
   height: calc(var(--d) * var(--u));
   border: calc(4.571 * var(--u)) solid #181818;
   border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease, left 0.3s ease, top 0.3s ease;
 }
 
-.filterSelectedLabel {
+.filterDisc:hover {
+  opacity: 1 !important;
+}
+
+.filterDisc:focus-visible {
+  outline: calc(2 * var(--u)) solid #fff;
+  outline-offset: calc(3 * var(--u));
+}
+
+/* 원 아래 라벨 — 선택된 필터는 밝게, 나머지는 흐리게 */
+.filterDiscLabel {
   composes: pos text center from './components/stage.module.css';
-  --x: 960;
   --y: 920.4;
   --fs: 12;
   --ls: 1;
   line-height: calc(12 * var(--u));
+  white-space: nowrap;
   font-family: var(--f-out);
   font-weight: 500;
   color: #eceef0;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.filterDiscLabelOn {
+  opacity: 1;
 }
 
 /* ───────── 08 App Promo ───────── */
