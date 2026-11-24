@@ -8,6 +8,7 @@ import styles from './ModelFeature.module.css';
  * 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080)
  * - 한쪽: 손글씨 모델명 + 헤드라인 · 설명 · 버튼
  * - 반대쪽: 626×626 제품 카드(배경 없는 투명 사진) + 'POLAROID CAMERA - 00N' 라벨
+ * - 카드는 모델별 배경색(card.bg) 위에 놓인다
  * 글 묶음이 화면에 어느 정도(60%) 보이면 한꺼번에:
  *   손글씨 모델명이 펜으로 쓰듯 그려지고(ScriptDraw), 흐릿하던 헤드라인과 제품 카드가 초점이 맞듯 선명해진다.
  */
@@ -36,7 +37,8 @@ export default function ModelFeature({ model, linkLabel, reducedMotion }) {
     >
       <figure
         className={`${styles.card} ${inView || reducedMotion ? styles.focused : ''}`}
-        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch }}
+        data-tone={model.card.tone}
+        style={{ '--l': cl, '--t': ct, '--w': cw, '--h': ch, '--card-bg': model.card.bg }}
       >
         <div className={styles.cardMedia}>
           <img className={styles.cardImage} src={model.card.src} alt={model.card.alt} loading="lazy" />

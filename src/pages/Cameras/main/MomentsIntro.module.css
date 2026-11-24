@@ -1,9 +1,10 @@
-/* 3. Every Moment Has Its Camera (시안 1920×1095, 배경 #fffaec) */
+/* 3. Every Moment Has Its Camera (시안 1920×1095)
+   배경: 가운데가 살짝 가라앉은 아이보리 종이 이미지(moments-bg.webp, 사용자 제공) — 섹션 크기에 맞춰 늘여 깐다 */
 .section {
   overflow: hidden;
   /* 제목 위 211 / 사진 아래 160 */
   padding: calc(211 * var(--px)) 0 calc(160 * var(--px));
-  background: #fffaec;
+  background: #fef7e8 url('@/assets/cameras/main/moments-bg.webp') center / 100% 100% no-repeat;
   text-align: center;
 }
 

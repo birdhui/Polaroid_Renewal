@@ -16,10 +16,12 @@
   height: calc(var(--h) * var(--px));
 }
 
-/* 제품 카드: 626×626, 배경 없는 투명 제품 사진 + 라벨 */
+/* 제품 카드: 626×626, 모델별 배경색(Figma 'Cameras' 프레임 카드 배경) 위에 투명 제품 사진 + 라벨 */
 .card {
   margin: 0;
   isolation: isolate;
+  border-radius: calc(24 * var(--px));
+  background: var(--card-bg, transparent);
 }
 
 /* 처음엔 흐릿하게, 글이 보이기 시작하면(.focused) 선명하게 — 헤드라인과 같은 타이밍 */
@@ -59,6 +61,11 @@
   font-size: max(10px, calc(12 * var(--px)));
   line-height: 1.26;
   pointer-events: none;
+}
+
+/* 어두운 배경 카드(Mod · I-2)는 라벨을 밝은 글씨로 */
+.card[data-tone='dark'] .cardLabels {
+  color: #fffaec;
 }
 
 .cardLabels > span {
