@@ -1,17 +1,17 @@
 import { useRef } from 'react';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion.js';
 import useDetailPageMotion from '../hooks/useDetailPageMotion.js';
-import { FONT_GOOGLE, FONT_PRETENDARD, SANITY, SANITY_FILES } from '../now/detailShared.js';
-import NowApp from '../now/sections/NowApp.jsx';
-import NowFeatures from '../now/sections/NowFeatures.jsx';
-import NowFilm from '../now/sections/NowFilm.jsx';
-import NowFilters from '../now/sections/NowFilters.jsx';
-import NowStore from '../now/sections/NowStore.jsx';
+import { FONT_GOOGLE, FONT_PRETENDARD, SANITY, SANITY_FILES } from '../now-detail/detailShared.js';
+import NowApp from '../now-detail/sections/NowApp.jsx';
+import NowFeatures from '../now-detail/sections/NowFeatures.jsx';
+import NowFilm from '../now-detail/sections/NowFilm.jsx';
+import NowFilters from '../now-detail/sections/NowFilters.jsx';
+import NowStore from '../now-detail/sections/NowStore.jsx';
 import NowPlusDraw from './sections/NowPlusDraw.jsx';
 import blueImage from '@/assets/cameras/now-plus/now-plus-blue.webp';
 import coralImage from '@/assets/cameras/now-plus/now-plus-coral.webp';
 import filmPrintImage from '@/assets/cameras/now-plus/now-plus-film-print.webp';
-import base from '../now/CameraNowPage.module.css';
+import base from '../now-detail/CameraNowPage.module.css';
 import styles from './CameraNowPlusPage.module.css';
 
 /**
