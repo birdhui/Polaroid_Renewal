@@ -1,3 +1,11 @@
+/* Figma 의 Outfit Black — 글자 안쪽 겹치는 윤곽선을 제거한 파일(외곽선 렌더링용) */
+@font-face {
+  font-family: 'Outfit Black NoOverlap';
+  src: url('../../../assets/fonts/outfit-latin-900-nooverlap.woff2') format('woff2');
+  font-weight: 900;
+  font-display: block;
+}
+
 /*
  * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
  * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
@@ -233,7 +241,7 @@ span.transitionImage {
   top: 50%;
   display: grid;
   white-space: nowrap;
-  font-family: var(--f-out);
+  font-family: 'Outfit Black NoOverlap', var(--f-out);
   font-weight: 900;
   font-size: 30vw;
   line-height: 1.26;
