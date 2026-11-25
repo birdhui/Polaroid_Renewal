@@ -1,0 +1,17 @@
+import asset7 from '@/assets/history/story/story-2512f4475ca0.webp';
+import asset8 from '@/assets/history/story/story-ef085c62181d.svg';
+import asset9 from '@/assets/history/story/story-92ea69d22d38.webp';
+import asset12 from '@/assets/history/story/story-6be59fa3d3ec.webp';
+import asset14 from '@/assets/history/story/story-2e3406a9b9bb.webp';
+import asset15 from '@/assets/history/story/story-80f0395e8d6d.webp';
+import asset18 from '@/assets/history/story/story-32a8c99089f2.webp';
+import asset29 from '@/assets/history/story/story-chapter-1943.webp';
+import asset30 from '@/assets/history/story/story-chapter-2008.webp';
+import asset31 from '@/assets/history/story/story-chapter-2017.webp';
+import momentGrandma from '@/assets/history/story/story-moment-grandma.webp';
+import momentKid from '@/assets/history/story/story-moment-kid-camera.webp';
+import momentRaincoat from '@/assets/history/story/story-moment-raincoat.webp';
+import momentFamily from '@/assets/history/story/story-moment-family.webp';
+import filmVideo from '@/assets/history/story/story-film-moment.mp4';
+import filmPoster from '@/assets/history/story/story-film-moment-poster.webp';
+export { filmVideo, filmPoster, asset7, asset8, asset9, asset12, asset14, asset15, asset18, asset29, asset30, asset31, momentGrandma, momentKid, momentRaincoat, momentFamily };
