@@ -55,7 +55,7 @@
   --fs: 170;
   --ls: -2;
   font-family: var(--f-out);
-  font-weight: 800;
+  font-weight: 500;
   color: #fff;
 }
 
@@ -665,7 +665,7 @@
 
 .goFilmEyebrow {
   composes: pos text from './components/stage.module.css';
-  --x: 346;
+  --x: 341;
   --y: 142;
   --fs: 20;
   --ls: 0;
@@ -677,7 +677,7 @@
 
 .goFilmTitle {
   composes: pos text from './components/stage.module.css';
-  --x: 346;
+  --x: 341;
   --y: 169;
   --fs: 80;
   --ls: 0;
@@ -689,7 +689,7 @@
 
 .goFilmDescription {
   composes: pos text from './components/stage.module.css';
-  --x: 346;
+  --x: 341;
   --y: 389;
   --fs: 22;
   --ls: -0.8;
@@ -705,7 +705,7 @@
 
 .goFilmButton {
   composes: pos size from './components/stage.module.css';
-  --x: 346;
+  --x: 341;
   --y: 540;
   --w: 160;
   --h: 48;
@@ -722,7 +722,7 @@
 
 .goFilmTabLine {
   composes: pos size from './components/stage.module.css';
-  --x: 1090;
+  --x: 1113;
   --y: 142;
   --w: 107;
   --h: 70.1;
@@ -732,7 +732,7 @@
 
 .goFilmTab {
   composes: pos text from './components/stage.module.css';
-  --x: 1099.5;
+  --x: 1114;
   --y: 166.6;
   --fs: 25;
   --ls: 0;
@@ -744,7 +744,7 @@
 
 .goFilmPanel {
   composes: pos size from './components/stage.module.css';
-  --x: 1090;
+  --x: 1113;
   --y: 239.1;
   --w: 483;
   --h: 621;
@@ -753,7 +753,7 @@
 
 .goFilmCaption {
   composes: pos text center from './components/stage.module.css';
-  --x: 1332;
+  --x: 1355;
   --y: 275.1;
   --fs: 18;
   --ls: 0;
@@ -765,7 +765,7 @@
 
 .goFilmPack {
   composes: pos size from './components/stage.module.css';
-  --x: 1167.2;
+  --x: 1190.2;
   --y: 364.6;
   --w: 330.6;
   --h: 279.7;
@@ -796,11 +796,11 @@
 }
 
 .goFilmThumb1 {
-  --x: 1267.2;
+  --x: 1290.2;
 }
 
 .goFilmThumb2 {
-  --x: 1355.9;
+  --x: 1378.9;
 }
 
 /* 이미지 파일이 아직 없을 때 보이는 자리표시자 */

@@ -391,8 +391,8 @@ export default function CameraNowPage() {
         <FilmImage image={goFilm.images.pack} className={styles.goFilmPack} alt="Color Film Double Pack 제품 이미지" />
         <p className={styles.goFilmCaption}>{goFilm.caption}</p>
 
-        <span className={styles.goFilmThumbTile} style={{ '--x': 1255 }} aria-hidden="true" />
-        <span className={`${styles.goFilmThumbTile} ${styles.goFilmThumbTileDim}`} style={{ '--x': 1343.6 }} aria-hidden="true" />
+        <span className={styles.goFilmThumbTile} style={{ '--x': 1278 }} aria-hidden="true" />
+        <span className={`${styles.goFilmThumbTile} ${styles.goFilmThumbTileDim}`} style={{ '--x': 1366.6 }} aria-hidden="true" />
         <FilmImage image={goFilm.images.thumb1} className={styles.goFilmThumb1} alt="Color Film Double Pack 썸네일" />
         <FilmImage image={goFilm.images.thumb2} className={styles.goFilmThumb2} alt="Color Film 썸네일" />
       </section>

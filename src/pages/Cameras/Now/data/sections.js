@@ -149,7 +149,7 @@ const goFilmImage = (name) => goFilmImages[`../../../../assets/cameras/now/${nam
 
 export const goFilm = {
   eyebrow: 'Compatibility',
-  title: ['Polaroid Go', 'Film'],
+  title: ['Polaroid Now', 'Film'],
   // bold: Pretendard SemiBold
   description: [
     [{ text: '배터리 없이 더 가볍고 합리적인 ' }, { text: 'i-Type 필름', bold: true }, { text: '부터,' }],
@@ -157,7 +157,7 @@ export const goFilm = {
     [{ text: '원하는 필름을 골라 바로 촬영을 시작해 보세요.' }],
   ],
   ctaLabel: '모든 필름 보기',
-  tabLabel: 'Go Film',
+  tabLabel: 'Now Film',
   caption: 'Color Film Double Pack',
   images: {
     pack: { src: goFilmImage('go-film-pack.png'), file: 'go-film-pack.png' },
