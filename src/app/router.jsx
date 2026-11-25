@@ -21,7 +21,7 @@ const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: ROUTES.history, element: <HistoryPage /> },
       { path: ROUTES.cameras, element: <CamerasPage /> },
-      { path: ROUTES.cameraNow, element: <CameraNowPage /> },
+      { path: ROUTES.camerasNow, element: <CameraNowPage /> },
       { path: ROUTES.compare, element: <ComparePage /> },
       { path: ROUTES.film, element: <FilmPage /> },
       { path: '*', element: <NotFoundPage /> },
