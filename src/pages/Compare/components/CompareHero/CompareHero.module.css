@@ -1,0 +1,130 @@
+/* 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고. */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(1080 * var(--u));
+  min-height: 560px;
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+  transition: opacity 350ms ease; /* ComparePage.jsx 의 HERO_LEAVE_DURATION 과 같게 */
+}
+
+/* "찾아보기"를 누르면 이 자리에서 사라지고, 그 자리에 채팅 화면이 나타난다 */
+.hero[data-leaving='true'] {
+  opacity: 0;
+}
+
+/*
+ * 시안: 문구 묶음이 히어로 위에서 407 에서 시작해 655 에서 끝난다(높이 248).
+ * 1080 안에서 가운데 정렬하면 416 에서 시작하므로, 아래 여백 18 로 9 만큼 끌어올려 시안과 맞춘다.
+ */
+.copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: calc(18 * var(--u));
+  text-align: center;
+}
+
+/* 시안: Outfit Regular 20 / 자간 -0.9 */
+.eyebrow {
+  font-family: var(--compare-font-display);
+  font-size: max(calc(20 * var(--u)), 15px);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+}
+
+/* 시안: Outfit SemiBold 32 / 자간 -0.9 · 위 문구와 19 간격 */
+.title {
+  margin-top: calc(19 * var(--u));
+  font-family: var(--compare-font-display);
+  font-size: max(calc(32 * var(--u)), 22px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.028em;
+}
+
+/* 시안: Pretendard Regular 14 / 행간 1.1 / 자간 -0.28 · 제목과 19 간격 */
+.subtitle {
+  margin-top: calc(19 * var(--u));
+  color: #151515;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(14 * var(--u)), 13px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+}
+
+/* 시안: 137 x 41 검정 버튼 / Pretendard 14 흰색 / 자간 -1 · 문구와 73 간격 */
+.cta {
+  margin-top: calc(73 * var(--u));
+  width: max(calc(137 * var(--u)), 120px);
+  height: max(calc(41 * var(--u)), 38px);
+  background: #151515;
+  color: #fff;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(14 * var(--u)), 13px);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cta:hover {
+  background: #333;
+}
+
+.cta:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+}
+
+/*
+ * 좁은 화면에서는 배경이 확대되어 가운데 빈 자리가 좁아지므로 높이를 늘리고 문구 상자 폭을 제한한다.
+ * (문구 뒤에 흰 바탕을 깔아 카메라를 흐리게 하던 보정은 뺐다 — 카메라가 흐려져 보여서)
+ */
+@media (max-width: 1100px) {
+  .hero {
+    height: auto;
+    min-height: 560px;
+    padding: 120px 24px;
+  }
+
+  .copy {
+    max-width: 520px;
+    padding: 40px 28px 48px;
+  }
+
+  .eyebrow {
+    font-size: 16px;
+  }
+
+  .title {
+    margin-top: 14px;
+    font-size: clamp(22px, 4.6vw, 30px);
+  }
+
+  .subtitle {
+    margin-top: 14px;
+    font-size: 14px;
+  }
+
+  .cta {
+    margin-top: 40px;
+    width: 137px;
+    height: 41px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,348 @@
+/*
+ * 로딩 화면 — Figma 1583:303 (1920×1080 기준, --u 는 ComparePage.module.css 참고)
+ * 장면(data-phase)마다 아래 변수 값이 바뀌고, 요소들이 그 값을 향해 transition 한다.
+ * 숫자(--w1-x 등)는 1920 기준 px 이고 var(--s) 를 곱해 화면에 맞게 줄어든다.
+ * 이동·크기 값은 Figma 프레임 1583:293(한 줄) / 1583:297(가로 크롭) / 1583:287(정사각형)에서 가져왔고,
+ * 시간·곡선은 레퍼런스(refinerypro.framer.ai/sequence)를 측정한 임시값이다.
+ */
+.loading {
+  --s: clamp(0.6px, var(--u), 1px);
+  --loading-ease: cubic-bezier(0.22, 1, 0.36, 1); /* 레퍼런스가 쓰는 ease-out */
+  --loading-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --swap: 600ms; /* 사진 전환 시간 (레퍼런스: 대부분 500ms 안에 끝나고 끝이 길게 늘어지는 ease-out) */
+
+  /* 기본(= intro 이전) 값 — 두 글씨가 한 줄 자리보다 좌우로 40px 바깥에서 시작한다 */
+  --word-o: 0;
+  --w1-x: -120;
+  --w1-y: 34;
+  --w2-x: 134;
+  --w2-y: -34;
+  --box-w: 0;
+  --box-h: 0;
+  --wide-o: 1;
+  --sq-o: 0;
+
+  position: relative;
+  height: max(100svh, 560px); /* 무대(CompareFinder)와 같은 한 화면 높이 */
+  overflow: hidden;
+  background: #17100a;
+  animation: loading-in 400ms ease backwards; /* 채팅에서 넘어올 때 칼같이 바뀌지 않게 */
+}
+
+@keyframes loading-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 양쪽(왼쪽·오른쪽)에서 가운데로 모이며 한 줄이 된다 (글씨 전체가 함께 나타남 — 글자별 효과 없음) */
+.loading[data-phase='intro'] {
+  --word-o: 1;
+  --w1-x: -80;
+  --w2-x: 94;
+}
+
+/* 왼쪽 글씨는 위로, 오른쪽 글씨는 아래로 갈라지고 그 사이에 가로 크롭(248×118)이 열린다 */
+.loading[data-phase='split'] {
+  --word-o: 1;
+  --w1-x: 0;
+  --w1-y: 0;
+  --w2-x: 0;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 118;
+}
+
+/* 정사각형(248×248)으로 확장 */
+.loading[data-phase='square'] {
+  --word-o: 1;
+  --w1-x: 0;
+  --w1-y: 0;
+  --w2-x: 0;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 248;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+/* 위 글씨는 오른쪽으로, 아래 글씨는 왼쪽으로 살짝 이동한다 */
+.loading[data-phase='slide'],
+.loading[data-phase='rest'] {
+  --word-o: 1;
+  --w1-x: 38;
+  --w1-y: 0;
+  --w2-x: -52;
+  --w2-y: 0;
+  --box-w: 248;
+  --box-h: 248;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+/* 닫히며 한 줄로 모였다가 사라진다 */
+.loading[data-phase='exit'] {
+  --word-o: 0;
+  --w1-x: -80;
+  --w1-y: 34;
+  --w2-x: 94;
+  --w2-y: -34;
+  --box-w: 0;
+  --box-h: 0;
+  --wide-o: 0;
+  --sq-o: 1;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/*
+ * [위 텍스트] [사진] [아래 텍스트]를 화면 가운데에 겹쳐 놓고, 글씨만 사진 상자 높이만큼 위·아래로 옮긴다.
+ * (예전에는 세로 flex 묶음이라 상자 높이가 변할 때마다 레이아웃이 다시 계산돼 글씨가 계단처럼 끊겨 보였다.
+ *  지금은 상자도 글씨도 레이아웃을 건드리지 않고 transform / clip-path 로만 움직인다.)
+ */
+.column {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.column > * {
+  grid-area: 1 / 1;
+}
+
+/* 글씨 묶음이 상자 위·아래로 벌어지는 거리 = 상자 높이의 절반 + 글씨 높이의 절반(24) + 간격(10). 상자가 열리는 시간·곡선과 같게 움직인다. */
+.follow {
+  will-change: transform;
+  transition: transform 650ms var(--loading-ease);
+}
+
+.follow1 {
+  transform: translateY(calc(-1 * (var(--box-h) / 2 + 34) * var(--s)));
+}
+
+.follow2 {
+  transform: translateY(calc((var(--box-h) / 2 + 34) * var(--s)));
+}
+
+/* 글씨가 먼저 벌어진 다음(0.25s 뒤) 사진이 열린다 */
+.loading[data-phase='split'] .follow {
+  transition-delay: 200ms;
+}
+
+.loading[data-phase='square'] .follow {
+  transition-duration: 800ms;
+}
+
+.loading[data-phase='exit'] .follow {
+  transition: transform 750ms var(--loading-ease-in-out);
+}
+
+.word {
+  margin: 0;
+  height: calc(48 * var(--s));
+  font-family: 'Compare Outfit', 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: calc(32 * var(--s));
+  line-height: calc(48 * var(--s));
+  letter-spacing: calc(-0.32 * var(--s));
+  color: #fff;
+  white-space: nowrap;
+  opacity: var(--word-o);
+  will-change: translate, transform, opacity;
+}
+
+/*
+ * 두 글씨는 x(translate)와 y(transform)를 따로 움직인다 — 같은 높이에 있는 동안에는 가로로 서로 지나치지 않도록,
+ * 갈라질 때는 세로로 먼저 벌어진 뒤 가로가 움직이고, 닫힐 때는 가로가 먼저 움직인 뒤 세로로 모인다.
+ */
+.word1 {
+  translate: calc(var(--w1-x) * var(--s)) 0;
+  transform: translateY(calc(var(--w1-y) * var(--s)));
+}
+
+.word2 {
+  translate: calc(var(--w2-x) * var(--s)) 0;
+  transform: translateY(calc(var(--w2-y) * var(--s)));
+}
+
+.word {
+  transition:
+    translate 900ms var(--loading-ease),
+    transform 900ms var(--loading-ease),
+    opacity 900ms var(--loading-ease);
+}
+
+/* 갈라짐: 세로가 먼저 벌어지고(0.3s 뒤) 가로가 움직인다 */
+.loading[data-phase='split'] .word {
+  transition:
+    translate 800ms var(--loading-ease) 300ms,
+    transform 800ms var(--loading-ease),
+    opacity 900ms var(--loading-ease);
+}
+
+.loading[data-phase='slide'] .word {
+  transition:
+    translate 550ms var(--loading-ease),
+    transform 550ms var(--loading-ease),
+    opacity 900ms var(--loading-ease);
+}
+
+/* 닫힘: 가로가 먼저 지나가고, 사진이 작아진 뒤(0.3s 뒤) 세로로 모이며 사라진다 */
+.loading[data-phase='exit'] .word {
+  transition:
+    translate 600ms var(--loading-ease-in-out),
+    transform 700ms var(--loading-ease-in-out) 300ms,
+    opacity 700ms var(--loading-ease-in-out) 300ms;
+}
+
+.box {
+  /*
+   * 상자는 늘 최종 크기(248×248)이고, 열리고 닫히는 것은 clip-path 로 가운데에서부터 잘라 보여 준다.
+   * (width·height 를 움직이면 매 프레임 레이아웃이 다시 계산된다)
+   * --box-w / --box-h 는 지금 보이는 폭·높이(1920 기준 px)이다.
+   */
+  position: relative;
+  width: calc(248 * var(--s));
+  height: calc(248 * var(--s));
+  overflow: hidden;
+  clip-path: inset(
+    calc((248 - var(--box-h)) / 2 * var(--s)) calc((248 - var(--box-w)) / 2 * var(--s)) round calc(20 * var(--s))
+  );
+  transition: clip-path 650ms var(--loading-ease);
+}
+
+/* 글씨가 먼저 벌어진 다음(0.25s 뒤) 사진이 열린다 */
+.loading[data-phase='split'] .box {
+  transition-delay: 200ms;
+}
+
+.loading[data-phase='square'] .box {
+  transition-duration: 800ms;
+}
+
+.loading[data-phase='exit'] .box {
+  opacity: 0;
+  transition:
+    clip-path 750ms var(--loading-ease-in-out),
+    opacity 500ms var(--loading-ease-in-out) 100ms;
+}
+
+/* 사진 레이어는 박스가 커져도 늘어나지 않고 가운데에 고정된 크기로 놓인다 */
+.wide,
+.square {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+.wide {
+  width: calc(248 * var(--s));
+  height: calc(118 * var(--s));
+  object-position: 50% 35%;
+  opacity: var(--wide-o);
+  transition: opacity 700ms var(--loading-ease);
+}
+
+/*
+ * 사진 전환 — 레퍼런스(refinerypro.framer.ai/sequence)를 프레임 단위로 잰 값이다.
+ * 사진마다 박스 크기의 틀(.slide, overflow:hidden)이 있고, 틀이 옆으로 움직이며 가장자리가 사진을 잘라 준다.
+ *   새 사진: 한쪽 바깥(박스 폭의 75%)에서 출발해 제자리로 → 시작할 때 25%만 가장자리에 보인다.
+ *   이전 사진: 새 사진이 들어오는 반대쪽으로 25%만 밀려난다. 새 사진이 위(z-index 2)에서 덮으며 들어오므로 박스 안이 비는 순간이 없다.
+ *   (레퍼런스는 이전 사진이 같은 쪽으로 75% 밀려나서 가운데가 잠깐 비는데, 검은 배경이 보이지 않게 이렇게 바꿨다.)
+ *   틀 안의 사진은 틀과 반대 방향으로 24%만큼 움직여(시차) 사진이 따로 노는 느낌을 준다.
+ * 방향은 사진마다 번갈아 바뀐다(from-right / from-left). 사진은 1.08배로 놓인다(레퍼런스와 같음).
+ * 위치(transform)만 움직이므로 레이아웃 계산이 없다.
+ */
+.slides {
+  position: absolute;
+  inset: 0;
+  opacity: var(--sq-o);
+  transition: opacity 600ms var(--loading-ease);
+}
+
+.slide {
+  --dir: 1;
+  --ix: 0px;
+
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  visibility: hidden; /* 차례가 아닌 사진 */
+  will-change: transform;
+  transform: translateX(calc(var(--dir) * 186 * var(--s)));
+}
+
+.slide[data-dir='from-left'] {
+  --dir: -1;
+}
+
+.square {
+  width: calc(248 * var(--s));
+  height: calc(248 * var(--s));
+  transform: translate(calc(-50% + var(--ix)), -50%) scale(1.08);
+}
+
+/* 지금 보이는 사진: 가장자리에서 제자리로 */
+.slide[data-state='active'] {
+  --ix: 0px;
+
+  z-index: 2;
+  visibility: visible;
+  transform: none;
+  transition: transform var(--swap) var(--loading-ease);
+}
+
+/* 방금까지 보이던 사진: 새 사진이 들어오는 반대쪽으로 조금만 밀려나며 덮인다 */
+.slide[data-state='prev'] {
+  --ix: calc(var(--dir) * -15 * var(--s));
+
+  z-index: 1;
+  visibility: visible;
+  transform: translateX(calc(var(--dir) * 62 * var(--s)));
+  transition: transform var(--swap) var(--loading-ease);
+}
+
+/* 차례를 기다리는 사진: 출발 자리에 숨어 있다가 active 가 되는 순간 보이며 움직인다 */
+.slide[data-state='idle'] {
+  --ix: calc(var(--dir) * -45 * var(--s));
+}
+
+.slide[data-state='active'] .square,
+.slide[data-state='prev'] .square {
+  transition: transform var(--swap) var(--loading-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: none;
+  }
+
+  .word,
+  .follow,
+  .box,
+  .wide,
+  .slides,
+  .slide,
+  .square {
+    transition: none;
+  }
+}

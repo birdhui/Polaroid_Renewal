@@ -1,0 +1,750 @@
+/*
+ * 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고.
+ * 시안: 화면 1920×1080 / "Find" 위 123 / 카드 폭 966·높이 785·위 185·모서리 30 / 입력창 폭 877·높이 143·카드 아래에서 53.
+ * 섹션은 1920×1080 한 화면에 꼭 맞는 높이(185 + 785 + 110 = 1080)다.
+ * 모든 치수는 --s(= 시안의 1px 이 지금 화면에서 몇 px 인지)를 곱해서 시안 비율 그대로 화면 폭·높이에 맞춰 줄어든다.
+ * 글자는 너무 작아지지 않도록 최소 크기를 둔다. --s 는 0.6px 아래로는 줄지 않고(폭 약 1150px 이하),
+ * 600px 이하(모바일)에서는 시안 px 그대로 쓰면서 따로 맞춘다.
+ */
+.chat {
+  /*
+   * 모션 값 — 시안에 정해진 수치가 없어 임시로 둔 값이다. (CLAUDE.md: 확정되지 않은 모션 수치는 추측하지 않는다)
+   * 확정되면 여기 변수만 바꾸면 된다. --chat-shift-duration·--chat-ease-out 은 CompareChat.jsx 도 읽는다. (ms 단위로 쓸 것)
+   */
+  --chat-rise-distance: 96px; /* 질문 말풍선이 아래에서 올라오는 거리 */
+  --chat-rise-duration: 650ms;
+  --chat-first-rise-duration: 400ms; /* 맨 처음 질문 말풍선이 올라오는 시간 */
+  --chat-drop-distance: 10px; /* 선택지가 말풍선 안에서 위에서 내려오는 거리 */
+  --chat-drop-duration: 480ms;
+  --chat-pick-fade: 250ms; /* 답변을 누르면 나머지 선택지가 사라지는 시간 (다음 질문으로 넘어가기 전 대기 300ms 안에 끝난다) */
+  --chat-next-delay: 400ms; /* 앞 대화가 자리 잡기 시작한 뒤 다음 질문이 올라오기 시작하기까지 */
+  --chat-options-delay: 300ms; /* 질문 말풍선이 다 올라온 뒤 선택지가 나오기까지 */
+  --chat-options-stagger: 80ms; /* 선택지 사이 간격 */
+  --chat-shift-duration: 550ms; /* 새 질문이 붙을 때 앞 말풍선들이 위로 밀려 올라가는 시간 */
+  --chat-intro-exit-duration: 400ms; /* 첫 질문이 뜰 때 안내 문구가 위로 올라가며 사라지는 시간 (첫 질문이 올라오는 시간과 같게 둬서 동시에 바뀐다) */
+  --chat-intro-exit-distance: 56px; /* 안내 문구가 올라가는 거리 */
+  --chat-intro-rise: 600ms; /* 안내 제목·설명 글이 아래에서 올라오는 시간 */
+  --chat-intro-rise-distance: 28px; /* 올라오기 전에 아래로 내려가 있는 거리 */
+  --chat-msg-rise: 28px; /* 보낸 말·챗봇 답변이 아래에서 올라오는 거리 */
+  --chat-msg-duration: 420ms;
+  --chat-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* 살짝 튕기며 자리 잡는 이징 */
+  --chat-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --chat-answer: #f2ca95; /* 답변 말풍선 기본(연한 주황) */
+  --chat-answer-strong: #f3a133; /* 답변 호버·선택, 직접 입력 점선 (진한 주황) */
+
+  /* 시안 치수: 입력창 높이 143, 카드 아래 여백 53 (--s 를 곱한다) */
+  --s: clamp(0.6px, var(--u), 1px);
+  --chat-bar-height: calc(143 * var(--s));
+  --chat-card-pad-bottom: calc(53 * var(--s));
+
+  position: relative;
+  padding: calc(185 * var(--s)) 16px calc(110 * var(--s));
+  background: var(--compare-beige);
+  color: var(--compare-ink);
+}
+
+/* 시안: Outfit Regular 20 / 자간 -0.9 / 위에서 123 */
+.title {
+  position: absolute;
+  top: calc(123 * var(--s));
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--compare-font-display);
+  font-size: max(calc(20 * var(--s)), 16px);
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.045em;
+  color: #000;
+  white-space: nowrap;
+}
+
+/* 흰 카드 — 시안: 흰색 80% · 폭 966·높이 785·모서리 30 / 안쪽 좌우 44(입력창 폭 877). */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: min(calc(966 * var(--s)), 100%);
+  height: calc(785 * var(--s)); /* 대화가 길어져도 카드 높이는 그대로 두고, 말풍선 영역 안에서 스크롤한다 */
+  margin: 0 auto;
+  padding: calc(32 * var(--s)) calc(44 * var(--s)) var(--chat-card-pad-bottom); /* 위쪽 여백: 대화가 길어져 스크롤될 때 말풍선이 카드 모서리에 닿아 잘려 보이지 않게 */
+  border-radius: calc(30 * var(--s));
+  background: var(--compare-card);
+  /* 시안: 선 #151515 50% · 안쪽 · 두께 1 (안쪽 선이라 크기가 변하지 않도록 inset 그림자로 그린다) */
+  box-shadow: inset 0 0 0 1px var(--compare-card-stroke);
+}
+
+/*
+ * 안내 문구 — 카드 위쪽에 고정돼 있고, 첫 질문이 떠도 남아 있다. 선택지를 누르면 위로 올라가며 사라진다.
+ * 위치: 카드 위에서 106 (캡처한 시안 이미지에서 잰 값이라 대략적이다)
+ * 시안: 제목 Outfit Medium 36 / 줄 64.4 / 자간 -2, 설명 Pretendard Light 16 / 줄 1.3 / 자간 -0.32, 제목과 설명 사이 18
+ */
+.intro {
+  position: absolute;
+  top: calc(106 * var(--s));
+  right: 0;
+  left: 0;
+  padding: 0 16px;
+  text-align: center;
+  pointer-events: none;
+  transition:
+    opacity 250ms ease, /* 문구는 말풍선이 자리를 잡기 전에 거의 다 옅어진다 */
+    transform var(--chat-intro-exit-duration) var(--chat-ease-out),
+    visibility 0s linear var(--chat-intro-exit-duration);
+}
+
+.intro[data-hidden='true'] {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(calc(var(--chat-intro-exit-distance) * -1));
+}
+
+.introTitle {
+  font-family: var(--compare-font-display);
+  font-size: max(calc(36 * var(--s)), 24px);
+  font-weight: 500;
+  line-height: 1.789; /* 시안 64.4 / 36 */
+  letter-spacing: -0.0556em;
+  color: #000;
+  text-wrap: balance;
+}
+
+/* 타이핑 중 아직 안 쓴 글자: 자리만 차지하고 보이지 않는다 */
+.typeRest {
+  visibility: hidden;
+}
+
+/* 커서: 폭 0 인 자리표시자 안에 얇은 막대를 띄워서 글자 위치를 밀지 않는다 (Typewriter 의 0.06em × 0.9em 막대) */
+.typeCursor {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.typeCursor::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0.08em;
+  width: 0.06em;
+  height: 0.9em;
+  background: currentcolor;
+  transform: translateY(-50%);
+  animation: type-cursor-blink 1s steps(1, end) infinite;
+}
+
+/* 타이핑 중에는 깜빡이지 않고 켜 둔다 */
+.typeCursor[data-typing='true']::after {
+  animation: none;
+}
+
+@keyframes type-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.introText {
+  margin-top: calc(18 * var(--s));
+  transition:
+    opacity var(--chat-intro-rise) var(--chat-ease-out),
+    transform var(--chat-intro-rise) var(--chat-ease-out);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(16 * var(--s)), 13px);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: #000;
+  word-break: keep-all;
+}
+
+/* 제목 타이핑이 끝나면 설명 글이 아래에서 위로 올라오며 나타난다 */
+.introText[data-shown='false'] {
+  opacity: 0;
+  transform: translateY(var(--chat-intro-rise-distance));
+}
+
+/*
+ * 말풍선들 — 카드 위쪽에서부터 아래로 차례로 쌓인다. 입력창 쪽으로 내려오는 모션이 입력창 뒤에서 나오도록 z-index 를 낮게 둔다.
+ * 대화가 길어서 이 영역을 넘치면 안에서 스크롤되고(스크롤바는 숨김) 새 메시지가 보이게 맨 아래로 이동한다. 위쪽 가장자리는 살짝 흐려진다.
+ */
+.stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  /* 위쪽: 첫 말풍선이 위쪽 흐림(mask)에 가리지 않게 / 시안: 칩 아래 → 입력창 위 45 */
+  padding-top: calc(28 * var(--s));
+  padding-bottom: calc(45 * var(--s));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 calc(28 * var(--s)));
+}
+
+.stack::-webkit-scrollbar {
+  display: none;
+}
+
+.stack > * + * {
+  margin-top: calc(18 * var(--s));
+}
+
+.stack > .message + .step {
+  margin-top: calc(24 * var(--s));
+}
+
+.step {
+  /* 이 질문 말풍선이 올라오는 시간 — 선택지는 이 시간이 지난 뒤 --chat-options-delay 만큼 더 있다가 나온다 */
+  --question-rise: var(--chat-rise-duration);
+  --question-delay: var(--chat-next-delay); /* 앞 질문에 답한 뒤 이어지는 질문은 잠깐 있다가 올라온다 */
+
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.step[data-first='true'] {
+  --question-rise: var(--chat-first-rise-duration);
+  --question-delay: 0ms;
+}
+
+/* 질문 사이 간격 — 시안에 없어 이전 값을 그대로 둔다. */
+.step + .step {
+  margin-top: calc(36 * var(--s));
+}
+
+/*
+ * 질문 말풍선 — 검정, 왼쪽. 시안(1603:292): 왼쪽 위·오른쪽 위·오른쪽 아래 28.385, 왼쪽 아래 5.677 / 안쪽 여백 위아래 16·좌우 21
+ * 글 Pretendard Medium 15 / 자간 -0.3 / 카드 안쪽 왼쪽 선(입력창 왼쪽)에서 10 안으로 들어가 있다.
+ */
+.question {
+  width: fit-content;
+  max-width: 100%;
+  margin-left: calc(10 * var(--s));
+  padding: calc(16 * var(--s)) calc(21 * var(--s));
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s));
+  background: var(--compare-bubble);
+  color: var(--compare-bubble-text);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(15 * var(--s)), 12px);
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+  /* backwards: 시작 전(지연 중)에는 첫 장면(숨김)을 유지하고, 끝나면 기본 스타일로 돌아온다 */
+  animation: rise var(--chat-rise-duration) var(--chat-ease-bounce) backwards;
+  animation-delay: var(--question-delay);
+}
+
+/* 맨 처음 질문 말풍선 — 올라오는 시간을 따로 정한다 */
+.firstQuestion {
+  animation-duration: var(--chat-first-rise-duration);
+}
+
+/*
+ * 문장형 답변들 — 질문 아래 오른쪽 끝에 세로로 한 개씩. 글 길이에 따라 폭이 달라진다.
+ * 시안: 질문과의 간격 22 / 답변 사이 16 / 오른쪽 끝은 카드 안쪽 오른쪽 선에서 69 안쪽
+ */
+.answers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  align-self: flex-end;
+  max-width: 100%;
+  margin-top: calc(22 * var(--s));
+  margin-right: calc(69 * var(--s));
+  gap: calc(16 * var(--s));
+}
+
+/*
+ * 답변 말풍선 — 기본은 연한 주황(#f2ca95), 호버·포커스하면 진한 주황(#f3a133), 글자는 항상 흰색.
+ * 시안: 안쪽 여백 위아래 11.354·좌우 22 / 왼쪽 위·왼쪽 아래·오른쪽 위 28.385, 오른쪽 아래 5.677 / Pretendard Regular 14 · 자간 -0.28
+ * 질문 다음에 아래에서 살짝 올라오며 나타난다. reveal 은 나타나기 전(지연 시간)에 누르거나 포커스되지 않도록 숨겨 둔다.
+ */
+.answer {
+  --answer-delay: calc(
+    var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger)
+  );
+
+  flex: none;
+  max-width: 100%;
+  margin: 0;
+  padding: calc(11.354 * var(--s)) calc(22 * var(--s));
+  border: 0;
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
+  background: var(--chat-answer);
+  color: #fff;
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(14 * var(--s)), 12px);
+  font-weight: 400;
+  line-height: calc(17 * var(--s));
+  letter-spacing: -0.02em;
+  text-align: right;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+  animation:
+    message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards,
+    reveal 10ms linear backwards;
+  animation-delay: var(--answer-delay), var(--answer-delay);
+}
+
+@media (hover: hover) {
+  .answer:hover {
+    background: var(--chat-answer-strong);
+  }
+}
+
+.answer:focus-visible {
+  background: var(--chat-answer-strong);
+  outline: 2px solid var(--compare-ink);
+  outline-offset: 3px;
+}
+
+/* 방금 누른 답변: 나머지 선택지가 옅어져 사라지는 동안 진한 주황으로 남는다 */
+.answer[data-state='picked'] {
+  background: var(--chat-answer-strong);
+  cursor: default;
+  pointer-events: none;
+}
+
+.answer[data-state='fading'],
+.direct[data-state='fading'] {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--chat-pick-fade) ease,
+    background-color 200ms ease;
+}
+
+/* 고른 답변 — 진한 주황으로 대화 기록에 남는다 (누를 수 없다) */
+.sent {
+  background: var(--chat-answer-strong);
+  cursor: default;
+  animation: none;
+}
+
+/* 직접 입력해서 답변하기 — 배경 없이 주황 점선 테두리와 주황 글자. 시안: 테두리 #f3a133 1 · 글자 #f0a137 / 모양·크기는 답변과 같다 */
+.direct {
+  flex: none;
+  max-width: 100%;
+  margin: 0;
+  padding: calc(10.354 * var(--s)) calc(21 * var(--s));
+  border: 1px dashed var(--chat-answer-strong);
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
+  background: transparent;
+  color: var(--compare-orange);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(14 * var(--s)), 12px);
+  font-weight: 400;
+  line-height: calc(17 * var(--s));
+  letter-spacing: -0.02em;
+  text-align: right;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+  animation:
+    message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards,
+    reveal 10ms linear backwards;
+  animation-delay:
+    calc(var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger)),
+    calc(var(--question-delay) + var(--question-rise) + var(--chat-options-delay) + var(--i, 0) * var(--chat-options-stagger));
+}
+
+@media (hover: hover) {
+  .direct:hover {
+    background: rgb(243 161 51 / 8%);
+  }
+}
+
+.direct:focus-visible {
+  outline: 2px solid var(--compare-ink);
+  outline-offset: 3px;
+}
+
+/*
+ * 보낸 말(주황, 오른쪽)과 챗봇 답변(검정, 왼쪽) — 시안에 없어 질문 말풍선·선택 칩의 색과 모양을 그대로 따른다.
+ * 글: 질문과 같은 Pretendard Medium 15 / 모서리: 질문 말풍선과 같고, 꼬리 쪽 모서리만 작게
+ */
+.message {
+  display: flex;
+  flex: none;
+  width: 100%;
+}
+
+.message[data-role='user'] {
+  justify-content: flex-end;
+  /* 선택지 답변과 같은 세로선에 맞춘다 (오른쪽 끝이 .answers 와 같다) */
+  padding-right: calc(69 * var(--s));
+}
+
+/* 챗봇 말풍선(되묻기) — 질문 말풍선과 같은 크기·위치 */
+.messageText {
+  max-width: min(100%, calc(560 * var(--s)));
+  margin: 0 0 0 calc(10 * var(--s));
+  padding: calc(16 * var(--s)) calc(21 * var(--s));
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s));
+  background: var(--compare-bubble);
+  color: var(--compare-bubble-text);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(15 * var(--s)), 12px);
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  animation: message-rise var(--chat-msg-duration) var(--chat-ease-out) backwards;
+}
+
+/* 직접 입력한 답 — 선택지로 고른 답변(.answer/.sent)과 같은 크기·색·모양 */
+.message[data-role='user'] .messageText {
+  margin: 0;
+  padding: calc(11.354 * var(--s)) calc(22 * var(--s));
+  border-radius: calc(28.385 * var(--s)) calc(28.385 * var(--s)) calc(5.677 * var(--s)) calc(28.385 * var(--s));
+  background: var(--chat-answer-strong);
+  color: #fff;
+  font-size: max(calc(14 * var(--s)), 12px);
+  font-weight: 400;
+  line-height: calc(17 * var(--s));
+  text-align: right;
+}
+
+/* 챗봇이 답을 쓰는 중 — 점 세 개가 차례로 깜빡인다 */
+.typingDots {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--s));
+  height: 1.4em;
+}
+
+.typingDots span {
+  width: calc(7 * var(--s));
+  height: calc(7 * var(--s));
+  min-width: 5px;
+  min-height: 5px;
+  border-radius: 50%;
+  background: currentcolor;
+  animation: typing-dot 1s ease-in-out infinite;
+}
+
+.typingDots span:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.typingDots span:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * 입력창 — 직접 답을 써서 보낼 수 있다. (Enter 로 전송, Shift+Enter 는 줄바꿈)
+ * 시안: 바깥 폭 877·높이 143·모서리 20·테두리 #f3f3f3 / 안쪽 테두리 #e1e4ea·모서리 20·안쪽 여백 12
+ * 글자 16 / 줄 1.5 / 자간 -0.176 / #99a0ae, 아이콘 20·16 사이 간격 10, 맨 왼쪽 위에 가는 세로 줄(커서)
+ */
+.bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: var(--chat-bar-height);
+  border: 1px solid var(--compare-bar-outline);
+  border-radius: calc(20 * var(--s));
+  background: #fff;
+}
+
+.barInner {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+  padding: calc(12 * var(--s));
+  border: 1px solid var(--compare-bar-border);
+  border-radius: calc(20 * var(--s));
+  background: #fff;
+}
+
+.barInner:focus-within {
+  border-color: var(--compare-bar-text);
+}
+
+/* 글 입력 칸 — 안내 글(placeholder)은 시안의 "메세지를 입력해주세요." 와 같은 모양이다. */
+.input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--compare-ink);
+  caret-color: var(--compare-ink);
+  font-family: var(--compare-font-ko);
+  font-size: max(calc(16 * var(--s)), 13px);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+  resize: none;
+}
+
+.input::placeholder {
+  color: var(--compare-bar-text);
+  opacity: 1;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+/* 글자 앞의 가는 세로 줄(커서). 시안: 왼쪽 9·위 13·높이 20. 입력칸이 비어 있고 포커스가 없을 때만 보이고, 입력 중엔 진짜 커서가 대신한다. */
+.barCaret {
+  display: none;
+  position: absolute;
+  top: calc(13 * var(--s));
+  left: calc(9 * var(--s));
+  width: 1px;
+  height: calc(20 * var(--s));
+  background: var(--compare-bar-text);
+}
+
+.barInner[data-empty='true']:not(:focus-within) .barCaret {
+  display: block;
+}
+
+.barTools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(10 * var(--s));
+  color: var(--compare-bar-text);
+}
+
+/* 아이콘 시안 크기: 마이크 20, 전송 16 */
+.barTools img {
+  display: block;
+  flex: none;
+  width: calc(var(--icon, 20) * var(--s));
+  height: calc(var(--icon, 20) * var(--s));
+}
+
+.send img {
+  --icon: 16;
+}
+
+/* 전송 버튼 — 보낼 글이 없을 땐 흐리게, 누를 수 있을 땐 선명하게. 터치하기 쉽도록 보이지 않는 여백으로 누르는 영역을 넓힌다. */
+.send {
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 150ms ease;
+}
+
+.send:not(:disabled) {
+  opacity: 1;
+}
+
+.send:disabled {
+  cursor: default;
+}
+
+.send:focus-visible {
+  outline: 2px solid var(--compare-ink);
+  outline-offset: 4px;
+}
+
+.barDivider {
+  width: 1px;
+  height: calc(20 * var(--s));
+  background: var(--compare-bar-border);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--chat-rise-distance));
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes message-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--chat-msg-rise));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--chat-drop-distance) * -1));
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal {
+  from {
+    visibility: hidden;
+  }
+
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 좁은 화면 (시안에 없는 보정): 시안 px 그대로 쓰고, 카드는 화면 폭에 맞추며, 선택지는 2열로 둔다. */
+@media (max-width: 600px) {
+  .chat {
+    --s: 1px;
+
+    padding: 96px 16px 40px;
+  }
+
+  .title {
+    top: 56px;
+  }
+
+  /*
+   * 폰 한 화면에 들어가도록 화면이 낮으면 카드 높이를 줄인다 (위 96 + 아래 40).
+   * 안내 문구와 질문이 겹치지 않게 600 아래로는 줄이지 않는다. 그만큼 낮은 화면에서는 한 화면에 안 들어가므로 스크롤을 잠그지 않는다.
+   */
+  .card {
+    height: min(640px, max(600px, calc(100svh - 136px)));
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .messageText {
+    max-width: 88%;
+    margin-left: 0;
+  }
+
+  .message[data-role='user'] {
+    padding-right: 0;
+  }
+
+  .message[data-role='user'] .messageText {
+    max-width: 92%;
+  }
+
+  /* 좁은 화면: 말풍선이 잘리지 않도록 안쪽 여백을 없애고, 긴 문장은 줄바꿈한다 */
+  .question {
+    max-width: 88%;
+    margin-left: 0;
+  }
+
+  .answers {
+    margin-right: 0;
+    max-width: 92%;
+  }
+
+  .answer,
+  .direct {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* 모션 줄이기: 움직임 없이 나타나기만 한다. (reset.css 가 애니메이션 시간도 거의 0 으로 줄인다) */
+@media (prefers-reduced-motion: reduce) {
+  .question {
+    animation: fade 150ms linear backwards;
+    animation-delay: 0ms;
+  }
+
+  .answer,
+  .direct,
+  .messageText {
+    animation: fade 150ms linear backwards;
+    animation-delay: 0ms;
+    transition: none;
+  }
+
+  .sent {
+    animation: none;
+  }
+
+  .typingDots span {
+    animation: none;
+  }
+
+  .intro,
+  .introText {
+    transition: none;
+  }
+
+  .introText {
+    transition: none;
+  }
+
+  .typeCursor::after {
+    animation: none;
+  }
+}

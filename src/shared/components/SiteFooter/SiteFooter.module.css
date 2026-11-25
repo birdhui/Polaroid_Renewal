@@ -1,122 +1,75 @@
 /*
- * 공통 Footer — Cameras 시안(polaroid-shop) 푸터와 같은 값 (어두운 배경).
- * 아래 색·글꼴 값은 아직 공통 토큰(variables.css)에 없어서 이 컴포넌트 안에만 둔다.
- * 디자인 시스템에 정해지면 토큰으로 옮긴다(모진아 담당, PM 검토).
+ * Figma 시안(1920px 기준): 높이 653, 로고 x=88·y=126(552×143), 메뉴 x=1214·y=126, 글자 30px, 간격 71.
+ * 시안 수치는 화면 폭에 비례해 줄어들고 1920px 이상에서는 그대로 유지한다.
+ * 글꼴은 Compare 페이지가 번들한 DM Sans 를 임시로 쓴다. 공통 폰트가 확정되면 교체한다.
  */
 .footer {
-  --footer-bg: #0f0f0f;
-  --footer-ink: #f2eee9;
-  --footer-muted: #9a958c;
-  --footer-faint: #77736b;
-  --footer-line: #2a2a2a;
-  --footer-red: #e3412b;
-  --footer-orange: #f28c28;
-  --footer-yellow: #f6c243;
-  --footer-green: #74b544;
-  --footer-blue: #1d92d2;
-  --footer-display: 'Archivo', 'Pretendard Variable', var(--font-sans);
+  --u: min(calc(100vw / 1920), 1px);
 
-  padding: 72px clamp(20px, 3.4vw, 48px) 32px;
-  background: var(--footer-bg);
-  color: var(--footer-ink);
-  font-family: 'Pretendard Variable', 'Pretendard', var(--font-sans);
+  background: #1e1e1e;
+  color: #fff;
+  font-family: 'Compare DM Sans', var(--font-sans);
 }
 
 .inner {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 48px;
+  align-items: flex-start;
   justify-content: space-between;
+  max-width: 1920px;
+  min-height: calc(653 * var(--u));
+  margin: 0 auto;
+  padding: calc(126 * var(--u)) calc(105 * var(--u)) calc(126 * var(--u)) calc(88 * var(--u));
 }
 
-.brand {
-  max-width: 300px;
+.logo {
+  display: block;
+  flex: none;
+  line-height: 0;
 }
 
-.wordmark {
+.logoImage {
+  display: block;
+  width: calc(552 * var(--u));
+  height: auto;
+}
+
+.list {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  color: var(--footer-ink);
-  font: 800 24px / 1 var(--footer-display);
-  letter-spacing: -0.04em;
-  text-decoration: none;
+  gap: calc(71 * var(--u));
 }
 
-.bar {
-  display: flex;
-  width: 30px;
-  height: 6px;
+.link {
+  font-size: max(calc(30 * var(--u)), 16px);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: normal;
 }
 
-.bar i {
-  flex: 1;
-}
-
-.tagline {
-  margin: 18px 0 0;
-  color: var(--footer-muted);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(28px, 4vw, 64px);
-}
-
-.col h4 {
-  margin: 0 0 18px;
-  font: 700 12px / 1 var(--footer-display);
-  letter-spacing: 0.16em;
-}
-
-.col ul {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-  color: var(--footer-muted);
-  font-size: 14px;
-  list-style: none;
-}
-
-.bottom {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: space-between;
-  margin-top: 64px;
-  padding-top: 24px;
-  border-top: 1px solid var(--footer-line);
-  color: var(--footer-faint);
-  font-size: 13px;
-}
-
-.bottom nav {
-  display: flex;
-  gap: 16px;
-}
-
-.legalItem {
-  display: flex;
-  gap: 16px;
-}
-
-.bottom a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.bottom a:hover,
-.bottom a:focus-visible {
-  color: var(--footer-ink);
-}
-
-.wordmark:focus-visible,
-.bottom a:focus-visible {
-  outline: 2px solid var(--footer-ink);
+.logo:focus-visible,
+.link:focus-visible {
+  outline: 2px solid #fff;
   outline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .inner {
+    flex-direction: column;
+    gap: 48px;
+    min-height: 0;
+    padding: 64px 24px;
+  }
+
+  .logoImage {
+    width: min(100%, 320px);
+  }
+
+  .list {
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+
+  .link {
+    font-size: 20px;
+  }
 }

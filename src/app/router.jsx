@@ -42,7 +42,7 @@ const router = createBrowserRouter([
       { path: ROUTES.history, element: <HistoryPage /> },
       { path: ROUTES.cameras, element: <CamerasPage /> },
       { path: ROUTES.camerasNow, element: <CameraNowPage /> },
-      { path: ROUTES.compare, element: <ComparePage /> },
+      { path: ROUTES.compare, element: <ComparePage /> , handle: { hideHeader: true }},
       { path: ROUTES.film, element: <FilmPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

@@ -1,3 +1,168 @@
+/*
+ * Compare 페이지 폰트·디자인 값
+ * 공통 토큰(src/shared/styles/variables.css)과 styleguide.md 가 확정되기 전이라
+ * Figma 시안 값을 이 페이지 안에서만 정의한다. 토큰이 확정되면 이 변수들을 공통 토큰으로 교체한다.
+ * 하위 컴포넌트(components/*)는 아래 --compare-* 변수를 상속해서 사용한다.
+ */
+
+/* 폰트는 Compare 전용으로 포함한다 (라이선스: SIL OFL 1.1, assets/compare/fonts/LICENSE-*.txt).
+   공통 폰트와 이름이 겹치지 않도록 별도 family 이름을 쓴다. */
+@font-face {
+  font-family: 'Compare DM Sans';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/dm-sans-latin-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare DM Sans';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/dm-sans-latin-600.woff2') format('woff2');
+}
+
+/* 히어로·채팅 안내 제목용. 시안의 영문 글꼴이다. */
+/* 호환 필름 값용 — 영문(i-Type, Go)만 Outfit 으로, 숫자·한글은 Pretendard 로 보이게 글자 범위를 제한한 Outfit */
+@font-face {
+  font-family: 'Compare Outfit Letters';
+  font-weight: 500;
+  src: url('../../assets/compare/fonts/outfit-latin-500.woff2') format('woff2');
+  unicode-range: U+0041-005A, U+0061-007A, U+002D, U+002F;
+}
+
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Outfit';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/outfit-latin-600.woff2') format('woff2');
+}
+
+/* subset 은 완성형 한글 2,350자를 포함한다. 그 밖의 글자는 아래 fallback 폰트로 표시된다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-light.subset.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-regular.subset.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-medium.subset.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-semibold.subset.woff2') format('woff2');
+}
+
+/*
+ * 레이아웃 배율: Figma 시안은 1920×1080 한 화면 기준이고, 섹션 하나가 한 화면 높이(1080)다.
+ * --u 는 "시안의 1px"이 현재 화면에서 몇 px인지를 나타낸다. 1920×1080 이상에서는 1px(시안 그대로),
+ * 화면 폭이나 높이가 그보다 작으면 둘 중 더 작은 쪽 비율로 줄어서, 섹션 하나가 한 화면에 들어온다.
+ * 하위 컴포넌트는 calc(시안값 * var(--u)) 로 시안 수치를 그대로 쓴다.
+ */
+/* 가격(₩ 와 숫자)에만 쓰는 Bold. 필요한 글자만 담은 작은 subset 이다. */
+@font-face {
+  font-family: 'Compare Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../assets/compare/fonts/pretendard-bold.price.woff2') format('woff2');
+}
+
 .page {
-  padding: var(--space-6);
+  --compare-bg: #1e1e1e;
+  --compare-text: #fff;
+  --compare-hero-text: #f1e2c7;
+  --compare-card-bg: #000;
+  --compare-card-border: #e7e7d9;
+  --compare-card-border-active: #fff;
+  --compare-btn-back: #b7b7b7;
+  --compare-btn-next: #636161;
+  --compare-line: #b7b7b7;
+  --compare-beige: #fff9e8;
+  --compare-ink: #151515;
+  --compare-bubble: #3a3b3c;
+  --compare-bubble-text: #fefefe;
+  --compare-orange: #f0a137;
+  --compare-chip: #f2f2f2;
+  --compare-card: rgb(255 255 255 / 0.8);
+  --compare-card-stroke: rgb(21 21 21 / 0.5);
+  --compare-bar-outline: #f3f3f3;
+  --compare-bar-border: #e1e4ea;
+  --compare-bar-text: #99a0ae;
+  --compare-font-en: 'Compare Outfit', var(--font-sans); /* 영문은 모두 Outfit */
+  --compare-font-display: 'Compare Outfit', var(--font-sans);
+  --compare-font-ko: 'Compare Pretendard', var(--font-sans);
+  --u: min(calc(100cqw / 1920), calc(100svh / 1080), 1px);
+
+  container-type: inline-size;
+  background: var(--compare-bg);
+}
+
+/*
+ * 이 페이지에서는 스크롤바를 보이지 않게 한다. 스크롤은 휠·터치·키보드로 그대로 된다.
+ * (페이지 스크롤바는 html 에 달리므로 이 페이지가 열려 있는 동안만 html 에 적용한다)
+ */
+:global(html):has(.page) {
+  scrollbar-width: none;
+}
+
+:global(html):has(.page)::-webkit-scrollbar {
+  display: none;
+}
+
+/* 히어로가 사라진 자리에 채팅 화면이 부드럽게 나타난다 */
+.finder {
+  animation: finder-in 500ms ease backwards;
+}
+
+@keyframes finder-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finder {
+    animation: none;
+  }
 }

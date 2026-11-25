@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
-import { ROUTES } from '@/app/routes.js';
+import { NAV_ITEMS, ROUTES } from '@/app/routes.js';
+import logo from '@/assets/shared/images/logo-polaroid-white.webp';
 import styles from './SiteFooter.module.css';
 
 /**
@@ -24,39 +25,19 @@ export default function SiteFooter() {
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <div className={styles.brand}>
-          <Link to={ROUTES.landing} className={styles.wordmark} aria-label="Polaroid 홈으로 이동">
-            polaroid
-            <span className={styles.bar} aria-hidden="true">
-              {BAR_COLORS.map((c) => (
-                <i key={c} style={{ background: c }} />
-              ))}
-            </span>
-          </Link>
-          <p className={styles.tagline}>[브랜드 소개 한 줄 — 추가 예정]</p>
-        </div>
-        <div className={styles.nav}>
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title} className={styles.col}>
-              <h4>{col.title}</h4>
-              <ul>
-                {Array.from({ length: col.items }, (_, i) => (
-                  <li key={i}>[메뉴]</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className={styles.bottom}>
-        <span>© Polaroid 2026. All rights reserved</span>
-        <nav aria-label="약관">
-          {LEGAL_LINKS.map((label, i) => (
-            <span key={label} className={styles.legalItem}>
-              {i > 0 && <span aria-hidden="true">|</span>}
-              <a href="#">{label}</a>
-            </span>
-          ))}
+        <Link to={ROUTES.landing} className={styles.logo} aria-label="Polaroid 홈으로 이동">
+          <img className={styles.logoImage} src={logo} alt="" width="552" height="143" loading="lazy" />
+        </Link>
+        <nav aria-label="푸터 메뉴">
+          <ul className={styles.list}>
+            {NAV_ITEMS.map(({ label, path }) => (
+              <li key={path}>
+                <Link to={path} className={styles.link}>
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
     </footer>

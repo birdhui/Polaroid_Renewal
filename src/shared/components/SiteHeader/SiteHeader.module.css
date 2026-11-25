@@ -22,3 +22,92 @@
 .active {
   color: var(--color-text);
 }
+
+/*
+ * 첫 화면 위에 겹쳐 올라오는 헤더 (Figma 시안, 1920px 기준: 로고 x=68·y=33, 메뉴 간격 71, 글자 16px).
+ * 시안 수치는 화면 폭에 비례해 줄어들고 1920px 이상에서는 그대로 유지한다.
+ * 글꼴은 Compare 페이지가 번들한 DM Sans 를 임시로 쓴다. 공통 폰트가 확정되면 교체한다.
+ */
+.overlay {
+  --u: min(calc(100vw / 1920), 1px);
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: var(--z-header);
+  --edge: max(0px, (100vw - 1920px) / 2); /* 1920px 보다 넓은 화면에서 본문과 같은 가장자리에 맞춘다 */
+  padding: max(calc(33 * var(--u)), 16px) calc(max(calc(93 * var(--u)), 20px) + var(--edge)) 0 calc(max(calc(68 * var(--u)), 20px) + var(--edge));
+  border-bottom: 0;
+  color: #fff;
+  font-family: 'Compare DM Sans', var(--font-sans);
+}
+
+.overlay .logo {
+  display: block;
+  line-height: 0;
+}
+
+.logoImage {
+  display: block;
+  width: max(calc(108 * var(--u)), 84px);
+  height: auto;
+}
+
+.overlay .list {
+  gap: max(calc(71 * var(--u)), 20px);
+}
+
+.overlay .link,
+.overlay .active {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.overlay .link:focus-visible,
+.overlay .logo:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .overlay {
+    padding: 16px 16px 0;
+  }
+
+  .logoImage {
+    width: 76px;
+  }
+
+  .overlay .list {
+    gap: 14px;
+  }
+
+  .overlay .link,
+  .overlay .active {
+    font-size: 14px;
+  }
+}
+
+/* 390px 전후의 좁은 화면에서 로고와 첫 메뉴가 붙지 않도록 간격을 더 둔다 */
+@media (max-width: 440px) {
+  .overlay {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .logoImage {
+    width: 66px;
+  }
+
+  .overlay .list {
+    gap: 11px;
+  }
+
+  .overlay .link,
+  .overlay .active {
+    font-size: 13px;
+  }
+}
