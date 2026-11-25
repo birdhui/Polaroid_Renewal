@@ -1,0 +1,148 @@
+.section {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  width: min(100%, 2560px);
+  min-block-size: min(56.25cqw, 1440px);
+  margin-inline: auto;
+}
+
+.calendar {
+  display: grid;
+  grid-template-rows: minmax(0, 65fr) minmax(0, 6fr) minmax(0, 651fr);
+  inline-size: min(44.0625%, 1128px);
+  aspect-ratio: 846 / 722;
+  container-type: inline-size;
+}
+
+.headingCrop {
+  position: relative;
+  grid-area: 1 / 1 / 2 / -1;
+  overflow: hidden;
+}
+
+.headingCrop img {
+  position: absolute;
+  inset: -7.69% auto auto -24.01%;
+  inline-size: 148.15%;
+  block-size: 1084.62%;
+  max-inline-size: none;
+}
+
+.calendarBody {
+  grid-area: 3 / 1 / -1 / -1;
+  display: grid;
+  grid-template-rows: 70fr 878fr;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.weekdays {
+  align-items: center;
+  text-align: center;
+  font-size: clamp(9px, 1.65cqw, 19px);
+  font-weight: 600;
+}
+
+.days {
+  --grid-line: max(1px, 0.15cqw);
+
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  border-block-start: var(--grid-line) solid #fff;
+  border-inline-start: var(--grid-line) solid #fff;
+}
+
+.day {
+  position: relative;
+  min-inline-size: 0;
+  border-block-end: var(--grid-line) solid #fff;
+  border-inline-end: var(--grid-line) solid #fff;
+}
+
+.dayNumber {
+  position: absolute;
+  inset: 0.65cqw auto auto 0.75cqw;
+  font-size: clamp(9px, 1.8cqw, 21px);
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+  pointer-events: none;
+}
+
+.photoDay {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+
+.photoDay:focus-visible {
+  outline: 2px solid #fff9e8;
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .photoDay:hover {
+    box-shadow: inset 0 0 0 1px rgb(255 249 232 / 80%);
+  }
+}
+
+.preview {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: var(--z-overlay);
+  inline-size: clamp(130px, 14vw, clamp(190px, 9.895833vw, 253.333px));
+  aspect-ratio: 829 / 1002;
+  filter: drop-shadow(0 8px 16px rgb(0 0 0 / 42%));
+  pointer-events: none;
+}
+
+.print {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.print {
+  padding: 6%;
+  background: #f4f1e7;
+}
+
+.printCrop {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+@media (max-width: 959px) {
+  .stage {
+    min-block-size: auto;
+    padding: var(--space-8) var(--space-5);
+  }
+
+  .calendar {
+    inline-size: min(100%, 424px);
+  }
+}

@@ -1,0 +1,284 @@
+/* 4~9. 모델 섹션 (시안 1920×1095, Go 만 1080 — 배경 #fff9e8) */
+.section {
+  position: relative;
+  height: calc(var(--sh) * var(--px));
+  overflow: hidden;
+  background: #fff9e8;
+}
+
+/* 시안 좌표(--l, --t, --w, --h)에 놓이는 요소 */
+.card,
+.script {
+  position: absolute;
+  left: calc(var(--l) * var(--px));
+  top: calc(var(--t) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+}
+
+/* 제품 카드: 626×626, 모델별 배경색(Figma 'Cameras' 프레임 카드 배경) 위에 투명 제품 사진 + 라벨 */
+.card {
+  margin: 0;
+  isolation: isolate;
+  border-radius: calc(24 * var(--px));
+  background: var(--card-bg, transparent);
+}
+
+/* 처음엔 흐릿하게, 글이 보이기 시작하면(.focused) 선명하게 — 헤드라인과 같은 타이밍 */
+.cardMedia {
+  position: absolute;
+  inset: 0;
+  filter: blur(max(6px, calc(16 * var(--px))));
+  opacity: 0.45;
+  transform: scale(1.04);
+  transition:
+    filter 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    opacity 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    transform 1.2s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.focused .cardMedia {
+  filter: blur(0);
+  opacity: 1;
+  transform: none;
+}
+
+.cardImage {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cardLabels {
+  position: absolute;
+  inset: 0;
+  color: #151515;
+  font-family: var(--cm-font-eng);
+  font-weight: 500;
+  font-size: max(10px, calc(12 * var(--px)));
+  line-height: 1.26;
+  pointer-events: none;
+}
+
+/* 어두운 배경 카드(Mod · I-2)는 라벨을 밝은 글씨로 */
+.card[data-tone='dark'] .cardLabels {
+  color: #fffaec;
+}
+
+.cardLabels > span {
+  position: absolute;
+  white-space: nowrap;
+}
+
+/* 시안: 위 라벨 카드 위에서 28 · 왼쪽 33 · 오른쪽 31, 아래 라벨 카드 아래에서 21 */
+.labelTopLeft {
+  top: calc(28 * var(--px));
+  left: calc(33 * var(--px));
+}
+
+.labelTopRight {
+  top: calc(28 * var(--px));
+  right: calc(31 * var(--px));
+}
+
+.labelBottom {
+  bottom: calc(21 * var(--px));
+}
+
+/* 아래 번호는 카드의 바깥쪽 모서리(글 반대편)에 둔다 */
+.section[data-side='left'] .labelBottom {
+  right: calc(31 * var(--px));
+}
+
+.section[data-side='right'] .labelBottom {
+  left: calc(31 * var(--px));
+}
+
+/* 손글씨는 헤드라인 뒤에 깔린다 */
+.script {
+  z-index: 0;
+}
+
+/* 소개 글 묶음 — 시안 기준선(--edge)과 헤드라인 첫 줄(--top)에 맞춘다 */
+.copy {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--top) * var(--px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section[data-side='left'] .copy {
+  left: calc(var(--edge) * var(--px));
+}
+
+.section[data-side='right'] .copy {
+  right: calc((1920 - var(--edge)) * var(--px));
+  align-items: flex-end;
+  text-align: right;
+}
+
+/*
+ * 초점 맞추기: 메인 헤드라인만 흐림(blur)·흐린 농도로 시작해, 드로잉이 시작되면(.focused) 선명해진다.
+ * 흐림 정도는 화면 폭에 비례(--px)하고, 너무 작아지지 않게 최소 4px 로 둔다.
+ */
+.copy .title {
+  filter: blur(max(4px, calc(10 * var(--px))));
+  opacity: 0.3;
+  transition:
+    filter 1s cubic-bezier(0.22, 0.7, 0.2, 1),
+    opacity 1s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+.focused .title {
+  filter: blur(0);
+  opacity: 1;
+}
+
+.title {
+  margin: 0;
+  color: #000;
+  font-family: var(--cm-font-text);
+  font-weight: 700;
+  font-size: max(24px, calc(40 * var(--px)));
+  line-height: 1.2;
+  letter-spacing: -0.05em;
+}
+
+.body {
+  margin: calc(24 * var(--px)) 0 0;
+  color: #151515;
+  /* 'Every Moment Has Its Camera' 소개 문구와 같은 규격 */
+  font-family: var(--cm-font-text);
+  font-weight: 300;
+  font-size: max(13px, calc(20 * var(--px)));
+  line-height: 1.19;
+  letter-spacing: -0.05em;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: max(36px, calc(41 * var(--px)));
+  margin-top: calc(72 * var(--px));
+  padding: 0 max(24px, calc(36 * var(--px)));
+  background: #151515;
+  color: #fff;
+  font-family: var(--cm-font-text);
+  font-weight: 500;
+  font-size: max(13px, calc(16 * var(--px)));
+  letter-spacing: -0.0625em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: #3a3833;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 좁은 화면: 카드 → 손글씨 → 글 순서로 세로로 쌓는다 */
+@media (max-width: 1023px) {
+  .section {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 56px 24px 72px;
+  }
+
+  .card,
+  .script {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+
+  .card {
+    width: min(100%, 520px);
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto 12px;
+    border-radius: 20px;
+  }
+
+  .cardLabels {
+    font-size: 11px;
+  }
+
+  .labelTopLeft,
+  .labelTopRight {
+    top: 16px;
+  }
+
+  .labelTopLeft {
+    left: 18px;
+  }
+
+  .labelTopRight,
+  .section[data-side] .labelBottom {
+    right: 18px;
+    left: auto;
+  }
+
+  .labelBottom {
+    bottom: 14px;
+  }
+
+  .script {
+    width: min(70%, 320px);
+    height: auto;
+    margin-bottom: -28px;
+  }
+
+  .copy,
+  .section[data-side='left'] .copy,
+  .section[data-side='right'] .copy {
+    position: static;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .body {
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  .button {
+    margin-top: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardMedia,
+  .cardImage {
+    transition: none;
+  }
+
+  .cardMedia {
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .copy .title {
+    filter: none;
+    opacity: 1;
+    transition: none;
+  }
+}

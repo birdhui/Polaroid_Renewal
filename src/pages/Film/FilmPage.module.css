@@ -1,3 +1,194 @@
-.page {
-  padding: var(--space-6);
+@font-face {
+  font-family: 'Film Stock Outfit';
+  src: url('@/assets/film/fonts/outfit-light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+/* Pretendard subset for the Film introduction's Korean copy. */
+@font-face {
+  font-family: 'Film Intro Sans';
+  src: url('@/assets/film/fonts/film-intro-sans.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Film Intro Sans';
+  src: url('@/assets/film/fonts/faq-pretendard.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Film Hero Outfit';
+  src: url('@/assets/film/fonts/outfit-extra-light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+}
+
+
+@font-face {
+  font-family: 'Film Stock Outfit';
+  src: url('@/assets/film/fonts/stock-outfit.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+/* Film 미리보기에서 공통 헤더를 임시로 숨긴다. */
+:has(> main > .hero) > header {
+  display: none;
+}
+
+.hero {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100svh;
+  container-type: inline-size;
+  overflow: hidden;
+  background-color: #222118;
+  color: #fff;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.heroIdentity {
+  position: absolute;
+  inset-inline-start: 3.333333%;
+  inset-block-start: 75.555556%;
+  inline-size: 24.166667%;
+}
+
+.heroWordmark {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.heroTitle {
+  margin: 0;
+  font: 200 1.875cqw / 1.2 'Film Hero Outfit', var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+
+.stage {
+  max-width: 2560px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 424fr) minmax(0, 547fr);
+  column-gap: 17.708333cqw;
+  align-items: start;
+  min-block-size: 56.302083cqw;
+  padding-block: 7.5cqw;
+  padding-inline: 16.5625cqw 15.15625cqw;
+}
+
+.copy {
+  font-family: 'Film Intro Sans', var(--font-sans);
+  margin-block-start: 12.135417cqw;
+}
+
+.title {
+  font-size: clamp(30px, 2.865cqw, 73.333px);
+  font-weight: 500;
+  line-height: 1.23;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+}
+
+.brand {
+  font-family: 'Film Stock Outfit', var(--font-sans);
+  font-weight: 600;
+}
+
+.description {
+  margin-block-start: clamp(var(--space-5), 2.604cqw, 66.667px);
+  font-size: clamp(16px, 1.09375cqw, 28px);
+  font-weight: 300;
+  line-height: 1.380952;
+  letter-spacing: clamp(-1.333px, -0.052083cqw, -0.5px);
+  word-break: keep-all;
+}
+
+.description span {
+  display: block;
+}
+
+.introArtwork {
+  position: relative;
+  inline-size: 100%;
+  aspect-ratio: 547 / 731;
+}
+
+.introArtwork img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.introArtwork .introPrint {
+  position: absolute;
+  inset: 12.5855% auto auto 15.1737%;
+  inline-size: 87.7514%;
+  block-size: 72.777%;
+}
+
+@container (width <= 800px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+    min-block-size: auto;
+    padding-block: var(--space-8);
+    padding-inline: clamp(var(--space-5), 8cqw, var(--space-8));
+  }
+
+  .copy {
+    margin-block-start: 0;
+  }
+
+  .introArtwork {
+    max-inline-size: 360px;
+    justify-self: center;
+  }
+}
+
+.filmSequence {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: #151210;
+  color: #ffffff;
+}
+
+.backdropFrame {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: sticky;
+  inset-block-start: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: min(100svh, 100%);
+  object-fit: cover;
 }

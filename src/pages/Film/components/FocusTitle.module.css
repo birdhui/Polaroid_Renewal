@@ -1,0 +1,36 @@
+.title > span {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .title > span {
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6)), 1);
+
+    filter: blur(calc(4px * (1 - var(--line-focus))));
+    opacity: clamp(0, calc(var(--focus-progress, 1) * 4), 1);
+    transition: filter 280ms ease-out, opacity 120ms ease-out;
+  }
+
+  .title > span:only-child {
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6) / 1.6), 1);
+  }
+
+  .title > span + span {
+    --line-focus: clamp(0, calc((var(--focus-progress, 1.6) - 0.4) / 1.2), 1);
+  }
+
+  .title[data-focus-on-load] > span {
+    animation: focus-on-load 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .title[data-focus-on-load] > span + span {
+    animation-delay: 180ms;
+  }
+}
+
+@keyframes focus-on-load {
+  from {
+    filter: blur(4px);
+    opacity: 0.65;
+  }
+}
