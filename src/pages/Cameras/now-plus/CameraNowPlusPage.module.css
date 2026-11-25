@@ -1,6 +1,6 @@
 /*
  * Polaroid Now+ 상세페이지 전용 스타일 — 경로: /cameras/now-plus
- * 공통 틀(Hero · 기능 · Film · 캐러셀 · 앱 · 스토어)은 ../now/CameraNowPage.module.css 를 그대로 쓰고,
+ * 공통 틀(Hero · 기능 · Film · 캐러셀 · 앱 · 스토어)은 ../now-detail/CameraNowPage.module.css 를 그대로 쓰고,
  * 여기에는 Now+에만 있는 부분(카메라 4대 배치, 드로잉 → 채색 연출, 모드 원판 아이콘)만 둔다.
  * 값은 Now 페이지 변수(--gut, --text 등)를 이어 쓴다.
  */
