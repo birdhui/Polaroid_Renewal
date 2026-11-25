@@ -1,28 +1,43 @@
 /**
  * Landing 화면 UI 엔진 (담당: 곽세희)
  *
- * 아티팩트 프로토타입(Polaroid Renewal)의 화면 스크립트를 그대로 옮긴 1차 이식본.
- * - 뷰파인더 인트로(현재 SKIP_INTRO 로 숨김), 히어로 타이포 등장·퇴장, 사진 뒤 문구(블러→초점),
- *   역사 연도·도면, NOW·컬러 타이포, 왼쪽 목차 링(섹션 이동)을 담당한다.
+ * 아티팩트 프로토타입(Polaroid Renewal)의 화면 스크립트를 그대로 옮긴 이식본 (2차: 아티팩트 최신본 전체).
+ * - 글꼴 준비, 히어로 타이포 등장·퇴장, 사진 뒤 문구, 역사 연도(실측 칸 너비)·도면, NOW·컬러 타이포,
+ *   ZERO MINUTES, 부품 목록, Make a Moment Last · 필름 사진, 마지막 DEVELOPED, 커서, 사운드, 왼쪽 목차 링을 담당한다.
  * - 3D 장면(@/features/landing-camera/engine)과는 window.__* 값으로 주고받는다 (프로토타입 구조 유지).
  *   계약(cameraContract.js) 기반으로 나누는 작업은 다음 단계에서 한다.
  *
  * @param {AbortSignal} signal 페이지를 떠날 때 abort → 이벤트·루프 정리
  */
+export const LANDING_UI_GLOBALS = ['__colorIn', '__fTop', '__film', '__fontsOk', '__fontsReady', '__heroExit', '__heroWheel', '__hist', '__introDone', '__parts', '__setSection', '__storyIn', '__tb', '__zx'];
+
 export function mountLandingUi(signal) {
   // ── 프로토타입(아티팩트) 코드를 그대로 옮기기 위한 범위 한정 ──
-  // 창(window)에 다는 이벤트는 페이지를 떠날 때 signal 로 한 번에 해제되고, 애니메이션 루프도 함께 멈춘다.
+  // 창(window)·문서(document)에 다는 이벤트는 페이지를 떠날 때 signal 로 한 번에 해제되고, 애니메이션 루프·타이머도 함께 멈춘다.
   const withSignal = (o) => (o && typeof o === 'object' ? { ...o, signal } : { capture: !!o, signal });
   const addEventListener = (type, fn, o) => window.addEventListener(type, fn, withSignal(o));
   const requestAnimationFrame = (fn) => (signal.aborted ? 0 : window.requestAnimationFrame((t) => { if (!signal.aborted) fn(t); }));
   const setTimeout = (fn, ms) => { const id = window.setTimeout(() => { if (!signal.aborted) fn(); }, ms); signal.addEventListener('abort', () => window.clearTimeout(id)); return id; };
 
+  /* 쓰는 글꼴·굵기를 처음부터 전부 불러 둠 (아직 안 나온 장면의 글꼴까지) → 다 준비되면 히어로 글자 등장. 네트워크가 막히면 4초 뒤 그냥 진행 */
+  window.__fontsOk = !document.fonts;
+  window.__fontsReady = !document.fonts ? Promise.resolve() : Promise.race([
+    Promise.all(['200','300','400','500','600','700','800'].map(w => document.fonts.load(w + ' 16px Outfit', 'Aa09')).concat(
+      ['400','500'].map(w => document.fonts.load(w + ' 16px "Noto Sans KR"', '우리는')))).catch(() => {}),
+    new Promise(r => setTimeout(r, 4000))
+  ]).then(() => { window.__fontsOk = true; });
+
+
   /* 글자 블러: CSS filter 대신 text-shadow 로 — iOS 사파리에서 글자에 filter:blur 를 걸면 가장자리에 검은 테두리가 생김 (Kinoria 처럼 깨끗하게) */
   window.__tb = (el, px, extra) => { const s = el.style; s.filter = '';
     if (!(px > 0.05)) { s.color = ''; s.textShadow = extra || ''; return; }
-    const k = Math.min(1, px / 5);
-    s.color = `rgba(255,255,255,${(1 - 0.92 * k).toFixed(3)})`;
-    s.textShadow = `0 0 ${px.toFixed(2)}px rgba(255,255,255,${(0.45 + 0.55 * k).toFixed(3)})` + (extra ? ', ' + extra : ''); };
+    // 블러 중에도 원래 글자색 유지 (예: 주황 라벨이 흰색으로 보였다가 주황으로 바뀌지 않게)
+    if (!el._tbc) { const was = s.color; s.color = ''; const m = getComputedStyle(el).color.match(/[\d.]+/g) || [255, 255, 255, 1]; s.color = was; el._tbc = [m[0], m[1], m[2], m[3] === undefined ? 1 : +m[3]]; }
+    const [r, g, b, a] = el._tbc, k = Math.min(1, px / 5);
+    s.color = `rgba(${r},${g},${b},${(a * (1 - 0.92 * k)).toFixed(3)})`;
+    s.textShadow = `0 0 ${px.toFixed(2)}px rgba(${r},${g},${b},${(a * (0.45 + 0.55 * k)).toFixed(3)})` + (extra ? ', ' + extra : ''); };
+
+
   /* =====================================================================
      Viewfinder intro — KINORIA 방식
      · 사진(영상)은 화면에 고정. 크기가 변하지 않는다 → 로딩 중엔 초점만 맞춰짐
@@ -157,7 +172,7 @@ export function mountLandingUi(signal) {
   video.addEventListener('error', () => setPart('video', 1));
   setTimeout(() => setPart('video', 1), 9000);
   video.play().catch(() => {});
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setPart('fonts', 1));
+  window.__fontsReady.then(() => setPart('fonts', 1));
 
   /* ---------------- HUD */
   const scaleEl = document.getElementById('scale');
@@ -280,6 +295,8 @@ export function mountLandingUi(signal) {
   } else {
     requestAnimationFrame(frame);
   }
+
+
 
 
   /* 텍스트를 단어 단위로 나눠 순서대로 초점이 맞춰지게 (레퍼런스: 단어마다 2.5% 간격) */
@@ -413,14 +430,27 @@ export function mountLandingUi(signal) {
     ];
     const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
+    // 연도: 1937 에서 출발하면 2026 까지 한 번도 멈추지 않고 계속 올라감 (도면은 각 연도에서 머물러도 숫자는 계속 흐름).
+    //       각 도면이 가장 또렷한 순간(도착~출발 가운데)에 그 해를 지나가도록, 부드러운 단조 곡선으로 이음
+    // 1970 부터 2026 까지는 점점 천천히 감속하며 2026 에 부드럽게 맞춰 멈춤 (감속 곡선: 1-(1-t)^3.2 — 갈수록 확실히 느려져 마지막 몇 해는 한 해씩 천천히)
+    const Y_STEP = 1970, SC_STEP = 5.42, SC_END = 7.05, DEC_P = 3.2, STEP_RATE = (2026 - Y_STEP) * DEC_P / (SC_END - SC_STEP);
+    const YK = [[MS[0][2], MS[0][0]], ...MS.slice(1, -1).filter((m) => m[0] < Y_STEP).map((m) => [(m[1] + m[2]) / 2, m[0]]), [SC_STEP, Y_STEP]];
+    const YM = (() => {   // Fritsch–Carlson 단조 3차 보간 기울기 (처음은 0 → 천천히 출발, 끝은 감속 구간 시작 속도와 이어짐)
+      const n = YK.length, dl = [], m = new Array(n).fill(0);
+      for (let i = 0; i < n - 1; i++) dl.push((YK[i + 1][1] - YK[i][1]) / (YK[i + 1][0] - YK[i][0]));
+      for (let i = 1; i < n - 1; i++) { const a0 = dl[i - 1], a1 = dl[i]; m[i] = a0 * a1 <= 0 ? 0 : 3 * (YK[i + 1][0] - YK[i - 1][0]) / ((2 * YK[i + 1][0] - YK[i][0] - YK[i - 1][0]) / a0 + (YK[i + 1][0] + YK[i][0] - 2 * YK[i - 1][0]) / a1); }
+      m[n - 1] = STEP_RATE;
+      return m;
+    })();
     function yearAt(sc) {
-      if (sc <= MS[0][1]) return MS[0][0];
-      for (let i = 0; i < MS.length - 1; i++) {
-        const a = MS[i], b = MS[i + 1];
-        if (sc < a[2]) return a[0];
-        if (sc < b[1]) { const t = (sc - a[2]) / (b[1] - a[2]); return a[0] + (b[0] - a[0]) * (i === MS.length - 2 ? easeOutQuart(t) : ease(t)); }
+      if (sc <= YK[0][0]) return YK[0][1];
+      if (sc >= SC_STEP) {                                   // 감속 구간: 1970 에서 가장 빠르고 2026 으로 갈수록 점점 느려짐
+        const t = Math.min(1, (sc - SC_STEP) / (SC_END - SC_STEP));
+        return Y_STEP + (2026 - Y_STEP) * (1 - Math.pow(1 - t, DEC_P));
       }
-      return MS[MS.length - 1][0];
+      let i = 0; while (sc > YK[i + 1][0]) i++;
+      const [x0, y0] = YK[i], [x1, y1] = YK[i + 1], h = x1 - x0, t = (sc - x0) / h, t2 = t * t, t3 = t2 * t;
+      return (2 * t3 - 3 * t2 + 1) * y0 + (t3 - 2 * t2 + t) * h * YM[i] + (-2 * t3 + 3 * t2) * y1 + (t3 - t2) * h * YM[i + 1];
     }
     // 4자리 드럼
     const drums = [], drumEls = [];
@@ -430,14 +460,34 @@ export function mountLandingUi(signal) {
       yearEl.appendChild(dg); drums.push([...dg.children]); drumEls.push(dg);
     }
     // 숫자별 실제 글자폭(em) — 연도 폰트(Outfit) 로드 후 캔버스로 측정
-    let ADV = null;
+    // 숫자 칸 너비: 화면에 실제로 그려진 숫자 폭을 그대로 잼 (canvas 로 따로 재지 않음).
+    // 연도 요소 안에 보이지 않는 기준 글자(0~9 를 각각 10번)를 두고, 글꼴이 바뀌거나(기본 서체 → Outfit) 크기가 바뀌면
+    // ResizeObserver 가 그 즉시 다시 잼 → 칸 너비와 실제 글자가 어긋나 찌그러져 보이는 순간이 생기지 않음
+    let ADV = null, ADV_LS = 0;
+    const yRef = document.createElement('span');
+    yRef.className = 'yref'; yRef.setAttribute('aria-hidden', 'true');
+    yRef.innerHTML = [...'0123456789'].map((ch) => `<i>${ch.repeat(10)}</i>`).join('');
+    yearEl.appendChild(yRef);
+    const yRefs = [...yRef.children];
     const measureAdv = () => {
-      const cs = getComputedStyle(yearEl), c = document.createElement('canvas').getContext('2d');
-      c.font = `${cs.fontWeight} 100px ${cs.fontFamily}`;
-      ADV = [...'0123456789'].map((ch) => c.measureText(ch).width / 100);
+      const px = yRefs.map((el) => el.offsetWidth / 10);
+      if (px.some((v) => !(v > 0))) return;
+      ADV = px; ADV_LS = parseFloat(getComputedStyle(yearEl).getPropertyValue('--ls')) || 0;
     };
-    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { measureAdv(); lastSc = -1; });
-    function setYear(Y) {                                  // 주행거리계 방식: 1의 자리는 연속 회전, 윗자리는 아래 자리가 9→0 넘어갈 때만 함께 굴러감
+    let yReady = !document.fonts;
+    const remeasure = () => { measureAdv(); yShown = null; lastSc = -1; if (yDisp !== null) setYear(Math.max(1937, Math.min(2026, yDisp))); };
+    if (window.ResizeObserver) { const ro = new ResizeObserver(remeasure); yRefs.forEach((el) => ro.observe(el)); }
+    measureAdv();
+    if (document.fonts) {
+      Promise.all([document.fonts.load('700 104px Outfit', '0123456789'), document.fonts.load('400 22px Outfit', 'Since')].map((p) => p.catch(() => {})))
+        .then(() => document.fonts.ready).then(() => { remeasure(); yReady = true; });
+      document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', remeasure, { signal });
+      setTimeout(() => { if (!yReady) { remeasure(); yReady = true; } }, 6000);   // 글꼴을 못 받는 환경에서도 결국 보이게
+    }
+    function setYear(Yraw) {
+      // 걸쇠(디텐트): 한 해의 대부분은 온전한 숫자로 멈춰 있고, 끝 35% 에서만 다음 숫자로 빠르게 넘어감 → 멈췄을 때 숫자가 반쯤 걸쳐 잘려 보이지 않음
+      const Yi = Math.floor(Yraw), Yf = Yraw - Yi, Yt2 = Math.min(1, Math.max(0, (Yf - 0.65) / 0.35)), Y = Yi + Yt2 * Yt2 * (3 - 2 * Yt2);
+      // 주행거리계 방식: 1의 자리는 연속 회전, 윗자리는 아래 자리가 9→0 넘어갈 때만 함께 굴러감
       for (let d = 0; d < 4; d++) {
         const k = 3 - d, P = Math.pow(10, k);
         let v = Math.floor(Y / P) % 10;
@@ -445,16 +495,15 @@ export function mountLandingUi(signal) {
         else { const low = Y % P; if (low > P - 1) v += low - (P - 1); }
         if (ADV) {   // 칸 너비: 지금 보이는 숫자(굴러가는 중이면 두 숫자 사이 보간)의 글자폭 + 자간
           const a = Math.floor(v) % 10, b2 = (a + 1) % 10, t = v - Math.floor(v);
-          const fs = parseFloat(getComputedStyle(yearEl).fontSize), ls = parseFloat(getComputedStyle(yearEl).getPropertyValue('--ls')) || 0;
-          const w = (ADV[a] * (1 - t) + ADV[b2] * t) * fs + (d < 3 ? ls : 0);
+          const w = ADV[a] * (1 - t) + ADV[b2] * t + (d < 3 ? ADV_LS : 0);
           drumEls[d].style.width = w.toFixed(2) + 'px';
         }
         drums[d].forEach((f, n) => {
           let d = n - v; d = ((d + 5) % 10 + 10) % 10 - 5;              // -5..5 (0 = 현재 숫자)
           if (Math.abs(d) > 1.2) { f.style.opacity = 0; return; }
-          // 아래에서 올라와 위로 넘어감: 위쪽으로 빠지는 숫자는 뒤로 눕고(rotateX), 아래 숫자는 앞으로 세워지며 들어옴
-          f.style.transform = `translateY(${(d * 92).toFixed(2)}%) rotateX(${(-d * 62).toFixed(2)}deg) scale(${(1 - 0.12 * Math.abs(d)).toFixed(3)})`;
-          f.style.opacity = Math.max(0, 1 - Math.abs(d) * 0.85).toFixed(3);
+          // 글자 모양은 절대 변형하지 않음(회전·축소·원근 없음) — 위아래로만 미끄러지고, 칸 밖으로 나가는 만큼만 옅어짐. 멈춰 있을 땐 옆 숫자가 전혀 안 보임
+          f.style.transform = `translate3d(0, ${(d * 100).toFixed(2)}%, 0)`;
+          f.style.opacity = Math.max(0, 1 - Math.abs(d) * 1.15).toFixed(3);
         });
       }
     }
@@ -479,12 +528,25 @@ export function mountLandingUi(signal) {
       mfill = svg.querySelector('.mfill');
       drawEl.dataset.w = o.w; drawEl.dataset.h = o.h;
     }
-    let lastSc = -1;
+    let lastSc = -1, yDisp = null, yVel = 0, yShown = null, yLastT = 0;
     window.__hist = (sc, W, Hh) => {
-      { const pj = window.__nowProj; if (pj) H.style.setProperty('--tb', (pj.oy - 0.5687 * pj.ppu - Math.max(18, 40 * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1))) + 'px'); }
+      { const pj = window.__nowProj; if (pj) H.style.setProperty('--tb', (pj.oy - 0.5687 * pj.ppu - Math.max(28, 64)) + 'px'); }
       window.__colorIn && window.__colorIn(sc);
+      window.__zx && window.__zx(sc);
+      window.__parts && window.__parts(sc);
+      window.__film && window.__film(sc);
+      // 연도 숫자는 스크롤 위치를 바로 따라가지 않고 약 0.3초 늦게 부드럽게 따라감 → 휠 한 칸씩 끊겨 들어오는 입력이나
+      // 끝에서 아주 느려질 때도 멈칫멈칫(버퍼링처럼) 보이지 않고 미끄러지듯 감속하며 2026 에 멈춤
+      {
+        const nowT = performance.now(), dtY = Math.min(0.05, (nowT - (yLastT || nowT)) / 1000); yLastT = nowT;
+        const Yt = yearAt(sc);
+        if (yDisp === null || sc < 3.9) yDisp = Yt;
+        else { yVel += ((Yt - yDisp) * 90 - 19 * yVel) * dtY; yDisp += yVel * dtY; }       // 임계감쇠 스프링 (ω≈9.5)
+        if (Math.abs(Yt - yDisp) < 0.002 && Math.abs(yVel) < 0.02) { yDisp = Yt; yVel = 0; }
+        if (yDisp !== yShown) { yShown = yDisp; setYear(Math.max(1937, Math.min(2026, yDisp))); }
+      }
       if (Math.abs(sc - lastSc) < 0.0004) return; lastSc = sc;
-      const U = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1;
+      const U = 1;
       // 앞 장면 카피 퇴장 (블러 아웃)
       const so = Math.min(1, Math.max(0, (sc - 3.65) / 0.35));
       if (so > 0 || story.dataset.out) { story.querySelectorAll('.sw').forEach((w) => window.__tb(w, so > 0 ? 10 * so : 0)); if (so > 0) story.dataset.out = 1; else delete story.dataset.out; }
@@ -492,10 +554,9 @@ export function mountLandingUi(signal) {
       // 섹션 등장/퇴장
       const inK = Math.min(1, Math.max(0, (sc - 3.9) / 0.3));
       const outK = Math.min(1, Math.max(0, (sc - 7.25) / 0.35));
-      const Y = yearAt(sc);
-      setYear(Y);
+
       const focus = (k) => `blur(${(9 * (1 - k)).toFixed(2)}px)`;
-      yearEl.style.opacity = (inK * (1 - outK)).toFixed(3); window.__tb(yearEl, inK < 1 ? 9 * (1 - inK) : 8 * outK);
+      yearEl.style.opacity = (yReady && ADV ? inK * (1 - outK) : 0).toFixed(3); window.__tb(yearEl, inK < 1 ? 9 * (1 - inK) : 8 * outK);
       const sinceK = inK * (1 - Math.min(1, Math.max(0, (sc - 4.3) / 0.2)));
       sinceEl.style.opacity = sinceK.toFixed(3); window.__tb(sinceEl, 9 * (1 - sinceK));
       // 현재 마일스톤
@@ -504,7 +565,7 @@ export function mountLandingUi(signal) {
       if (m) {
         showDrawing(m[4], U, W);
         const draw = Math.min(1, Math.max(0, (sc - (m[1] - 0.18)) / 0.32));            // 선이 그려짐
-        const leave = m[2] > 90 ? Math.min(1, Math.max(0, (sc - 7.5) / 0.55)) : Math.min(1, Math.max(0, (sc - m[2]) / 0.12));
+        const lv = m[2] > 90 ? Math.min(1, Math.max(0, (sc - 7.5) / 0.55)) : Math.min(1, Math.max(0, (sc - m[2]) / 0.12)), leave = lv * lv * (3 - 2 * lv);   // 떠날 때도 스크롤에 붙어 부드럽게 (올리면 그대로 되돌아옴)
         const w = +drawEl.dataset.w || 600, h = +drawEl.dataset.h || 500;
         // 2026 도면과 같은 크기: 2026 도면은 실물 카메라에 맞춰 화면 폭의 (39.27%×0.886) 폭, 세로/가로 0.5955 비율.
         // 다른 도면도 화면에서 차지하는 면적이 2026 도면과 같도록 맞춤 → 모양(가로·세로 비율)은 달라도 체감 크기가 같음
@@ -512,6 +573,7 @@ export function mountLandingUi(signal) {
         const S = Math.min(Math.sqrt(A26 / (w * h)), 0.86 * W / w);
         if (m[4] !== '2026' || !window.__nowProj) { drawEl.style.width = (w * S) + 'px'; drawEl.style.height = (h * S) + 'px'; }
         drawEl.style.opacity = (1 - leave).toFixed(3);
+        drawEl.style.filter = leave > 0.002 ? `blur(${(8 * leave).toFixed(2)}px)` : '';   // 다음 해로 넘어갈 때 블러되며 사라짐
         // 마지막 도면(2026 NOW): 3D 모델 원점·배율에 맞춰 정확히 겹쳐 놓음 (도면 실루엣으로 찾은 각도와 상대 위치)
         const pj = window.__nowProj;
         if (m[4] === '2026' && pj) {
@@ -526,7 +588,7 @@ export function mountLandingUi(signal) {
         modelEl.textContent = m[3];
         const lk = Math.min(1, Math.max(0, (draw - 0.4) / 0.4)) * (1 - leave);
         modelEl.style.opacity = lk.toFixed(3); window.__tb(modelEl, 9 * (1 - lk));
-      } else { drawEl.style.opacity = 0; modelEl.style.opacity = 0; }
+      } else { drawEl.style.opacity = 0; drawEl.style.filter = ''; modelEl.style.opacity = 0; }
       // 실물 전환 구간 카피 (단어 단위 초점)
       hlWords.forEach((w, i) => {
         const t = Math.min(1, Math.max(0, (sc - 7.35 - i * 0.05) / 0.35)), e = 1 - Math.pow(1 - t, 3);
@@ -555,8 +617,245 @@ export function mountLandingUi(signal) {
       if (sw >= 0.5) cname.textContent = cnameCur;
       const dip = sw < 1 ? Math.abs(Math.cos(Math.PI * sw)) : 1;            // 바뀌는 순간 흐려졌다 또렷해짐
       const e0 = 1 - Math.pow(1 - base, 3);
-      cname.style.opacity = (0.85 * e0 * dip).toFixed(3);
-      window.__tb(cname, 8 * (1 - e0) + 6 * (1 - dip));
+      const out = Math.min(1, Math.max(0, (sc - 12.4) / 0.4)), oe = out * out * (3 - 2 * out);   // 부품 장면으로 넘어가며 카메라와 함께 블러로 사라짐
+      cname.style.opacity = (0.85 * e0 * dip * (1 - oe)).toFixed(3);
+      window.__tb(cname, 8 * (1 - e0) + 6 * (1 - dip) + 10 * oe);
+      if (out > 0) cWords.forEach((w) => { w.style.opacity = (parseFloat(w.style.opacity) * (1 - oe)).toFixed(3); window.__tb(w, 10 * oe); });
+    };
+    // 04. 부품 확대샷: 블랙 카메라가 블러되며 올라가는 동안 아래에서 블러된 확대샷이 올라오며 초점이 맞춰짐.
+    //     이후 스크롤에 따라 오른쪽 기능 목록이 한 칸씩 위로 올라가고, 가운데 항목만 진하게 (kinoria 부품 장면 방식)
+    const PT = document.querySelector('.parts');
+    const P_A = 14.45, P_IN = 0.85, P_STEP = 0.7, P_OUT = 16.85;   // 시작 · 등장 길이 · 항목 하나당 스크롤 길이 · 퇴장 시작
+    const PI = document.querySelector('.parts-img'), pBox = PI.querySelector('.pimg'), pTrk = PT.querySelector('.ptrk');
+    let pImgs = [], pRows = [];
+    const pFades = [...PT.querySelectorAll('.pfade')];
+    const pLabel = PT.querySelector('.plabel'), pDesc = PT.querySelector('.pdesc'), pCount = PT.querySelector('.pcount');
+    // kinoria 처럼 제목 첫 글자를 이어 읽으면 이름이 됨: N · O · W (공식·판매처 사양 기준 카피)
+    const P_INFO = [
+      { label: 'LENS', img: 'lens', title: 'Never Out Of Focus', lead: 'A two-lens autofocus system.', short: 'It picks the right lens for every shot.',
+        body: 'One lens covers 0.4 to 1.3 m, the other 1 m to infinity. The camera chooses between them on its own, so close-ups and wide views both land sharp.' },
+      { label: 'POWER', img: 'rear', title: 'One Charge, Fifteen Packs', lead: 'A built-in USB-C rechargeable battery.', short: 'Over 15 packs of film per charge.',
+        body: 'Charge it like your phone. One charge lasts for over 15 packs of film, so there are no disposable batteries to carry or throw away.' },
+      { label: 'FLASH', img: 'flash', title: 'Whatever The Light', lead: 'A smarter flash and ranging sensor.', short: 'Clearer pictures, even on sunny days.',
+        body: 'The light meter sits in a better spot and the improved ranging sensor reads the scene more closely, so the flash fires just right — even in bright sun.' },
+    ];
+    pBox.innerHTML = P_INFO.map((d) => `<img src="/assets/landing/parts/part-${d.img}.webp" alt="" decoding="async">`).join('');
+    pTrk.innerHTML = P_INFO.map((d) => `<p><span>${d.title}</span></p>`).join('');
+    const pMob = PT.querySelector('.pmob'), pmWord = PT.querySelector('.pmword'), pmCount = PT.querySelector('.pmcount');
+    pmWord.innerHTML = 'NOW'.split('').map((c) => `<span>${c}</span>`).join('');   // 모바일 진행 표시: 지금 항목의 첫 글자가 밝게 (kinoria K I N O R I A)
+    const pmLetters = [...pmWord.children];
+    // 모바일 항목 블록: kinoria 처럼 세 블록이 40px 간격으로 세로로 이어져 스크롤에 붙어 올라가고, 가운데 온 블록만 보임
+    pMob.insertAdjacentHTML('beforeend', P_INFO.map((d) => `<div class="pmblk"><b>${d.label}</b><h3>${d.title}</h3><i>${d.lead}</i><p>${d.body}</p></div>`).join(''));
+    const pmBlks = [...pMob.querySelectorAll('.pmblk')];
+    const mobQ = matchMedia('(max-aspect-ratio: 4/5)');
+    const fitTitles = () => {   // 제목이 화면 폭을 넘지 않도록 세 제목을 같은 크기로 맞춤 (kinoria 는 34px 기준)
+      if (!mobQ.matches) return;
+      const hs = pmBlks.map((b) => b.querySelector('h3'));
+      hs.forEach((h) => { h.style.fontSize = ''; });
+      const w = pMob.clientWidth || innerWidth - 40;
+      const over = Math.max(...hs.map((h) => h.scrollWidth / w));
+      if (over > 1) hs.forEach((h) => { h.style.fontSize = (34 / over).toFixed(2) + 'px'; });
+    };
+    addEventListener('resize', fitTitles); (document.fonts ? document.fonts.ready : Promise.resolve()).then(fitTitles); fitTitles();
+    pImgs = [...pBox.querySelectorAll('img')]; pRows = [...pTrk.querySelectorAll('p')];
+    const pIns = pRows.map((r) => r.firstElementChild), pLit = pRows.map(() => false);
+    const pLeft = PT.querySelector('.pleft'), pList = PT.querySelector('.plist'), pX = PT.querySelector('.px'), pLines = [...PT.querySelectorAll('.pline')];
+    const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    const kOut = (t) => 1 - Math.pow(1 - t, 4);                         // kinoria cubic-bezier(.165,.84,.44,1) 근사
+    let pCur = -1, pSwapT = -1, pImgCur = -1, pImgPrev = -1, pImgT = -1;
+    window.__parts = (sc) => {
+      const t = Math.min(1, Math.max(0, (sc - P_A) / P_IN));
+      PT.style.visibility = PI.style.visibility = t > 0 && sc < P_OUT + 0.6 ? 'visible' : 'hidden';
+      if (t <= 0 || sc >= P_OUT + 0.6) { pImgCur = -1; if (pLit.some(Boolean)) pIns.forEach((el, i) => { pLit[i] = false; el.style.transitionDelay = ''; el.classList.remove('on'); }); return; }
+      const now = performance.now();
+      const U = innerHeight / 1080;
+      // 확대샷: 카메라가 떠오르기 시작하면 아래에서 블러된 채 올라와 서서히 초점
+      const it = Math.min(1, Math.max(0, (t - 0.15) / 0.85)), ie = 1 - Math.pow(1 - it, 3);
+      // 퇴장: 다음 장면(필름)으로 넘어가며 확대샷이 블러되며 위로 빠져나감
+      const xo = Math.min(1, Math.max(0, (sc - P_OUT) / 0.6)), xe = xo * xo * (3 - 2 * xo);
+      pBox.style.transform = `translate3d(0, ${((1 - ie) * 42 - xe * 60).toFixed(2)}vh, 0)`;
+      pBox.style.filter = ie >= 0.999 && xe <= 0.001 ? '' : `blur(${(22 * (1 - ie) + 20 * xe).toFixed(2)}px)`;
+      pBox.style.opacity = (Math.min(1, it * 1.6) * (1 - Math.max(0, xo - 0.55) / 0.45)).toFixed(3);
+      const xY = -xe * 22 * innerHeight / 100;   // 퇴장: 전체가 위로 22vh
+      PT.style.opacity = Math.max(0, 1 - Math.max(0, (xo - 0.1) / 0.55)).toFixed(3);   // 가운데 문구가 뜨기 전에 사라짐
+      PT.style.filter = xe > 0.001 ? `blur(${(10 * xe).toFixed(2)}px)` : '';
+      // 기능 목록 진행
+      //  웹 (kinoria d7 실측): 목록 전체가 스크롤 양에 그대로 비례해 계속 움직임(멈추는 구간 없음 — 부드러움은 스크롤 감속에서). 가운데 기준선에 가장 가까운 항목이 '지금 항목'
+      //  모바일: 기존대로 항목 사이에서 잠깐 머무름
+      const raw = Math.max(0, Math.min(pRows.length - 1, (sc - P_A - P_IN) / P_STEP));
+      const k = Math.floor(raw), f = raw - k, fe = f < 0.2 ? 0 : f > 0.8 ? 1 : (() => { const x = (f - 0.2) / 0.6; return x * x * (3 - 2 * x); })();
+      const mob = mobQ.matches;
+      const p = mob ? Math.min(pRows.length - 1, k + fe) : (sc - P_A - P_IN) / P_STEP;
+      const pc = Math.max(0, Math.min(pRows.length - 1, p));
+      const idx = Math.round(pc);
+      const PITCH = 112 * U, LINE = (637 + 35) * U, H = innerHeight;
+      pTrk.style.transform = `translate3d(0, ${(-PITCH * p).toFixed(2)}px, 0)`;
+      // 첫 항목이 기준선에 닿기 전·마지막 항목이 지나간 뒤엔 왼쪽 설명·×·점선이 목록을 따라 움직임 (kinoria: 이름·× 는 1배, 설명은 1.25배)
+      const z = mob ? 0 : (pc - p) * PITCH;
+      pList.style.transform = xY ? `translate3d(0, ${xY.toFixed(1)}px, 0)` : '';
+      pX.style.transform = z || xY ? `translate3d(0, ${(z + xY).toFixed(1)}px, 0)` : '';
+      pLines.forEach((el) => { el.style.transform = z ? `translate3d(0, ${z.toFixed(1)}px, 0)` : ''; });
+      pLeft.style.transform = z || xY ? `translate3d(0, ${(z + xY).toFixed(1)}px, 0)` : '';
+      [pLabel, pDesc, pCount].forEach((el) => { el.style.translate = z ? `0 ${(z * 0.25).toFixed(1)}px` : ''; });
+      // 오른쪽 목록 (kinoria 실측): 가운데 항목만 흰색 1, 바로 위·아래 0.54, 그 밖 0.13 — 단계로 딱 바뀜.
+      // 등장: 화면 아래 88% 선을 넘을 때 안쪽 글자가 1.4초 동안 블러·아래에서 올라오며 나타남(한 번에 여러 개면 0.12초 + 0.09초씩 차례로). 다시 내려가면 사라짐
+      // 퇴장: 화면 위쪽 20% 안으로 들어가면 흐려지며 사라짐
+      const gate = t > 0.45;   // 앞 장면(ZERO) 글자가 다 빠진 뒤부터 등장
+      let lead = 0;
+      pRows.forEach((r, i) => {
+        const dd = Math.abs(i - idx), lvl = dd === 0 ? 1 : dd === 1 ? 0.54 : 0.13;
+        const y = LINE + (i - p) * PITCH + xY;                              // 이 항목의 화면 세로 위치(가운데)
+        if (pLit[i]) { if (y > H * 0.882 || !gate) { pLit[i] = false; pIns[i].style.transitionDelay = ''; pIns[i].classList.remove('on'); } }
+        else if (gate && y < H * 0.88) { pLit[i] = true; const dl = 0.12 + lead * 0.09; lead++; pIns[i].style.transitionDelay = `${dl}s, ${dl}s, ${dl}s`; pIns[i].classList.add('on'); }
+        const mt = Math.min(1, Math.max(0, (y / H) / 0.2));
+        if (r.classList.contains('on') !== (dd === 0)) { r.classList.toggle('on', dd === 0); r._tbc = null; }
+        r.style.opacity = (lvl * mt).toFixed(3);
+        r.style.transform = '';
+        r.style.filter = mt >= 0.999 ? '' : `blur(${((1 - mt) * 10).toFixed(2)}px)`;
+      });
+      const tt = Math.min(1, Math.max(0, (t - 0.45) / 0.55));
+      pFades.forEach((el, i) => {
+        const ti = Math.min(1, Math.max(0, tt * 1.4 - (pFades.length - 1 - i) * 0.06)), te = 1 - Math.pow(1 - ti, 3);
+        el.dataset.base = te; el.style.opacity = te.toFixed(3);
+        if (el.classList.contains('pmrow')) el.style.filter = te >= 0.999 ? '' : `blur(${(5 * (1 - te)).toFixed(2)}px)`;   // N·O·W 글자는 각자 색(회색/흰색)을 그대로 두고 흐림만
+        else if (el.tagName !== 'I' && !el.classList.contains('pscrim')) window.__tb(el, 9 * (1 - te));
+      });
+      // 확대샷 교체 (kinoria 실측, 웹·모바일 공통): 항목이 바뀌면 새 확대샷이 위에서 아래로 닦이듯 덮음 (시간 기반 약 0.8초, 천천히 시작해 천천히 끝남)
+      if (idx !== pImgCur) {
+        if (pImgCur < 0) { pImgPrev = -1; pImgT = -1; }
+        else { pImgPrev = pImgCur; pImgT = now; }
+        pImgCur = idx;
+      }
+      const wp = pImgT < 0 ? 1 : Math.min(1, (now - pImgT) / 800), we = wp < 0.5 ? 4 * wp * wp * wp : 1 - Math.pow(-2 * wp + 2, 3) / 2;
+      if (wp >= 1) pImgPrev = -1;
+      pImgs.forEach((im, i) => {
+        if (i === pImgCur) {
+          im.style.opacity = '1'; im.classList.add('pin');
+          im.style.clipPath = we >= 1 ? '' : `inset(0 0 ${((1 - we) * 100).toFixed(2)}% 0)`;
+          im.style.transform = we >= 1 ? '' : `scale(${(1.06 - 0.06 * we).toFixed(4)})`;
+        } else if (i === pImgPrev) {
+          im.style.opacity = '1'; im.classList.remove('pin'); im.style.clipPath = ''; im.style.transform = '';
+        } else { im.style.opacity = '0'; im.classList.remove('pin'); im.style.clipPath = ''; im.style.transform = ''; }
+      });
+      // 왼쪽 라벨·설명·번호 (웹): 항목이 바뀌면 글자는 바로 바뀌고, 아주 살짝 흐려졌다(약 12%) 1.4초에 걸쳐 또렷해짐
+      if (idx !== pCur) {
+        pCur = idx; pSwapT = pSwapT < 0 && pLabel.dataset.i === undefined ? -1 : now;
+        const info = P_INFO[pCur] || P_INFO[0], nn = String(P_INFO.length).padStart(2, '0'), cc = String(pCur + 1).padStart(2, '0');
+        pLabel.textContent = `(${info.label})`; pDesc.innerHTML = `${info.lead}<br>${info.short}`;
+        pCount.textContent = `(${cc}/${nn})`;
+        pmCount.textContent = `${cc} / ${nn}`;
+        pmLetters.forEach((l, i) => l.classList.toggle('on', i === pCur));   // 진행 표시: N · O · W 중 지금 항목의 글자만 흰색
+        pLabel.dataset.i = String(pCur);
+      }
+      const dip = 0;   // 항목이 바뀌면 글자만 딱 바뀜 (아래에서 올라오거나 흐려지는 모션 없음 — kinoria)
+      [pLabel, pDesc, pCount].forEach((el) => {
+        const bb = parseFloat(el.dataset.base || 1);
+        el.style.opacity = (bb * (1 - dip) * (el === pCount ? 0.55 : 1)).toFixed(3);
+        el.style.transform = dip > 0.001 ? `translateY(${dip.toFixed(3)}em)` : '';
+        window.__tb(el, 9 * (1 - bb) + 10 * dip);
+      });
+      // 모바일 블록 (kinoria 실측): 블록이 40px 간격으로 붙어 올라가며, 가운데에서 ±8px 안은 또렷, 22px 밖은 사라짐
+      if (mobQ.matches) {
+        const bb = parseFloat(pFades[0].dataset.base || 1);
+        pmBlks.forEach((b, i) => {
+          const d = (i - p) * 40;
+          b.style.transform = `translate3d(0, ${d.toFixed(1)}px, 0)`;
+          b.style.opacity = ((1 - sstep(8, 22, Math.abs(d))) * bb).toFixed(3);
+          b.style.filter = bb < 0.999 ? `blur(${(9 * (1 - bb)).toFixed(2)}px)` : '';
+        });
+      }
+    };
+    // 05. Make a Moment Last: 가운데 작은 카메라 앞에 사진이 나타나 스크롤에 맞춰 와다다다 바뀌며 커지고,
+    //     세 단어(Make · a Moment · Last)는 사진이 커질수록 양옆으로 벌어지며 옅어짐. 마지막 사진은 위로 빠져나감
+    const FL = document.querySelector('.film');
+    const fPrints = [...FL.querySelectorAll('.fstack img')];
+    const fW = [...FL.querySelectorAll('.fw:not(.fwx)')], fWx = FL.querySelector('.fwx');
+    const M_A = 17.0, M_UP = [17.15, 17.95], M_OUT = [18.3, 18.75], B_A = 18.62, B_B = 19.45;   // 문장 장면(카메라 낙하·문장 상승) · 나머지 문장 퇴장 · 사진 넘김 시작 · 끝 (scene.js 와 같은 값)
+    const MSG = document.querySelector('.msg'), mLines = MSG.querySelector('.mlines');
+    const mKeys = [...MSG.querySelectorAll('.mk')], mOthers = [...MSG.querySelectorAll('.mo')];
+    const mobQ2 = matchMedia('(max-aspect-ratio: 4/5)');
+    const fitMsg = () => {   // 문장 크기: 1920 기준 82px, 가장 긴 줄이 화면 폭의 90%를 넘지 않게 (모바일은 화면 폭 기준). 다음 장면 세 단어도 같은 크기
+      const U = innerHeight / 1080;
+      let fs;
+      if (mobQ2.matches) fs = Math.min(innerWidth * 0.075, 34);
+      else {
+        // 가운데 줄의 'Make a Moment Last' 가 화면 정중앙에 오도록 문단 전체를 좌우로 옮김 (줄은 왼쪽 정렬 유지 — kinoria 'it only opens this much')
+        mLines.style.fontSize = '100px'; mLines.style.left = '0px';
+        const x0 = mLines.getBoundingClientRect().left, wmax = Math.max(...[...mLines.querySelectorAll('.ml')].map((l) => l.getBoundingClientRect().width));
+        const a = (mKeys[0].getBoundingClientRect().left + mKeys[2].getBoundingClientRect().right) / 2 - x0;   // 문단 왼쪽 → 핵심 문장 가운데
+        fs = Math.min(82 * U, 100 * innerWidth * 0.46 / a, 100 * innerWidth * 0.46 / Math.max(1, wmax - a));
+        mLines.style.fontSize = '';
+        mLines.style.left = (innerWidth / 2 - a * fs / 100).toFixed(1) + 'px';
+      }
+      if (mobQ2.matches) mLines.style.left = '';
+      document.documentElement.style.setProperty('--mfs', fs.toFixed(2) + 'px');
+    };
+    addEventListener('resize', fitMsg); (document.fonts ? document.fonts.ready : Promise.resolve()).then(fitMsg); fitMsg();
+    const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    let fGapM = null;
+    window.__film = (sc) => {
+      // ── 문장 장면 ──
+      const mOn = sc > M_UP[0] - 0.05 && sc < M_OUT[1] + 0.05;
+      MSG.style.visibility = mOn ? 'visible' : 'hidden';
+      mLines.classList.toggle('on', sc > M_UP[0] + 0.02);           // kinoria 처럼 처음 보일 때 1.4초에 걸쳐 블러 → 또렷 (스크롤을 올려 사라지면 다시)
+      const up = Math.min(1, Math.max(0, (sc - M_UP[0]) / (M_UP[1] - M_UP[0]))), ue = 1 - Math.pow(1 - up, 3);
+      mLines.style.transform = `translateY(calc(-50% + ${((1 - ue) * 78).toFixed(2)}vh))`;   // 아래 화면 밖에서 스크롤에 붙어 올라와 가운데에 멈춤
+      const ho = Math.min(1, Math.max(0, (sc - M_OUT[0]) / (M_OUT[1] - M_OUT[0]))), he = ho * ho * (3 - 2 * ho);
+      mOthers.forEach((el) => {                                          // 나머지 문장: 살짝 위로 뜨며 블러되며 사라짐
+        el.style.opacity = (1 - sm(0, 0.8, ho)).toFixed(3);                            // 서서히 블러되며 위로 떠올라 사라짐
+        el.style.filter = ho > 0.001 ? `blur(${(12 * sm(0, 0.8, ho)).toFixed(2)}px)` : '';
+        el.style.transform = ho > 0.001 ? `translateY(${(-1.1 * he).toFixed(3)}em)` : '';
+      });
+      mKeys.forEach((el) => { el.style.opacity = sc >= M_OUT[0] ? '0' : ''; });   // 퇴장이 시작되면 다음 장면의 세 단어가 같은 자리에서 이어받음
+      // ── Make a Moment Last ──
+      const on = sc >= M_OUT[0];
+      FL.style.visibility = on ? 'visible' : 'hidden';
+      if (!on) return;
+      const U = innerHeight / 1080;
+      const mob = mobQ2.matches;
+      const k = Math.min(1, Math.max(0, (sc - B_A) / (B_B - B_A)));
+      const ke = 1 - Math.pow(1 - k, 1.6);
+      const out = Math.min(1, Math.max(0, (sc - B_B - 0.05) / 0.5)), oe = out * out * (3 - 2 * out);
+      // 세 단어: 문장 속 자리에서 출발해 가운데로 모이고, 사진이 커질수록 Make·Last 가 양옆으로 벌어지며 옅어짐
+      if (!fGapM || fGapM.w !== innerWidth || fGapM.h !== innerHeight) fGapM = { w: innerWidth, h: innerHeight, g: 0.45 * (parseFloat(getComputedStyle(fW[1]).fontSize) || 30) };
+      const gap = fGapM.g;   // 단어끼리 겹치지 않는 최소 간격 (창 크기가 바뀔 때만 읽음)
+      // Make · Last 벌어짐 (kinoria it only · this much 실측): 사진이 넘어가는 동안 가운데 단어는 제자리,
+      // 양옆 단어는 자간이 0 → 0.3em 으로 벌어지며 화면 가장자리(좌우 4%)까지 밀려남. 곡선 1-(1-t)^2.4, 흐려지지 않고 흰색 그대로
+      const sp = 1 - Math.pow(1 - k, 2.4), lsEm = 0.3 * sp;
+      const fsz = gap / 0.45, lsPx = lsEm * fsz;
+      [fW[0], fW[2]].forEach((w) => { w.style.letterSpacing = sp > 0.0005 ? `calc(-.01em + ${lsEm.toFixed(4)}em)` : ''; });
+      const sp0 = Math.max((mob ? 0.45 : 1) * 404 * U, fW[1].offsetWidth / 2 + Math.max(fW[0].offsetWidth, fW[2].offsetWidth) / 2 + gap);
+      const cx = innerWidth / 2, cy = innerHeight / 2, edge = innerWidth * 0.04;
+      fW.forEach((w, i) => {
+        const vw = w.offsetWidth - (i === 1 ? 0 : lsPx);                     // 보이는 글자 폭 (마지막 글자 뒤 자간 제외)
+        const s1 = innerWidth / 2 - edge - vw / 2;                           // 가장자리에 닿았을 때 가운데까지 거리
+        const lim = innerWidth / 2 - vw / 2 - 14;                            // 좁은 화면에서도 단어가 화면 밖으로 나가지 않게
+        let dx = i === 1 ? 0 : (i === 0 ? -1 : 1) * Math.min(sp0 + Math.max(0, s1 - sp0) * sp, lim) + (i === 1 ? 0 : lsPx / 2), dy = 0;
+        if (he < 1) {                                                        // 문장 속 위치 → 가운데 자리
+          const r = mKeys[i].getBoundingClientRect();
+          dx = (r.left + r.width / 2 - cx) * (1 - he) + dx * he; dy = (r.top + r.height / 2 - cy) * (1 - he);
+        }
+        w.style.transform = `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px - ${(oe * 6).toFixed(2)}vh))`;
+        const base = 1 - oe;
+        if (i === 1) {   // 사진이 거의 다 커졌을 때 a Moment → a Memory 로 블러 교차 (kinoria opens → needs)
+          const sw = Math.min(1, Math.max(0, (k - 0.8) / 0.1)), se = sw * sw * (3 - 2 * sw);
+          w.style.opacity = (base * (1 - se)).toFixed(3); window.__tb(w, 10 * oe + 9 * se);
+          fWx.style.transform = w.style.transform; fWx.style.opacity = (base * se).toFixed(3); window.__tb(fWx, 10 * oe + 9 * (1 - se));
+        } else { w.style.opacity = base.toFixed(3); window.__tb(w, 10 * oe); }
+      });
+      // 사진: 나머지 문장이 사라지면 가운데에 작게 나타나고, 넘김 동안 맨 위 사진이 바뀌며 커짐 (272 → 659px, 1920 기준)
+      const n = fPrints.length, top = sc < B_A ? 0 : Math.min(n - 1, Math.floor(k * n));
+      if (top !== window.__fTop) { if (window.__fTop !== undefined && sc >= B_A && sc <= B_B) dispatchEvent(new Event('pl-flick')); window.__fTop = top; }   // 사진 넘김 소리
+      const s0 = 272 / 659, grow = s0 + (1 - s0) * ke;
+      const pin = Math.min(1, Math.max(0, (sc - (B_A - 0.06)) / 0.12));   // 나머지 문장이 거의 사라지자마자 가운데에 작게 나타나 바로 와다다다 넘어가며 커짐
+      fPrints.forEach((im, i) => {
+        if (i > top || i < top - 2) { im.style.opacity = 0; return; }
+        const d = top - i;
+        im.style.opacity = (pin * (1 - out)).toFixed(3);
+        im.style.zIndex = String(i);
+        im.style.transform = `translateY(${(-oe * 95).toFixed(2)}vh) scale(${(grow * (0.92 + 0.08 * pin)).toFixed(4)})`;   // 기울기 없이 똑바로 정확히 포개짐
+        im.style.filter = (d > 0 ? `brightness(${(1 - d * 0.2).toFixed(2)}) ` : '') + (oe > 0.01 ? `blur(${(14 * oe).toFixed(1)}px)` : pin < 1 ? `blur(${(8 * (1 - pin)).toFixed(1)}px)` : '');
+      });
     };
     const hlWords = [];
     H.querySelectorAll('.hl').forEach((el) => {
@@ -568,8 +867,8 @@ export function mountLandingUi(signal) {
   /* 조리개 목차 — Leica timeline 목차 방식 */
   (function(){
     const wheel = document.getElementById('wheel'), trk = document.getElementById('wheelTrk'); if (!wheel) return;
-    const ITEMS = ['Details', 'Shot', 'About', 'Archive', 'Colors'];   // 히어로(제품) · 플래시·사진 출력 · 브랜드 문구 · 역사 도면 · 컬러
-    const u = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || (innerHeight / 1080);
+    const ITEMS = ['Details', 'Shot', 'About', 'Archive', 'Colors', 'Parts', 'Film'];   // 히어로(제품) · 플래시·사진 출력 · 브랜드 문구 · 역사 도면 · 컬러 · 부품 확대샷 · 필름 사진
+    const u = () => innerHeight / 1080;
     const STEP = 5, EXT = 9;                     // 항목 1칸 = 눈금 5개 (항목 눈금 + 작은 눈금 4개). 첫·마지막 항목 바깥은 눈금 9개
     const ticks = [];
     for (let t = -EXT; t <= (ITEMS.length - 1) * STEP + EXT; t++) {
@@ -585,19 +884,19 @@ export function mountLandingUi(signal) {
     const maxK = ITEMS.length - 1;
     const clampP = (v) => Math.max(-active - 0.4, Math.min(maxK - active + 0.4, v));
     // 섹션 ↔ 스크롤 위치(장면 단위 sc). 항목별 대표 장면
-    const SPAN = () => window.__SPAN || 6;
-    const GO = [0, 1.25, 3.45, 4.3, 9.1];                 // 각 섹션으로 이동했을 때 멈출 장면 (그 섹션의 대표 장면)
-    const sectionAt = (sc) => sc < 0.5 ? 0 : sc < 2.45 ? 1 : sc < 3.9 ? 2 : sc < 7.3 ? 3 : 4;
+    const SPAN = () => window.__SPAN || 5;
+    const GO = [0, 1.25, 3.45, 4.3, 9.1, 15.4, 17.95];                 // 각 섹션으로 이동했을 때 멈출 장면 (그 섹션의 대표 장면)
+    const sectionAt = (sc) => sc < 0.5 ? 0 : sc < 2.45 ? 1 : sc < 3.9 ? 2 : sc < 7.3 ? 3 : sc < 14.6 ? 4 : sc < 16.95 ? 5 : 6;   // Colors 에 ZERO PRINTS 장면 포함
     let nav = null;                                             // 이동 중인 스크롤 애니메이션
     const go = (k) => {
       if (GO[k] == null) return;
-      const from = scrollY, to = Math.round(GO[k] * innerHeight * SPAN());
+      const from = scrollY, to = Math.round((window.__sc2u ? window.__sc2u(GO[k]) : GO[k]) * innerHeight * SPAN());
       const dist = Math.abs(to - from) / (innerHeight * SPAN());
       nav = { from, to, t0: performance.now(), dur: 900 + Math.min(1300, dist * 260), k };
       active = k; peek = 0;
     };
     const stopNav = () => { nav = null; };
-    addEventListener('wheel', (e) => { if (!wheel.contains(e.target)) stopNav(); }, { passive: true });
+    addEventListener('wheel', (e) => { if (!(e.target instanceof Node && wheel.contains(e.target))) stopNav(); }, { passive: true });
     addEventListener('touchstart', stopNav, { passive: true });
     addEventListener('keydown', stopNav);
     const settle = () => { const k = Math.round(Math.max(0, Math.min(maxK, active + peek))); peek = active + peek - k; if (k !== active && GO[k] != null) go(k); else active = k; };
@@ -674,5 +973,267 @@ export function mountLandingUi(signal) {
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+  })();
+
+
+  /* 커서 — kinoria 와 같은 값: 점 11px #F0A137 포인트 컬러(누를 수 있는 곳 위에선 #5AD060), 프레임 반폭 16 · 반높이 12.5 · 모서리 8px · 선 1px #F6F5F4(+어두운 테두리)
+     프레임 위치: 스프링 ω24 ζ0.85 (누를 수 있는 곳 위: ω36 ζ0.8) · 프레임 크기: 스프링 ω34 ζ0.5 (누르면 0.74배) · 점 크기: ω38 ζ0.45 (누르면 0.8배)
+     누를 수 있는 곳에 올라가면 프레임이 쏙 줄었다 튕기고 점이 살짝 커졌다 돌아옴. 240Hz 로 쪼개 계산, 보일 때·숨을 때 0.18초 */
+  (function(){
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches && !/[?&]kc=1/.test(location.search)) return;   // ?kc=1: 확인용 강제 켜기
+    const CALM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cv = document.createElement('canvas'); cv.id = 'kc-cv'; cv.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(cv); document.documentElement.classList.add('kc-on');
+    signal.addEventListener('abort', () => { cv.remove(); document.documentElement.classList.remove('kc-on'); });   // 페이지를 떠나면 커서 캔버스 제거
+    const g = cv.getContext('2d');
+    const DOT = 11, HW = 16, HH = 12.5, FW = 24, FZ = 0.85;
+    const HOT = 'a,button,select,summary,textarea,label[for],input:not([type=hidden]),[role=button],[role=link],[role=tab],[role=menuitem],[role=switch],[role=checkbox],[role=radio],[role=option]';
+    const S = { x: 0, y: 0, vis: 0, va: 0, fx: 0, fy: 0, fvx: 0, fvy: 0, k: 1, kv: 0, ds: 1, dsv: 0, hot: 0, ga: 0, down: 0, shown: false };
+    let dpr = 1, KS = 1, raf = 0, last = 0, seen = -1e9;
+    const size = () => {
+      dpr = devicePixelRatio || 1;
+      cv.width = Math.max(1, Math.round(innerWidth * dpr)); cv.height = Math.max(1, Math.round(innerHeight * dpr));
+      const a = Math.min(innerWidth / 1920, innerHeight / 911); KS = a > 1 ? Math.min(3, a) : 1;   // 큰 화면에서만 비례해서 커짐
+      kick();
+    };
+    const spring = (p, v, to, w, z, h) => { v += (w * w * (to - p) - 2 * z * w * v) * h; return [p + v * h, v]; };
+    const toward = (a, b, st) => a < b ? Math.min(b, a + st) : Math.max(b, a - st);
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    function setHot(h) {
+      if (h === S.hot) return; S.hot = h;
+      if (!CALM) { if (h) { S.kv -= 7.5; S.dsv += 9; } else S.kv += 4; }
+    }
+    function move(e) {
+      if (e.pointerType === 'touch') { S.vis = 0; kick(); return; }
+      const now = performance.now(), snap = !S.vis && now - seen > 250;
+      S.x = e.clientX; S.y = e.clientY; seen = now;
+      if (snap || !S.shown) { S.fx = S.x; S.fy = S.y; S.fvx = S.fvy = 0; S.shown = true; }
+      S.vis = 1;
+      const t = e.target; setHot(t && t.closest && t.closest(HOT) && !t.closest('.wheel.drag') ? 1 : 0);
+      kick();
+    }
+    const O = { capture: true, passive: true };
+    addEventListener('pointermove', move, O); addEventListener('pointerover', move, O);
+    addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') return move(e); if (e.button === 0) S.down = 1; S.x = e.clientX; S.y = e.clientY; S.vis = 1; kick(); }, O);
+    const up = (e) => { if (e.pointerType !== 'touch') { S.down = 0; kick(); } };
+    addEventListener('pointerup', up, O); addEventListener('pointercancel', up, O);
+    document.documentElement.addEventListener('mouseleave', () => { setTimeout(() => { S.vis = 0; kick(); }, 40); }, { passive: true });
+    addEventListener('resize', size);
+    function frame(t) {
+      raf = 0;
+      const dt = Math.min(0.05, Math.max(0.001, (t - (last || t - 16.7)) / 1000)); last = t;
+      const n = Math.ceil(dt / (1 / 240)), h = dt / n;
+      const fw = CALM ? 400 : (S.hot ? 36 : FW), fz = S.hot ? 0.8 : FZ;
+      const kT = S.down ? 0.74 : 1, dT = S.down ? 0.8 : 1;
+      for (let i = 0; i < n; i++) {
+        [S.fx, S.fvx] = spring(S.fx, S.fvx, S.x, fw, fz, h);
+        [S.fy, S.fvy] = spring(S.fy, S.fvy, S.y, fw, fz, h);
+        [S.k, S.kv] = spring(S.k, S.kv, kT, 34, 0.5, h);
+        [S.ds, S.dsv] = spring(S.ds, S.dsv, dT, 38, 0.45, h);
+      }
+      if (CALM) { S.fx = S.x; S.fy = S.y; }
+      S.va = toward(S.va, S.vis, dt / 0.18);
+      S.ga = toward(S.ga, S.hot, dt / 0.16);
+      draw();
+      const still = Math.abs(S.fx - S.x) < 0.05 && Math.abs(S.fy - S.y) < 0.05 && Math.abs(S.fvx) + Math.abs(S.fvy) < 0.05 &&
+        Math.abs(S.k - kT) < 0.001 && Math.abs(S.kv) < 0.01 && Math.abs(S.ds - dT) < 0.001 && Math.abs(S.dsv) < 0.01 && S.va === S.vis && S.ga === S.hot;
+      if (!still) raf = requestAnimationFrame(frame); else last = 0;
+    }
+    function draw() {
+      g.clearRect(0, 0, cv.width, cv.height);
+      if (S.va <= 0) return;
+      const d = dpr, x = S.x * d, y = S.y * d, r = (DOT / 2) * S.ds * d * KS;
+      const c = [240 + (90 - 240) * S.ga, 161 + (208 - 161) * S.ga, 55 + (96 - 55) * S.ga].map(Math.round);   // 점: 포인트 컬러 #F0A137 (누를 수 있는 곳 위에선 #5AD060)
+      g.globalAlpha = S.va;
+      g.fillStyle = 'rgba(0,0,0,0.22)'; g.beginPath(); g.arc(x, y, r + 0.8 * d * KS, 0, Math.PI * 2); g.fill();   // 밝은 바탕에서도 보이는 옅은 테두리
+      g.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+      // 프레임: 모서리 네 개를 기기 픽셀에 맞춰 그려 1px 선이 번지지 않게
+      const k = S.k * KS, lw = Math.max(1, Math.round(d * KS)), o = lw / 2, leg = Math.round(8 * d * KS);
+      const L = Math.round((S.fx - HW * k) * d), R = Math.round((S.fx + HW * k) * d), T = Math.round((S.fy - HH * k) * d), B = Math.round((S.fy + HH * k) * d);
+      const path = () => {
+        g.beginPath();
+        g.moveTo(L + o, T + leg); g.lineTo(L + o, T + o); g.lineTo(L + leg, T + o);
+        g.moveTo(R - leg, T + o); g.lineTo(R - o, T + o); g.lineTo(R - o, T + leg);
+        g.moveTo(L + o, B - leg); g.lineTo(L + o, B - o); g.lineTo(L + leg, B - o);
+        g.moveTo(R - leg, B - o); g.lineTo(R - o, B - o); g.lineTo(R - o, B - leg);
+      };
+      g.lineCap = 'butt'; g.lineJoin = 'miter';
+      path(); g.strokeStyle = 'rgba(0,0,0,0.3)'; g.lineWidth = lw + 1.4 * d * KS; g.stroke();
+      path(); g.strokeStyle = '#F6F5F4'; g.lineWidth = lw; g.stroke();
+      g.globalAlpha = 1;
+    }
+    size();
+  })();
+
+
+  /* 사운드: 처음엔 꺼짐(브라우저 자동재생 정책). Sound 를 누르면 켜짐/꺼짐 — 선택은 기억함.
+     소리는 파일 없이 브라우저에서 합성: 잔잔한 배경음 · 셔터 찰칵(섬광 순간) · 사진 토출 모터음 · 사진 넘김 소리 */
+  (function(){
+    const btns = [document.querySelector('.ui .meta .sound'), document.querySelector('.sndfix')].filter(Boolean);
+    let on = false, ac = null, master = null, amb = null;
+    try { on = localStorage.getItem('pl-sound') === '1'; } catch (e) {}
+    const nbCache = {};
+    const noiseBuf = (sec) => {   // 잡음은 길이별로 한 번만 만들어 두고 재사용 (셔터 순간에 새로 만드느라 멈칫하지 않게)
+      const key = sec.toFixed(2); if (nbCache[key]) return nbCache[key];
+      const b = ac.createBuffer(1, Math.floor(ac.sampleRate * sec), ac.sampleRate), d = b.getChannelData(0); let l = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; l = 0.97 * l + 0.03 * w; d[i] = 0.6 * w + 4 * l; } return (nbCache[key] = b);
+    };
+    function ensure() {
+      if (ac) return true;
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+      ac = new AC(); signal.addEventListener('abort', () => { try { ac.close(); } catch (e) { /* 이미 닫힘 */ } });   // 페이지를 떠나면 소리 끔
+      master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      // 배경음: 낮은 화음(A2 · E3 · A3)이 천천히 숨 쉬듯 + 아주 옅은 필름 잡음
+      amb = ac.createGain(); amb.gain.value = 0.05;
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 0.4;
+      const lfo = ac.createOscillator(), lfoG = ac.createGain(); lfo.frequency.value = 0.07; lfoG.gain.value = 260; lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start();
+      [[110, 'triangle', 0.5], [164.81, 'sine', 0.35], [220.4, 'sine', 0.22], [109.6, 'sine', 0.3]].forEach(([f, t, g]) => {
+        const o = ac.createOscillator(), og = ac.createGain(); o.type = t; o.frequency.value = f; og.gain.value = g; o.connect(og); og.connect(lp); o.start();
+      });
+      const nz = ac.createBufferSource(); nz.buffer = noiseBuf(4); nz.loop = true;
+      const nf = ac.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 2400; nf.Q.value = 0.6;
+      const ng = ac.createGain(); ng.gain.value = 0.05; nz.connect(nf); nf.connect(ng); ng.connect(amb); nz.start();
+      lp.connect(amb); amb.connect(master);
+      [0.095, 0.11, 1.15, 0.1].forEach(noiseBuf);   // 셔터·모터·넘김 소리용 잡음 미리 준비
+      return true;
+    }
+    function render() {
+      btns.forEach((b) => { b.classList.toggle('off', !on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    }
+    function set(v) {
+      on = v; try { localStorage.setItem('pl-sound', on ? '1' : '0'); } catch (e) {}
+      render();
+      if (on) { if (!ensure()) return; ac.resume && ac.resume(); const t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0.9, t + 1.2); }
+      else if (ac) { const t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0, t + 0.6); }
+    }
+    btns.forEach((b) => {
+      b.addEventListener('click', (e) => { e.stopPropagation(); set(!on); });
+      b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); set(!on); } });
+    });
+    render();
+    // 기억된 '켜짐'은 첫 사용자 입력 때 다시 켬 (그 전에는 브라우저가 소리를 막음)
+    if (on) { const go = () => { removeEventListener('pointerdown', go, true); removeEventListener('keydown', go, true); removeEventListener('wheel', go, true); set(true); };
+      addEventListener('pointerdown', go, true); addEventListener('keydown', go, true); addEventListener('wheel', go, { capture: true, passive: true }); }
+    const live = () => on && ac && ac.state === 'running';
+    function burst(t, dur, type, freq, q, gain) {
+      const s = ac.createBufferSource(); s.buffer = noiseBuf(dur + 0.05);
+      const f = ac.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+      const g = ac.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t + dur + 0.05);
+    }
+    function click(t, freq, gain) {
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'square'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * 0.4, t + 0.02);
+      g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.025); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.04);
+    }
+    // 셔터: 찰-칵 (두 번 맞물리는 소리) → 0.38초 뒤 사진 토출 모터가 1.1초 동안 윙
+    addEventListener('pl-flash', () => {
+      if (!live()) return; const t = ac.currentTime + 0.01;
+      click(t, 2200, 0.18); burst(t, 0.045, 'highpass', 1800, 0.7, 0.5);
+      click(t + 0.07, 1500, 0.14); burst(t + 0.07, 0.06, 'bandpass', 1200, 0.9, 0.35);
+      const m0 = t + 0.38, m1 = m0 + 1.1;
+      const o = ac.createOscillator(), o2 = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain();
+      o.type = 'sawtooth'; o2.type = 'square'; o.frequency.setValueAtTime(70, m0); o.frequency.linearRampToValueAtTime(96, m0 + 0.15); o.frequency.setValueAtTime(96, m1 - 0.2); o.frequency.linearRampToValueAtTime(60, m1);
+      o2.frequency.value = 192; f.type = 'bandpass'; f.frequency.value = 420; f.Q.value = 1.2;
+      g.gain.setValueAtTime(0, m0); g.gain.linearRampToValueAtTime(0.09, m0 + 0.08); g.gain.setValueAtTime(0.09, m1 - 0.2); g.gain.linearRampToValueAtTime(0, m1);
+      o.connect(f); o2.connect(f); f.connect(g); g.connect(master); o.start(m0); o2.start(m0); o.stop(m1 + 0.05); o2.stop(m1 + 0.05);
+      burst(m0, 1.1, 'lowpass', 600, 0.5, 0.06);
+    });
+    // 사진 넘김(와다다다): 사진이 한 장 바뀔 때마다 종이 스치는 짧은 소리
+    addEventListener('pl-flick', () => { if (!live()) return; burst(ac.currentTime + 0.005, 0.05, 'bandpass', 3200 + Math.random() * 900, 1.1, 0.12); });
+    // 히어로가 지나가면 오른쪽 아래에 Sound 가 남음
+    const fix = document.querySelector('.sndfix');
+    (function loop() { const sc = window.__scS || 0; const sh = sc > 0.6; if (fix.classList.contains('show') !== sh) fix.classList.toggle('show', sh); requestAnimationFrame(loop); })();
+  })();
+
+
+  /* 04-0. ZERO PRINTS — kinoria ZERO EXPOSURES 실측 방식
+     · 줄마다 아래에서 스크롤에 붙어 올라오고, 처음 보일 때 1.4초 블러 → 또렷 (줄마다 0.1초씩 늦게)
+     · 스크롤하면 숫자가 ZERO → ONE … FIFTEEN 으로 빠르게 바뀜 (i-Type 컬러 필름 현상 시간 10~15분). 바뀌는 동안 숫자는 0.905배,
+       MINUTES 는 빨강·하늘색 잔상이 좌우로 벌어지고 살짝 흐려짐
+     · 다 세면 FIFTEEN MINUTES → ONE MEMORY 로 블러되며 초점이 맞춰짐 (kinoria THIRTY-SIX EXPOSURES → DECISIONS) */
+  (function(){
+    const Z = [...document.querySelectorAll('.zx')], F = document.querySelector('.zx-front'), B = document.querySelector('.zx-back');
+    const L1 = F.querySelector('.zd-1'), L2 = F.querySelector('.zd-2'), LB = F.querySelector('.zb-l'), LS = B.querySelector('.zsub-l'), G = document.querySelector('.zghost');
+    const cnt = F.querySelector('.zcnt'), cnt2 = F.querySelector('.zcnt2'), gs = [...F.querySelectorAll('.zd-2 .zg')], gs1 = [...F.querySelectorAll('.zg1')], w1 = F.querySelector('.zw'), w2 = F.querySelector('.zmem');
+    const NUM = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN'];
+    const ZA = 12.4, UP = [12.55, 13.1], CN = [13.18, 13.62], SW = [13.72, 13.92], OUT = [14.15, 14.5];   // 숫자 세기는 짧은 스크롤에 16단계 → 와다다 빠르게
+    const cl = (x) => Math.min(1, Math.max(0, x)), rg = (a, b, x) => cl((x - a) / (b - a)), eo = (t) => 1 - Math.pow(1 - t, 3), sm = (t) => t * t * (3 - 2 * t);
+    let zM = null;
+    // 마지막 장면 타이밍: 사진이 위로 빠져나가는 동안(19.5~) 배경 글씨가 바뀌고 → 사진·세 단어가 다 빠진 뒤(19.9~) 밝아지며 빛이 차오름. 카메라 낙하는 scene.js END_A(19.95)
+    const AD = [19.5, 19.95, 20.25, 20.5];
+    const ADJ = document.querySelector('.zadj'), ADJg = ADJ.querySelector('.zadj-g'), ADJa = ADJ.querySelector('.zadj-a');
+    let adjM = null;
+    const adjFit = () => {   // 글씨 폭 = POLAROID 배경 글씨 폭(화면의 60%), 세로 가운데도 배경 글씨와 같게
+      if (adjM && adjM.w === innerWidth && adjM.h === innerHeight) return;
+      const r = G.getBoundingClientRect(); if (!r.width) return;
+      ADJ.style.fontSize = '100px';
+      const wpx = ADJ.querySelector('.zadj-t').offsetWidth; if (!wpx) return;
+      ADJ.style.fontSize = (100 * r.width / wpx).toFixed(2) + 'px';
+      ADJ.style.top = (r.top + r.height / 2).toFixed(1) + 'px';
+      adjM = { w: innerWidth, h: innerHeight };
+    };
+    addEventListener('resize', () => { adjM = null; });
+    (window.__fontsReady || Promise.resolve()).then(() => { adjM = null; });
+    window.__zx = (sc) => {
+      // POLAROID 배경 글씨: 카메라가 블랙이 된 뒤(12.2)부터 서서히 나타나 이후 장면 내내 은은하게 유지
+      // 마지막 장면: POLAROID 배경 글씨가 같은 자리에서 DEVELOPED 로 블러 교차(은은한 밝기 그대로) → 밝아지며 빛남
+      const swp = sm(rg(AD[0], AD[1], sc)), lit = sm(rg(AD[1] - 0.05, AD[2], sc)), adjGl = eo(rg(AD[1], AD[3], sc));
+      { const go = (0.04 * eo(rg(12.2, 12.7, sc)) * (1 - swp)).toFixed(3); if (G.style.opacity !== go) G.style.opacity = go; G.style.filter = swp > 0.001 && swp < 0.999 ? `blur(${(8 * swp).toFixed(1)}px)` : ''; }
+      adjFit();
+      if (swp > 0) {
+        ADJ.style.visibility = 'visible';
+        ADJ.style.opacity = (0.05 * swp + 0.95 * lit).toFixed(3);
+        ADJ.style.filter = swp < 0.999 ? `blur(${(8 * (1 - swp)).toFixed(1)}px)` : '';
+        ADJ.style.transform = `translate(-50%, -50%) scale(${(0.985 + 0.015 * lit).toFixed(4)})`;
+        ADJg.style.opacity = adjGl.toFixed(3); ADJa.style.opacity = adjGl.toFixed(3);
+      } else if (ADJ.style.visibility !== 'hidden') ADJ.style.visibility = 'hidden';
+      const vis = sc > ZA && sc < OUT[1] + 0.05;
+      Z.forEach((z) => { z.style.visibility = vis ? 'visible' : 'hidden'; z.classList.toggle('on', sc > UP[0] + 0.05 && sc < OUT[1]); });
+      if (!vis) return;
+      const H = innerHeight, mob = innerWidth / H < 0.8;
+      if (!zM || zM.w !== innerWidth || zM.h !== innerHeight) zM = { w: innerWidth, h: innerHeight, fs: parseFloat(getComputedStyle(F.querySelector('.zd')).fontSize) || 120 };
+      const fs = zM.fs;
+      // kinoria 실측(1646×889) 간격: 두 줄 사이 0.93em · 아랫줄 가운데 → ONE PRESS 가운데 0.904em · → 설명글 가운데 1.319em (큰 글씨 크기 기준)
+      const yW = H * (mob ? 0.47 : 0.515), yC = yW - 0.93 * fs, yS = mob ? H * 0.66 : yW + 0.904 * fs, yB = mob ? H * 0.74 : yW + 1.319 * fs;
+      const ho = sm(rg(OUT[0], OUT[1], sc));                                         // 퇴장: 위로 살짝 떠오르며 블러로 사라짐
+      const place = (el, y, d) => {                                                 // 아래에서 스크롤에 붙어 올라옴 (줄마다 조금씩 늦게)
+        const u = eo(rg(UP[0] + d, UP[1] + d, sc));
+        el.style.top = '0px';
+        el.style.transform = `translate3d(0, ${(y - el.offsetHeight / 2 + (1 - u) * 0.42 * H - ho * 0.08 * H).toFixed(1)}px, 0)`;
+        el.style.opacity = (u * (1 - ho)).toFixed(3);
+        el.style.filter = ho > 0.002 ? `blur(${(10 * ho).toFixed(2)}px)` : '';
+      };
+      place(L1, yC, 0); place(L2, yW, 0.04); place(LS, yS, 0.08); place(LB, yB, 0.12);
+      // 숫자 세기
+      const NL = NUM.length - 1, c = rg(CN[0], CN[1], sc), n = Math.min(NL, Math.floor(c * NL + 0.0001));
+      const word = c >= 1 ? NUM[NL] : NUM[n];
+      if (cnt.textContent !== word) cnt.textContent = word;
+      const counting = c > 0 && c < 1 ? 1 : 0, ck = Math.min(rg(CN[0] - 0.03, CN[0] + 0.06, sc), 1 - rg(CN[1] - 0.04, CN[1] + 0.06, sc));
+      cnt.style.transform = '';   // 숫자 크기는 그대로 (세는 동안 줄었다 커지는 모션 없음)
+      const off = 2.4 * (fs / 135) * ck;
+      // FIFTEEN MINUTES → ONE MEMORY (kinoria EXPOSURES → DECISIONS): 바뀌는 순간 두 줄이 세게 블러되며 빨강·하늘색이 좌우로 크게 벌어지고
+      // 하얀 빛이 번져 홀로그램처럼 일렁였다가, 새 단어로 초점이 맞춰지며 색이 다시 모임
+      const sr = rg(SW[0], SW[1], sc), s = sm(sr), pk = Math.sin(Math.PI * sr);   // pk: 바뀌는 한가운데에서 최대
+      const bl = 16 * pk;                                                       // 바뀌는 동안의 블러 (가운데 16px)
+      const gOff = 2.4 * (fs / 135) * ck + 0.075 * fs * pk, gOp = Math.min(0.95, 0.26 * ck + 0.75 * pk), gBl = 2 + 10 * pk;
+      const glow = pk > 0.01 ? `0 0 ${(0.12 * fs * pk).toFixed(1)}px rgba(255,240,226,${(0.45 * pk).toFixed(3)}), 0 0 ${(0.3 * fs * pk).toFixed(1)}px rgba(255,236,214,${(0.25 * pk).toFixed(3)})` : '';
+      const ghost = (arr, txtA, txtB, onlySwap) => arr.forEach((g, i) => {
+        g.style.opacity = (onlySwap && pk <= 0.01 ? 0 : gOp).toFixed(3);
+        g.style.transform = `translate3d(calc(-50% + ${(i ? gOff : -gOff).toFixed(2)}px), 0, 0)`;
+        g.style.filter = pk > 0.01 ? `blur(${gBl.toFixed(2)}px)` : (ck > 0.01 ? 'blur(1px)' : '');
+        const t = s > 0.5 ? txtB : txtA; if (g.textContent !== t) g.textContent = t;
+      });
+      ghost(gs, 'MINUTES', 'MEMORY', false);
+      ghost(gs1, cnt.textContent, 'ONE', true);                                // 위 줄 잔상은 바뀌는 순간에만
+      cnt.style.opacity = (1 - s).toFixed(3); cnt.style.filter = s > 0.001 ? `blur(${(bl + 6 * s).toFixed(2)}px)` : '';
+      cnt2.style.opacity = s.toFixed(3); cnt2.style.filter = s < 0.999 ? `blur(${(bl + 6 * (1 - s)).toFixed(2)}px)` : '';
+      cnt.style.textShadow = cnt2.style.textShadow = glow;
+      w1.style.opacity = (1 - s).toFixed(3);
+      w1.style.filter = ck > 0.01 || s > 0.001 ? `blur(${(1.1 * ck + bl + 6 * s).toFixed(2)}px)` : '';
+      w1.style.textShadow = pk > 0.01 ? glow : ck > 0.01 ? `0 0 ${(0.1 * fs * ck).toFixed(1)}px rgba(255,236,214,${(0.06 * ck).toFixed(3)})` : '';
+      w2.style.opacity = s.toFixed(3);
+      w2.style.filter = s < 0.999 ? `blur(${(bl + 6 * (1 - s)).toFixed(2)}px)` : '';
+      w2.style.textShadow = glow;
+      void counting;
+    };
   })();
 }
