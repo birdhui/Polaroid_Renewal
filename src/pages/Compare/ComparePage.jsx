@@ -30,6 +30,15 @@ export default function ComparePage() {
 
   useEffect(() => () => clearTimeout(leaveTimer.current), []);
 
+  // 새로고침이나 다른 페이지에서 들어올 때 브라우저·라우터가 예전 스크롤 위치(결과 화면 쪽)를 되살리면, 처음 화면(히어로)에서는 스크롤이 잠겨 있어
+  // 히어로 아랫부분과 푸터만 보인 채 움직일 수 없게 된다. 처음 열릴 때는 항상 맨 위에서 시작한다.
+  // (되살리는 동작이 이 효과보다 나중에 일어날 수 있어 한 프레임 뒤에도 한 번 더 맞춘다)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const frame = requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   // 결과가 나오면 히어로를 결과 위에 다시 붙인다. 히어로가 위에 생기며 결과가 아래로 밀리므로, 보던 자리(결과)가 그대로 보이게 스크롤을 그만큼 내려 둔다.
   const heroAbove = phase === 'finder' && stage === 'result';
   const heroAboveBefore = useRef(false);
