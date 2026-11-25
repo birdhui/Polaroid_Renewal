@@ -103,3 +103,29 @@ export default function classifyAnswer(stepId, text) {
   }
   return { status: 'ambiguous', candidates: scored.slice(0, 2).map((item) => item.id) };
 }
+
+/**
+ * 되묻지 않고 가장 가까운 선택지로 분류한다. 채팅 화면은 이 함수를 쓴다.
+ * - 뜻이 분명하면 classifyAnswer 와 같은 결과다.
+ * - 둘 이상이 비슷하게 해당되면(ambiguous) 점수가 가장 높은 선택지로 본다.
+ * - 확신할 만큼은 아니어도(MIN_SCORE 미만) 걸리는 표현이 있으면 그중 가장 점수가 높은 선택지로 본다.
+ * - 걸리는 표현이 하나도 없을 때만 unknown 이다. (임의로 고르지 않는다)
+ * 새 기준을 만들지 않고 같은 사전·같은 점수 규칙만 쓰므로 추천 규칙표와 선택지 id 는 그대로다.
+ *
+ * @returns {{ status: 'matched', optionId: string, guessed: boolean } | { status: 'unknown' }}
+ */
+export function classifyNearest(stepId, text) {
+  const result = classifyAnswer(stepId, text);
+  if (result.status === 'matched') return { ...result, guessed: false };
+  if (result.status === 'ambiguous') return { status: 'matched', optionId: result.candidates[0], guessed: true };
+
+  const step = COMPARE_STEPS.find((item) => item.id === stepId);
+  const normalized = normalizeText(String(text ?? '').slice(0, MAX_ANSWER_LENGTH));
+  if (!step || !normalized) return { status: 'unknown' };
+  const dismissible = stepId !== 'experience';
+  const best = step.options
+    .map((option) => ({ id: option.id, score: scoreOption(COMPILED[stepId]?.[option.id] ?? [], normalized, dismissible) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)[0];
+  return best ? { status: 'matched', optionId: best.id, guessed: true } : { status: 'unknown' };
+}

@@ -2,7 +2,7 @@ import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState } from 'r
 import micIcon from '@/assets/compare/icons/chat-mic.svg';
 import sendIcon from '@/assets/compare/icons/chat-send.svg';
 import { buildRetryMessage } from '@/pages/Compare/data/compareChatReplies.js';
-import classifyAnswer, { MAX_ANSWER_LENGTH } from '@/pages/Compare/utils/classifyAnswer.js';
+import { classifyNearest, MAX_ANSWER_LENGTH } from '@/pages/Compare/utils/classifyAnswer.js';
 import styles from './CompareChat.module.css';
 
 /**
@@ -281,14 +281,14 @@ export default function CompareChat({ steps, answers, stepIndex, onChoose }) {
     if (!text || !canSend) return;
 
     const step = currentStep;
-    const result = classifyAnswer(step.id, text);
+    const result = classifyNearest(step.id, text);
     addMessage({ stepId: step.id, role: 'user', text });
     setDraft('');
     inputRef.current?.focus();
     // 직접 입력해서 답하면 위의 선택지는 모두 치우고 보낸 말만 남긴다. (뜻을 못 알아들어 되물을 때도 마찬가지)
     setTextSteps((prev) => ({ ...prev, [step.id]: true }));
 
-    // 뜻을 알아들었으면 중간 반응 없이 바로 다음 질문(마지막이면 안내 문구)으로 넘어간다.
+    // 가장 가까운 선택지로 분류되면(애매해도) 중간 반응 없이 바로 다음 질문(마지막이면 안내 문구)으로 넘어간다.
     if (result.status === 'matched') {
       failures.current[step.id] = 0;
       setBusyStepIndex(stepIndex);
@@ -296,7 +296,7 @@ export default function CompareChat({ steps, answers, stepIndex, onChoose }) {
       return;
     }
 
-    // 알아듣지 못했거나 애매하면 임의로 고르지 않고 짧게 다시 묻는다.
+    // 걸리는 표현이 하나도 없을 때만 임의로 고르지 않고 짧게 다시 묻는다.
     setTyping(true);
     replyTimer.current = setTimeout(() => {
       replyTimer.current = null;

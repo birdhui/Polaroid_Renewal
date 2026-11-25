@@ -1,6 +1,6 @@
 // 사용법: node src/pages/Compare/utils/classifyAnswer.test.mjs  (프로젝트 루트에서)
 // 문장 → 기대하는 분류. 'matched:선택지id' | 'ambiguous:a,b' | 'unknown'
-import classifyAnswer from './classifyAnswer.js';
+import classifyAnswer, { classifyNearest } from './classifyAnswer.js';
 import { COMPARE_LEXICON } from '../data/compareLexicon.js';
 import { COMPARE_STEPS } from '../data/compareSteps.js';
 import { COMPARE_RULES } from '../data/compareRecommendations.js';
@@ -56,7 +56,11 @@ const CASES = {
     ['써본 적은 있어요', 'unknown'],
     ['안녕하세요', 'unknown'],
     ['ㅋㅋㅋ', 'unknown'],
-    ['몰라요', 'unknown'],
+    ['몰라요', 'matched:beginner'],
+    ['별로없어', 'matched:beginner'],
+    ['써본적이 별로없어', 'matched:beginner'],
+    ['써본 적 거의 없어요', 'matched:beginner'],
+    ['거의 안 써봤어요', 'matched:beginner'],
     ['', 'unknown'],
     ['??', 'unknown'],
     ['😀', 'unknown'],
@@ -168,6 +172,22 @@ for (const [stepId, cases] of Object.entries(CASES)) {
       console.log(`✗ [${stepId}] "${text}" → ${actual}  (기대: ${expected})`);
     }
   }
+}
+
+// 되묻지 않고 가장 가까운 선택지로 보내는 classifyNearest — 애매한 문장도 하나로 정해지고, 걸리는 표현이 전혀 없을 때만 unknown
+for (const [stepId, text, expected] of [
+  ['experience', '초보인데 취미로 오래 했어요', 'matched'],
+  ['concern', '비용도 걱정되고 사진이 잘 나올지도 걱정돼요', 'matched'],
+  ['shooting', '가볍고 버튼만 누르면 되는 카메라요', 'matched'],
+  ['concern', '필름이 좀 궁금해요', 'matched'],
+  ['experience', '안녕하세요', 'unknown'],
+  ['shooting', 'ㅋㅋㅋㅋ', 'unknown'],
+  ['concern', '', 'unknown'],
+]) {
+  total += 1;
+  const got = classifyNearest(stepId, text);
+  const ok = got.status === expected && (expected === 'unknown' || COMPARE_STEPS.find((s) => s.id === stepId).options.some((o) => o.id === got.optionId));
+  if (!ok) { failed += 1; console.log(`✗ nearest [${stepId}] "${text}" → ${JSON.stringify(got)} (기대: ${expected})`); }
 }
 
 // 사전의 선택지 id 가 스텝 데이터·추천 규칙표와 같은지 확인한다. (새 id 를 만들지 않았다는 보증)
