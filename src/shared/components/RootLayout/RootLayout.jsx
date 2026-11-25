@@ -1,4 +1,5 @@
-import { Outlet, ScrollRestoration, useMatches } from 'react-router';
+import { Outlet, ScrollRestoration, useLocation, useMatches } from 'react-router';
+import { ROUTES } from '@/app/routes.js';
 import SiteHeader from '@/shared/components/SiteHeader/SiteHeader.jsx';
 import SiteFooter from '@/shared/components/SiteFooter/SiteFooter.jsx';
 import styles from './RootLayout.module.css';
@@ -13,6 +14,8 @@ export default function RootLayout() {
   const matches = useMatches();
   const overlay = matches.some((match) => match.handle?.headerOverlay);
   const hideHeader = matches.some((match) => match.handle?.hideHeader);
+  // 메인(Landing)은 마지막 장면이 따로 있어 공통 푸터를 붙이지 않는다
+  const isLanding = useLocation().pathname === ROUTES.landing;
 
   return (
     <div className={styles.layout}>
@@ -20,7 +23,7 @@ export default function RootLayout() {
       <main className={styles.main}>
         <Outlet />
       </main>
-      <SiteFooter />
+      {isLanding ? null : <SiteFooter />}
       <ScrollRestoration />
     </div>
   );

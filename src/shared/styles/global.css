@@ -2,6 +2,15 @@
 @import './reset.css';
 @import './variables.css';
 
+/* 스크롤바 숨김 — 모든 페이지 공통 (스크롤은 그대로 됨, PM 요청) */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--color-text);

@@ -1,0 +1,17 @@
+/* 공통 커서 캔버스: 화면 맨 위에 덮이지만 클릭은 그대로 아래로 통과한다 */
+.canvas {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2147483647;
+  pointer-events: none;
+  display: block;
+}
+
+/* 커서가 켜지면(마우스가 있는 기기) 기본 커서를 모든 곳에서 숨긴다 */
+:global(html.kc-on),
+:global(html.kc-on *) {
+  cursor: none !important;
+}
