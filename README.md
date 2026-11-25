@@ -5,7 +5,7 @@
 Polaroid 브랜드 웹사이트 UX/UI 리뉴얼 프로젝트입니다. (6인 협업)
 
 - **스택**: React 19 · Vite 8 · React Router 8 · JavaScript(JSX) · CSS Modules
-- **페이지**: Landing(헤더 타이틀 로고) + History · Cameras · Film · Archive
+- **페이지**: Landing(헤더 타이틀 로고) + History · Cameras · Compare · Film
 - **배포**: 아직 하지 않음
 
 ## 시작하기
@@ -33,9 +33,9 @@ npm run dev          # http://localhost:5173
 | 곽세희 (PM) | Landing Core — 스크롤 스토리텔링 · 3D 카메라 · 핵심 인터랙션 | `feat/landing-core` | `src/pages/Landing/`, `src/features/landing-camera/` |
 | 임희지 | Landing Visuals — 필름 현상·노후화 · 도면 전환 · 2.5D 공간 | `feat/landing-visuals` | `src/features/landing-visuals/`, `public/assets/landing/` |
 | 정준혁 | Cameras · Frontend Integration & QA | `feat/cameras` | `src/pages/Cameras/`, `src/assets/cameras/` |
-| 손다은 | Film · UX Validation | `feat/film` | `src/pages/Film/`, `src/assets/film/` |
+| 손다은 | Compare · UX Validation | `feat/compare` | `src/pages/Compare/`, `src/assets/compare/` |
 | 모진아 | History · Design System | `feat/history` | `src/pages/History/`, `src/assets/history/` |
-| 이나라 | Archive Editor | `feat/archive` | `src/pages/Archive/`, `src/assets/archive/` |
+| 이나라 | Film · Photo Editor | `feat/film` | `src/pages/Film/`, `src/assets/film/` |
 
 공통 작업 브랜치: `chore/project-structure`(곽세희·정준혁), `style/design-system`(모진아)
 
