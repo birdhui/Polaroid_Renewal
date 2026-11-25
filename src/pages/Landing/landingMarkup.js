@@ -76,7 +76,7 @@ export const LANDING_MARKUP = String.raw`
 <div class="boot"></div>
 
 
-<video id="video" src="/assets/landing/hero.mp4" poster="/assets/landing/hero-poster.jpg" muted loop playsinline autoplay preload="auto" style="display:none"></video>
+<video id="video" data-src="/assets/landing/hero.mp4" poster="/assets/landing/hero-poster.jpg" muted loop playsinline preload="none" style="display:none"></video>
 
 <button class="sndfix off" type="button" aria-pressed="false" aria-label="Sound"><span class="snd-in">Sound <i aria-hidden="true"><b></b><b></b><b></b></i></span></button>
 `;
