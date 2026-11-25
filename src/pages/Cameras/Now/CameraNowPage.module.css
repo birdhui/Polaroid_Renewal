@@ -243,7 +243,7 @@ span.transitionImage {
   white-space: nowrap;
   font-family: 'Outfit Black NoOverlap', var(--f-out);
   font-weight: 900;
-  font-size: 30vw;
+  font-size: 46.875vw; /* Figma Transition-1: 900px / 1920 */
   line-height: 1.26;
   letter-spacing: 0;
   opacity: var(--ttext-o);

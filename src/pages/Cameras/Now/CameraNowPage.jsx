@@ -238,12 +238,12 @@ function useTransitionScroll(trackRef, textRef) {
       // 카메라 사진: 처음 20% 동안 천천히 커지면서 사라진다
       const img = smooth(0.02, 0.2, p);
       // 글자 중심 위치(화면 가운데 기준 px): 왼쪽 끝이 화면 8% → 오른쪽 끝이 화면 92%
-      const startX = vw * 0.08 + textWidth / 2 - vw / 2;
+      const startX = vw * (58 / 1920) + textWidth / 2 - vw / 2; // Figma Transition-1: 글자 왼쪽 x=58
       const endX = vw * 0.92 - textWidth / 2 - vw / 2;
       const travel = smooth(0.2, 0.78, p);
       const settle = smooth(0.8, 1, p);
       const x = mix(mix(startX, endX, travel), 0, settle);
-      const scale = mix(1, 0.14, settle);
+      const scale = mix(1, 100 / 900, settle); // Figma Transition-2: 100px / Transition-1: 900px
       const fill = smooth(0.26, 0.76, p);
       const s = track.style;
       s.setProperty('--tbg', 'rgb(' + bg + ')');
@@ -339,7 +339,6 @@ export default function CameraNowPage() {
       {/* Transition-camera — 06 Feature 와 07 Filter 사이: 사진이 사라지고, 큰 글자가 지나가며 색이 채워지고, 배경이 #151515 로 바뀐다 */}
       <div ref={transitionTrackRef} className={styles.transitionTrack}>
         <div className={styles.transitionSticky}>
-          <FilmImage image={transitionCamera.image} className={styles.transitionImage} alt="Polaroid Now 카메라" />
           <div ref={transitionTextRef} className={styles.transitionText} aria-hidden="true">
             <span className={styles.transitionOutline}>{transitionCamera.text}</span>
             <span className={styles.transitionFill}>{transitionCamera.text}</span>
