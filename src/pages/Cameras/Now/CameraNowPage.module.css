@@ -200,9 +200,9 @@
   --tx: 0px;
   --ts: 1;
   --tfill: 100%;
-  --ttext-o: 0;
+  --ty: 62vh;
   position: relative;
-  height: 480vh;
+  height: 560vh;
   background: var(--tbg);
 }
 
@@ -247,8 +247,7 @@ span.transitionImage {
   line-height: 1.26;
   letter-spacing: 0;
   white-space: pre;
-  opacity: var(--ttext-o);
-  transform: translate(calc(-50% + var(--tx)), -50%) scale(var(--ts));
+  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(var(--ts));
   will-change: transform;
 }
 

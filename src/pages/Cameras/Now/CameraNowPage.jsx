@@ -232,7 +232,7 @@ function useTransitionScroll(trackRef, textRef) {
       const vw = window.innerWidth;
       const textWidth = textRef.current ? textRef.current.offsetWidth : vw * 2.4;
       // 배경 · 외곽선 색: 글자가 채워지는 구간에 맞춰 크림 → #151515
-      const dark = smooth(0.2, 0.7, p);
+      const dark = smooth(0.14, 0.58, p);
       const bg = [mix(255, 21, dark), mix(249, 21, dark), mix(232, 21, dark)].map(Math.round).join(',');
       const stroke = [mix(21, 255, dark), mix(21, 249, dark), mix(21, 232, dark)].map(Math.round).join(',');
       // 카메라 사진: 처음 20% 동안 천천히 커지면서 사라진다
@@ -240,11 +240,12 @@ function useTransitionScroll(trackRef, textRef) {
       // 글자 중심 위치(화면 가운데 기준 px): 왼쪽 끝이 화면 8% → 오른쪽 끝이 화면 92%
       const startX = vw * (58 / 1920) + textWidth / 2 - vw / 2; // Figma Transition-1: 글자 왼쪽 x=58
       const endX = vw * 0.92 - textWidth / 2 - vw / 2;
-      const travel = smooth(0.2, 0.78, p);
-      const settle = smooth(0.8, 1, p);
+      const rise = smooth(0, 0.12, p); // Transition-1: 글자가 아래에서 위로 올라온다
+      const travel = smooth(0.14, 0.62, p);
+      const settle = smooth(0.64, 0.78, p); // 0.78 ~ 1 은 Transition-2 화면을 그대로 보여주는 구간
       const x = mix(mix(startX, endX, travel), 0, settle);
       const scale = mix(1, 100 / 900, settle); // Figma Transition-2: 100px / Transition-1: 900px
-      const fill = smooth(0.26, 0.76, p);
+      const fill = smooth(0.2, 0.6, p);
       const s = track.style;
       s.setProperty('--tbg', 'rgb(' + bg + ')');
       s.setProperty('--tstroke', 'rgb(' + stroke + ')');
@@ -253,7 +254,7 @@ function useTransitionScroll(trackRef, textRef) {
       s.setProperty('--tx', x.toFixed(1) + 'px');
       s.setProperty('--ts', scale.toFixed(4));
       s.setProperty('--tfill', ((1 - fill) * 100).toFixed(2) + '%');
-      s.setProperty('--ttext-o', (p > 0.2 ? 1 : smooth(0.14, 0.2, p)).toFixed(3));
+      s.setProperty('--ty', ((1 - rise) * 62).toFixed(2) + 'vh');
     };
     const tick = () => {
       const goal = read();
