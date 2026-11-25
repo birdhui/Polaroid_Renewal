@@ -71,7 +71,7 @@ export const features = [
   {
     id: 'sharpness',
     tag: 'FUNCTION — 01',
-    tagLabel: 'OPTIMIZED EXPOSURES FOR SHARPER PICTURES',
+    tagLabel: 'SHARPER PICTURES',
     shift: -9, // Figma 06 프레임은 문구·선이 9px 위에 있다
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,

@@ -90,19 +90,19 @@
 
 /* Vector 48 */
 .introBrackets {
-  --x: 612;
-  --y: 236;
-  --w: 696;
-  --h: 200;
-  --arm: 58;
+  --x: 672;
+  --y: 239;
+  --w: 548;
+  --h: 158;
+  --arm: 45;
   --stroke: 1;
-  --bracket-color: #000;
+  --bracket-color: rgba(0, 0, 0, 0.8);
 }
 
 .introHeading {
   composes: pos text center from './components/stage.module.css';
   --x: 960;
-  --y: 266;
+  --y: 248;
   --fs: 56;
   --ls: -2;
   line-height: calc(70 * var(--u));
