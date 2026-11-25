@@ -1,1169 +1,1568 @@
-/* Figma 의 Outfit Black — 글자 안쪽 겹치는 윤곽선을 제거한 파일(외곽선 렌더링용) */
-@font-face {
-  font-family: 'Outfit Black NoOverlap';
-  src: url('../../../assets/fonts/outfit-latin-900-nooverlap.woff2') format('woff2');
-  font-weight: 900;
-  font-display: block;
-}
-
 /*
- * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
- * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
- * 화면 너비에 비례해 커지고 작아진다. 색상: 크림 #fff9e8, 잉크 #151515, 포인트 #f0a137.
+ * Polaroid Now 상세페이지 (검은 배경) — 경로: /cameras/now
+ * 헤더·푸터는 공통 SiteHeader·SiteFooter 를 쓴다.
+ * 공통 헤더가 화면 위에 고정되지 않으므로 시안의 헤더 높이(--head)는 0 으로 둔다.
  */
 .page {
-  --now-cream: #fff9e8;
-  --now-ink: #151515;
-  --now-accent: #f0a137;
-  --f-pre: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --f-out: 'Outfit', 'Pretendard', sans-serif;
-  --f-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --f-arch: 'Archivo', 'Pretendard', sans-serif;
+  --bg: #0a0a0a;
+  --bg-2: #121211;
+  --ink: #f4f0e8;
+  --muted: #9b968d;
+  --line: #2a2826;
+  --red: #e3412b;
+  --orange: #ff8200;
+  --yellow: #f6c243;
+  --green: #74b544;
+  --blue: #1d92d2;
+  --text: 'Pretendard Variable', 'Pretendard', var(--font-sans);
+  --display: 'Archivo', var(--text);
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --hand: 'Reenie Beanie', 'Pretendard Variable', cursive;
+  --gut: clamp(20px, 4.4vw, 72px);
+  --head: 0px;
+  /* 텍스트 규격 (2번 '제품 디자인' 섹션 기준) */
+  --t-eyebrow: 600 clamp(14px, 1.1vw, 17px) / 1 var(--display);
+  --t-title: 800 clamp(30px, 3.4vw, 56px) / 1.15 var(--text);
+  --t-body: 500 14px / 1.75 var(--text);
+  --c-body: #bdb7ad;
 
-  background: var(--now-cream);
-  color: var(--now-ink);
-  font-family: var(--f-pre);
-  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
-.screen {
-  composes: screen from './components/stage.module.css';
-}
-
-.line {
+.page :is(img, video) {
   display: block;
+  max-width: 100%;
 }
 
-/* 섹션 배경 사진: --bx --by --bw --bh 는 Figma "Section BG Photo" 좌표 */
-.bg {
+.page :is(h1, h2, h3, p) {
+  word-break: keep-all;
+}
+
+/* 모든 섹션 한 화면(100vh) */
+.page > section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.eyebrow {
+  display: block;
+  font: var(--t-eyebrow);
+  letter-spacing: 0.04em;
+  color: var(--orange);
+}
+
+.tTitle {
+  margin: 0;
+  font: var(--t-title);
+  letter-spacing: -0.035em;
+}
+
+.tBody {
+  margin: 0;
+  font: var(--t-body);
+  color: var(--c-body);
+}
+
+/* ---------- 1. hero ---------- */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding: calc(var(--head) + 3vh) var(--gut) clamp(48px, 9svh, 104px);
+  background: #3a3937;
+  text-align: left;
+}
+
+.heroPh {
   position: absolute;
-  left: calc(var(--bx) * var(--u));
-  top: calc(var(--by) * var(--u));
-  width: calc(var(--bw) * var(--u));
-  height: calc(var(--bh) * var(--u));
-  max-width: none;
-  object-fit: cover;
+  right: var(--gut);
+  bottom: clamp(48px, 9svh, 104px);
+  font: 500 14px / 1 var(--text);
+  letter-spacing: 0.04em;
+  color: rgb(244 240 232 / 0.32);
 }
 
-/* ───────── 01 Hero ───────── */
-.heroImage {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: calc(1081 * var(--u));
-  max-width: none;
-  object-fit: cover;
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(14px, 2.4vh, 28px);
+  max-width: 900px;
 }
 
-.heroTitle {
-  composes: pos text from './components/stage.module.css';
-  --x: 90;
-  --y: 675;
-  --fs: 170;
-  --ls: -2;
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: #fff;
+/* ---------- 2. design ---------- */
+.design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.4vh, 28px);
+  padding: calc(var(--head) + 3vh) var(--gut) 5vh;
+  background: var(--bg);
+  text-align: center;
 }
 
-.heroDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 90;
-  --y: 892;
-  --fs: 24;
-  --ls: -0.24;
-  line-height: 1.45;
-  font-family: var(--f-pre);
-  font-weight: 400;
-  color: #fff;
+.design h2 {
+  margin: 0;
+  font: var(--t-title);
+  letter-spacing: -0.035em;
 }
 
-/* Figma gradation_bg: 아래쪽 458px 가 투명 → 검정 60% 로 짙어져 글자가 잘 보이게 한다 */
-.heroGradient {
-  position: absolute;
-  left: 0;
-  top: calc(622 * var(--u));
-  width: 100%;
-  height: calc(458 * var(--u));
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
-  pointer-events: none;
-}
-
-/* ───────── 02 Intro ───────── */
-.intro,
-.featuresHeading {
-  background: var(--now-cream);
-}
-
-/* Vector 48 */
-.introBrackets {
-  --x: 662;
-  --y: 239;
-  --w: 568;
-  --h: 158;
-  --arm: 45;
-  --stroke: 1;
-  --bracket-color: rgba(0, 0, 0, 0.8);
-}
-
-.introHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 946;
-  --y: 248;
-  --fs: 56;
-  --ls: -2;
-  line-height: calc(70 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 600;
-  color: var(--now-ink);
-}
-
-.introWordmark {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 592;
-  --fs: 200;
-  --ls: 0.7;
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #000;
-}
-
-.introEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 595;
-  --fs: 18;
-  --ls: 0.7;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-/*
- * Figma의 제품 사진은 배경이 투명한 PNG다. 지금 에셋은 흰 배경 JPG라서
- * multiply로 크림 배경에 녹여 흰 박스가 보이지 않게 한다. TODO: 투명 PNG(7ae68)로 교체.
- */
-.introImage {
-  composes: pos size from './components/stage.module.css';
-  --x: 600;
-  --y: 745;
-  --w: 720;
-  --h: 347.4;
-  max-width: none;
+.designImg {
+  width: min(720px, 60vw);
+  max-height: 34vh;
+  margin: clamp(28px, 6vh, 76px) 0 clamp(18px, 3.4vh, 44px);
   object-fit: contain;
-  mix-blend-mode: multiply;
+  filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.6));
 }
 
-/* ───────── 03 Features Heading ───────── */
-.featuresHeadingText strong {
-  font-weight: 700;
+.design p {
+  max-width: 900px;
+  margin: 0;
+  font: var(--t-body);
+  color: var(--c-body);
 }
 
-.featuresHeadingText {
-  composes: pos text center from './components/stage.module.css';
-  --x: 959;
-  --y: 498;
-  --fs: 40;
-  --ls: -1;
-  line-height: calc(55 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 600;
-  color: var(--now-ink);
+/* ---------- 3. features (기능마다 한 화면, 좌우 분할 에디토리얼) ----------
+   한쪽은 설명(작은 사진 + 글), 반대쪽은 큰 이미지 자리. .featRowFlip 이면 좌우가 바뀐다. */
+.features {
+  background: var(--bg);
 }
 
-/* ───────── 07~11 어두운 구간 ─────────
- * Figma 새 디자인: Go Film · Discover · Footer 는 #151515, Filter 는 #232323 → #151515 (위→아래),
- * App Promo 는 #151515. 이전의 고정 갈색 그라데이션은 걷어냈다. */
-.darkZone {
+.featIntro {
+  padding: calc(var(--head) + clamp(72px, 12vh, 140px)) var(--gut) clamp(48px, 8vh, 96px);
+  text-align: center;
+}
+
+.featIntro h2 {
+  margin: clamp(14px, 2.4vh, 28px) 0 0;
+  font: var(--t-title);
+  letter-spacing: -0.035em;
+}
+
+.featList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.featRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  height: 100vh;
+  height: 100svh;
+  min-height: 640px;
+  border-top: 1px solid var(--line);
+}
+
+.featRowFlip .featInfo {
+  order: 2;
+}
+
+.featInfo {
   position: relative;
-  color: #fff;
-  background: #151515;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(56px, 9vh, 96px) var(--gut) clamp(72px, 11vh, 110px);
+  background: var(--bg-2);
+  text-align: center;
 }
 
-.filters,
-.appPromo,
-.goFilm,
-.discover,
-.footer {
-  color: #fff;
+.featTag {
+  padding: 6px 14px 5px;
+  border: 1px solid rgb(244 240 232 / 0.45);
+  border-radius: 999px;
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
-/* ───────── Transition-camera: 스크롤 따라 사진 → 큰 글자(외곽선 → 채움) → #151515 배경 ───────── */
-.transitionTrack {
-  --tbg: #fff9e8;
-  --tstroke: rgb(21, 21, 21);
-  --timg-o: 1;
-  --timg-s: 1;
-  --tx: 0px;
-  --ts: 1;
-  --tfill: 100%;
-  --ty: 62vh;
+.featName {
+  margin: clamp(14px, 2vh, 22px) 0 clamp(20px, 3.2vh, 36px);
+  font: 700 clamp(13px, 0.95vw, 15px) / 1.2 var(--display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.featMedia {
   position: relative;
-  height: 560vh;
-  background: var(--tbg);
+  overflow: hidden;
+  width: auto;
+  height: clamp(220px, 42vh, 470px);
+  aspect-ratio: 24 / 25;
+  max-width: 100%;
+  background: #1c1b19;
 }
 
-.transitionSticky {
+.featMedia img,
+.featMedia video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.featMedia:hover img,
+.featMedia:hover video {
+  scale: 1.04;
+}
+
+.featInfo h3 {
+  margin: clamp(22px, 3.6vh, 40px) 0 0;
+  font: 700 clamp(20px, 1.7vw, 30px) / 1.3 var(--text);
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.featDesc {
+  max-width: 420px;
+  margin: 12px 0 0;
+  font: var(--t-body);
+  color: var(--c-body);
+  word-break: keep-all;
+}
+
+.featFoot {
+  position: absolute;
+  right: var(--gut);
+  bottom: clamp(22px, 3.4vh, 36px);
+  left: var(--gut);
+  display: flex;
+  justify-content: space-between;
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* 큰 이미지 자리 (이미지 확정 전) */
+.featVisual {
+  position: relative;
+  background: #4a4845;
+}
+
+.featPending {
+  position: absolute;
+  right: clamp(18px, 1.8vw, 32px);
+  bottom: clamp(18px, 2.6vh, 32px);
+  font: 600 14px / 1 var(--text);
+  color: rgb(255 255 255 / 0.78);
+}
+
+/* ---------- 3-2. cutaway (three.js 실시간 3D, 스크롤 연출) ----------
+   GLB 모델을 스크롤 진행률에 맞춰 그린다. 카메라 맞춤·문구 위치는 cutaway/createCutaway.js 가 넣는다. */
+.cutaway {
+  position: relative;
+  height: 600vh;
+  background: var(--bg);
+}
+
+.cutawayStage {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100svh;
   overflow: hidden;
 }
 
-.transitionImage {
+.cutawayGlow {
   position: absolute;
-  left: 50%;
   top: 50%;
-  width: min(100vw, 100vh);
-  height: min(100vw, 100vh);
-  max-width: none;
-  object-fit: contain;
-  opacity: var(--timg-o);
-  transform: translate(-50%, -50%) scale(var(--timg-s));
+  width: 56vw;
+  height: 120vh;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .35;
+  pointer-events: none;
+  will-change: opacity,transform;
 }
 
-span.transitionImage {
+.cutawayGlowL {
+  left: -30vw;
+  translate: 0 -50%;
+  background: radial-gradient(closest-side,rgba(94,200,242,.75),rgba(139,224,78,.55) 45%,rgba(244,211,58,.35) 70%,transparent);
+}
+
+.cutawayGlowR {
+  right: -30vw;
+  translate: 0 -50%;
+  background: radial-gradient(closest-side,rgba(242,140,40,.75),rgba(244,211,58,.5) 45%,rgba(139,224,78,.3) 72%,transparent);
+}
+
+.cutawayCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.cutawayCanvas.isReady {
+  opacity: 1;
+}
+
+.cutawayPoster {
+  display: none;
+  position: absolute;
+  top: calc(var(--head) + 4vh);
+  left: 50%;
+  width: min(640px,80vw);
+  max-height: 62vh;
+  object-fit: contain;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.cutaway.isFallback .cutawayPoster {
+  display: block;
+}
+
+.cutaway.isFallback .cutawayCanvas {
+  display: none;
+}
+
+.cutaway.isFallback .cutawayCopy {
+  opacity: 1!important;
+  visibility: visible!important;
+  top: auto!important;
+  bottom: clamp(40px,9vh,96px);
+}
+
+.cutawayCopy {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: min(560px,calc(100% - var(--gut) * 2));
+  translate: -50% 0;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity,transform;
+}
+
+.cutawayText {
+  margin: 0;
+  font: 700 clamp(18px,1.55vw,26px)/1.3 var(--display);
+  letter-spacing: -.015em;
+  color: #fff;
+}
+
+/* 영상 카드: 왼쪽 둥근 정사각형 썸네일 + 오른쪽 문구 (i-2 'Watch' 구성) */
+.watchCard {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(21, 21, 21, 0.25);
-  color: rgba(21, 21, 21, 0.5);
-  font-family: var(--f-mono);
-  font-size: 12px;
+  gap: clamp(14px,1.3vw,22px);
+  margin-top: clamp(20px,3vh,36px);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.transitionText {
+.watchThumb {
+  position: relative;
+  flex: none;
+  width: clamp(76px,6.2vw,108px);
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.55);
+  background: #222;
+}
+
+.watchThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.watchThumb svg {
   position: absolute;
-  left: 50%;
   top: 50%;
+  left: 50%;
+  width: 30%;
+  translate: -50% -50%;
+  fill: #fff;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.45));
+}
+
+.watchText {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px,1vh,12px);
+  max-width: 15em;
+}
+
+.watchLabel {
+  font: 500 clamp(13px,.95vw,16px)/1 var(--display);
+  color: #8DBC43;
+}
+
+.watchTitle {
+  font: 500 clamp(16px,1.2vw,20px)/1.2 var(--display);
+  letter-spacing: -.01em;
+  color: #fff;
+}
+
+.watchCard:hover .watchThumb img {
+  transform: scale(1.06);
+}
+
+.watchCard:focus-visible {
+  outline: 2px solid #8DBC43;
+  outline-offset: 6px;
+  border-radius: 8px;
+}
+
+/* 영상 모달 */
+.videoModal {
+  width: min(1100px,92vw);
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: #000;
+  overflow: visible;
+}
+
+.videoModal::backdrop {
+  background: rgba(0,0,0,.82);
+}
+
+.videoModalFrame {
+  aspect-ratio: 16/9;
+}
+
+.videoModalFrame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.videoModalClose {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: 40px;
+  height: 40px;
   display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  cursor: pointer;
+}
+
+.videoModalClose svg {
+  width: 20px;
+  stroke: #fff;
+  stroke-width: 2;
+  fill: none;
+}
+
+.videoModalClose:hover {
+  background: rgba(255,255,255,.22);
+}
+
+/* ---------- 5. filters (필터 캐러셀) ----------
+   인화 사진 창(가로 넘김) + 필터 원판 탭. 탭 위치·넘김은 FilterCarousel 이 --o(가운데 기준 칸 수)로 정한다. */
+.filters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(36px,6vh,72px);
+  padding: calc(var(--head) + 8vh) var(--gut) 12vh;
+  background: #0d0d0d;
+  text-align: center;
+  overflow: hidden;
+}
+
+.filtersHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px,2.6vh,30px);
+}
+
+.filtersEyebrow {
+  margin: 0;
+  font: 500 clamp(15px,1.15vw,19px)/1 var(--display);
+  color: #EBB741;
+}
+
+.filtersHead h2 {
+  margin: 0;
+  font: 800 clamp(38px,5vw,84px)/1.02 var(--display);
+  letter-spacing: -.035em;
+  color: #fff;
+}
+
+.filterViewer {
+  --pw: min(440px,74vw,calc((100svh - var(--head) - 200px) * 88 / 107));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(22px,3.4vh,40px);
+}
+
+.filterWindow {
+  position: relative;
+  width: var(--pw);
+  aspect-ratio: 88/107;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.filterWindow.isDrag {
+  cursor: grabbing;
+}
+
+.filterPrint {
+  --o: 0;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 6.8% 5.7% 0;
+  background: #f3f1ec;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  transform: translateX(calc(var(--o) * (100% + clamp(28px,4vw,56px))));
+  transition: transform .85s cubic-bezier(.65,0,.35,1),opacity .35s;
+}
+
+.filterPrint.noAnim {
+  transition: none;
+}
+
+.filterPrint img {
+  width: 100%;
+  aspect-ratio: 79/79;
+  object-fit: cover;
+  background: #ddd;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.filterPrint figcaption {
+  margin-top: 7.5%;
+  font: 400 clamp(13px,1.15vw,17px)/1 var(--mono);
+  letter-spacing: .08em;
+  color: #1c1c1c;
+}
+
+.filterTabs {
+  --gap: clamp(64px,6vw,96px);
+  position: relative;
+  width: calc(var(--gap) * 5);
+  height: clamp(96px,10vh,112px);
+  -webkit-mask-image: linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
+  mask-image: linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
+}
+
+.filterTab {
+  --o: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: var(--gap);
+  margin-left: calc(var(--gap) / -2);
+  padding: 10px 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transform: translateX(calc(var(--o) * var(--gap)));
+  transition: transform .85s cubic-bezier(.65,0,.35,1),opacity .35s;
+}
+
+.filterTab.noAnim {
+  transition: none;
+}
+
+.filterDisc {
+  position: relative;
+  width: clamp(36px,3vw,46px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 5px solid #181818;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.12);
+  background: var(--glass);
+  transition: scale .5s cubic-bezier(.65,0,.35,1);
+}
+
+.filterDisc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg,rgba(255,255,255,.38),transparent 46%);
+}
+
+.filterDiscStarburst {
+  --glass: repeating-linear-gradient(0deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),repeating-linear-gradient(-60deg,transparent 0 5px,rgba(40,40,40,.35) 5px 6px),#d7dbdf;
+}
+
+.filterDiscRedVignette {
+  --glass: radial-gradient(circle,#0d0d0d 0 21%,rgba(255,255,255,.7) 22% 25%,#c8423b 26%);
+}
+
+.filterDiscOrange {
+  --glass: #e39a52;
+}
+
+.filterDiscYellow {
+  --glass: #e9de62;
+}
+
+.filterDiscBlue {
+  --glass: #5f93c8;
+}
+
+.filterName {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
   white-space: nowrap;
-  font-family: 'Outfit Black NoOverlap', var(--f-out);
-  font-weight: 900;
-  font-size: 46.875vw; /* Figma Transition-1: 900px / 1920 */
-  line-height: 1.26;
-  letter-spacing: 0;
-  white-space: pre;
-  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(var(--ts));
+  color: var(--c);
+  opacity: 0;
+  transition: opacity .35s;
+}
+
+.filterTab[aria-selected="true"] .filterDisc {
+  scale: 1.32;
+}
+
+.filterTab[aria-selected="true"] .filterName {
+  opacity: 1;
+  transition-delay: .25s;
+}
+
+.filterTab:not([aria-selected="true"]):hover .filterDisc {
+  scale: 1.1;
+}
+
+.filterTab:focus-visible {
+  outline: none;
+}
+
+.filterTab:focus-visible .filterDisc {
+  outline: 2px solid var(--c);
+  outline-offset: 6px;
+}
+
+.filterTab.isFar {
+  opacity: .4;
+}
+
+/* 사진 아래 설명 (내부 구조 섹션의 카메라 아래 문구와 같은 규격) */
+.filtersText {
+  width: min(560px,100%);
+  margin: clamp(8px,2vh,24px) 0 0;
+  text-align: left;
+  font: 700 clamp(18px,1.55vw,26px)/1.3 var(--display);
+  letter-spacing: -.015em;
+  color: #fff;
+}
+
+/* ---------- 4. Polaroid NOW Film (i-2 '우리 필름' 구성) ----------
+   고정된 무대에서 인화 사진이 올라와 현상되며 화면을 채운다. 위치·크기는 NowFilm 이 넣는다. */
+.film {
+  background: var(--bg);
+}
+
+.filmPin {
+  position: relative;
+  height: 320vh;
+  height: 320svh;
+}
+
+.filmStage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.filmHead {
+  position: absolute;
+  top: calc(var(--head) + clamp(56px, 11vh, 120px));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.2vh, 26px);
+  align-items: center;
+  width: 90vw;
+  text-align: center;
+  translate: -50% 0;
+}
+
+.filmEyebrow {
+  margin: 0;
+  color: #f28c28;
+  font: 500 clamp(14px, 1.05vw, 18px) / 1 var(--display);
+}
+
+.filmTitle {
+  margin: 0;
+  color: #fff;
+  font: 800 clamp(40px, 5.4vw, 92px) / 1.04 var(--display);
+  letter-spacing: -0.035em;
+}
+
+.btWord {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.btChar {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100px) scaleY(0.5) rotate(45deg);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.5s ease var(--d),
+    transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d);
+}
+
+.filmTitle.isIn .btChar {
+  opacity: 1;
+  transform: none;
+}
+
+/* JS 가 오기 전 기본 위치: 화면 아래쪽에 살짝 기울어 보인다 */
+.filmPrint {
+  position: absolute;
+  top: 70%;
+  left: 37%;
+  z-index: 2;
+  width: 26vw;
+  aspect-ratio: 88 / 107;
+  background: #f3f1ec; /* 사진을 불러오기 전에도 인화지처럼 보이게 */
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.55),
+    0 4px 12px rgb(0 0 0 / 0.35);
+  transform: rotate(-3deg);
   will-change: transform;
 }
 
-.transitionOutline,
-.transitionFill {
-  grid-area: 1 / 1;
+.filmPrint img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
 }
 
-.transitionOutline {
-  /* Figma: 외곽선 3px OUTSIDE(#F0A137). 가운데 정렬 선 6px 을 그리고 글자 안쪽은 배경색으로 덮어 바깥쪽 3px 만 남긴다 */
-  color: var(--tbg);
-  paint-order: stroke fill;
-  -webkit-text-stroke: calc(6em / 900) var(--now-accent);
-  /* 채워진 부분의 외곽선은 보이지 않도록, 아직 안 채워진 오른쪽만 남긴다 */
-  clip-path: inset(0 0 0 calc(100% - var(--tfill)));
+/* 현상 전: 사진 자리가 흐린 회색으로 덮여 있다가 스크롤에 맞춰 걷힌다 */
+.filmUndev {
+  position: absolute;
+  top: calc(6 / 107 * 100%);
+  left: calc(4.5 / 88 * 100%);
+  width: calc(79 / 88 * 100%);
+  height: calc(79 / 107 * 100%);
+  background: linear-gradient(160deg, #e4e3df, #cfcfcc);
+  pointer-events: none;
 }
 
-/* 같은 글자를 겹쳐 두고 오른쪽부터 잘라 두었다가, 스크롤에 따라 왼쪽 → 오른쪽으로 색이 채워진다 */
-.transitionFill {
-  color: var(--now-accent);
-  clip-path: inset(0 var(--tfill) 0 0);
+.filmCopy {
+  display: flex;
+  justify-content: center;
+  padding: clamp(56px, 10vh, 120px) var(--gut) clamp(96px, 16vh, 180px);
 }
 
+.filmText {
+  width: min(560px, 100%);
+  margin: 0;
+  color: #fff;
+  font: 700 clamp(18px, 1.55vw, 26px) / 1.3 var(--display);
+  letter-spacing: -0.015em;
+}
+
+/* ---------- 6. app ---------- */
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(32px, 6vw, 120px);
+  align-items: center;
+  padding: calc(var(--head) + 4vh) clamp(24px, 9vw, 180px) 5vh;
+  background: var(--bg-2);
+}
+
+.app .eyebrow {
+  margin-bottom: clamp(14px, 2.4vh, 28px);
+}
+
+.app h2 {
+  max-width: 640px;
+  margin: 0;
+  font: var(--t-title);
+  letter-spacing: -0.035em;
+}
+
+.appLinks {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 26px 0 0;
+  font: 400 13px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  color: #cfc9bf;
+}
+
+.appLinks .u {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.appLinks .sep {
+  opacity: 0.5;
+}
+
+.phone {
+  --d: 12s;
+  position: relative;
+  width: clamp(230px, 22vw, 340px);
+  max-height: 82vh;
+  aspect-ratio: 9 / 19.5;
+  padding: 10px;
+  border-radius: clamp(36px, 3.4vw, 52px);
+  background: #1b1b1d;
+  box-shadow:
+    inset 0 0 0 2px #3a3a3e,
+    0 40px 80px rgb(0 0 0 / 0.6);
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: clamp(28px, 2.8vw, 44px);
+  background: #000;
+  container-type: inline-size;
+}
+
+.island {
+  position: absolute;
+  top: calc(10px + 2.6%);
+  left: 50%;
+  z-index: 5;
+  width: 30%;
+  height: 3.6%;
+  border-radius: 99px;
+  background: #000;
+  translate: -50% 0;
+}
+
+.s {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: var(--d) linear infinite;
+}
+
+.status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5.4cqw 8cqw 0;
+  font: 600 4.4cqw / 1 var(--display);
+  color: #fff;
+}
+
+.status i {
+  width: 9cqw;
+  height: 3.6cqw;
+  border-radius: 1cqw;
+  background: #fff;
+}
+
+/* story */
+.sStory {
+  background: #111;
+  animation-name: story;
+}
+
+.storyBg {
+  position: absolute;
+  inset: 0;
+  background: url('https://cdn.sanity.io/images/ieogcuy1/production/1228092e3ce76ea6edaaf862626bc42aca3311ee-4107x5000.jpg?w=400&fm=webp&q=70')
+    center / cover;
+  filter: grayscale(0.2) blur(10px) brightness(0.55);
+  scale: 1.2;
+}
+
+.storyBar {
+  position: absolute;
+  top: 16cqw;
+  right: 5cqw;
+  left: 5cqw;
+  z-index: 3;
+  height: 0.8cqw;
+  overflow: hidden;
+  border-radius: 1cqw;
+  background: rgb(255 255 255 / 0.35);
+}
+
+.storyBar i {
+  display: block;
+  height: 100%;
+  background: #fff;
+  animation: storybar var(--d) linear infinite;
+}
+
+.storyHead {
+  position: absolute;
+  top: 20cqw;
+  right: 5cqw;
+  left: 5cqw;
+  z-index: 3;
+  display: flex;
+  gap: 2.4cqw;
+  align-items: center;
+  font: 700 4.2cqw / 1 var(--display);
+  color: #fff;
+}
+
+.avatar {
+  width: 8cqw;
+  height: 8cqw;
+  border-radius: 50%;
+  background: conic-gradient(var(--red), var(--orange), var(--yellow), var(--green), var(--blue), var(--red));
+}
+
+.storyHead .dot {
+  width: 1.6cqw;
+  height: 1.6cqw;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.storyHead .dots {
+  margin-left: auto;
+}
+
+.storyHead .x,
+.sShare .x {
+  font: 300 7cqw / 1 var(--display);
+  color: #fff;
+}
+
+.storyPrint {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: 68%;
+  box-shadow: 0 4cqw 8cqw rgb(0 0 0 / 0.5);
+  translate: -50% -50%;
+  rotate: -1.5deg;
+}
+
+.storyFoot {
+  position: absolute;
+  right: 5cqw;
+  bottom: 7cqw;
+  left: 5cqw;
+  z-index: 3;
+  display: flex;
+  gap: 3cqw;
+  align-items: center;
+}
+
+.msg {
+  flex: 1;
+  padding: 3cqw 4cqw;
+  border: 0.4cqw solid rgb(255 255 255 / 0.6);
+  border-radius: 99px;
+  font: 500 3.6cqw / 1 var(--display);
+  color: #fff;
+}
+
+.ic {
+  width: 6cqw;
+  height: 6cqw;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+}
+
+.ic.heart {
+  animation: heartfill var(--d) linear infinite;
+}
+
+.popHeart {
+  position: absolute;
+  right: 13cqw;
+  bottom: 14cqw;
+  z-index: 4;
+  width: 16cqw;
+  height: 16cqw;
+  fill: #e0284f;
+  opacity: 0;
+  animation: heartpop var(--d) linear infinite;
+}
+
+/* scan */
+.sScan {
+  background: linear-gradient(#d9d9d6, #bdbdb9);
+  animation-name: scan;
+}
+
+.hold {
+  position: absolute;
+  top: 17cqw;
+  left: 50%;
+  z-index: 3;
+  padding: 1.6cqw 3.4cqw;
+  border-radius: 99px;
+  background: #2fbf5b;
+  font: 600 3.4cqw / 1 var(--display);
+  color: #fff;
+  white-space: nowrap;
+  translate: -50% 0;
+}
+
+.scanFrame {
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  width: 70%;
+  aspect-ratio: 885 / 1071;
+  translate: -50% -50%;
+}
+
+.scanPrint {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: 0 3cqw 6cqw rgb(0 0 0 / 0.25);
+  animation: scanprint var(--d) linear infinite;
+}
+
+.c {
+  position: absolute;
+  width: 12cqw;
+  height: 12cqw;
+  border: 1.2cqw solid #2fbf5b;
+  animation: brackets var(--d) linear infinite;
+}
+
+.tl {
+  top: -5cqw;
+  left: -5cqw;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.tr {
+  top: -5cqw;
+  right: -5cqw;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.bl {
+  bottom: -5cqw;
+  left: -5cqw;
+  border-top: 0;
+  border-right: 0;
+}
+
+.br {
+  right: -5cqw;
+  bottom: -5cqw;
+  border-top: 0;
+  border-left: 0;
+}
+
+.count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 46cqw / 1 var(--display);
+  color: rgb(255 255 255 / 0.92);
+  text-shadow: 0 2cqw 6cqw rgb(0 0 0 / 0.25);
+  opacity: 0;
+  animation: var(--d) linear infinite;
+}
+
+.n3 {
+  animation-name: c3;
+}
+
+.n2 {
+  animation-name: c2;
+}
+
+.n1 {
+  animation-name: c1;
+}
+
+.shutter {
+  position: absolute;
+  right: 8cqw;
+  bottom: 8cqw;
+  width: 16cqw;
+  height: 16cqw;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1.4cqw rgb(255 255 255 / 0.5);
+}
+
+/* share */
+.sShare {
+  background: #3c3c3e;
+  animation-name: share;
+}
+
+.sShare .x {
+  position: absolute;
+  top: 16cqw;
+  right: 6cqw;
+  z-index: 3;
+}
+
+.shareTitle {
+  position: absolute;
+  top: 24cqw;
+  right: 0;
+  left: 0;
+  margin: 0;
+  font: 500 3.8cqw / 1 var(--display);
+  color: #fff;
+  text-align: center;
+}
+
+.shareCards {
+  position: absolute;
+  top: 34cqw;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  animation: sharecards var(--d) linear infinite;
+}
+
+.shareCards img {
+  width: 66%;
+  box-shadow: 0 3cqw 6cqw rgb(0 0 0 / 0.35);
+}
+
+.shareCards .peek {
+  position: absolute;
+  top: 4%;
+  right: -2cqw;
+  width: 10cqw;
+  height: 92%;
+  background: #e9e7e3;
+}
+
+.shareApps {
+  position: absolute;
+  right: 4cqw;
+  bottom: 6cqw;
+  left: 4cqw;
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  padding: 0;
+  font: 500 2.6cqw / 1 var(--display);
+  color: #ddd;
+  text-align: center;
+  list-style: none;
+}
+
+.shareApps li {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqw;
+  align-items: center;
+}
+
+.shareApps i {
+  width: 12cqw;
+  height: 12cqw;
+  border-radius: 3cqw;
+}
+
+.shareApps i.more {
+  background: #e8e8ea radial-gradient(circle, #8e8e93 0.9cqw, transparent 1cqw) 0 0 / 3.6cqw 100% repeat-x;
+  background-position: 2.2cqw 50%;
+}
+
+/* 12초 루프: 스토리 → 스캔(카운트다운) → 공유 → 스토리(하트) */
+@keyframes story {
+  0%, 20% { opacity: 1; }
+  24%, 78% { opacity: 0; }
+  82%, 100% { opacity: 1; }
+}
+
+@keyframes scan {
+  0%, 20% { opacity: 0; }
+  24%, 50% { opacity: 1; }
+  54%, 100% { opacity: 0; }
+}
+
+@keyframes share {
+  0%, 50% { opacity: 0; }
+  54%, 76% { opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
+
+@keyframes storybar {
+  0% { width: 0; }
+  22% { width: 100%; }
+  80% { width: 0; }
+  100% { width: 60%; }
+}
+
+@keyframes scanprint {
+  0%, 24% { transform: rotate(-6deg) scale(0.92); }
+  34%, 100% { transform: rotate(0) scale(1); }
+}
+
+@keyframes brackets {
+  0%, 24% { opacity: 0; transform: scale(1.5); }
+  30% { opacity: 1; }
+  36%, 50% { opacity: 1; transform: scale(1); }
+  54%, 100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes c3 {
+  0%, 35% { opacity: 0; }
+  36%, 40% { opacity: 1; }
+  41%, 100% { opacity: 0; }
+}
+
+@keyframes c2 {
+  0%, 40% { opacity: 0; }
+  41%, 45% { opacity: 1; }
+  46%, 100% { opacity: 0; }
+}
+
+@keyframes c1 {
+  0%, 45% { opacity: 0; }
+  46%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes sharecards {
+  0%, 54% { transform: translateY(8cqw); opacity: 0; }
+  60%, 100% { transform: none; opacity: 1; }
+}
+
+@keyframes heartpop {
+  0%, 84% { opacity: 0; transform: scale(0) rotate(-12deg); }
+  87% { opacity: 1; transform: scale(1.25) rotate(0); }
+  90%, 96% { opacity: 1; transform: scale(1) translateY(-6cqw); }
+  100% { opacity: 0; transform: scale(1) translateY(-14cqw); }
+}
+
+@keyframes heartfill {
+  0%, 85% { fill: none; stroke: #fff; }
+  87%, 100% { fill: #e0284f; stroke: #e0284f; }
+}
+
+/* ---------- 7. store (배경 사진 + 유리 박스, 쇼핑 페이지 이동) ---------- */
+.store {
+  position: relative;
+  height: 120vh;
+  height: 120svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--bg);
+  isolation: isolate;
+}
+
+.storeBg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  filter: grayscale(.45) brightness(.62) contrast(.95);
+}
+
+/* 회색빛으로 가라앉히고,
+위·아래는 페이지 배경과 이어지게 */
+.store::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,0) 18%,rgba(10,10,10,0) 82%,var(--bg) 100%),rgba(28,28,30,.42);
+}
+
+.storeCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: min(1080px,calc(100% - var(--gut) * 2));
+  height: min(820px,82svh);
+  padding: clamp(40px,6vh,72px) clamp(20px,4vw,64px) clamp(32px,5vh,56px);
+  border-radius: clamp(20px,2.4vw,34px);
+  text-align: center;
+  background: linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.1));
+  -webkit-backdrop-filter: blur(26px) saturate(1.15);
+  backdrop-filter: blur(26px) saturate(1.15);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28),0 30px 80px rgba(0,0,0,.35);
+}
+
+/* 위쪽 테두리에 따뜻한 빛이 맺히는 느낌 */
+.storeCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(180deg,rgba(246,214,150,.85),rgba(255,255,255,.18) 14%,rgba(255,255,255,0) 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.storeTop {
+  margin: 0;
+  font: 500 clamp(18px,2.3vw,40px)/1.12 var(--display);
+  letter-spacing: -.025em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.storeLink {
+  font: italic 400 clamp(26px,3.1vw,50px)/1.1 'Playfair Display',Georgia,serif;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+
+/* 박스 전체를 눌러도 이동 */
+.storeLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.storeNowrap {
+  white-space: nowrap;
+}
+
+.storeArrow {
+  display: inline-block;
+  margin-left: .35em;
+  font: 400 .8em/1 var(--display);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+
+.storeCard:hover .storeArrow,
+.storeLink:focus-visible .storeArrow {
+  transform: translateX(8px);
+}
+
+.storeLink:focus-visible {
+  outline: none;
+}
+
+.storeCard:has(.storeLink:focus-visible) {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.storeBottom {
+  margin: 0;
+  font: 600 clamp(36px,6.4vw,108px)/.95 var(--display);
+  letter-spacing: -.04em;
+  color: rgba(255,255,255,.62);
+}
+
+/* 화면에는 숨기고 스크린리더만 읽는 글 */
 .srOnly {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
-/* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
-.page .filters {
-  aspect-ratio: 1920 / 1194;
-  background: #151515; /* Figma 07 Filter Showcase: 단색 #151515 (Transition-2 와 동일) */
-}
-
-.filterEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 959.5;
-  --y: 153;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.filterHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 959.5;
-  --y: 208;
-  --fs: 70;
-  --ls: -2;
-  line-height: calc(91 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.filterDescription {
-  composes: pos from './components/stage.module.css';
-  --x: 317;
-  --y: 634;
-  width: calc(1287 * var(--u));
-  margin: 0;
-  font-family: var(--f-out);
-  font-size: calc(26 * var(--u));
-  font-weight: 200;
-  letter-spacing: calc(-0.4 * var(--u));
-  line-height: calc(33.8 * var(--u));
-  color: #fff;
-}
-
-.filterPrint {
-  composes: pos size from './components/stage.module.css';
-  --x: 763;
-  --y: 476;
-  --w: 396;
-  --h: 482;
-  transition: background-color 0.4s ease;
-}
-
-.filterPreview {
-  composes: pos size from './components/stage.module.css';
-  --x: 786;
-  --y: 503;
-  --w: 351;
-  --h: 351;
-  max-width: none;
-  object-fit: cover;
-}
-
-.filterCardLabel {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 899;
-  --fs: 17;
-  --ls: 1.4;
-  line-height: calc(17 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #1c1c1c;
-}
-
-.filterDisc {
-  composes: pos from './components/stage.module.css';
-  box-sizing: border-box;
-  width: calc(var(--d) * var(--u));
-  height: calc(var(--d) * var(--u));
-  padding: 0;
-  border: calc(4.57 * var(--u)) solid #181818;
-  border-radius: 50%;
-  cursor: pointer;
-  transition:
-    opacity 0.3s ease,
-    left 0.3s ease,
-    top 0.3s ease,
-    width 0.3s ease,
-    height 0.3s ease;
-}
-
-.filterDisc:focus-visible {
-  outline: calc(2 * var(--u)) solid var(--now-accent);
-  outline-offset: calc(3 * var(--u));
-}
-
-.filterDiscLabel {
-  composes: pos text center from './components/stage.module.css';
-  --y: 1074.4;
-  --fs: 12;
-  --ls: 1;
-  line-height: calc(12 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: #eceef0;
+/* ---------- reveal ---------- */
+.rv {
   opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.filterDiscLabelOn {
-  opacity: 1;
-}
-
-/* ───────── 08 App Promo (프레임 1920×1583) ───────── */
-.page .appPromo {
-  aspect-ratio: 1920 / 1583;
-  background: #151515;
-}
-
-.phoneBody {
-  composes: pos size from './components/stage.module.css';
-  --x: 290;
-  --y: 463;
-  --w: 334.7;
-  --h: 725.2;
-  border-radius: calc(52 * var(--u));
-  background: #1b1b1d;
-}
-
-.phoneScreen,
-.phoneStory {
-  composes: pos size from './components/stage.module.css';
-  --x: 299.8;
-  --y: 472.8;
-  --w: 315;
-  --h: 705.5;
-  border-radius: calc(44 * var(--u));
-  background: #000;
-}
-
-.phoneStory {
-  max-width: none;
-  object-fit: cover;
-}
-
-.statusTime {
-  composes: pos text from './components/stage.module.css';
-  --x: 325;
-  --y: 488.7;
-  --fs: 14.1;
-  --ls: 0;
-  line-height: calc(14.1 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 600;
-  color: #030303;
-}
-
-.battery {
-  composes: pos size from './components/stage.module.css';
-  --x: 561.3;
-  --y: 491.1;
-  --w: 28.3;
-  --h: 11.3;
-  border-radius: calc(3.2 * var(--u));
-  background: #030303;
-}
-
-.storyBar,
-.storyProgress {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 523.2;
-  --w: 283.5;
-  --h: 2.6;
-  border-radius: calc(1.3 * var(--u));
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.storyProgress {
-  --w: 78;
-  background: #fff;
-}
-
-.avatar {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 535.8;
-  --w: 25.2;
-  --h: 25.2;
-  border-radius: 50%;
-  background: conic-gradient(#e3412b, #ff8200, #f6c243, #74b544, #1d92d2, #e3412b);
-}
-
-.profileName {
-  composes: pos text from './components/stage.module.css';
-  --x: 348.4;
-  --y: 540.7;
-  --fs: 13.4;
-  line-height: calc(13.4 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.profileDot {
-  composes: pos size from './components/stage.module.css';
-  --x: 414.6;
-  --y: 545.9;
-  --w: 5;
-  --h: 5;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.storyMore {
-  composes: pos text from './components/stage.module.css';
-  --x: 564.5;
-  --y: 540.7;
-  --fs: 13.4;
-  line-height: calc(13.4 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 700;
-  color: #fff;
-}
-
-.storyClose {
-  composes: pos text from './components/stage.module.css';
-  --x: 585.3;
-  --y: 536.2;
-  --fs: 22.4;
-  line-height: calc(22.4 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 300;
-  color: #fff;
-}
-
-.island {
-  composes: pos size from './components/stage.module.css';
-  --x: 407.1;
-  --y: 491.6;
-  --w: 100.4;
-  --h: 26.1;
-  border-radius: calc(13.3 * var(--u));
-  background: #000;
-}
-
-.messageBox {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 1123.7;
-  --w: 198.4;
-  --h: 32.5;
-  box-sizing: border-box;
-  border: calc(1.14 * var(--u)) solid #0f0f0f;
-  border-radius: calc(16.5 * var(--u));
-}
-
-.messageText {
-  composes: pos text from './components/stage.module.css';
-  --x: 329.3;
-  --y: 1133.7;
-  --fs: 11.5;
-  line-height: calc(11.5 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #000;
-}
-
-.phoneIcon {
-  composes: pos from './components/stage.module.css';
-  --y: 1130.5;
-  width: calc(18.9 * var(--u));
-  height: calc(18.9 * var(--u));
-  color: #0f0f0f;
-}
-
-.appEyebrow,
-.appHeading,
-.appDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 1629.7;
-  transform: translateX(-100%);
-  text-align: right;
-  color: #fff;
-}
-
-.appEyebrow {
-  --y: 463;
-  --fs: 18;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.appHeading {
-  --y: 508;
-  --fs: 70;
-  --ls: -2;
-  line-height: calc(91 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-}
-
-.appDescription {
-  --y: 717;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-}
-
-.storeIcon {
-  composes: pos size from './components/stage.module.css';
-  --y: 877;
-  --w: 60;
-  --h: 60;
-  border-radius: calc(13.3 * var(--u));
-  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.6) 100%), #fffaec;
-}
-
-.storeIconApple {
-  --x: 1478.7;
-}
-
-.storeIconGoogle {
-  --x: 1567.7;
-}
-
-.storeGlyph {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.storeGlyphGoogle {
-  position: absolute;
-  left: calc(14 * var(--u));
-  top: calc(11.5 * var(--u));
-  width: calc(31 * var(--u));
-  height: calc(36 * var(--u));
-}
-
-.storeLabel {
-  composes: pos text from './components/stage.module.css';
-  --y: 955;
-  --fs: 13;
-  --ls: 0.5;
-  line-height: calc(13 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #cfc9bf;
-}
-
-.storeDownload {
-  --x: 1356.7;
-}
-
-.storeIos {
-  --x: 1508.2;
-  transform: translateX(-50%);
-  text-align: center;
-}
-
-.storeDivider {
-  --x: 1548.7;
-  font-family: var(--f-mono);
-  opacity: 0.5;
-}
-
-.storeAndroid {
-  --x: 1567.7;
-}
-
-/* ───────── 09 Purchase CTA ───────── */
-.purchaseBrackets {
-  --x: 875;
-  --y: 104;
-  --w: 170;
-  --h: 71;
-  --arm: 20;
-  --stroke: 1;
-  --bracket-color: #19140c;
-}
-
-.purchaseWordmark {
-  composes: pos text center from './components/stage.module.css';
-  --x: 961;
-  --y: 112;
-  --fs: 64;
-  --ls: -3.2;
-  line-height: calc(50 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #19140c;
-}
-
-.purchaseHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 201;
-  --fs: 20;
-  --ls: -1.5;
-  line-height: calc(50 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #19140c;
-}
-
-/* 스크롤 구간: 화면 높이 + 사진 줄이 지나가는 만큼. 안쪽 화면은 sticky 로 고정한다 */
-.purchaseTrack {
-  position: relative;
-  height: 260vh;
-  background: #fff9e8; /* Figma 09: 크림색 배경(Rectangle 1), 배경 사진은 끔 */
-  color: #19140c;
-}
-
-.purchaseSticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.purchaseSticky > section {
-  width: min(100%, calc(100vh * 1920 / 1080));
-}
-
-/* Figma "photo list": 왼쪽 0 에서 시작, 간격 99, 스크롤 진행도(--p)만큼 왼쪽으로 이동 */
-.purchaseList {
-  position: absolute;
-  left: 0;
-  top: calc(292 * var(--u));
-  display: flex;
-  align-items: center;
-  gap: calc(var(--gap) * var(--u));
-  transform: translateX(calc(var(--p, 0) * var(--travel) * -1 * var(--u)));
-  will-change: transform;
-}
-
-.purchaseShot {
-  flex: none;
-  width: calc(var(--w) * var(--u));
-  height: calc(573 * var(--u));
-  max-width: none;
-  object-fit: cover;
-}
-
-.purchaseButton {
-  position: absolute;
-  left: calc(50% - 1.5 * var(--u));
-  top: calc(919 * var(--u));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(137 * var(--u));
-  height: calc(41 * var(--u));
-  padding: 0 calc(60 * var(--u));
-  transform: translateX(-50%);
-  background: #19140c;
-  color: #fff;
-  font-family: var(--f-pre);
-  font-size: calc(14 * var(--u));
-  font-weight: 500;
-  letter-spacing: calc(-1 * var(--u));
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-/* ───────── 10 Polaroid Go Film ───────── */
-.page .goFilm {
-  background: #151515;
-}
-
-.goFilmEyebrow {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 142;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.goFilmTitle {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 169;
-  --fs: 80;
-  --ls: 0;
-  line-height: calc(88 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.goFilmDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 389;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #fff;
-}
-
-.goFilmDescription strong {
-  font-weight: 600;
-}
-
-.goFilmButton {
-  composes: pos size from './components/stage.module.css';
-  --x: 341;
-  --y: 540;
-  --w: 160;
-  --h: 48;
-  box-sizing: border-box;
-  padding: 0;
-  border: calc(1 * var(--u)) solid #fff;
-  background: transparent;
-  color: #fff;
-  font-family: var(--f-pre);
-  font-size: calc(14 * var(--u));
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.goFilmTabLine {
-  composes: pos size from './components/stage.module.css';
-  --x: 1113;
-  --y: 142;
-  --w: 107;
-  --h: 70.1;
-  box-sizing: border-box;
-  border-bottom: calc(2 * var(--u)) solid var(--now-accent);
-}
-
-.goFilmTab {
-  composes: pos text from './components/stage.module.css';
-  --x: 1114;
-  --y: 166.6;
-  --fs: 25;
-  --ls: 0;
-  line-height: calc(25 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.goFilmPanel {
-  composes: pos size from './components/stage.module.css';
-  --x: 1113;
-  --y: 239.1;
-  --w: 483;
-  --h: 621;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.goFilmCaption {
-  composes: pos text center from './components/stage.module.css';
-  --x: 1355;
-  --y: 275.1;
-  --fs: 18;
-  --ls: 0;
-  line-height: calc(21 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 400;
-  color: #fff;
-}
-
-.goFilmPack {
-  composes: pos size from './components/stage.module.css';
-  --x: 1190.2;
-  --y: 364.6;
-  --w: 330.6;
-  --h: 279.7;
-  max-width: none;
-  object-fit: contain;
-}
-
-.goFilmThumbTile {
-  composes: pos size from './components/stage.module.css';
-  --y: 716.1;
-  --w: 81.6;
-  --h: 81.6;
-  background: #fff;
-}
-
-.goFilmThumbTileDim {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.goFilmThumb1,
-.goFilmThumb2 {
-  composes: pos size from './components/stage.module.css';
-  --y: 734.4;
-  --w: 57.2;
-  --h: 48.4;
-  max-width: none;
-  object-fit: contain;
-}
-
-.goFilmThumb1 {
-  --x: 1290.2;
-}
-
-.goFilmThumb2 {
-  --x: 1378.9;
-}
-
-/* 이미지 파일이 아직 없을 때 보이는 자리표시자 */
-.imageSlot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  color: rgba(255, 255, 255, 0.55);
-  font-family: var(--f-mono);
-  font-size: calc(11 * var(--u));
-  text-align: center;
-  word-break: break-all;
-}
-
-/* ───────── 11 Discover More ───────── */
-.page .discover {
-  background: #151515;
-}
-
-.discoverEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 238;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.discoverHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 265;
-  --fs: 80;
-  --ls: 0;
-  line-height: calc(88 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.discoverDescription {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 397;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #fff;
-}
-
-.discoverList {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cardFrame {
-  composes: pos size from './components/stage.module.css';
-  --x: 270;
-  --y: 653;
-  --w: 228;
-  --h: 212;
-  overflow: visible;
-}
-
-.cardPhoto {
-  composes: pos size from './components/stage.module.css';
-  max-width: none;
-  object-fit: contain;
-  opacity: 0.5;
-}
-
-.cardPhotoActive {
-  opacity: 1;
-}
-
-.cardLabel {
-  composes: pos text center from './components/stage.module.css';
-  --y: 895;
-  --fs: 24;
-  --ls: 0;
-  line-height: calc(30 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 200;
-  color: #fff;
-}
-
-.cardLabelActive {
-  font-weight: 500;
-}
-
-/* ───────── 12 Footer ───────── */
-.page .footer {
-  background: #151515;
-}
-
-.footerLogo {
-  composes: pos size from './components/stage.module.css';
-  --x: 64;
-  --y: 454;
-  --w: 102;
-  --h: 28;
-  max-width: none;
-}
-
-.footerTagline {
-  composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 494;
-  --fs: 16;
-  --ls: -0.8;
-  line-height: calc(22.4 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 400;
-  color: #fff;
-}
-
-.footerCopyright {
-  composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 570;
-  --fs: 12;
-  --ls: -1;
-  line-height: calc(16.8 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 200;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.footerWordmark {
-  composes: pos size from './components/stage.module.css';
-  --x: 64;
-  --y: 751;
-  --w: 940;
-  --h: 258;
-  max-width: none;
-}
-
-.footerColumn {
-  composes: pos from './components/stage.module.css';
-  --y: 808;
-}
-
-.footerColumn ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.footerHeading {
-  margin: 0 0 calc(10 * var(--u));
-  font-family: var(--f-out);
-  font-size: calc(16 * var(--u));
-  font-weight: 500;
-  line-height: calc(22.4 * var(--u));
-  white-space: nowrap;
-  color: #fff;
-}
-
-.footerItem {
-  font-family: var(--f-out);
-  font-size: calc(14 * var(--u));
-  font-weight: 200;
-  line-height: calc(23 * var(--u));
-  white-space: nowrap;
-  color: #fff;
-}
-
-/* ───────── 글자 등장 효과 (KINORIA 글자 등장 값) ─────────
- * data-reveal 은 CameraNowPage.jsx 의 useTextReveal 이 글자 줄마다 붙이고, 화면에 들어오면 data-in 이 붙는다.
- * transform 은 가운데 정렬(translateX)이 쓰고 있어서 올라오는 이동은 별도 속성인 translate 로 준다. */
-.page [data-reveal] {
-  opacity: 0;
-  filter: blur(10px);
-  translate: 0 1em;
+  transform: translateY(28px);
   transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.page [data-reveal][data-in] {
+.rv.in {
   opacity: 1;
-  filter: blur(0);
-  translate: 0 0;
+  transform: none;
 }
 
-/* 01 Hero 그라데이션: 글자와 같은 타이밍으로 아래에서 올라오며 나타난다 */
-.page .heroGradient[data-reveal] {
-  filter: none;
-  translate: 0 calc(90 * var(--u));
+/* ---------- responsive ---------- */
+@media (max-width: 1024px) {
+  .app {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .appLinks {
+    justify-content: center;
+  }
+
+  .phone {
+    width: auto;
+    height: 62vh;
+    max-height: 62vh;
+  }
 }
 
-.page .heroGradient[data-reveal][data-in] {
-  translate: 0 0;
+@media (max-width: 640px) {
+  .heroPh {
+    top: calc(var(--head) + 20px);
+    bottom: auto;
+  }
+
+  .phone {
+    height: 54vh;
+    max-height: 54vh;
+  }
+
+  .featRow {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 46svh;
+    height: auto;
+    min-height: 0;
+  }
+
+  .featRowFlip .featInfo {
+    order: 0;
+  }
+
+  .featInfo {
+    padding-top: 56px;
+  }
+
+  .featMedia {
+    width: min(78vw, 360px);
+    height: auto;
+  }
+
+  .storeTop br {
+    display: none;
+  }
 }
 
-/* 작은 프레임이 0 → 원래 크기로 커진다. 글자는 프레임 안에서 살짝 커지며 나온다 */
-.page [data-frame] {
-  transform: scale(0);
-  transition: transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.page [data-frame][data-in] {
-  transform: scale(1);
-}
-
-.page [data-reveal][data-pop] {
-  scale: 0.6;
-  translate: none; /* 아래에서 올라오지 않고 제자리(프레임 가운데)에서 커진다 */
-  transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    scale 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
-}
-
-.page [data-reveal][data-pop][data-in] {
-  scale: 1;
-  translate: none;
-}
-
-/* 가운데 정렬(translateX(-50%))을 쓰는 글자 상자는 scale 을 transform 안에 같이 넣어 중앙에서 커지게 한다 */
-.page [data-reveal][data-pop='self'] {
-  scale: none;
-  translate: none;
-  transform: translateX(-50%) scale(0.6);
-  transform-origin: 50% 50%;
-  transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
-}
-
-.page [data-reveal][data-pop='self'][data-in] {
-  transform: translateX(-50%) scale(1);
-}
-
+/* 동작 줄이기: 스크롤 연출·루프 애니메이션 끄고 정지 상태로 */
 @media (prefers-reduced-motion: reduce) {
-  .page [data-frame],
-  .page [data-frame][data-in] {
+  .rv {
+    opacity: 1;
     transform: none;
     transition: none;
   }
 
-  .page [data-reveal][data-pop],
-  .page [data-reveal][data-pop][data-in] {
-    scale: none;
+  .cutaway {
+    height: 100vh;
+    height: 100svh;
   }
 
-  .page [data-reveal][data-pop='self'],
-  .page [data-reveal][data-pop='self'][data-in] {
-    transform: translateX(-50%);
+  .filmPin {
+    height: auto;
   }
 
-  .page [data-reveal] {
-    opacity: 1;
-    filter: none;
+  .filmStage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6vh;
+    align-items: center;
+    height: auto;
+    padding: calc(var(--head) + 10vh) 0 0;
+  }
+
+  .filmHead {
+    position: static;
     translate: none;
-    transition: none;
+  }
+
+  .filmPrint {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(420px, 70vw);
+    transform: none;
+  }
+
+  .filmUndev {
+    display: none;
+  }
+
+  .btChar {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .filterPrint,
+  .filterTab,
+  .filterDisc,
+  .storeArrow {
+    transition: none !important;
+  }
+
+  .s,
+  .storyBar i,
+  .scanPrint,
+  .c,
+  .count,
+  .shareCards,
+  .popHeart,
+  .ic.heart {
+    animation: none;
+  }
+
+  .sScan {
+    opacity: 1;
+  }
+
+  .n1 {
+    opacity: 1;
   }
 }

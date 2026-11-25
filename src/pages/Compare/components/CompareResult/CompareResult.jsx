@@ -30,6 +30,7 @@ function ProductCard({ rank, product }) {
       </div>
 
       <div className={styles.summary}>
+        {product.badge ? <span className={styles.badge}>{product.badge}</span> : null}
         <div className={styles.titleRow}>
           <h3 className={styles.name}>
             {product.name}
@@ -100,9 +101,10 @@ function ProductCard({ rank, product }) {
  * 추천 결과 — STEP 1~3 을 모두 마친 뒤 나타난다.
  * 추천 카메라 3개를 규칙표 순서대로 보여 준다.
  * 순위는 규칙표(data/compareRecommendations.js)를 그대로 따르며, 공식 폴라로이드 추천이 아닌 프로젝트의 초기 추천안이다.
+ * 카드 아래의 "다시보기"(onRetry)를 누르면 처음 질문으로 돌아간다.
  * 제품 상세페이지가 정해지지 않은 카메라(detailPath 가 null)의 버튼은 연결 전 상태로 둔다.
  */
-const CompareResult = forwardRef(function CompareResult({ selection }, ref) {
+const CompareResult = forwardRef(function CompareResult({ selection, onRetry }, ref) {
   const recommendations = getRecommendations(selection);
 
   return (
@@ -112,6 +114,14 @@ const CompareResult = forwardRef(function CompareResult({ selection }, ref) {
           <ProductCard key={product.id} rank={rank} product={product} />
         ))}
       </div>
+      {onRetry ? (
+        <div className={styles.actions}>
+          {/* 시안(Figma 2374:1412): 카드 아래 가운데의 주황 "다시보기" — 누르면 처음 질문(채팅)으로 돌아간다 */}
+          <button type="button" className={`${styles.compare} ${styles.retry}`} onClick={onRetry}>
+            다시보기
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 });

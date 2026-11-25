@@ -63,6 +63,7 @@ export const COMPARE_PRODUCTS = {
     generation: 'Generation 3',
     price: '₩ 229,000',
     summary: '간편한 촬영으로 일상의 순간을 기록하는 기본 모델',
+    badge: '입문자용', // 카드 이미지 아래 주황 라벨 (Figma 2374:1505). 시안에 라벨이 있는 모델만 둔다
     image: productNow,
     imageSize: { width: 159, height: 159 },
     defaultColor: 'white',
@@ -110,6 +111,7 @@ export const COMPARE_PRODUCTS = {
     generation: null,
     price: '₩ 399,000',
     summary: '자동 초점과 노출 경고로 촬영을 도와주는 카메라',
+    badge: '전문가용', // Figma 2374:1507
     image: productFlip,
     imageSize: { width: 156, height: 156 },
     defaultColor: 'white',

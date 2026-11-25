@@ -16,6 +16,7 @@ const BOT_REPLY_DELAY = 700;
  * INTRO_RISE: 설명 글이 올라오는 시간(CompareChat.module.css 의 --chat-intro-rise 와 같은 값). 거리·곡선도 그쪽 변수에 있다.
  */
 const INTRO_RISE = 600;
+const INTRO_HOLD = 700; // 설명 글이 다 나타난 뒤 문구를 읽을 수 있게 머무르는 시간(이 뒤에 문구가 사라지고 첫 질문이 나온다)
 
 /**
  * 안내 제목 타이핑 모션 — Framer 'AnimatedTextRotator' 의 Typewriter 를 측정한 값(얇은 막대 커서)을 따르되, 글자당 간격은 레퍼런스(≈65ms)보다 빠르게 45ms 로 잡았다.
@@ -220,7 +221,7 @@ export default function CompareChat({ steps, answers, stepIndex, onChoose }) {
   // 제목 타이핑이 끝나면 설명 글을 올리고, 다 올라온 뒤에 첫 질문을 띄운다.
   const handleTitleDone = () => {
     setTextOn(true);
-    setTimeout(() => setIntroDone(true), window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : INTRO_RISE);
+    setTimeout(() => setIntroDone(true), window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : INTRO_RISE + INTRO_HOLD);
   };
 
   // 입력창이 화면에 들어오기 시작하면 첫 질문을 띄운다. 히어로 아래에 있어서 페이지를 열자마자 끝나 버리지 않게 하려는 것이다.

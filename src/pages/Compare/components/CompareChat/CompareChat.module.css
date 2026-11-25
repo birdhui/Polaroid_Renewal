@@ -1,7 +1,7 @@
 /*
  * 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고.
- * 시안: 화면 1920×1080 / "Find" 위 123 / 카드 폭 966·높이 785·위 185·모서리 30 / 입력창 폭 877·높이 143·카드 아래에서 53.
- * 섹션은 1920×1080 한 화면에 꼭 맞는 높이(185 + 785 + 110 = 1080)다.
+ * 시안(2021:1177): 화면 1920×1080 / "Find" 위 187 / 카드 폭 782·높이 643·위 245·모서리 44 / 입력창 폭 722·높이 112·카드 아래에서 28.
+ * 섹션은 1920×1080 한 화면에 꼭 맞는 높이(245 + 643 + 192 = 1080)다.
  * 모든 치수는 --s(= 시안의 1px 이 지금 화면에서 몇 px 인지)를 곱해서 시안 비율 그대로 화면 폭·높이에 맞춰 줄어든다.
  * 글자는 너무 작아지지 않도록 최소 크기를 둔다. --s 는 0.6px 아래로는 줄지 않고(폭 약 1150px 이하),
  * 600px 이하(모바일)에서는 시안 px 그대로 쓰면서 따로 맞춘다.
@@ -32,21 +32,21 @@
   --chat-answer: #f2ca95; /* 답변 말풍선 기본(연한 주황) */
   --chat-answer-strong: #f3a133; /* 답변 호버·선택, 직접 입력 점선 (진한 주황) */
 
-  /* 시안 치수: 입력창 높이 143, 카드 아래 여백 53 (--s 를 곱한다) */
+  /* 시안 치수: 입력창 높이 112, 카드 아래 여백 28 (--s 를 곱한다) */
   --s: clamp(0.6px, var(--u), 1px);
-  --chat-bar-height: calc(143 * var(--s));
-  --chat-card-pad-bottom: calc(53 * var(--s));
+  --chat-bar-height: calc(112 * var(--s));
+  --chat-card-pad-bottom: calc(28 * var(--s));
 
   position: relative;
-  padding: calc(185 * var(--s)) 16px calc(110 * var(--s));
+  padding: calc(245 * var(--s)) 16px calc(192 * var(--s));
   background: var(--compare-beige);
   color: var(--compare-ink);
 }
 
-/* 시안: Outfit Regular 20 / 자간 -0.9 / 위에서 123 */
+/* 시안: Outfit Regular 20 / 자간 -0.9 / 위에서 187 */
 .title {
   position: absolute;
-  top: calc(123 * var(--s));
+  top: calc(187 * var(--s));
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--compare-font-display);
@@ -58,37 +58,38 @@
   white-space: nowrap;
 }
 
-/* 흰 카드 — 시안: 흰색 80% · 폭 966·높이 785·모서리 30 / 안쪽 좌우 44(입력창 폭 877). */
+/* 흰 카드 — 시안: 흰색 · 폭 782·높이 643·모서리 44 · 테두리 없음 / 안쪽 좌우 30(입력창 폭 722) / 그림자 2겹 */
 .card {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  width: min(calc(966 * var(--s)), 100%);
-  height: calc(785 * var(--s)); /* 대화가 길어져도 카드 높이는 그대로 두고, 말풍선 영역 안에서 스크롤한다 */
+  width: min(calc(782 * var(--s)), 100%);
+  height: calc(643 * var(--s)); /* 대화가 길어져도 카드 높이는 그대로 두고, 말풍선 영역 안에서 스크롤한다 */
   margin: 0 auto;
-  padding: calc(32 * var(--s)) calc(44 * var(--s)) var(--chat-card-pad-bottom); /* 위쪽 여백: 대화가 길어져 스크롤될 때 말풍선이 카드 모서리에 닿아 잘려 보이지 않게 */
-  border-radius: calc(30 * var(--s));
-  background: var(--compare-card);
-  /* 시안: 선 #151515 50% · 안쪽 · 두께 1 (안쪽 선이라 크기가 변하지 않도록 inset 그림자로 그린다) */
-  box-shadow: inset 0 0 0 1px var(--compare-card-stroke);
+  padding: calc(32 * var(--s)) calc(30 * var(--s)) var(--chat-card-pad-bottom); /* 위쪽 여백: 대화가 길어져 스크롤될 때 말풍선이 카드 모서리에 닿아 잘려 보이지 않게 */
+  border-radius: calc(44 * var(--s));
+  background: #fff;
+  /* 시안 Drop shadow 2겹: (X 0 · Y 14 · Blur 18.5 · 빛 #cec7b4 25%) + (X 0 · Y 5 · Blur 36.4 · #cec7b4 55%) */
+  box-shadow:
+    0 calc(14 * var(--s)) calc(18.5 * var(--s)) 0 rgb(206 199 180 / 25%),
+    0 calc(5 * var(--s)) calc(36.4 * var(--s)) 0 rgb(206 199 180 / 55%);
 }
 
 /*
  * 안내 문구 — 카드 위쪽에 고정돼 있고, 첫 질문이 떠도 남아 있다. 선택지를 누르면 위로 올라가며 사라진다.
- * 위치: 카드 위에서 106 (캡처한 시안 이미지에서 잰 값이라 대략적이다)
- * 시안: 제목 Outfit Medium 36 / 줄 64.4 / 자간 -2, 설명 Pretendard Light 16 / 줄 1.3 / 자간 -0.32, 제목과 설명 사이 18
+ * 시안(2021:1177): 제목 이미지 상자 420×140이 카드 위에서 28 / 설명 Pretendard Light 18 · 줄 1.4 · 자간 -0.36 이 카드 위에서 148(제목 상자와 20 겹친다)
  */
 .intro {
   position: absolute;
-  top: calc(106 * var(--s));
+  top: calc(28 * var(--s));
   right: 0;
   left: 0;
   padding: 0 16px;
   text-align: center;
   pointer-events: none;
   transition:
-    opacity 250ms ease, /* 문구는 말풍선이 자리를 잡기 전에 거의 다 옅어진다 */
+    opacity 200ms ease, /* 문구는 말풍선이 자리를 잡기 전에 거의 다 옅어진다 */
     transform var(--chat-intro-exit-duration) var(--chat-ease-out),
     visibility 0s linear var(--chat-intro-exit-duration);
 }
@@ -100,6 +101,11 @@
 }
 
 .introTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(140 * var(--s)); /* 시안(2021:1177) 제목 상자 높이 140 — 글자는 그 가운데에 놓인다 */
+  margin: 0;
   font-family: var(--compare-font-display);
   font-size: max(calc(36 * var(--s)), 24px);
   font-weight: 500;
@@ -152,14 +158,14 @@
 }
 
 .introText {
-  margin-top: calc(18 * var(--s));
+  margin-top: calc(-20 * var(--s));
   transition:
     opacity var(--chat-intro-rise) var(--chat-ease-out),
     transform var(--chat-intro-rise) var(--chat-ease-out);
   font-family: var(--compare-font-ko);
-  font-size: max(calc(16 * var(--s)), 13px);
+  font-size: max(calc(18 * var(--s)), 13px);
   font-weight: 300;
-  line-height: 1.3;
+  line-height: 1.4;
   letter-spacing: -0.02em;
   color: #000;
   word-break: keep-all;
@@ -239,7 +245,7 @@
   font-family: var(--compare-font-ko);
   font-size: max(calc(15 * var(--s)), 12px);
   font-weight: 500;
-  line-height: normal;
+  line-height: 1.2; /* 글씨 15 에 줄 높이 18 → 위아래 여백 16씩 더해 높이 50 (Figma 말풍선 345x50). 글꼴에 따라 높이가 달라지지 않게 고정 */
   letter-spacing: -0.02em;
   word-break: keep-all;
   /* backwards: 시작 전(지연 중)에는 첫 장면(숨김)을 유지하고, 끝나면 기본 스타일로 돌아온다 */
@@ -400,7 +406,7 @@
   font-family: var(--compare-font-ko);
   font-size: max(calc(15 * var(--s)), 12px);
   font-weight: 500;
-  line-height: normal;
+  line-height: 1.2; /* 글씨 15 에 줄 높이 18 → 위아래 여백 16씩 더해 높이 50 (Figma 말풍선 345x50). 글꼴에 따라 높이가 달라지지 않게 고정 */
   letter-spacing: -0.02em;
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -458,8 +464,8 @@
 
 /*
  * 입력창 — 직접 답을 써서 보낼 수 있다. (Enter 로 전송, Shift+Enter 는 줄바꿈)
- * 시안: 바깥 폭 877·높이 143·모서리 20·테두리 #f3f3f3 / 안쪽 테두리 #e1e4ea·모서리 20·안쪽 여백 12
- * 글자 16 / 줄 1.5 / 자간 -0.176 / #99a0ae, 아이콘 20·16 사이 간격 10, 맨 왼쪽 위에 가는 세로 줄(커서)
+ * 시안(2021:1181): 폭 722·높이 112·모서리 20·테두리 #ebebeb 1·안쪽 여백 20·줄 사이 10 / 그림자 drop-shadow X 0 · Y 13 · Blur 11.4 · #000 6%
+ * 글자 16 / 줄 1.5 / 자간 -0.176 / #b2b2b2, 마이크·전송 아이콘 칸 36 사이 가는 세로선(높이 28), 맨 왼쪽에 가는 세로 줄(커서 20)
  */
 .bar {
   position: relative;
@@ -468,9 +474,10 @@
   flex-direction: column;
   justify-content: center;
   height: var(--chat-bar-height);
-  border: 1px solid var(--compare-bar-outline);
+  border: 1px solid #ebebeb;
   border-radius: calc(20 * var(--s));
   background: #fff;
+  filter: drop-shadow(0 calc(13 * var(--s)) calc(11.4 * var(--s)) rgb(0 0 0 / 6%));
 }
 
 .barInner {
@@ -480,14 +487,14 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 0;
-  padding: calc(12 * var(--s));
-  border: 1px solid var(--compare-bar-border);
-  border-radius: calc(20 * var(--s));
+  padding: calc(20 * var(--s));
+  gap: calc(10 * var(--s));
   background: #fff;
+  border-radius: inherit;
 }
 
 .barInner:focus-within {
-  border-color: var(--compare-bar-text);
+  box-shadow: inset 0 0 0 1px var(--compare-bar-text);
 }
 
 /* 글 입력 칸 — 안내 글(placeholder)은 시안의 "메세지를 입력해주세요." 와 같은 모양이다. */
@@ -506,11 +513,12 @@
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: -0.011em;
+  padding-left: calc(10 * var(--s)); /* 맨 앞 가는 줄(커서) 옆: 시안은 줄 + 간격 6 + 글자 앞 공백 */
   resize: none;
 }
 
 .input::placeholder {
-  color: var(--compare-bar-text);
+  color: #b2b2b2;
   opacity: 1;
 }
 
@@ -518,15 +526,15 @@
   cursor: not-allowed;
 }
 
-/* 글자 앞의 가는 세로 줄(커서). 시안: 왼쪽 9·위 13·높이 20. 입력칸이 비어 있고 포커스가 없을 때만 보이고, 입력 중엔 진짜 커서가 대신한다. */
+/* 글자 앞의 가는 세로 줄(커서). 시안: 입력창 안쪽 왼쪽 20·위 22(글줄 24 가운데)·높이 20. 입력칸이 비어 있고 포커스가 없을 때만 보이고, 입력 중엔 진짜 커서가 대신한다. */
 .barCaret {
   display: none;
   position: absolute;
-  top: calc(13 * var(--s));
-  left: calc(9 * var(--s));
+  top: calc(22 * var(--s));
+  left: calc(20 * var(--s));
   width: 1px;
   height: calc(20 * var(--s));
-  background: var(--compare-bar-text);
+  background: #b2b2b2;
 }
 
 .barInner[data-empty='true']:not(:focus-within) .barCaret {
@@ -541,16 +549,28 @@
   color: var(--compare-bar-text);
 }
 
-/* 아이콘 시안 크기: 마이크 20, 전송 16 */
+/* 아이콘 시안 크기: 아이콘 칸 36, 그 안에 아이콘 30 */
 .barTools img {
   display: block;
   flex: none;
-  width: calc(var(--icon, 20) * var(--s));
-  height: calc(var(--icon, 20) * var(--s));
+  width: calc(var(--icon, 30) * var(--s));
+  height: calc(var(--icon, 30) * var(--s));
+}
+
+.send {
+  align-items: center;
+  justify-content: center;
+  width: calc(36 * var(--s));
+  height: calc(36 * var(--s));
 }
 
 .send img {
-  --icon: 16;
+  --icon: 30;
+}
+
+/* 마이크는 아이콘 칸 36 안에 30 으로 놓는다 (전송 버튼은 위에서 칸을 36 으로 잡았다) */
+.barTools > img {
+  margin: calc(3 * var(--s));
 }
 
 /* 전송 버튼 — 보낼 글이 없을 땐 흐리게, 누를 수 있을 땐 선명하게. 터치하기 쉽도록 보이지 않는 여백으로 누르는 영역을 넓힌다. */
@@ -579,7 +599,7 @@
 
 .barDivider {
   width: 1px;
-  height: calc(20 * var(--s));
+  height: calc(28 * var(--s));
   background: var(--compare-bar-border);
 }
 

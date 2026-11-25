@@ -16,12 +16,12 @@ const READY_FALLBACK = 3000; // 이미지가 끝내 안 불러와져도 이 시�
 
 /*
  * 인트로 뒤의 움직임 (Framer "Motion Parallax Pro" 를 참고한 임시 값 — 시안에서 확정된 수치가 아니다)
- *  - 마우스를 따라 카메라가 반대 방향으로 움직이고, 카메라마다 깊이(DEPTHS)가 달라 움직이는 양이 다르다.
+ *  - 마우스가 가는 쪽으로 카메라가 따라 움직이고, 카메라마다 깊이(DEPTHS)가 달라 움직이는 양이 다르다.
  *  - 가만히 있어도 천천히 위아래로 떠 있는다.
  */
 const SETTLE_DELAY = 1500; // 인트로(지연 200 + 1200)가 끝난 뒤부터 움직임을 시작한다
-const PARALLAX_REACH = 34; // 화면 가로 1920 기준 최대 이동량(px). 화면 폭에 비례해 줄고 늘어난다
-const PARALLAX_EASE = 0.07; // 클수록 마우스를 빨리 따라온다
+const PARALLAX_REACH = 48; // 화면 가로 1920 기준 최대 이동량(px). 화면 폭에 비례해 줄고 늘어난다
+const PARALLAX_EASE = 0.09; // 클수록 마우스를 빨리 따라온다
 const DEPTHS = [0.7, 1.05, 0.85, 1.15, 0.65, 0.95, 1.25, 1.1, 0.75, 1.2, 0.8, 1, 0.7, 0.9]; // HERO_CAMERAS 순서
 
 const CENTER_X = HERO_STAGE.width / 2;
@@ -94,8 +94,8 @@ export default function CompareHeroCameras() {
       const nx = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2));
       const ny = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2));
       const reach = PARALLAX_REACH * Math.min(rect.width / 1920, 1);
-      targetX = -nx * reach;
-      targetY = -ny * reach;
+      targetX = nx * reach;
+      targetY = ny * reach;
       wake();
     };
     const onLeave = () => {

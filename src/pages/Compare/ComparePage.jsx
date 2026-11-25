@@ -23,6 +23,7 @@ export default function ComparePage() {
   const leaveTimer = useRef(null);
   const [phase, setPhase] = useState('hero'); // hero | leaving(히어로가 사라지는 중) | finder
   const [stage, setStage] = useState('chat'); // chat | loading | result
+  const [finderRun, setFinderRun] = useState(0); // 결과의 "다시보기" — 값이 바뀌면 질문 화면을 처음 상태로 새로 시작한다
 
   // 히어로와 질문하는 동안(채팅·로딩)에는 한 화면에 고정해 둔다. 히어로를 스크롤해도 아래 푸터만 올라오는 일이 없게 하려는 것이다.
   // 결과가 나오면 풀어서 큰 결과 카드와 푸터까지 볼 수 있게 한다.
@@ -83,7 +84,7 @@ export default function ComparePage() {
       ) : null}
       {phase === 'finder' ? (
         <div ref={finderRef} className={styles.finder}>
-          <CompareFinder onStageChange={setStage} />
+          <CompareFinder key={finderRun} onStageChange={setStage} onRestart={() => setFinderRun((run) => run + 1)} />
         </div>
       ) : null}
     </div>
