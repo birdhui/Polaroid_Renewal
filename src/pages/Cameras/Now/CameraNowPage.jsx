@@ -11,6 +11,7 @@ import {
   purchaseCta,
   goFilm,
   discoverMore,
+  footer,
 } from './data/sections.js';
 import styles from './CameraNowPage.module.css';
 
@@ -25,7 +26,7 @@ import styles from './CameraNowPage.module.css';
    React 19가 <link>를 <head>로 올려준다. */
 const FONT_STYLESHEETS = [
   'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;800&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wght@300;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500&family=Archivo:wght@300;600;700&display=swap',
 ];
 
 function Lines({ lines }) {
@@ -61,6 +62,7 @@ const REVEAL_TARGETS = [
   'goFilmEyebrow',
   'goFilmTitle',
   'goFilmDescription',
+  'discoverEyebrow',
   'discoverHeading',
   'discoverDescription',
 ];
@@ -240,7 +242,12 @@ export default function CameraNowPage() {
       {/* 03 Features Heading */}
       <section className={`${styles.screen} ${styles.featuresHeading}`}>
         <h2 className={styles.featuresHeadingText}>
-          <Lines lines={featuresHeading} />
+          {/* Figma: '특별하게 남기는'만 Bold */}
+          <span className={styles.line}>
+            {featuresHeading[0].split('특별하게 남기는')[0]}
+            <strong>특별하게 남기는</strong>
+          </span>
+          <span className={styles.line}>{featuresHeading[1]}</span>
         </h2>
       </section>
 
@@ -250,7 +257,7 @@ export default function CameraNowPage() {
         features={features}
       />
 
-      {/* 07~11: 하나의 갈색 그라데이션 배경으로 이어서 보이도록 묶는다 (ORYZO 참고) */}
+      {/* 07~08, 10: 어두운 구간 (#151515 · Filter 는 #232323 → #151515 그라데이션) */}
       <div className={styles.darkZone}>
       {/* 07 Filter Showcase */}
       <section className={`${styles.screen} ${styles.filters}`}>
@@ -299,41 +306,11 @@ export default function CameraNowPage() {
 
       {/* 08 App Promo */}
       <section className={`${styles.screen} ${styles.appPromo}`}>
-
-        <p className={styles.appEyebrow}>{appPromo.eyebrow}</p>
-        <h3 className={styles.appHeading}>
-          <Lines lines={appPromo.heading} />
-        </h3>
-        <p className={styles.appDescription}>
-          <Lines lines={appPromo.description} />
-        </p>
-
-        {/* TODO: Figma App Store / Play Store 아이콘 SVG(1827:3846·3847)로 교체. 지금은 근사한 모양이다. */}
-        <span className={`${styles.storeIcon} ${styles.storeIconApple}`} aria-hidden="true">
-          <svg className={styles.storeGlyph} viewBox="0 0 60 60" fill="none">
-            <g stroke="#f0a137" strokeWidth="4.5" strokeLinecap="round">
-              <path d="M30 14 L19 40" />
-              <path d="M30 14 L41 40" />
-              <path d="M22 33 H38" />
-            </g>
-          </svg>
-        </span>
-        <span className={`${styles.storeIcon} ${styles.storeIconGoogle}`} aria-hidden="true">
-          <svg className={styles.storeGlyph} viewBox="0 0 60 60">
-            <path d="M20 14 L44 30 L20 46 Z" fill="#34a853" />
-            <path d="M20 14 L33 30 L20 46 Z" fill="#4285f4" />
-            <path d="M33 30 L44 30 L38 24 Z" fill="#fbbc04" />
-            <path d="M33 30 L44 30 L38 36 Z" fill="#ea4335" />
-          </svg>
-        </span>
-        <p className={`${styles.storeLabel} ${styles.storeDownload}`}>{appPromo.downloadLabel}</p>
-        <p className={`${styles.storeLabel} ${styles.storeIos}`}>{appPromo.stores[0]}</p>
-        <p className={`${styles.storeLabel} ${styles.storeDivider}`}>|</p>
-        <p className={`${styles.storeLabel} ${styles.storeAndroid}`}>{appPromo.stores[1]}</p>
-
         <div className={styles.phoneBody} />
         <div className={styles.phoneScreen} />
         <img className={styles.phoneStory} src={appPromo.image} alt="Polaroid 앱 스토리 화면" />
+        <p className={styles.statusTime} aria-hidden="true">9:41</p>
+        <span className={styles.battery} aria-hidden="true" />
         <span className={styles.storyBar} />
         <span className={styles.storyProgress} />
         <span className={styles.avatar} />
@@ -348,17 +325,78 @@ export default function CameraNowPage() {
         <span className={styles.island} />
         <span className={styles.messageBox} />
         <p className={styles.messageText}>{appPromo.messagePlaceholder}</p>
-        {/* TODO: Figma 아이콘 SVG(1827:3838·3840·3842)로 교체. 지금은 근사한 모양이다. */}
-        <svg className={styles.phoneIcon} style={{ '--x': 694.2 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        {/* TODO: Figma 아이콘 벡터(Icon Glyph)로 교체. 지금은 근사한 모양이다. */}
+        <svg className={styles.phoneIcon} style={{ '--x': 523.5 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
           <rect x="3.5" y="3.5" width="13" height="13" rx="3" />
         </svg>
-        <svg className={styles.phoneIcon} style={{ '--x': 723 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <svg className={styles.phoneIcon} style={{ '--x': 551.8 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
           <path d="M10 16.5 C4 12.5 3 9.5 3 7.5 A3.6 3.6 0 0 1 10 6.2 A3.6 3.6 0 0 1 17 7.5 C17 9.5 16 12.5 10 16.5 Z" />
         </svg>
-        <svg className={styles.phoneIcon} style={{ '--x': 751.8 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
+        <svg className={styles.phoneIcon} style={{ '--x': 580.2 }} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
           <path d="M17 3 L3 9 L9 11 L11 17 Z M17 3 L9 11" />
         </svg>
+
+        <p className={styles.appEyebrow}>{appPromo.eyebrow}</p>
+        <h3 className={styles.appHeading}>
+          <Lines lines={appPromo.heading} />
+        </h3>
+        <p className={styles.appDescription}>
+          <Lines lines={appPromo.description} />
+        </p>
+
+        {/* TODO: Figma App Store 아이콘 벡터(Vector 8~10)로 교체. 지금은 근사한 모양이다. */}
+        <span className={`${styles.storeIcon} ${styles.storeIconApple}`} aria-hidden="true">
+          <svg className={styles.storeGlyph} viewBox="0 0 60 60" fill="none">
+            <g stroke="#c4c4c4" strokeWidth="4.5" strokeLinecap="round">
+              <path d="M30 14 L19 40" />
+              <path d="M30 14 L41 40" />
+              <path d="M22 33 H38" />
+            </g>
+          </svg>
+        </span>
+        <span className={`${styles.storeIcon} ${styles.storeIconGoogle}`} aria-hidden="true">
+          <svg className={styles.storeGlyphGoogle} viewBox="20 14 24 32">
+            <path d="M20 14 L44 30 L20 46 Z" fill="#34a853" />
+            <path d="M20 14 L33 30 L20 46 Z" fill="#4285f4" />
+            <path d="M33 30 L44 30 L38 24 Z" fill="#fbbc04" />
+            <path d="M33 30 L44 30 L38 36 Z" fill="#ea4335" />
+          </svg>
+        </span>
+        <p className={`${styles.storeLabel} ${styles.storeDownload}`}>{appPromo.downloadLabel}</p>
+        <p className={`${styles.storeLabel} ${styles.storeIos}`}>{appPromo.stores[0]}</p>
+        <p className={`${styles.storeLabel} ${styles.storeDivider}`}>|</p>
+        <p className={`${styles.storeLabel} ${styles.storeAndroid}`}>{appPromo.stores[1]}</p>
       </section>
+
+      {/* 10 Polaroid Go Film */}
+      <section className={`${styles.screen} ${styles.goFilm}`}>
+        <p className={styles.goFilmEyebrow}>{goFilm.eyebrow}</p>
+        <h3 className={styles.goFilmTitle}>
+          <Lines lines={goFilm.title} />
+        </h3>
+        <p className={styles.goFilmDescription}>
+          {goFilm.description.map((line) => (
+            <span key={line.map((part) => part.text).join('')} className={styles.line}>
+              {line.map((part) => (part.bold ? <strong key={part.text}>{part.text}</strong> : part.text))}
+            </span>
+          ))}
+        </p>
+        <button type="button" className={styles.goFilmButton}>
+          {goFilm.ctaLabel}
+        </button>
+
+        <span className={styles.goFilmTabLine} aria-hidden="true" />
+        <p className={styles.goFilmTab}>{goFilm.tabLabel}</p>
+        <div className={styles.goFilmPanel} />
+        <FilmImage image={goFilm.images.pack} className={styles.goFilmPack} alt="Color Film Double Pack 제품 이미지" />
+        <p className={styles.goFilmCaption}>{goFilm.caption}</p>
+
+        <span className={styles.goFilmThumbTile} style={{ '--x': 1255 }} aria-hidden="true" />
+        <span className={`${styles.goFilmThumbTile} ${styles.goFilmThumbTileDim}`} style={{ '--x': 1343.6 }} aria-hidden="true" />
+        <FilmImage image={goFilm.images.thumb1} className={styles.goFilmThumb1} alt="Color Film Double Pack 썸네일" />
+        <FilmImage image={goFilm.images.thumb2} className={styles.goFilmThumb2} alt="Color Film 썸네일" />
+      </section>
+      </div>
 
       {/* 09 Purchase CTA — 스크롤하면 photo list 가 먼저 가로로 끝까지 지나가고, 그 다음에 화면이 내려간다 */}
       <div ref={purchaseTrackRef} className={styles.purchaseTrack}>
@@ -386,69 +424,60 @@ export default function CameraNowPage() {
         </div>
       </div>
 
-      {/* 10 Polaroid Go Film */}
-      <section className={`${styles.screen} ${styles.goFilm}`}>
-        <p className={styles.goFilmEyebrow}>{goFilm.eyebrow}</p>
-        <h3 className={styles.goFilmTitle}>
-          <Lines lines={goFilm.title} />
-        </h3>
-        <p className={styles.goFilmDescription}>
-          {goFilm.description.map((line) => (
-            <span key={line.map((part) => part.text).join('')} className={styles.line}>
-              {line.map((part) => (part.bold ? <strong key={part.text}>{part.text}</strong> : part.text))}
-            </span>
-          ))}
-        </p>
-        <button type="button" className={styles.goFilmButton}>
-          {goFilm.ctaLabel}
-        </button>
-
-        <p className={styles.goFilmTab}>{goFilm.tabLabel}</p>
-        <div className={styles.goFilmPanel} />
-        <FilmImage image={goFilm.images.pack} className={styles.goFilmPack} alt="Color Film Double Pack 제품 이미지" />
-        <p className={styles.goFilmCaption}>{goFilm.caption}</p>
-
-        <span className={styles.goFilmThumbTile} style={{ '--y': 377 }} aria-hidden="true" />
-        <span className={styles.goFilmThumbTile} style={{ '--y': 521 }} aria-hidden="true" />
-        <FilmImage image={goFilm.images.thumb1} className={styles.goFilmThumb1} alt="Color Film Double Pack 썸네일" />
-        <CornerBrackets className={styles.goFilmThumbFrame} />
-        <FilmImage image={goFilm.images.thumb2} className={styles.goFilmThumb2} alt="Color Film 썸네일" />
-      </section>
-
+      <div className={styles.darkZone}>
       {/* 11 Discover More */}
       <section className={`${styles.screen} ${styles.discover}`}>
+        <p className={styles.discoverEyebrow}>{discoverMore.eyebrow}</p>
         <h3 className={styles.discoverHeading}>
           <Lines lines={discoverMore.heading} />
         </h3>
         <p className={styles.discoverDescription}>
           <Lines lines={discoverMore.description} />
         </p>
-        <ul>
+        <svg className={styles.cardFrame} viewBox="0 0 229 213" fill="none" aria-hidden="true">
+          <path d="M48.1939 0.5H0.5V52.2529M179.643 0.5H228.5V52.2529M0.5 157.006V212.5H48.1939M228.5 157.006V212.5H179.643" stroke="#fff" />
+        </svg>
+        <ul className={styles.discoverList}>
           {discoverMore.products.map((product) => (
-            <li
-              key={product.id}
-              className={`${styles.discoverCard} ${product.active ? styles.discoverCardActive : ''}`}
-              style={{ '--x': product.x, '--y': product.y }}
-            >
-              <CornerBrackets className={styles.cardFrame} />
+            <li key={product.id}>
               <img
                 className={`${styles.cardPhoto} ${product.active ? styles.cardPhotoActive : ''}`}
-                style={{
-                  '--px': product.photo.x - product.x,
-                  '--py': product.photo.y - product.y,
-                  '--pw': product.photo.w,
-                  '--ph': product.photo.h,
-                }}
+                style={{ '--x': product.photo.x, '--y': product.photo.y, '--w': product.photo.w, '--h': product.photo.h }}
                 src={product.image}
                 alt={`${product.label} 제품 이미지`}
               />
-              <span className={`${styles.cardLabel} ${product.active ? styles.cardLabelActive : ''}`}>
+              <span
+                className={`${styles.cardLabel} ${product.active ? styles.cardLabelActive : ''}`}
+                style={{ '--x': product.photo.x + product.photo.w / 2 }}
+              >
                 {product.label}
               </span>
             </li>
           ))}
         </ul>
       </section>
+
+      {/* 12 Footer */}
+      <footer className={`${styles.screen} ${styles.footer}`}>
+        <img className={styles.footerLogo} src={footer.logo} alt="polaroid" />
+        <p className={styles.footerTagline}>
+          <Lines lines={footer.tagline} />
+        </p>
+        <p className={styles.footerCopyright}>{footer.copyright}</p>
+        <img className={styles.footerWordmark} src={footer.wordmark} alt="" aria-hidden="true" />
+        {footer.columns.map((column) => (
+          <div key={column.title} className={styles.footerColumn} style={{ '--x': column.x }}>
+            <p className={styles.footerHeading}>{column.title}</p>
+            <ul>
+              {column.items.map((item) => (
+                <li key={item} className={styles.footerItem}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </footer>
       </div>
     </article>
   );

@@ -24,6 +24,8 @@ import productFlipImage from '../../../../assets/cameras/now/product-flip.png';
 import productModImage from '../../../../assets/cameras/now/product-mod.png';
 import productI2Image from '../../../../assets/cameras/now/product-i2.png';
 import productGoImage from '../../../../assets/cameras/now/product-go.png';
+import footerWordmark from '../../../../assets/cameras/now/footer-wordmark.svg';
+import footerLogo from '../../../../assets/cameras/now/footer-logo.svg';
 
 export const hero = {
   title: 'Now',
@@ -88,13 +90,13 @@ export const filterShowcase = {
   // 노랑·주황은 선택되지 않았을 때 opacity 0.4다. paper는 인화지 색(없으면 color를 쓴다).
   size: 46,
   selectedSize: 60.7,
-  cy: 881.75,
+  cy: 1035.75,
   items: [
-    { id: 'yellow', label: 'YELLOW', color: '#e9de62', cx: 768, opacity: 0.4 },
-    { id: 'blue', label: 'BLUE', color: '#5f93c8', cx: 864, opacity: 1 },
-    { id: 'starburst', label: 'STARBURST', color: '#d7dbdf', paper: '#f3f1ec', cx: 959.95, opacity: 1, selected: true },
-    { id: 'red-vignette', label: 'RED VIGNETTE', color: '#c8423b', cx: 1056, opacity: 1 },
-    { id: 'orange', label: 'ORANGE', color: '#e39a52', cx: 1152, opacity: 0.4 },
+    { id: 'yellow', label: 'YELLOW', color: '#e9de62', cx: 769, opacity: 0.4 },
+    { id: 'blue', label: 'BLUE', color: '#5f93c8', cx: 865, opacity: 1 },
+    { id: 'starburst', label: 'STARBURST', color: '#d7dbdf', paper: '#f3f1ec', cx: 960.95, opacity: 1, selected: true },
+    { id: 'red-vignette', label: 'RED VIGNETTE', color: '#c8423b', cx: 1057, opacity: 1 },
+    { id: 'orange', label: 'ORANGE', color: '#e39a52', cx: 1153, opacity: 0.4 },
   ],
 };
 
@@ -164,18 +166,31 @@ export const goFilm = {
 };
 
 export const discoverMore = {
-  heading: ['Discover', 'More Cameras.'],
+  eyebrow: 'Compatibility',
+  heading: ['Discover More Cameras.'],
   description: [
-    '저마다 다른 매력을 가진 폴라로이드 카메라.',
-    '촬영 방식부터 디자인, 기능까지 살펴보고',
+    '저마다 다른 매력을 가진 폴라로이드 카메라. 촬영 방식부터 디자인, 기능까지 살펴보고',
     '당신에게 어울리는 또 다른 카메라를 만나보세요.',
   ],
-  // x·y: 카드 위치, photo: 카드 안 제품 사진의 절대 좌표·크기(Figma px)
+  // photo: 제품 사진의 절대 좌표·크기(Figma px). 라벨은 사진 아래(y 895)에 사진 가운데 정렬
   products: [
-    { id: 'now-plus', label: 'Now+', x: 787, y: 225, active: true, image: productNowPlusImage, photo: { x: 847, y: 267, w: 141, h: 160 } },
-    { id: 'flip', label: 'Flip', x: 1106, y: 225, image: productFlipImage, photo: { x: 1158, y: 278, w: 157, h: 149 } },
-    { id: 'mod', label: 'Mod', x: 1425, y: 225, image: productModImage, photo: { x: 1488, y: 276, w: 135, h: 153 } },
-    { id: 'i-2', label: 'I-2', x: 918, y: 575, image: productI2Image, photo: { x: 963, y: 628, w: 171, h: 138 } },
-    { id: 'go', label: 'Go', x: 1237, y: 575, image: productGoImage, photo: { x: 1291, y: 629, w: 153, h: 135 } },
+    { id: 'now-plus', label: 'Now+', active: true, image: productNowPlusImage, photo: { x: 313, y: 679, w: 141, h: 160 } },
+    { id: 'flip', label: 'Flip', image: productFlipImage, photo: { x: 632, y: 684, w: 157, h: 149 } },
+    { id: 'mod', label: 'Mod', image: productModImage, photo: { x: 923, y: 682, w: 135, h: 153 } },
+    { id: 'i-2', label: 'I-2', image: productI2Image, photo: { x: 1192, y: 690, w: 171, h: 138 } },
+    { id: 'go', label: 'Go', image: productGoImage, photo: { x: 1497, y: 691, w: 153, h: 135 } },
+  ],
+};
+
+/* 11 Footer (Figma 2158:1056) — 서명 이미지(image 224)는 에셋을 받을 수 없어 아직 넣지 않았다 */
+export const footer = {
+  logo: footerLogo,
+  wordmark: footerWordmark,
+  tagline: ['지나간 순간을, 손에 남는 한 장으로.', '89년을 지나온 폴라로이드는 오늘도 당신이 간직하고 싶은 순간을 한 장의 사진에 담습니다.'],
+  copyright: '© 2026 Polaroid. Made by four',
+  columns: [
+    { title: 'QUICK LINKS', x: 1382.5, items: ['Brand', 'History', 'Cameras', 'Film', 'Compare'] },
+    { title: 'SOCIALS', x: 1529, items: ['Instagram', 'Linkedin', 'YouTube'] },
+    { title: 'LEGAL', x: 1675, items: ['Terms of Service', 'Privacy Policy', 'Imprint'] },
   ],
 };

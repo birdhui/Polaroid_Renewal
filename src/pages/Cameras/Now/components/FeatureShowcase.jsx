@@ -11,17 +11,17 @@ import styles from './FeatureShowcase.module.css';
 
 // Figma 04·05·06 공통 좌표(px, 1920 기준). d = 목록에서 활성 위치까지의 거리(0 = 활성)
 const Y_AT = [
-  [-2, 302], // Headline Stack 첫 줄
-  [-1, 389],
-  [0, 485], // 두 점선 사이의 활성 문구
-  [1, 581],
+  [-2, 479], // Headline Stack 첫 줄(숨김)
+  [-1, 566],
+  [0, 653], // 두 선 사이의 활성 문구
+  [1, 740],
 ];
 const ALPHA_AT = [
   [-3, 0],
-  [-2, 0.04],
-  [-1, 0.2],
+  [-2, 0],
+  [-1, 0.15],
   [0, 1],
-  [1, 0.2],
+  [1, 0.15],
   [2, 0],
 ];
 // 활성 문구에서 멀어질수록 초점이 풀린다(KINORIA처럼 올라가면서 흐려진다). 단위는 Figma px
@@ -195,7 +195,6 @@ export default function FeatureShowcase({ heading, features }) {
           })}
           <CornerBrackets className={styles.frame} />
 
-          <div className={styles.tagPill} aria-hidden="true" />
           <p className={styles.tagCode}>{active.tag}</p>
           <p className={styles.tagLabel}>{active.tagLabel}</p>
 
@@ -215,7 +214,7 @@ export default function FeatureShowcase({ heading, features }) {
                 className={`${styles.headline} ${i === index ? styles.current : ''}`}
                 style={{
                   '--y': y,
-                  color: `rgba(255, 255, 255, ${alpha})`,
+                  color: `rgba(21, 21, 21, ${alpha})`,
                   filter: blur > 0.05 ? `blur(calc(${blur} * var(--u)))` : undefined,
                   pointerEvents: alpha < 0.05 ? 'none' : undefined,
                 }}

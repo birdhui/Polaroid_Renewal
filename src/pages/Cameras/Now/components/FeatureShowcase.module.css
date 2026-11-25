@@ -1,10 +1,10 @@
-/* 04~06 Feature — Figma 현재 디자인(배경 #151515) + 스크롤 연동 스테이지 */
+/* 04~06 Feature — Figma 현재 디자인(크림 배경, 마지막 프레임은 #fff9e8 → #ddd7cd) + 스크롤 연동 스테이지 */
 
 /* 스크롤 구간: 기능 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
 .track {
   position: relative;
   height: calc((var(--count) + 1) * 100vh);
-  background: #151515;
+  background: linear-gradient(180deg, #fff9e8 0%, #fff9e8 68%, #ddd7cd 100%);
 }
 
 /* 고정되는 동안 1920×1080 스테이지는 화면 가운데에 놓이고 나머지 영역도 같은 배경색이다 */
@@ -15,22 +15,22 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #151515;
 }
 
 .section {
   composes: screen from './stage.module.css';
   position: relative;
-  width: min(100%, calc(100vh * 1920 / 1080));
+  width: min(100%, calc(100vh * 1920 / 1190));
+  aspect-ratio: 1920 / 1190;
 }
 
 /* 01 자동초점 1 · 02 · 03 — 겹쳐 두고 활성 이미지만 보인다 */
 .image {
   composes: pos from './stage.module.css';
-  --x: 194;
-  --y: 161;
-  width: calc(766 * var(--u));
-  height: calc(766 * var(--u));
+  --x: 293;
+  --y: 342;
+  width: calc(569 * var(--u));
+  height: calc(569 * var(--u));
   max-width: none;
   object-fit: cover;
   opacity: 0;
@@ -43,74 +43,61 @@
 
 /* Feature Frame (Corner Brackets) */
 .frame {
-  --x: 194;
-  --y: 161;
-  --w: 766;
-  --h: 766;
-  --arm: 176;
-  --arm-bottom: 206;
-  --stroke: 6;
-  --bracket-color: #fff;
-}
-
-/* Feature Tag Pill — 흰 배경, 어두운 글자 */
-.tagPill {
-  composes: pos size from './stage.module.css';
-  --x: 1045;
-  --y: 161;
-  --w: 129;
-  --h: 24.1;
-  box-sizing: border-box;
-  background: #fff;
-  border: calc(0.571 * var(--u)) solid #fff;
-  border-radius: calc(12.05 * var(--u));
+  --x: 293;
+  --y: 342;
+  --w: 569;
+  --h: 569;
+  --arm: 131;
+  --arm-bottom: 153;
+  --stroke: 1.5;
+  --bracket-color: #151515;
 }
 
 .tagCode {
   composes: pos text center from './stage.module.css';
-  --x: 1109.55;
-  --y: 167;
-  --fs: 12;
+  --x: 1092.5;
+  --y: 343;
+  --fs: 15;
   --ls: 0.5;
   line-height: calc(12 * var(--u));
-  font-family: var(--f-mono);
+  font-family: 'IBM Plex Sans', var(--f-pre);
   font-weight: 500;
   color: #151515;
 }
 
 .tagLabel {
   composes: pos text from './stage.module.css';
-  --x: 1045;
-  --y: 203;
-  --fs: 23;
-  --ls: 0.3;
-  line-height: calc(18 * var(--u));
+  --x: 1022;
+  --y: 369;
+  --fs: 32;
+  --ls: -1;
+  line-height: calc(40 * var(--u));
   font-family: var(--f-arch);
   font-weight: 700;
-  color: #fff;
+  color: #151515;
 }
 
-/* Divider 1·2 (점선) — 항상 활성 문구 위아래에 고정 */
+/* Divider 1·2 (실선) — 항상 활성 문구 위아래에 고정 */
 .rule {
   composes: pos from './stage.module.css';
-  --x: 1045;
-  width: calc(717 * var(--u));
-  border-top: calc(1.5 * var(--u)) dotted rgba(255, 255, 255, 0.45);
+  --x: 1022;
+  width: calc(620 * var(--u));
+  border-top: calc(1 * var(--u)) solid #151515;
 }
 
 .ruleTop {
-  --y: 464;
+  --y: 632;
 }
 
 .ruleBottom {
-  --y: 560;
+  --y: 719;
 }
 
 /* Headline 문구 3개 — 45px Pretendard Bold, 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */
 .headline {
   composes: pos text from './stage.module.css';
-  --x: 1045;
-  --fs: 45;
+  --x: 1022;
+  --fs: 38;
   --ls: -0.9;
   padding: 0;
   border: 0;
@@ -123,7 +110,7 @@
 
 .headline:not(.current):hover,
 .headline:not(.current):focus-visible {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(21, 21, 21, 0.6) !important;
 }
 
 .current {
