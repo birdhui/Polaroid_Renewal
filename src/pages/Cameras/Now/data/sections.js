@@ -195,3 +195,17 @@ export const footer = {
     { title: 'LEGAL', x: 1675, items: ['Terms of Service', 'Privacy Policy', 'Imprint'] },
   ],
 };
+
+/*
+ * Transition-camera (Figma 2408:2095) — 06 Feature 와 07 Filter 사이의 크림색 전환 장면 (1920×1928).
+ * 안의 이미지 "수정4 1"(1920×1920, x0 y8)은 Figma에서 PNG로 내보내 아래 이름으로 넣으면 자동으로 나타난다.
+ *   src/assets/cameras/now/transition-camera.png (jpg·webp 도 가능)
+ */
+const transitionImages = import.meta.glob('../../../../assets/cameras/now/transition-camera.{png,jpg,jpeg,webp}', {
+  eager: true,
+  import: 'default',
+});
+const transitionSrc = Object.values(transitionImages)[0];
+export const transitionCamera = {
+  image: { src: transitionSrc, file: 'transition-camera.png' },
+};

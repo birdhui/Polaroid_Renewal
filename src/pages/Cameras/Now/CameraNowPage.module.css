@@ -183,6 +183,27 @@
   color: #fff;
 }
 
+/* ───────── Transition-camera (프레임 1920×1928, 크림 배경) ───────── */
+.page .transitionCamera {
+  aspect-ratio: 1920 / 1928;
+  background: #fff9e8;
+}
+
+.transitionImage {
+  composes: pos size from './components/stage.module.css';
+  --x: 0;
+  --y: 8;
+  --w: 1920;
+  --h: 1920;
+  max-width: none;
+  object-fit: cover;
+}
+
+span.transitionImage {
+  border-color: rgba(21, 21, 21, 0.25);
+  color: rgba(21, 21, 21, 0.5);
+}
+
 /* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
 .page .filters {
   aspect-ratio: 1920 / 1194;

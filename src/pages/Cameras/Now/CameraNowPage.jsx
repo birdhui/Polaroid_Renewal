@@ -10,6 +10,7 @@ import {
   appPromo,
   purchaseCta,
   goFilm,
+  transitionCamera,
   discoverMore,
   footer,
 } from './data/sections.js';
@@ -256,6 +257,11 @@ export default function CameraNowPage() {
         heading={featuresHeading.join(' ')}
         features={features}
       />
+
+      {/* Transition-camera — 06 Feature 와 07 Filter 사이 전환 장면 */}
+      <section className={`${styles.screen} ${styles.transitionCamera}`}>
+        <FilmImage image={transitionCamera.image} className={styles.transitionImage} alt="Polaroid Now 카메라" />
+      </section>
 
       {/* 07~08, 10: 어두운 구간 (#151515 · Filter 는 #232323 → #151515 그라데이션) */}
       <div className={styles.darkZone}>
