@@ -4,7 +4,7 @@
 .track {
   position: relative;
   height: calc((var(--count) + 1) * 100vh);
-  background: linear-gradient(180deg, #fff9e8 0%, #fff9e8 68%, #ddd7cd 100%);
+  background: #fff9e8; /* Figma Feature BG: 단색 */
 }
 
 /* 고정되는 동안 1920×1080 스테이지는 화면 가운데에 놓이고 나머지 영역도 같은 배경색이다 */
