@@ -201,11 +201,89 @@ function usePurchaseScroll(trackRef) {
   }, [trackRef]);
 }
 
+
+const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
+const smooth = (a, b, v) => {
+  const t = clamp01((v - a) / (b - a));
+  return t * t * (3 - 2 * t);
+};
+const mix = (a, b, t) => a + (b - a) * t;
+
+/*
+ * Transition-camera: 스크롤에 맞춰
+ *  1) 카메라 사진이 사라지고
+ *  2) 큰 외곽선 글자가 왼쪽으로 지나가면서 색이 왼쪽→오른쪽으로 채워지고(채워지는 동안 배경이 크림 → #151515 로 바뀌고)
+ *  3) 다 채워지면 글자가 화면 가운데로 모이며 작아진다.
+ * 값은 모두 track 의 CSS 변수(--tbg --tstroke --timg-o --timg-s --tx --ts --tfill)로 넘기고 CSS 가 그린다.
+ */
+function useTransitionScroll(trackRef, textRef) {
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return undefined;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let frame = 0;
+    let current = 0;
+    const read = () => {
+      const rect = track.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      return scrollable > 0 ? clamp01(-rect.top / scrollable) : 0;
+    };
+    const apply = (p) => {
+      const vw = window.innerWidth;
+      const textWidth = textRef.current ? textRef.current.offsetWidth : vw * 2.4;
+      // 배경 · 외곽선 색: 글자가 채워지는 구간에 맞춰 크림 → #151515
+      const dark = smooth(0.2, 0.7, p);
+      const bg = [mix(255, 21, dark), mix(249, 21, dark), mix(232, 21, dark)].map(Math.round).join(',');
+      const stroke = [mix(21, 255, dark), mix(21, 249, dark), mix(21, 232, dark)].map(Math.round).join(',');
+      // 카메라 사진: 처음 20% 동안 천천히 커지면서 사라진다
+      const img = smooth(0.02, 0.2, p);
+      // 글자 중심 위치(화면 가운데 기준 px): 왼쪽 끝이 화면 8% → 오른쪽 끝이 화면 92%
+      const startX = vw * 0.08 + textWidth / 2 - vw / 2;
+      const endX = vw * 0.92 - textWidth / 2 - vw / 2;
+      const travel = smooth(0.2, 0.78, p);
+      const settle = smooth(0.8, 1, p);
+      const x = mix(mix(startX, endX, travel), 0, settle);
+      const scale = mix(1, 0.14, settle);
+      const fill = smooth(0.26, 0.76, p);
+      const s = track.style;
+      s.setProperty('--tbg', 'rgb(' + bg + ')');
+      s.setProperty('--tstroke', 'rgb(' + stroke + ')');
+      s.setProperty('--timg-o', (1 - img).toFixed(3));
+      s.setProperty('--timg-s', mix(1, 1.08, img).toFixed(3));
+      s.setProperty('--tx', x.toFixed(1) + 'px');
+      s.setProperty('--ts', scale.toFixed(4));
+      s.setProperty('--tfill', ((1 - fill) * 100).toFixed(2) + '%');
+      s.setProperty('--ttext-o', (p > 0.2 ? 1 : smooth(0.14, 0.2, p)).toFixed(3));
+    };
+    const tick = () => {
+      const goal = read();
+      current = reduceMotion ? goal : current + (goal - current) * 0.12;
+      if (Math.abs(goal - current) < 0.0004) current = goal;
+      apply(current);
+      frame = current !== goal ? requestAnimationFrame(tick) : 0;
+    };
+    const wake = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+    wake();
+    window.addEventListener('scroll', wake, { passive: true });
+    window.addEventListener('resize', wake);
+    return () => {
+      window.removeEventListener('scroll', wake);
+      window.removeEventListener('resize', wake);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [trackRef, textRef]);
+}
+
 export default function CameraNowPage() {
   const pageRef = useRef(null);
   const purchaseTrackRef = useRef(null);
   useTextReveal(pageRef);
   usePurchaseScroll(purchaseTrackRef);
+  const transitionTrackRef = useRef(null);
+  const transitionTextRef = useRef(null);
+  useTransitionScroll(transitionTrackRef, transitionTextRef);
   const purchaseListTravel = PURCHASE_LIST_TRAVEL;
   const [selectedId, setSelectedId] = useState(
     () => filterShowcase.items.find((item) => item.selected).id,
@@ -258,10 +336,17 @@ export default function CameraNowPage() {
         features={features}
       />
 
-      {/* Transition-camera — 06 Feature 와 07 Filter 사이 전환 장면 */}
-      <section className={`${styles.screen} ${styles.transitionCamera}`}>
-        <FilmImage image={transitionCamera.image} className={styles.transitionImage} alt="Polaroid Now 카메라" />
-      </section>
+      {/* Transition-camera — 06 Feature 와 07 Filter 사이: 사진이 사라지고, 큰 글자가 지나가며 색이 채워지고, 배경이 #151515 로 바뀐다 */}
+      <div ref={transitionTrackRef} className={styles.transitionTrack}>
+        <div className={styles.transitionSticky}>
+          <FilmImage image={transitionCamera.image} className={styles.transitionImage} alt="Polaroid Now 카메라" />
+          <div ref={transitionTextRef} className={styles.transitionText} aria-hidden="true">
+            <span className={styles.transitionOutline}>{transitionCamera.text}</span>
+            <span className={styles.transitionFill}>{transitionCamera.text}</span>
+          </div>
+          <p className={styles.srOnly}>{transitionCamera.text}</p>
+        </div>
+      </div>
 
       {/* 07~08, 10: 어두운 구간 (#151515 · Filter 는 #232323 → #151515 그라데이션) */}
       <div className={styles.darkZone}>

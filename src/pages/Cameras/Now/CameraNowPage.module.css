@@ -183,25 +183,89 @@
   color: #fff;
 }
 
-/* ───────── Transition-camera (프레임 1920×1928, 크림 배경) ───────── */
-.page .transitionCamera {
-  aspect-ratio: 1920 / 1928;
-  background: #fff9e8;
+/* ───────── Transition-camera: 스크롤 따라 사진 → 큰 글자(외곽선 → 채움) → #151515 배경 ───────── */
+.transitionTrack {
+  --tbg: #fff9e8;
+  --tstroke: rgb(21, 21, 21);
+  --timg-o: 1;
+  --timg-s: 1;
+  --tx: 0px;
+  --ts: 1;
+  --tfill: 100%;
+  --ttext-o: 0;
+  position: relative;
+  height: 480vh;
+  background: var(--tbg);
+}
+
+.transitionSticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .transitionImage {
-  composes: pos size from './components/stage.module.css';
-  --x: 0;
-  --y: 8;
-  --w: 1920;
-  --h: 1920;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
   max-width: none;
-  object-fit: cover;
+  object-fit: contain;
+  opacity: var(--timg-o);
+  transform: translate(-50%, -50%) scale(var(--timg-s));
 }
 
 span.transitionImage {
-  border-color: rgba(21, 21, 21, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(21, 21, 21, 0.25);
   color: rgba(21, 21, 21, 0.5);
+  font-family: var(--f-mono);
+  font-size: 12px;
+}
+
+.transitionText {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  white-space: nowrap;
+  font-family: var(--f-out);
+  font-weight: 600;
+  font-size: 30vw;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  opacity: var(--ttext-o);
+  transform: translate(calc(-50% + var(--tx)), -50%) scale(var(--ts));
+  will-change: transform;
+}
+
+.transitionOutline,
+.transitionFill {
+  grid-area: 1 / 1;
+}
+
+.transitionOutline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--tstroke);
+}
+
+/* 같은 글자를 겹쳐 두고 오른쪽부터 잘라 두었다가, 스크롤에 따라 왼쪽 → 오른쪽으로 색이 채워진다 */
+.transitionFill {
+  color: var(--now-accent);
+  clip-path: inset(0 var(--tfill) 0 0);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
