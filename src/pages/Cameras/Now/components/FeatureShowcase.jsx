@@ -162,7 +162,8 @@ export default function FeatureShowcase({ heading, features }) {
           {/* 가운데 문구 블록: 제목 · 선 · 부제 · 설명 (Figma Frame 137) */}
           {features.map((feature, i) => {
             const d = i - pos;
-            const titleH = feature.titleLines.length * 72;
+            // 제목이 한 줄이어도 선·부제·설명은 세 기능 모두 같은 위치(선 508 · 부제 548 · 설명 628)
+            const titleH = 144;
             return (
               <div
                 key={feature.id}
