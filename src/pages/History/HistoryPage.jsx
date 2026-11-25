@@ -22,10 +22,10 @@ export default function HistoryPage() {
 <div className="scene" id="sHero">
 <div className="frame origin" id="origin"><p className="origin-since">{"Since"}</p><h1 className="origin-year">{"1937"}</h1></div>
 <div className="frame" id="heroFrame">
-<div className="ph" data-x="464.95" data-y="490.71" data-w="244.57" data-h="293.48" data-rot="1.77" data-fx="-90" data-fy="60" data-frot="-4" data-start="0.2"><div className="card" style={{ '--m': `url(${momentKid})` }}><img src={momentKid} alt="카메라를 들고 있는 아이의 폴라로이드 사진" /></div></div>
-<div className="ph" data-x="709.36" data-y="519.42" data-w="244.57" data-h="293.48" data-rot="-3.36" data-fx="-40" data-fy="80" data-frot="3" data-start="0.38"><div className="card" style={{ '--m': `url(${momentFamily})` }}><img src={momentFamily} alt="거실에서 함께 웃는 가족의 폴라로이드 사진" /></div></div>
-<div className="ph" data-x="953.78" data-y="490.27" data-w="244.57" data-h="293.48" data-rot="0" data-fx="40" data-fy="80" data-frot="-3" data-start="0.56"><div className="card" style={{ '--m': `url(${momentRaincoat})` }}><img src={momentRaincoat} alt="노란 레인코트를 입고 폴라로이드 카메라를 든 사람의 폴라로이드 사진" /></div></div>
-<div className="ph" data-x="1201.22" data-y="514.85" data-w="244.57" data-h="293.48" data-rot="5.74" data-fx="90" data-fy="60" data-frot="4" data-start="0.74"><div className="card" style={{ '--m': `url(${momentGrandma})` }}><img src={momentGrandma} alt="할머니를 안고 있는 아이의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="406.76" data-y="485.15" data-w="273.92" data-h="328.7" data-rot="1.77" data-fx="-90" data-fy="60" data-frot="-4" data-start="0.2"><div className="card" style={{ '--m': `url(${momentKid})` }}><img src={momentKid} alt="노을 진 하늘 아래 두 손을 맞잡은 두 사람의 실루엣 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="680.68" data-y="517.31" data-w="273.92" data-h="328.7" data-rot="-3.36" data-fx="-40" data-fy="80" data-frot="3" data-start="0.38"><div className="card" style={{ '--m': `url(${momentFamily})` }}><img src={momentFamily} alt="숫자 10 초가 켜진 생일 케이크 앞의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="954.6" data-y="484.66" data-w="273.92" data-h="328.7" data-rot="0" data-fx="40" data-fy="80" data-frot="-3" data-start="0.56"><div className="card" style={{ '--m': `url(${momentRaincoat})` }}><img src={momentRaincoat} alt="함박눈이 내리는 밤에 눈을 맞으며 노는 사람들의 폴라로이드 사진" /></div></div>
+<div className="ph" data-x="1228.52" data-y="512.19" data-w="273.92" data-h="328.7" data-rot="5.74" data-fx="90" data-fy="60" data-frot="4" data-start="0.74"><div className="card" style={{ '--m': `url(${momentGrandma})` }}><img src={momentGrandma} alt="헤드폰을 쓴 눈사람의 폴라로이드 사진" /></div></div>
 </div>
 <div className="moments-copy" id="momentsCopy"><h2>{"The way we hold onto moments."}</h2><p>{"소중한 사람과 그 순간을 직접 찍고, 기다리고, 손에 쥐는 과정"}{" "}<br />{"우리는 디지털 이미지와는 다른 방식으로 실제 경험과 기억을 남겨왔습니다."}</p></div>
 <div className="scroll-cue" id="cue">{"SCROLL"}</div>
