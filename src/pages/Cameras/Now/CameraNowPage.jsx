@@ -12,7 +12,6 @@ import {
   goFilm,
   transitionCamera,
   discoverMore,
-  footer,
 } from './data/sections.js';
 import styles from './CameraNowPage.module.css';
 
@@ -552,27 +551,7 @@ export default function CameraNowPage() {
         </ul>
       </section>
 
-      {/* 12 Footer */}
-      <footer className={`${styles.screen} ${styles.footer}`}>
-        <img className={styles.footerLogo} src={footer.logo} alt="polaroid" />
-        <p className={styles.footerTagline}>
-          <Lines lines={footer.tagline} />
-        </p>
-        <p className={styles.footerCopyright}>{footer.copyright}</p>
-        <img className={styles.footerWordmark} src={footer.wordmark} alt="" aria-hidden="true" />
-        {footer.columns.map((column) => (
-          <div key={column.title} className={styles.footerColumn} style={{ '--x': column.x }}>
-            <p className={styles.footerHeading}>{column.title}</p>
-            <ul>
-              {column.items.map((item) => (
-                <li key={item} className={styles.footerItem}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </footer>
+      {/* 12 Footer — 공통 SiteFooter(RootLayout)로 옮김 */}
       </div>
     </article>
   );

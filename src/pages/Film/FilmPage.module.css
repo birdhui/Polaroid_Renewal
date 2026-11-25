@@ -40,11 +40,6 @@
   font-display: swap;
 }
 
-/* Film 미리보기에서 공통 헤더를 임시로 숨긴다. */
-:has(> main > .hero) > header {
-  display: none;
-}
-
 .hero {
   position: relative;
   inline-size: 100%;

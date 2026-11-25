@@ -390,38 +390,7 @@ function closeUpdate(sy) {
   });
 }
 
-/* ================= GNB 호버 (Figma 2128:1214 'GNB / Menu Item (Roll)': Default → Hover → Out) ================= */
-// 롤용 글자 복사본은 data-text 로 CSS(::before/::after)가 읽는다. 공통 헤더 마크업은 건드리지 않는다.
-// 들어오면 한 줄 위로(in), 나가면 한 줄 더 위로(out) 굴린 뒤, 끝나면 Default 로 순간 복귀(보이는 글자는 같아 티 나지 않음).
-function setupGnbHover() {
-  if (!header) return;
-  const snap = a => {                              // 전환 없이 Default 로 되돌림
-    a.dataset.gnbSnap = '';
-    delete a.dataset.gnb;
-    void a.offsetWidth;
-    delete a.dataset.gnbSnap;
-  };
-  const enter = a => {
-    if (reduced) return;
-    if (a.dataset.gnb === 'out') snap(a);          // 나가는 중에 다시 들어오면 처음부터 다시 굴림
-    a.dataset.gnb = 'in';
-  };
-  const leave = a => {
-    if (a.dataset.gnb !== 'in') return;
-    a.dataset.gnb = 'out';
-  };
-  header.querySelectorAll('nav a').forEach(a => {
-    a.dataset.text = a.textContent.trim();
-    // 링크가 위로 움직여도 판정이 흔들리지 않도록, 고정된 li 에서 들어오고 나감을 받는다.
-    const hit = a.closest('li') || a;
-    listen(hit, 'pointerenter', e => { if (e.pointerType !== 'touch') enter(a); });
-    listen(hit, 'pointerleave', e => { if (e.pointerType !== 'touch') leave(a); });
-    listen(a, 'focus', () => { if (a.matches(':focus-visible')) enter(a); });
-    listen(a, 'blur', () => leave(a));
-    listen(a, 'transitionend', e => { if (e.target === a && e.propertyName === 'transform' && a.dataset.gnb === 'out') snap(a); });
-  });
-}
-setupGnbHover();
+/* GNB 호버(메뉴 롤)는 공통 SiteHeader 가 맡는다 */
 
 /* ================= 폴라로이드 만져보기 (마우스 호버) =================
    커서를 올리면 사진을 손으로 살짝 집어 든 것처럼: 커서 쪽으로 기울고 조금 들려 그림자가 깊어지며, 인화지 표면에 빛이 커서를 따라 비침.
@@ -451,9 +420,7 @@ setupCardTouch();
 function gnbTheme(f, sy) {
   if (!header) return;
   header.dataset.historyTheme = lastF > 0.65 && sy < Q0 + 1.2 * vh ? 'light' : 'dark';
-  // 아래로 스크롤하면 숨기고, 위로 스크롤하면 다시 내려온다. 맨 위에서는 항상 보인다.
-  const hidden = scrollY > 40 && headerDir > 0;
-  if ((header.dataset.historyHidden === 'true') !== hidden) header.dataset.historyHidden = String(hidden);
+  // 스크롤할 때 숨겼다 다시 보이는 동작은 공통 SiteHeader 가 맡는다
 }
 
 /* ================= 메인 루프 ================= */
@@ -527,19 +494,6 @@ function frame() {
    오른쪽 블록과 연도 숫자는 스크롤 위치를 그대로 따라 이어서 움직인다. (방향키·다이얼 이동은 그대로) */
 let dragging = false;
 const stops = () => { const b = storyTop(); return [b + WE, ...CH.map((_, i) => b + chStart + i * step)]; };
-/* 헤더 표시: 사용자가 스크롤하는 방향(휠·터치·키보드)을 기준으로 정한다 */
-let headerDir = 0, headerTouchY = null;
-addEventListener('wheel', e => { if (Math.abs(e.deltaY) > 2) headerDir = e.deltaY > 0 ? 1 : -1; }, { passive: true });
-addEventListener('touchstart', e => { headerTouchY = e.touches[0]?.clientY ?? null; }, { passive: true });
-addEventListener('touchmove', e => {
-  const y = e.touches[0]?.clientY;
-  if (headerTouchY === null || y === undefined || Math.abs(y - headerTouchY) < 8) return;
-  headerDir = y < headerTouchY ? 1 : -1; headerTouchY = y;
-}, { passive: true });
-addEventListener('keydown', e => {
-  if (['ArrowDown', 'PageDown', ' ', 'Spacebar', 'End'].includes(e.key)) headerDir = 1;
-  if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) headerDir = -1;
-});
 addEventListener('keydown', e => {
   if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
   const sy = scrollY, st = stops();
@@ -614,8 +568,7 @@ requestAnimationFrame(frame);
   timers.forEach(window.clearTimeout);
   root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
   if (header) {
-    delete header.dataset.historyTheme; delete header.dataset.historyHidden;
-    header.querySelectorAll('nav a').forEach(a => { delete a.dataset.gnb; delete a.dataset.gnbSnap; delete a.dataset.text; });
+    delete header.dataset.historyTheme; delete header.dataset.historyHidden;   // 메뉴 링크(data-text 등)는 SiteHeader 가 관리하므로 건드리지 않음
   }
  };
 }
