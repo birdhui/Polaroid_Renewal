@@ -108,6 +108,7 @@ const CASES = {
     ['비용도 걱정되고 사진이 잘 나올지도 걱정돼요', 'ambiguous:result,cost'],
     ['가격도 그렇고 성능도 궁금해요', 'ambiguous:cost,features'],
     ['특히 가격이 제일 걱정돼요 사진도 걱정되긴 해요', 'matched:cost'],
+    ['일상에서 사용하고 싶어', 'matched:usage'],
     ['잘 모르겠어요', 'unknown'],
     ['딱히 없어요', 'unknown'],
     ['ㅎㅎ', 'unknown'],
