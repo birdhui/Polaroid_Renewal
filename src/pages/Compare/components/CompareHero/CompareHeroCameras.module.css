@@ -20,9 +20,39 @@
   pointer-events: none;
 }
 
-.camera {
+/*
+ * 카메라 한 대 = .item > 떠 있는 층(.float) > 이미지(.camera)
+ * 층마다 움직임이 겹치지 않게 나눴다: 바깥 층은 마우스 패럴랙스, .float 은 둥둥 떠 있는 움직임, 이미지는 인트로.
+ * --mx / --my 는 CompareHeroCameras.jsx 가 마우스 위치에 맞춰 넣고, --depth 는 카메라마다 다르다.
+ */
+.item {
   position: absolute;
+  aspect-ratio: 1;
+  transform: translate3d(calc(var(--mx, 0px) * var(--depth, 1)), calc(var(--my, 0px) * var(--depth, 1)), 0);
+  will-change: transform;
+}
+
+.float {
   display: block;
+}
+
+.settled .float {
+  animation: float var(--float-duration, 7s) ease-in-out var(--float-delay, 0s) infinite alternate;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(-0.9%);
+  }
+
+  to {
+    transform: translateY(0.9%);
+  }
+}
+
+.camera {
+  display: block;
+  width: 100%;
   height: auto;
   opacity: 0; /* 이미지가 모두 준비되기 전에는 숨긴다 */
   user-select: none;
@@ -44,11 +74,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .item {
+    transform: none;
+  }
+
   .camera {
     opacity: 1;
+    transition: none;
   }
 
   .ready .camera {
+    animation: none;
+  }
+
+  .settled .float {
     animation: none;
   }
 }
