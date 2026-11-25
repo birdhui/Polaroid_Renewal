@@ -233,8 +233,8 @@ function useTransitionScroll(trackRef, textRef) {
       const textWidth = textRef.current ? textRef.current.offsetWidth : vw * 2.4;
       // 배경 · 외곽선 색: 글자가 채워지는 구간에 맞춰 크림 → #151515
       const dark = smooth(0.14, 0.58, p);
-      const bg = [mix(255, 21, dark), mix(249, 21, dark), mix(232, 21, dark)].map(Math.round).join(',');
-      const stroke = [mix(21, 255, dark), mix(21, 249, dark), mix(21, 232, dark)].map(Math.round).join(',');
+      const bg = [mix(255, 21, dark), mix(250, 21, dark), mix(242, 21, dark)].map(Math.round).join(',');
+      const stroke = [mix(21, 255, dark), mix(21, 250, dark), mix(21, 242, dark)].map(Math.round).join(',');
       // 카메라 사진: 처음 20% 동안 천천히 커지면서 사라진다
       const img = smooth(0.02, 0.2, p);
       // 글자 중심 위치(화면 가운데 기준 px): 왼쪽 끝이 화면 8% → 오른쪽 끝이 화면 92%

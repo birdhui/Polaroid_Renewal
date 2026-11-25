@@ -9,10 +9,10 @@
 /*
  * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
  * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
- * 화면 너비에 비례해 커지고 작아진다. 색상: 크림 #fff9e8, 잉크 #151515, 포인트 #f0a137.
+ * 화면 너비에 비례해 커지고 작아진다. 색상: 크림 #fffaf2, 잉크 #151515, 포인트 #f0a137.
  */
 .page {
-  --now-cream: #fff9e8;
+  --now-cream: #fffaf2;
   --now-ink: #151515;
   --now-accent: #f0a137;
   --f-pre: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
@@ -193,7 +193,7 @@
 
 /* ───────── Transition-camera: 스크롤 따라 사진 → 큰 글자(외곽선 → 채움) → #151515 배경 ───────── */
 .transitionTrack {
-  --tbg: #fff9e8;
+  --tbg: #fffaf2;
   --tstroke: rgb(21, 21, 21);
   --timg-o: 1;
   --timg-s: 1;
@@ -697,7 +697,7 @@ span.transitionImage {
 .purchaseTrack {
   position: relative;
   height: 260vh;
-  background: #fff9e8; /* Figma 09: 크림색 배경(Rectangle 1), 배경 사진은 끔 */
+  background: #fffaf2; /* Figma 09: 크림색 배경(Rectangle 1), 배경 사진은 끔 */
   color: #19140c;
 }
 
