@@ -149,9 +149,9 @@ function layout() {
     const w = p.w * U, h = p.h * U;
     let left = p.x * U, top = p.y * U;
     if (mobile) {
-      // 모바일: 네 장이 모인 줄 전체(시안 가로 약 981px)를 화면 폭에 맞춰 줄이고, 문구 아래에 둔다
-      const s = Math.min(1, (vw - 24) / (981 * U));
-      const cx = p.x + p.w / 2 - 955, cy = p.y + p.h / 2 - 649;
+      // 모바일: 네 장이 모인 줄 전체(가로 약 1096px)를 화면 폭에 맞춰 줄이고, 문구 아래에 둔다
+      const s = Math.min(1, (vw - 24) / (1096 * U));
+      const cx = p.x + p.w / 2 - 955, cy = p.y + p.h / 2 - 665;
       const ww = p.w * U * s, hh = p.h * U * s;
       left = vw / 2 + cx * U * s - ww / 2; top = vh * 0.58 + cy * U * s - hh / 2;
       Object.assign(p.el.style, { left: left + 'px', top: top + 'px', width: ww + 'px', height: hh + 'px' });
