@@ -1,3 +1,27 @@
+/**
+ * Cameras 메인 페이지 공통 값 — Figma Cameras 프레임(가로 1920) 기준
+ * 아직 공통 토큰(variables.css)에 없는 값이라 이 페이지 안에서만 쓴다.
+ * 공통 토큰이 확정되면(모진아, style/design-system) 해당 토큰으로 교체한다.
+ *
+ * --px: 시안 1px 이 화면에서 차지하는 크기(= 페이지 폭 / 1920).
+ *       각 섹션은 시안 좌표에 이 값을 곱해 배치하므로 화면 폭이 달라도 같은 구도를 유지한다.
+ *       (cqw 기준이라 스크롤바 폭이 빠진 실제 페이지 폭을 쓴다.)
+ */
 .page {
-  padding: var(--space-6);
+  container-type: inline-size;
+  --px: calc(100cqw / 1920);
+
+  /* 글꼴: 영문 Outfit, 한글·본문 Pretendard (로드 전·실패 시 공통 기본 글꼴) */
+  --cm-font-text: 'Pretendard Variable', 'Pretendard', var(--font-sans);
+  --cm-font-eng: 'Outfit', var(--cm-font-text);
+
+  overflow-x: clip;
+  background: #fffaec;
+  color: #151515;
+  font-family: var(--cm-font-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page img {
+  max-width: none;
 }

@@ -1,0 +1,38 @@
+/*
+ * Figma "Cameras - NOW" 프레임은 1920px 너비 기준으로 설계됐다.
+ * 각 섹션(.screen)을 컨테이너로 두고 --u(= 화면 너비 / 1920)를 곱해서
+ * Figma 좌표·크기·폰트 값을 그대로 쓰면서 어떤 너비에서도 같은 비율로 보이게 한다.
+ * 사용법: --x, --y, --w, --h, --fs, --ls 에 Figma 숫자(px)만 적는다.
+ */
+.screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1920 / 1080;
+  overflow: hidden;
+  container-type: inline-size;
+  --u: calc(100cqw / 1920);
+}
+
+.pos {
+  position: absolute;
+  left: calc(var(--x, 0) * var(--u));
+  top: calc(var(--y, 0) * var(--u));
+}
+
+.size {
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+}
+
+.text {
+  margin: 0;
+  font-size: calc(var(--fs) * var(--u));
+  letter-spacing: calc(var(--ls, 0) * var(--u));
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.center {
+  transform: translateX(-50%);
+  text-align: center;
+}
