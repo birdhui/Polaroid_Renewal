@@ -186,6 +186,8 @@ const transitionImages = import.meta.glob('../../../../assets/cameras/now/transi
 });
 const transitionSrc = Object.values(transitionImages)[0];
 export const transitionCamera = {
-  text: 'POLAROID NOW',
+  text: 'POLAROLID NOW', // Figma Transition 프레임 문구 그대로(오타로 보이면 디자인 확인 필요)
+  // Figma 글자별 자간(px, 900px 글자 기준): 'L'(3번째) 뒤만 32, 나머지 -2
+  letterSpacing: [-2, -2, 32, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2],
   image: { src: transitionSrc, file: 'transition-camera.png' },
 };

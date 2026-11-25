@@ -281,6 +281,10 @@ export default function CameraNowPage() {
   const purchaseTrackRef = useRef(null);
   useTextReveal(pageRef);
   usePurchaseScroll(purchaseTrackRef);
+  // 글자별 자간(Figma, 900px 기준 px → em)
+  const transitionLetters = [...transitionCamera.text].map((ch, i) => (
+    <span key={i} style={{ letterSpacing: (transitionCamera.letterSpacing[i] ?? 0) / 900 + 'em' }}>{ch}</span>
+  ));
   const transitionTrackRef = useRef(null);
   const transitionTextRef = useRef(null);
   useTransitionScroll(transitionTrackRef, transitionTextRef);
@@ -340,8 +344,8 @@ export default function CameraNowPage() {
       <div ref={transitionTrackRef} className={styles.transitionTrack}>
         <div className={styles.transitionSticky}>
           <div ref={transitionTextRef} className={styles.transitionText} aria-hidden="true">
-            <span className={styles.transitionOutline}>{transitionCamera.text}</span>
-            <span className={styles.transitionFill}>{transitionCamera.text}</span>
+            <span className={styles.transitionOutline}>{transitionLetters}</span>
+            <span className={styles.transitionFill}>{transitionLetters}</span>
           </div>
           <p className={styles.srOnly}>{transitionCamera.text}</p>
         </div>

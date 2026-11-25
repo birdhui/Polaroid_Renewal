@@ -246,6 +246,7 @@ span.transitionImage {
   font-size: 46.875vw; /* Figma Transition-1: 900px / 1920 */
   line-height: 1.26;
   letter-spacing: 0;
+  white-space: pre;
   opacity: var(--ttext-o);
   transform: translate(calc(-50% + var(--tx)), -50%) scale(var(--ts));
   will-change: transform;
@@ -257,9 +258,10 @@ span.transitionImage {
 }
 
 .transitionOutline {
-  color: transparent;
-  /* Figma: Outfit Black, 외곽선 #F0A137 / 900px 기준 13px */
-  -webkit-text-stroke: 0.0144em var(--now-accent);
+  /* Figma: 외곽선 3px OUTSIDE(#F0A137). 가운데 정렬 선 6px 을 그리고 글자 안쪽은 배경색으로 덮어 바깥쪽 3px 만 남긴다 */
+  color: var(--tbg);
+  paint-order: stroke fill;
+  -webkit-text-stroke: calc(6em / 900) var(--now-accent);
   /* 채워진 부분의 외곽선은 보이지 않도록, 아직 안 채워진 오른쪽만 남긴다 */
   clip-path: inset(0 0 0 calc(100% - var(--tfill)));
 }
