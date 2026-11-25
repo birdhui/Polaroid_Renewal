@@ -8,11 +8,11 @@
 import heroImage from '../../../../assets/cameras/now/hero.jpg';
 import introProductImage from '../../../../assets/cameras/now/intro-product.jpg';
 import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus-poster.png';
-import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.webm';
+import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.mp4';
 import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure-poster.png';
 import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.mp4';
 import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness-poster.png';
-import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.webm';
+import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.mp4';
 import sectionBackgroundImage from '../../../../assets/cameras/now/dark-section-bg.jpg';
 import filterPreviewImage from '../../../../assets/cameras/now/filter-preview.jpg';
 import appStoryImage from '../../../../assets/cameras/now/app-story.jpg';
@@ -58,7 +58,7 @@ export const features = [
     tagLabel: 'TWO-LENS AUTOFOCUS',
     headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
     image: featureAutofocusImage,
-    video: featureAutofocusVideo, // 배경이 투명한(알파) WebM — image는 poster/대체 이미지
+    video: featureAutofocusVideo, // 01 렌즈 클로즈업 영상 — image는 poster/대체 이미지
   },
   {
     id: 'double-exposure',
@@ -66,7 +66,7 @@ export const features = [
     tagLabel: 'DOUBLE EXPOSURE MODE',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
-    video: featureDoubleExposureVideo, // Figma 05 v.2 — 자막 제거 영상을 875×875 영역(x0,y31)으로 크롭, 766×766
+    video: featureDoubleExposureVideo, // 02 더블 익스포저 영상 — 세로 영상(734×1254)을 위쪽 기준 734×734로 크롭
   },
   {
     id: 'sharpness',
