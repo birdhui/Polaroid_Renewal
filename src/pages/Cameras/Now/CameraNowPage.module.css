@@ -234,10 +234,10 @@ span.transitionImage {
   display: grid;
   white-space: nowrap;
   font-family: var(--f-out);
-  font-weight: 600;
+  font-weight: 900;
   font-size: 30vw;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 1.26;
+  letter-spacing: 0;
   opacity: var(--ttext-o);
   transform: translate(calc(-50% + var(--tx)), -50%) scale(var(--ts));
   will-change: transform;
@@ -250,7 +250,10 @@ span.transitionImage {
 
 .transitionOutline {
   color: transparent;
-  -webkit-text-stroke: 2px var(--tstroke);
+  /* Figma: Outfit Black, 외곽선 #F0A137 / 900px 기준 13px */
+  -webkit-text-stroke: 0.0144em var(--now-accent);
+  /* 채워진 부분의 외곽선은 보이지 않도록, 아직 안 채워진 오른쪽만 남긴다 */
+  clip-path: inset(0 0 0 calc(100% - var(--tfill)));
 }
 
 /* 같은 글자를 겹쳐 두고 오른쪽부터 잘라 두었다가, 스크롤에 따라 왼쪽 → 오른쪽으로 색이 채워진다 */

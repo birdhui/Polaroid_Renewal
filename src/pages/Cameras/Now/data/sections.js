@@ -207,6 +207,6 @@ const transitionImages = import.meta.glob('../../../../assets/cameras/now/transi
 });
 const transitionSrc = Object.values(transitionImages)[0];
 export const transitionCamera = {
-  text: 'Polaroid Now',
+  text: 'POLAROID NOW',
   image: { src: transitionSrc, file: 'transition-camera.png' },
 };
