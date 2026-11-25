@@ -1,0 +1,310 @@
+/* 2. 카메라 라인업 (시안 1920×1764, 배경 #fff9e8) */
+.section {
+  position: relative;
+  overflow: hidden;
+  /* 제목 위 150 / 카메라 이름 줄 아래 200 (시안 227 / 348 에서 줄여 한 화면에 가깝게) */
+  padding: calc(150 * var(--px)) 0 calc(200 * var(--px));
+  background: #fff9e8;
+}
+
+.title {
+  margin: 0;
+  color: #151515;
+  font-family: var(--cm-font-text);
+  font-weight: 600;
+  font-size: max(26px, calc(40 * var(--px)));
+  line-height: 1.15;
+  letter-spacing: -0.036em;
+  text-align: center;
+}
+
+/* 모델 이름 줄 (시안: Now | Now+ | Go | MOD | Flip | I-2) — 제목과 40px, 이름 사이 56px, Outfit 40px 600 */
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 56px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.categories li {
+  position: relative;
+  display: flex;
+}
+
+/* 이름 사이 가는 세로선 — 간격 56px 의 가운데, 세로는 글자(대문자 높이)의 가운데 */
+.categories li + li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -28px;
+  width: 1px;
+  height: 0.6em;
+  font-size: 40px;
+  background: #c4c3c1;
+  transform: translate(-50%, -50%);
+}
+
+.category {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #b3aea2;
+  font-family: var(--cm-font-eng);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.26;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition: color 0.4s ease;
+}
+
+.category:hover {
+  color: #6f6a5f;
+}
+
+/* 가운데에 온 카메라 */
+.categoryActive,
+.categoryActive:hover {
+  color: #000;
+}
+
+.category:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 4px;
+}
+
+/*
+ * 프레임·카메라 무대: 시안(y 446 ~ 1114)을 --k 배로 줄였다.
+ * 제목 · 카메라 · 모델 이름 줄이 한 화면(시안 기준 약 870px)에 들어오도록 크기와 위아래 간격을 줄였다.
+ * --s: 무대 전체(가로 간격 · 높이 · 카메라 · 프레임)를 가운데(x 948) 기준으로 한 번 더 줄이는 비율.
+ *      JS(LineupCarousel.jsx 의 STAGE_SCALE)와 같은 값이어야 끌기 거리가 맞는다.
+ */
+.stage {
+  --s: 0.8;
+  --k: calc(0.72 * var(--s));
+  position: relative;
+  height: calc(668 * var(--k) * var(--px));
+  margin-top: calc(60 * var(--px));
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 세로 스크롤은 브라우저에 맡기고 가로 끌기만 받는다 */
+  touch-action: pan-y;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.stage:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 8px;
+}
+
+/* 프레임 선 두께(8)만큼 바깥으로 4px 큰 SVG — 가운데(x 948)를 기준으로 줄인다 */
+.frame {
+  position: absolute;
+  left: calc((948 - 451 * var(--k)) * var(--px));
+  top: calc(-4 * var(--k) * var(--px));
+  width: calc(902 * var(--k) * var(--px));
+  height: auto;
+  pointer-events: none;
+}
+
+.camera {
+  position: absolute;
+  /* 가로 위치·흐림 정도·겹침 순서는 JS(LineupCarousel.jsx 의 render)가 매 프레임 transform · --blur-mix · z-index 로 정한다 */
+  left: 0;
+  /* 세로 중심 y 738 = 무대 위쪽(446) + 292 (무대와 같은 비율로 줄인다) */
+  top: calc(292 * var(--k) * var(--px));
+  width: calc(var(--w) * var(--s) * var(--px));
+  height: calc(var(--h) * var(--s) * var(--px));
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  backface-visibility: hidden;
+  cursor: inherit;
+}
+
+.camera:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 4px;
+}
+
+/* 선명한 그림과 미리 흐리게 그린 그림을 겹쳐 두고 투명도만 바꾼다 */
+.layer {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.layer:first-child {
+  opacity: calc(1 - var(--blur-mix, 0));
+}
+
+.blurred {
+  opacity: var(--blur-mix, 0);
+  filter: blur(calc(4 * var(--px)));
+}
+
+.layer img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/*
+ * 바닥 그림자 — I-2 이미지의 그림자처럼 카메라가 바닥에 닿은 선(--sb)에 붙어 좌우로 얇게 퍼진다.
+ * 위쪽 절반은 카메라 몸체 뒤에 가려지고, 바닥 선 아래로만 짧게 보인다(공중에 뜬 느낌 제거).
+ *  - 첫 번째 그라데이션: 몸체 폭만큼, 바닥 선에 바짝 붙은 진한 접지 그림자
+ *  - 두 번째 그라데이션: 몸체보다 좌우로 넓게 번지는 옅은 그림자
+ * 흐린 그림에도 같이 들어가 양옆 카메라에서는 함께 흐려진다.
+ */
+.shadow .layer::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--sb) * 100% - 3%);
+  left: calc(var(--sl) * 100% - 9%);
+  right: calc(var(--sr) * 100% - 9%);
+  height: 6%;
+  background:
+    radial-gradient(closest-side, rgba(12, 12, 12, 0.58), rgba(12, 12, 12, 0.2) 70%, transparent) 50% 50% / 84% 46% no-repeat,
+    radial-gradient(closest-side, rgba(12, 12, 12, 0.26), rgba(12, 12, 12, 0.1) 60%, transparent);
+  filter: blur(calc(2 * var(--px)));
+  pointer-events: none;
+}
+
+/* 이름 · View More: 시안처럼 모델 이름은 프레임 아래 선 가운데(모서리 사이 빈 곳)에 걸치고, 그 아래 버튼 */
+.caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 이름 줄(64px × 1.26)의 가운데가 프레임 아래 선에 오도록 위로 끌어올린다 */
+  margin-top: -40px;
+}
+
+.name {
+  margin: 0;
+  color: #000;
+  font-family: var(--cm-font-eng);
+  font-weight: 600;
+  font-size: 64px;
+  line-height: 1.26;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* 이름이 바뀔 때 살짝 떠오르며 바뀐다 */
+.nameText {
+  display: inline-block;
+  animation: nameIn 0.5s cubic-bezier(0.22, 0.7, 0.2, 1);
+}
+
+@keyframes nameIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.18em);
+  }
+}
+
+/* View More 버튼: 312×64, 채움 #151515, Outfit 20px */
+.viewMore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 312px;
+  height: 64px;
+  margin-top: calc(80 * var(--px));
+  background: #151515;
+  color: #fff;
+  font-family: var(--cm-font-eng);
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.25s ease;
+}
+
+.viewMore:hover {
+  background: #3a3a3a;
+}
+
+.viewMore:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: 4px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .section {
+    padding: 64px 0 72px;
+  }
+
+  /* 좁은 화면: 무대를 1.28배 키우고 가운데를 맞춘다 (양옆 카메라는 화면 밖으로 반쯤 잘린다) */
+  .stage {
+    --px: calc(100cqw / 1500);
+    width: calc(1920 * var(--px));
+    margin: 32px 0 0 calc(-210 * var(--px));
+  }
+
+  /* 좁은 화면: 이름 줄 글자·간격을 줄여 한두 줄에 들어가게 */
+  .categories {
+    gap: 8px 18px;
+    margin-top: 24px;
+    padding: 0 16px;
+  }
+
+  .categories li + li::before {
+    left: -9px;
+    font-size: 20px;
+    transform: translate(-50%, -50%);
+  }
+
+  .category {
+    font-size: 20px;
+  }
+
+  .caption {
+    margin-top: 24px;
+  }
+
+  .name {
+    font-size: 40px;
+  }
+
+  .viewMore {
+    width: min(312px, 100% - 32px);
+    height: 56px;
+    margin-top: 20px;
+    font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category,
+  .viewMore {
+    transition: none;
+  }
+
+  .nameText {
+    animation: none;
+  }
+}

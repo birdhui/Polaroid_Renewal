@@ -1,0 +1,151 @@
+/* 10. 마지막 안내 (시안 1920×1081 — 왼쪽 반 #151515, 오른쪽 반 흰색) */
+.section {
+  position: relative;
+  height: calc(1081 * var(--px));
+  overflow: hidden;
+  background: linear-gradient(90deg, #151515 50%, #fff 50%);
+}
+
+.camera,
+.script {
+  position: absolute;
+  left: calc(var(--l) * var(--px));
+  top: calc(var(--t) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  object-fit: contain;
+}
+
+.camera {
+  z-index: 1;
+}
+
+/* 패널은 섹션 전체를 덮는 투명 층이고, 안의 요소만 시안 좌표에 놓인다 */
+.panel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.panel > * {
+  pointer-events: auto;
+}
+
+.heading {
+  margin: 0;
+}
+
+.body,
+.button {
+  position: absolute;
+  left: calc(var(--cx) * var(--px));
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.body {
+  top: calc(var(--body-top) * var(--px));
+  margin: 0;
+  font-family: var(--cm-font-text);
+  font-weight: 500;
+  font-size: max(12px, calc(14 * var(--px)));
+  line-height: 1.19;
+  letter-spacing: -0.07em;
+  text-align: center;
+}
+
+.button {
+  top: calc(var(--button-top) * var(--px));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max(110px, calc(137 * var(--px)));
+  height: max(36px, calc(41 * var(--px)));
+  font-family: var(--cm-font-text);
+  font-weight: 500;
+  font-size: max(12px, calc(14 * var(--px)));
+  letter-spacing: -0.07em;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  opacity: 0.8;
+}
+
+.panel[data-tone='dark'] .body {
+  color: #fff;
+}
+
+.panel[data-tone='dark'] .button {
+  background: #fff;
+  color: #19140c;
+}
+
+.panel[data-tone='light'] .body {
+  color: #151515;
+}
+
+.panel[data-tone='light'] .button {
+  background: #151515;
+  color: #fff;
+}
+
+/* 좁은 화면: 카메라 → 어두운 패널 → 밝은 패널 순서로 쌓는다 */
+@media (max-width: 1023px) {
+  .section {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    background: none;
+  }
+
+  .camera {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    padding: 40px 24px;
+    background: linear-gradient(90deg, #151515 50%, #fff 50%);
+    object-fit: contain;
+    max-height: 420px;
+  }
+
+  .panel {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 48px 24px 56px;
+  }
+
+  .panel[data-tone='dark'] {
+    background: #151515;
+  }
+
+  .panel[data-tone='light'] {
+    background: #fff;
+  }
+
+  .script,
+  .body,
+  .button {
+    position: static;
+    transform: none;
+  }
+
+  .script {
+    width: min(100%, 360px);
+    height: auto;
+    margin: -60px 0 -50px;
+  }
+
+  .body {
+    text-align: center;
+    white-space: normal;
+  }
+}
