@@ -161,29 +161,36 @@
 .page :global(.q-kr){top:auto;bottom:14vh;transform:none}
 }
 
-:global(header):has(+ :global(main) > .page){position:fixed;inset:0 0 auto;height:80px;padding:0 var(--page-gutter,50px);z-index:100;display:flex;align-items:center;justify-content:space-between;background:transparent;border:0;color:#fff;--gnb-base:#fff;--gnb-hover:#fff0ce}
-:global(header):has(+ :global(main) > .page) > :global(a:first-child){display:block;width:91px;height:25px;font-size:0;background:currentColor;mask:url('../../assets/history/story/story-177a75b74589.svg') center/contain no-repeat}
+/* GNB (Figma 2442:2691): 로고 81×22 + 메뉴 4개(간격 43px), 상단 여백 20px. 공통 헤더 마크업은 그대로 두고 History 에서만 덮어쓴다 */
+:global(header):has(+ :global(main) > .page){position:fixed;inset:0 0 auto;padding:20px var(--page-gutter,50px) 0;z-index:100;display:flex;align-items:center;justify-content:space-between;background:transparent;border:0;color:#fff}
+:global(header):has(+ :global(main) > .page) > :global(a:first-child){display:block;width:81px;height:22px;font-size:0;background:currentColor;mask:url('../../assets/history/story/story-177a75b74589.svg') center/contain no-repeat}
 :global(header):has(+ :global(main) > .page) :global(nav){width:auto}
-:global(header):has(+ :global(main) > .page) :global(nav ul){display:flex;justify-content:flex-end;align-items:center;gap:28px}
-:global(header):has(+ :global(main) > .page) :global(nav a){position:relative;color:inherit;display:inline-block;padding:3px;font:500 14px/17px 'Outfit',var(--font-sans);letter-spacing:0;white-space:nowrap}
-:global(header):has(+ :global(main) > .page) :global(nav a)::before,:global(header):has(+ :global(main) > .page) :global(nav a)::after{content:attr(data-text);content:attr(data-text) / '';position:absolute;left:3px;top:3px;height:17px;white-space:nowrap;pointer-events:none;opacity:0}
-:global(header):has(+ :global(main) > .page) :global(nav a)::before{clip-path:polygon(0 0,100% 0,100% 6px,0 6px,0 11px,100% 11px,100% 17px,0 17px)}
-:global(header):has(+ :global(main) > .page) :global(nav a)::after{clip-path:inset(6px 0 6px 0)}
-:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb]{animation:gnbBase .36s steps(1,end) both}
-:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb]::before{animation:gnbTop .36s steps(1,end) both}
-:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb]::after{animation:gnbMid .36s steps(1,end) both}
-:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb='in']{color:var(--gnb-hover);--ga:var(--gnb-base);--gb:var(--gnb-hover)}
-:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb='out']{color:var(--gnb-base);--ga:var(--gnb-hover);--gb:var(--gnb-base)}
-:global(header):has(+ :global(main) > .page) :global(nav a:focus-visible){outline:1px solid currentColor;outline-offset:4px}
-@keyframes gnbBase{0%{color:transparent}99.9%{color:transparent}100%{color:var(--gb)}}
-@keyframes gnbTop{0%{opacity:1;transform:translateX(2px);color:var(--gb)}20%{transform:translateX(-2px);color:var(--ga)}40%{transform:translateX(1px);color:var(--gb)}60%{transform:translateX(-2px);color:var(--ga)}80%{transform:translateX(2px);color:var(--gb)}99.9%{opacity:1;transform:translateX(0);color:var(--gb)}100%{opacity:0;transform:none}}
-@keyframes gnbMid{0%{opacity:1;transform:translateX(-2px);color:var(--ga)}20%{transform:translateX(2px);color:var(--gb)}40%{transform:translateX(-2px);color:var(--ga)}60%{transform:translateX(1px);color:var(--gb)}80%{transform:translateX(-1px);color:var(--ga)}99.9%{opacity:1;transform:translateX(0);color:var(--gb)}100%{opacity:0;transform:none}}
-@media (prefers-reduced-motion:reduce){:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb],:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb]::before,:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb]::after{animation:none}}
-:global(header[data-history-theme='light']):has(+ :global(main) > .page){color:#151515;--gnb-base:#151515;--gnb-hover:#a68a4b}
+:global(header):has(+ :global(main) > .page) :global(nav ul){display:flex;justify-content:flex-end;align-items:center;gap:43px}
+/* Figma 메뉴 순서는 History·Cameras·Film·Compare. 공통 routes.js 순서(…Compare·Film)는 건드리지 않고 화면 순서만 바꾼다 */
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(3)){order:4}
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(4)){order:3}
+/* 메뉴 롤 (Figma 컴포넌트 'GNB / Menu Item (Roll)' 2128:1214 — State: Default → Hover → Out)
+   한 줄 높이(17px) 창(li) 안에 같은 글자 3줄(A=링크 글자, B=::before, C=::after)을 쌓고, 호버 때 한 줄, 떠날 때 한 줄 더 위로 굴린다.
+   굴러가는 중에도 굵기가 바뀌지 않도록 세 줄 모두 Light(300)로 고정. Out 이 끝나면 Default 로 순간 복귀(보이는 모습은 같음) */
+:global(header):has(+ :global(main) > .page) :global(nav li){height:17px;clip-path:inset(0 -24px)}  /* 위아래만 자름: 폰트가 늦게 와도 글자 좌우가 잘리지 않게 */
+:global(header):has(+ :global(main) > .page) :global(nav li:has(> a:focus-visible)){outline:1px solid currentColor;outline-offset:4px;clip-path:none}
+:global(header):has(+ :global(main) > .page) :global(nav a){position:relative;display:block;height:17px;color:inherit;text-align:center;font:300 14px/17px 'Outfit',var(--font-sans);letter-spacing:0;white-space:nowrap;transition:transform .45s cubic-bezier(.65,0,.35,1)}
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(1) a){width:46px}
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(2) a){width:57px}
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(3) a){width:59px}
+:global(header):has(+ :global(main) > .page) :global(nav li:nth-child(4) a){width:27px}
+:global(header):has(+ :global(main) > .page) :global(nav a)::before,:global(header):has(+ :global(main) > .page) :global(nav a)::after{content:attr(data-text);content:attr(data-text) / '';position:absolute;left:0;right:0;height:17px;font-weight:inherit;pointer-events:none}
+:global(header):has(+ :global(main) > .page) :global(nav a)::before{top:17px}
+:global(header):has(+ :global(main) > .page) :global(nav a)::after{top:34px}
+:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb='in']{transform:translateY(-17px)}
+:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb='out']{transform:translateY(-34px)}
+:global(header):has(+ :global(main) > .page) :global(nav a)[data-gnb-snap]{transition:none}
+@media (prefers-reduced-motion:reduce){:global(header):has(+ :global(main) > .page) :global(nav a){transition:none}}
+:global(header[data-history-theme='light']):has(+ :global(main) > .page){color:#151515}
 :global(header):has(+ :global(main) > .page){transition:color .4s,opacity .35s ease,transform .35s ease}
 :global(header[data-history-hidden='true']):has(+ :global(main) > .page):not(:focus-within){opacity:0;transform:translateY(-100%);pointer-events:none}
 @media (prefers-reduced-motion:reduce){:global(header):has(+ :global(main) > .page){transition:none}}
-@media(max-width:820px){:global(header):has(+ :global(main) > .page){height:72px;padding-inline:18px}:global(header):has(+ :global(main) > .page) :global(nav){width:auto}:global(header):has(+ :global(main) > .page) :global(nav ul){gap:8px}}
+@media(max-width:820px){:global(header):has(+ :global(main) > .page){padding-inline:18px}:global(header):has(+ :global(main) > .page) :global(nav ul){gap:16px}}
 
 .page{position:relative;background:var(--dark);color:#fff;font-family:var(--kr);overflow-x:clip;isolation:isolate}
 .page :global(img){max-width:none}

@@ -390,23 +390,35 @@ function closeUpdate(sy) {
   });
 }
 
-/* ================= GNB 호버 (Figma 2054:2573: Default → Glitch → Hover) ================= */
-// 글리치 조각용 글자 복사본은 data-text 로 CSS(::before/::after)가 읽는다. 공통 헤더 마크업은 건드리지 않는다.
+/* ================= GNB 호버 (Figma 2128:1214 'GNB / Menu Item (Roll)': Default → Hover → Out) ================= */
+// 롤용 글자 복사본은 data-text 로 CSS(::before/::after)가 읽는다. 공통 헤더 마크업은 건드리지 않는다.
+// 들어오면 한 줄 위로(in), 나가면 한 줄 더 위로(out) 굴린 뒤, 끝나면 Default 로 순간 복귀(보이는 글자는 같아 티 나지 않음).
 function setupGnbHover() {
   if (!header) return;
-  const play = (a, dir) => {
-    if (a.dataset.gnb === dir) return;
-    delete a.dataset.gnb; void a.offsetWidth;       // 애니메이션을 처음부터 다시 시작
-    a.dataset.gnb = dir;
+  const snap = a => {                              // 전환 없이 Default 로 되돌림
+    a.dataset.gnbSnap = '';
+    delete a.dataset.gnb;
+    void a.offsetWidth;
+    delete a.dataset.gnbSnap;
+  };
+  const enter = a => {
+    if (reduced) return;
+    if (a.dataset.gnb === 'out') snap(a);          // 나가는 중에 다시 들어오면 처음부터 다시 굴림
+    a.dataset.gnb = 'in';
+  };
+  const leave = a => {
+    if (a.dataset.gnb !== 'in') return;
+    a.dataset.gnb = 'out';
   };
   header.querySelectorAll('nav a').forEach(a => {
     a.dataset.text = a.textContent.trim();
-    // 글리치 중에는 링크가 조각으로 잘려 마우스 판정도 줄어들므로, 잘리지 않는 li 에서 들어오고 나감을 받는다.
+    // 링크가 위로 움직여도 판정이 흔들리지 않도록, 고정된 li 에서 들어오고 나감을 받는다.
     const hit = a.closest('li') || a;
-    listen(hit, 'pointerenter', e => { if (e.pointerType !== 'touch') play(a, 'in'); });
-    listen(hit, 'pointerleave', e => { if (e.pointerType !== 'touch' && a.dataset.gnb) play(a, 'out'); });
-    listen(a, 'focus', () => { if (a.matches(':focus-visible')) play(a, 'in'); });
-    listen(a, 'blur', () => { if (a.dataset.gnb) play(a, 'out'); });
+    listen(hit, 'pointerenter', e => { if (e.pointerType !== 'touch') enter(a); });
+    listen(hit, 'pointerleave', e => { if (e.pointerType !== 'touch') leave(a); });
+    listen(a, 'focus', () => { if (a.matches(':focus-visible')) enter(a); });
+    listen(a, 'blur', () => leave(a));
+    listen(a, 'transitionend', e => { if (e.target === a && e.propertyName === 'transform' && a.dataset.gnb === 'out') snap(a); });
   });
 }
 setupGnbHover();
@@ -601,6 +613,9 @@ requestAnimationFrame(frame);
   if (resizeId !== null) window.cancelAnimationFrame(resizeId);
   timers.forEach(window.clearTimeout);
   root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
-  if (header) { delete header.dataset.historyTheme; delete header.dataset.historyHidden; }
+  if (header) {
+    delete header.dataset.historyTheme; delete header.dataset.historyHidden;
+    header.querySelectorAll('nav a').forEach(a => { delete a.dataset.gnb; delete a.dataset.gnbSnap; delete a.dataset.text; });
+  }
  };
 }

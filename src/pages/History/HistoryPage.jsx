@@ -12,8 +12,8 @@ export default function HistoryPage() {
  preconnect('https://cdn.jsdelivr.net', { crossOrigin: 'anonymous' });
  useLayoutEffect(() => initHistoryStory(root.current), []);
  return <section ref={root} className={styles.page} aria-label="Polaroid History">
-{/* Outfit은 실제 쓰는 굵기(200·400·500·600·700)만, Pretendard는 화면에 나온 글자만 받는 dynamic subset으로 불러옴 */}
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700&amp;family=DM+Sans:opsz,wght@9..40,500&amp;display=swap" />
+{/* Outfit은 실제 쓰는 굵기(200·300·400·500·600·700)만, Pretendard는 화면에 나온 글자만 받는 dynamic subset으로 불러옴 */}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;family=DM+Sans:opsz,wght@9..40,500&amp;display=swap" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
 
 <section className="pin" id="story">
