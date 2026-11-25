@@ -18,10 +18,9 @@
 | 01 | `feat/landing-core` | 곽세희 | `src/pages/Landing/`, `src/features/landing-camera/` |
 | 02 | `feat/landing-visuals` | 임희지 | `src/features/landing-visuals/`, `public/assets/landing/` |
 | 03 | `feat/cameras` | 정준혁 | `src/pages/Cameras/`, `src/assets/cameras/` |
-| 04 | `feat/film` | 손다은 | `src/pages/Film/`, `src/assets/film/` |
+| 04 | `feat/compare` | 손다은 | `src/pages/Compare/`, `src/assets/compare/` |
 | 05 | `feat/history` | 모진아 | `src/pages/History/`, `src/assets/history/` |
-| 06 | `feat/archive` | 이나라 | `src/pages/Archive/`, `src/assets/archive/` |
-| 07 | `feat/cameras-now` | 임희지 | `src/pages/Cameras/Now/`, `src/assets/cameras/now/` |
+| 06 | `feat/film` | 이나라 | `src/pages/Film/`, `src/assets/film/` |
 
 ### 공통 작업용 브랜치
 
@@ -52,10 +51,9 @@ git merge origin/develop      # 충돌이 나면 직접 해결하고 커밋 (어
 | `feat/landing-core` | 랜딩 페이지, 스크롤 컨트롤러, 3D 카메라, 핵심 인터랙션 |
 | `feat/landing-visuals` | 랜딩 시각 효과, 영상·필름·도면·2.5D 모듈 |
 | `feat/cameras` | Cameras 페이지의 화면과 데이터 |
-| `feat/film` | Film 페이지의 화면과 데이터 |
+| `feat/compare` | Compare 페이지의 화면과 데이터 |
 | `feat/history` | History 페이지의 화면과 데이터 |
-| `feat/archive` | Archive 페이지와 사진 편집 기능 |
-| `feat/cameras-now` | Cameras › Polaroid Now 상세 페이지의 화면과 데이터 |
+| `feat/film` | Film 페이지와 사진 편집 기능 |
 | `style/design-system` | `docs/styleguide.md`, `src/shared/styles/`, 공통 로고·파비콘 |
 | `chore/project-structure` | `src/app/`, 프로젝트 초기 설정, 공통 라우팅, 개발 문서 |
 
@@ -76,7 +74,7 @@ type(scope): 변경 내용 요약
 | `docs` | 문서 수정 |
 | `chore` | 설정·빌드·의존성·구조 등 기타 작업 |
 
-- **scope**: `landing`, `landing-camera`, `landing-visuals`, `cameras`, `film`, `history`, `archive`, `design-system`, `shared`, `app`, `config`, `docs`
+- **scope**: `landing`, `landing-camera`, `landing-visuals`, `cameras`, `compare`, `film`, `history`, `design-system`, `shared`, `app`, `config`, `docs`
 - 요약은 한국어 한 줄로, 무엇을 바꿨는지 씁니다.
 - 예:
   - `feat(film): 필름 종류 카드 마크업 추가`
