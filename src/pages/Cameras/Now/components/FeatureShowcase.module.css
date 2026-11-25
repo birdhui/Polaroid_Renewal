@@ -1,10 +1,10 @@
-/* 04~06 Feature — Figma 현재 디자인(크림 배경, 마지막 프레임은 #fff9e8 → #ddd7cd) + 스크롤 연동 스테이지 */
+/* 04~06 Feature — Figma Frame 134~136(크림 #FFFAF2, 1920×1080) + 스크롤 연동 스테이지 */
 
 /* 스크롤 구간: 기능 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
 .track {
   position: relative;
   height: calc((var(--count) + 1) * 100vh);
-  background: #fff9e8; /* Figma Feature BG: 단색 */
+  background: #fffaf2;
 }
 
 /* 고정되는 동안 1920×1080 스테이지는 화면 가운데에 놓이고 나머지 영역도 같은 배경색이다 */
@@ -20,15 +20,99 @@
 .section {
   composes: screen from './stage.module.css';
   position: relative;
-  width: min(100%, calc(100vh * 1920 / 1190));
-  aspect-ratio: 1920 / 1190;
+  width: min(100%, calc(100vh * 1920 / 1080));
+  aspect-ratio: 1920 / 1080;
 }
 
-/* 01 자동초점 1 · 02 · 03 — 겹쳐 두고 활성 이미지만 보인다 */
+/* 왼쪽 다이얼 눈금 — 눈금 위치·길이·투명도는 JS 가 원통 모양으로 계산한다 */
+.dial {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tick {
+  position: absolute;
+  height: max(1px, calc(1 * var(--u)));
+  background: #151515;
+}
+
+/* "Funtion 0N" — Outfit Medium 22, 중앙 눈금 오른쪽 */
+.label {
+  composes: pos text from './stage.module.css';
+  --x: 107;
+  --y: 526;
+  --fs: 22;
+  width: calc(105 * var(--u));
+  line-height: calc(28 * var(--u));
+  text-align: center;
+  font-family: var(--f-out);
+  font-weight: 500;
+  color: #151515;
+}
+
+/* Frame 137 — 제목 · 선 · 부제 · 설명 (508px 너비, 왼쪽 363 / 위 324) */
+.block {
+  position: absolute;
+  left: calc(363 * var(--u));
+  top: calc(324 * var(--u));
+  width: calc(508 * var(--u));
+  will-change: opacity, transform;
+}
+
+.title {
+  margin: 0;
+  display: grid;
+  font-family: var(--f-out);
+  font-weight: 600;
+  font-size: calc(60 * var(--u));
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: rgba(21, 21, 21, 0.9);
+}
+
+.rule {
+  position: absolute;
+  left: 0;
+  top: calc(var(--y) * var(--u));
+  width: 100%;
+  border-top: max(1px, calc(1 * var(--u))) solid #000;
+}
+
+.subtitle {
+  position: absolute;
+  left: 0;
+  top: calc(var(--y) * var(--u));
+  margin: 0;
+  font-family: var(--f-pre);
+  font-weight: 700;
+  font-size: calc(30 * var(--u));
+  line-height: 1.33;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.description {
+  position: absolute;
+  left: 0;
+  top: calc(var(--y) * var(--u));
+  width: 100%;
+  margin: 0;
+  font-family: var(--f-pre);
+  font-weight: 400;
+  font-size: calc(14 * var(--u));
+  line-height: 1.6;
+  letter-spacing: -0.025em;
+  color: rgba(21, 21, 21, 0.9);
+}
+
+/* 01 자동초점 · 02 더블 익스포저 · 03 선명도 — 겹쳐 두고 활성 영상만 보인다 (569×569, 1027/244) */
 .image {
   composes: pos from './stage.module.css';
-  --x: 293;
-  --y: 342;
+  --x: 1027;
+  --y: 244;
   width: calc(569 * var(--u));
   height: calc(569 * var(--u));
   max-width: none;
@@ -44,75 +128,11 @@
 /* Feature Frame (Corner Brackets) — 571×571 SVG, 선이 박스 밖으로 0.75씩 나온다 */
 .frame {
   position: absolute;
-  left: calc(292.25 * var(--u));
-  top: calc(341.25 * var(--u));
+  left: calc(1026.25 * var(--u));
+  top: calc(243.25 * var(--u));
   width: calc(571 * var(--u));
   height: calc(571 * var(--u));
   pointer-events: none;
-}
-
-.tagCode {
-  composes: pos text center from './stage.module.css';
-  --x: 1092.5;
-  --y: 343;
-  --fs: 15;
-  --ls: 0.5;
-  line-height: calc(12 * var(--u));
-  font-family: 'IBM Plex Sans', var(--f-pre);
-  font-weight: 500;
-  color: #151515;
-}
-
-.tagLabel {
-  composes: pos text from './stage.module.css';
-  --x: 1022;
-  --y: 369;
-  --fs: 32;
-  --ls: -1;
-  line-height: calc(40 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 700;
-  color: #151515;
-}
-
-/* Divider 1·2 (실선) — 항상 활성 문구 위아래에 고정 */
-.rule {
-  composes: pos from './stage.module.css';
-  --x: 1022;
-  width: calc(620 * var(--u));
-  border-top: calc(1 * var(--u)) solid #151515;
-}
-
-.ruleTop {
-  --y: calc(632 + var(--shift, 0));
-}
-
-.ruleBottom {
-  --y: calc(719 + var(--shift, 0));
-}
-
-/* Headline 문구 3개 — 45px Pretendard Bold, 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */
-.headline {
-  composes: pos text from './stage.module.css';
-  --x: 1022;
-  --fs: 38;
-  --ls: -0.9;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: var(--f-pre);
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-}
-
-.headline:not(.current):hover,
-.headline:not(.current):focus-visible {
-  color: rgba(21, 21, 21, 0.6) !important;
-}
-
-.current {
-  cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {

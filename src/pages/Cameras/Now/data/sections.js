@@ -9,6 +9,10 @@ import heroImage from '../../../../assets/cameras/now/hero.jpg';
 import introProductImage from '../../../../assets/cameras/now/intro-product.jpg';
 import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus-poster.png';
 import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.mp4';
+import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure-poster.png';
+import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.mp4';
+import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness-poster.png';
+import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.mp4';
 import sectionBackgroundImage from '../../../../assets/cameras/now/dark-section-bg.jpg';
 import filterPreviewImage from '../../../../assets/cameras/now/filter-preview.jpg';
 import appStoryImage from '../../../../assets/cameras/now/app-story.jpg';
@@ -43,18 +47,39 @@ export const featuresHeading = ['모든 순간을 특별하게 남기는', '세 
 
 /**
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
- * Figma 현재 디자인: 배경 #151515, 세 프레임이 같은 레이아웃이고 문구 목록의 활성 위치만 다르다.
- * 문구 목록은 스크롤에 따라 위로 올라간다(KINORIA 방식).
- * tag(FUNCTION — 01)는 세 프레임 모두 Figma 원본 값 그대로다(디자인 담당자 확인 필요).
+ * Figma 현재 디자인(Frame 134~136): 크림 배경, 왼쪽 다이얼 눈금 + "Funtion 0N" 라벨,
+ * 가운데 영문 제목 · 선 · 한글 부제 · 설명, 오른쪽 569×569 영상. 라벨 철자는 Figma 그대로다.
  */
 export const features = [
   {
     id: 'two-lens-autofocus',
-    tag: 'FUNCTION — 01',
-    tagLabel: 'TWO-LENS AUTOFOCUS',
-    headline: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게.',
+    label: 'Funtion 01', // Figma 문구 그대로("Funtion")
+    titleLines: ['TWO-LENS', 'AUTOFOCUS'],
+    subtitle: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게',
+    description:
+      '표준 렌즈와 인물 렌즈, 두 개의 렌즈를 갖춘 오토포커스 시스템이에요. 피사체와의 거리에 따라 알맞은 렌즈를 카메라가 알아서 골라, 가까운 인물도 먼 풍경도 또렷하게 담아줘요.',
     image: featureAutofocusImage,
-    video: featureAutofocusVideo, // 01 렌즈 클로즈업 영상 — image는 poster/대체 이미지
+    video: featureAutofocusVideo,
+  },
+  {
+    id: 'double-exposure',
+    label: 'Funtion 02',
+    titleLines: ['double exposure', 'mode'],
+    subtitle: '두 번 찍으면 두 장면이 한 장에',
+    description:
+      '한 장의 사진에 두 장면을 겹쳐 담는 더블 익스포저 모드예요.  셔터를 두 번 눌러 두 컷을 한 장에 담으면, 현실과 상상이 섞인 몽환적인 사진이 나와요.',
+    image: featureDoubleExposureImage,
+    video: featureDoubleExposureVideo,
+  },
+  {
+    id: 'sharpness',
+    label: 'Funtion 03',
+    titleLines: ['sharper pictures'],
+    subtitle: '강한 햇빛 아래서도 더 선명하게',
+    description:
+      '밝은 햇빛 아래서도 노출을 최적화해, 야외에서도 더 선명한 사진을 담아요.  거리 센서와 플래시, 오토포커스를 개선해 쨍한 날에도 또렷한 한 장을 남겨요.',
+    image: featureSharpnessImage,
+    video: featureSharpnessVideo,
   },
 ];
 
