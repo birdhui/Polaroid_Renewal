@@ -1,0 +1,192 @@
+.story {
+  position: relative;
+  padding-block: var(--space-8) calc(var(--space-8) * 2);
+  /* hidden 은 스크롤 컨테이너를 만들어 sticky 를 깨뜨리므로 clip 사용 */
+  overflow-x: clip;
+  background: var(--cam-bg);
+  color: var(--cam-ink);
+}
+
+.story:focus {
+  outline: none;
+}
+
+/* ---------- 타이틀 ---------- */
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding-inline: var(--space-5);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.enWord {
+  font-family: var(--cam-font-eng);
+  font-weight: 600;
+}
+
+.itWord {
+  font-family: var(--cam-font-point);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  opacity: 0.9;
+}
+
+/* ---------- 사진 스테이지 ---------- */
+.stage {
+  position: relative;
+  height: 168vw;
+  margin-top: var(--space-8);
+}
+
+.photos {
+  position: absolute;
+  inset: 0;
+}
+
+.photo {
+  position: absolute;
+  top: calc(var(--y) * 1%);
+  left: calc(var(--x) * 1%);
+  width: calc(var(--w) * 1%);
+  /* 스크롤 진행률(--progress, 0→1)에 따라 위로 천천히 이동 */
+  transform: translate3d(0, calc((0.5 - var(--progress, 0.5)) * var(--depth) * 2px), 0);
+  will-change: transform;
+}
+
+/* 본문은 스테이지 전체 구간 동안 화면 가운데에 고정 */
+.stickyRange {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.body {
+  position: sticky;
+  top: 50vh;
+  top: 50svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: var(--space-5);
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: -0.04em;
+  text-align: center;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.6);
+}
+
+.bodyLine {
+  display: block;
+}
+
+/* ---------- 로크업 + CTA ---------- */
+.end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-7);
+  margin-top: var(--space-8);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--cam-font-eng);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.cta:hover {
+  background: var(--cam-ink);
+  color: var(--cam-bg);
+}
+
+.cta:active {
+  transform: scale(0.97);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--cam-accent);
+  outline-offset: 3px;
+}
+
+.isIn {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 모바일 ---------- */
+@media (max-width: 767px) {
+  .story {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .stage {
+    height: 190vw;
+    margin-top: var(--space-7);
+  }
+
+  .photo {
+    top: calc(var(--my) * 1%);
+    left: calc(var(--mx) * 1%);
+    width: calc(var(--mw) * 1%);
+  }
+
+  .body {
+    font-size: 0.875rem;
+  }
+}
+
+/* ---------- 동작 줄이기 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .titleBlock,
+  .end {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .photo {
+    transform: none;
+    will-change: auto;
+  }
+}

@@ -1,0 +1,130 @@
+.section {
+  background: var(--shop-paper);
+  color: var(--shop-ink);
+}
+
+/* 히어로 SCROLL 안내로 포커스만 옮겨 받는 섹션이라 외곽선은 숨긴다 */
+.section:focus {
+  outline: none;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-3), 2vw, 28px);
+  margin: 0;
+  padding: 0 clamp(var(--space-3), 2vw, 28px) clamp(var(--space-3), 2vw, 28px);
+  list-style: none;
+}
+
+.item {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.isIn {
+  opacity: 1;
+  transform: none;
+}
+
+.tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  background: var(--tile-bg);
+  color: var(--tile-fg);
+}
+
+.word {
+  position: absolute;
+  top: 53%;
+  right: 0;
+  left: 0;
+  transform: translateY(-50%);
+  font-family: var(--cam-font-eng);
+  font-size: var(--tile-fs, 32cqw);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.fill {
+  z-index: 0;
+  color: var(--tile-fg);
+}
+
+.line {
+  z-index: 2;
+  color: transparent;
+  -webkit-text-stroke: max(1.5px, 0.36cqw) var(--tile-fg);
+  filter: drop-shadow(0 0 max(1px, 0.22cqw) var(--tile-halo, rgb(0 0 0 / 0.55)));
+}
+
+.camera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: var(--tile-w, 58%);
+  height: auto;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4cqw 5cqw rgb(0 0 0 / 0.22));
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.tile:hover .camera,
+.tile:focus-visible .camera {
+  transform: translate(-50%, -50%) scale(1.045);
+}
+
+.tile:focus-visible {
+  outline: 3px solid var(--shop-ink);
+  outline-offset: 3px;
+}
+
+.meta {
+  position: absolute;
+  right: clamp(14px, 4cqw, 32px);
+  bottom: clamp(12px, 3.6cqw, 28px);
+  left: clamp(14px, 4cqw, 32px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--cam-font-eng);
+  font-size: clamp(0.75rem, 2.6cqw, 1.0625rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.more {
+  font-weight: 500;
+  opacity: 0.82;
+}
+
+@media (max-width: 760px) {
+  .more {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .camera {
+    transition: none;
+  }
+}

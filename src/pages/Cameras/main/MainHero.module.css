@@ -1,0 +1,66 @@
+/*
+ * 1. Hero — 화면 한 장을 꽉 채운다 (1920×1080 화면에서 정확히 1920×1080).
+ * 화면 비율이 16:9 와 달라도 영상은 잘리면서(cover) 빈 곳 없이 채운다.
+ */
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: #28251a;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  position: absolute;
+  left: calc(81 * var(--px));
+  /* 시안: 로고 y 816, 'Instant Cameras' 아래 끝 약 984 → 화면 아래에서 96px 위. 화면 높이가 달라도 아래 기준으로 둔다 */
+  bottom: calc(96 * var(--px));
+  margin: 0;
+  font: inherit;
+}
+
+.logo {
+  display: block;
+  width: calc(464 * var(--px));
+  height: auto;
+}
+
+.sub {
+  display: block;
+  /* 로고 아래(816+127) 에서 'Instant Cameras'(955)까지 12px */
+  margin-top: calc(12 * var(--px));
+  color: #fff;
+  font-family: var(--cm-font-eng);
+  font-weight: 100;
+  font-size: max(18px, calc(24 * var(--px)));
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .hero {
+    height: min(80svh, 640px);
+  }
+
+  .title {
+    left: 24px;
+    bottom: 32px;
+  }
+
+  .logo {
+    width: 200px;
+  }
+
+  .sub {
+    margin-top: 8px;
+  }
+}
