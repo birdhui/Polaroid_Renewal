@@ -90,9 +90,9 @@
 
 /* Vector 48 */
 .introBrackets {
-  --x: 672;
+  --x: 662;
   --y: 239;
-  --w: 548;
+  --w: 568;
   --h: 158;
   --arm: 45;
   --stroke: 1;
@@ -101,7 +101,7 @@
 
 .introHeading {
   composes: pos text center from './components/stage.module.css';
-  --x: 960;
+  --x: 946;
   --y: 248;
   --fs: 56;
   --ls: -2;
