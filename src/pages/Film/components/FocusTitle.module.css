@@ -4,22 +4,23 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .title > span {
-    --line-focus: clamp(0, calc(var(--focus-progress, 1) / 0.6), 1);
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6)), 1);
 
-    filter: blur(calc(8px * (1 - var(--line-focus))));
-    opacity: calc(0.45 + 0.55 * var(--line-focus));
+    filter: blur(calc(4px * (1 - var(--line-focus))));
+    opacity: clamp(0, calc(var(--focus-progress, 1) * 4), 1);
+    transition: filter 280ms ease-out, opacity 120ms ease-out;
   }
 
   .title > span:only-child {
-    --line-focus: var(--focus-progress, 1);
+    --line-focus: clamp(0, calc(var(--focus-progress, 1.6) / 1.6), 1);
   }
 
   .title > span + span {
-    --line-focus: clamp(0, calc((var(--focus-progress, 1) - 0.4) / 0.6), 1);
+    --line-focus: clamp(0, calc((var(--focus-progress, 1.6) - 0.4) / 1.2), 1);
   }
 
   .title[data-focus-on-load] > span {
-    animation: focus-on-load 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation: focus-on-load 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
   .title[data-focus-on-load] > span + span {
@@ -29,7 +30,7 @@
 
 @keyframes focus-on-load {
   from {
-    filter: blur(8px);
-    opacity: 0.45;
+    filter: blur(4px);
+    opacity: 0.65;
   }
 }

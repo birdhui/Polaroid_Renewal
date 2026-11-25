@@ -8,18 +8,16 @@
 
 .section {
   container-type: inline-size;
-  background: #fff9e8;
-  color: #151515;
 }
 
 .stage {
-  --film-unit: min(1px, 0.0520833333cqw);
+  --film-unit: min(1.333333px, 0.0520833333cqw);
 
   display: grid;
   grid-template-columns: 35em 17.125em;
   align-items: start;
   gap: 27.625em;
-  max-width: 1920px;
+  max-width: 2560px;
   min-block-size: 68.4375em;
   margin-inline: auto;
   padding: 12.3125em 0 12.3125em 17.5em;
@@ -48,13 +46,14 @@
   block-size: 18.5625em;
 }
 
-.lettering img,
+.lettering .ink,
 .photo img {
   position: absolute;
   max-inline-size: none;
 }
 
-.lettering img {
+.lettering .ink {
+  filter: brightness(0) invert(1);
   inset: 0 auto auto -54.3%;
   inline-size: 204.61%;
   block-size: 100%;
@@ -105,17 +104,20 @@
 }
 
 .track {
+  --dash: calc(var(--film-unit) * 2);
+
   flex: none;
   inline-size: calc(var(--film-unit) * var(--line-length));
-  border-block-start: 1px dotted #827c70;
+  block-size: calc(var(--film-unit) * 0.5);
+  background: repeating-linear-gradient(to right, #fff 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
 }
 
 .vertical .track {
-  inline-size: 0;
+  inline-size: calc(var(--film-unit) * 0.5);
   block-size: calc(var(--film-unit) * var(--line-length));
-  border-block-start: 0;
-  border-inline-start: 1px dotted #827c70;
+  background: repeating-linear-gradient(to bottom, #fff 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
 }
+
 
 .valueSlot {
   display: grid;
@@ -124,7 +126,7 @@
 }
 
 .value {
-  font: 500 max(9px, 0.875em) / 1.5 'Film Stock Outfit', var(--font-sans);
+  font: 500 max(9px, 1em) / 1.5 'Film Stock Outfit', var(--font-sans);
   letter-spacing: -0.01em;
 }
 
@@ -135,6 +137,10 @@
   letter-spacing: -0.03em;
   word-break: keep-all;
   white-space: nowrap;
+}
+
+.section[data-film-stock='go'] .caption {
+  text-align: center;
 }
 
 .caption strong {
@@ -183,13 +189,14 @@
 
 .spec dt {
   font-family: 'Film Stock Sans', var(--font-sans);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .spec dd {
   position: relative;
   padding-inline-start: 1.55em;
   font-family: 'Film Stock Outfit', var(--font-sans);
+  font-weight: 300;
 }
 
 .spec dd::before {
@@ -198,7 +205,6 @@
   inline-size: 1em;
   block-size: 0.075em;
   background: url('@/assets/film/go/spec-divider.svg') center / contain no-repeat;
-  opacity: 0.72;
   transform: translate(-50%, -50%) rotate(90deg);
   content: '';
 }
@@ -236,7 +242,7 @@
   block-size: 15.6875em;
 }
 
-.section[data-film-stock='i-type'] .lettering img {
+.section[data-film-stock='i-type'] .lettering .ink {
   inset-inline-start: -12.76%;
   inline-size: 120.26%;
 }
@@ -307,4 +313,97 @@
   .section[data-film-stock='i-type'] .artwork {
     min-block-size: calc(42.6875em + 42px);
   }
+}
+
+.maskedInk {
+  display: none;
+}
+
+.stroke {
+  fill: none;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lettering[data-writing='waiting'] .finishedInk,
+  .lettering[data-writing='writing'] .finishedInk {
+    visibility: hidden;
+  }
+
+  .lettering[data-writing='writing'] .maskedInk {
+    display: inline;
+  }
+
+  .lettering[data-writing='writing'] .stroke {
+    animation-name: writeStroke;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes writeStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .horizontal .mark {
+    --track-start-scale: 0 1;
+    --arrow-start-offset: var(--arrow-distance) 0;
+  }
+
+  .vertical .mark {
+    --track-start-scale: 1 0;
+    --arrow-start-offset: 0 var(--arrow-distance);
+  }
+
+  .mark:first-child {
+    --arrow-distance: calc(var(--film-unit) * var(--line-length));
+  }
+
+  .mark:last-child {
+    --arrow-distance: calc(-1 * var(--film-unit) * var(--line-length));
+  }
+
+  .horizontal .mark:first-child .track {
+    transform-origin: right;
+  }
+
+  .horizontal .mark:last-child .track {
+    transform-origin: left;
+  }
+
+  .vertical .mark:first-child .track {
+    transform-origin: bottom;
+  }
+
+  .vertical .mark:last-child .track {
+    transform-origin: top;
+  }
+
+  [data-dimensions-visible='false'] .mark {
+    visibility: hidden;
+  }
+
+  [data-dimensions-visible='true'] .track {
+    animation: extendDimension 620ms cubic-bezier(0.22, 0.75, 0.25, 1) both;
+  }
+
+  [data-dimensions-visible='true'] .mark img {
+    animation: moveDimensionArrow 620ms cubic-bezier(0.22, 0.75, 0.25, 1) both;
+  }
+}
+
+@keyframes extendDimension {
+  from { scale: var(--track-start-scale); }
+  to { scale: 1; }
+}
+
+@keyframes moveDimensionArrow {
+  from { translate: var(--arrow-start-offset); }
+  to { translate: 0 0; }
 }
