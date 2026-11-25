@@ -41,16 +41,14 @@
   opacity: 1;
 }
 
-/* Feature Frame (Corner Brackets) */
+/* Feature Frame (Corner Brackets) — 571×571 SVG, 선이 박스 밖으로 0.75씩 나온다 */
 .frame {
-  --x: 293;
-  --y: 342;
-  --w: 569;
-  --h: 569;
-  --arm: 131;
-  --arm-bottom: 153;
-  --stroke: 1.5;
-  --bracket-color: #151515;
+  position: absolute;
+  left: calc(292.25 * var(--u));
+  top: calc(341.25 * var(--u));
+  width: calc(571 * var(--u));
+  height: calc(571 * var(--u));
+  pointer-events: none;
 }
 
 .tagCode {
@@ -86,11 +84,11 @@
 }
 
 .ruleTop {
-  --y: 632;
+  --y: calc(632 + var(--shift, 0));
 }
 
 .ruleBottom {
-  --y: 719;
+  --y: calc(719 + var(--shift, 0));
 }
 
 /* Headline 문구 3개 — 45px Pretendard Bold, 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */

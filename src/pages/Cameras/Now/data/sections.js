@@ -49,7 +49,7 @@ export const featuresHeading = ['모든 순간을 특별하게 남기는', '세 
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
  * Figma 현재 디자인: 배경 #151515, 세 프레임이 같은 레이아웃이고 문구 목록의 활성 위치만 다르다.
  * 문구 목록은 스크롤에 따라 위로 올라간다(KINORIA 방식).
- * 세 기능의 tag/tagLabel이 모두 "FUNCTION — 01 / TWO-LENS AUTOFOCUS"인 것은 Figma 원본 값 그대로다(디자인 담당자 확인 필요).
+ * tag(FUNCTION — 01)는 세 프레임 모두 Figma 원본 값 그대로다(디자인 담당자 확인 필요).
  */
 export const features = [
   {
@@ -63,7 +63,7 @@ export const features = [
   {
     id: 'double-exposure',
     tag: 'FUNCTION — 01',
-    tagLabel: 'TWO-LENS AUTOFOCUS',
+    tagLabel: 'DOUBLE EXPOSURE MODE',
     headline: '두 번 찍으면 두 장면이 한 장에.',
     image: featureDoubleExposureImage,
     video: featureDoubleExposureVideo, // Figma 05 v.2 — 자막 제거 영상을 875×875 영역(x0,y31)으로 크롭, 766×766
@@ -71,7 +71,8 @@ export const features = [
   {
     id: 'sharpness',
     tag: 'FUNCTION — 01',
-    tagLabel: 'TWO-LENS AUTOFOCUS',
+    tagLabel: 'OPTIMIZED EXPOSURES FOR SHARPER PICTURES',
+    shift: -9, // Figma 06 프레임은 문구·선이 9px 위에 있다
     headline: '강한 햇빛 아래서도 더 선명하게',
     image: featureSharpnessImage,
     video: featureSharpnessVideo,

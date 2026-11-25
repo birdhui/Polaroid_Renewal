@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import CornerBrackets from './CornerBrackets.jsx';
 import styles from './FeatureShowcase.module.css';
 
 /**
@@ -33,6 +32,15 @@ const BLUR_AT = [
   [1, 2.5],
   [2, 6],
 ];
+
+// 기능별 y 보정(Figma 06 프레임은 9px 위). 스크롤 위치에 따라 연속으로 섞는다
+const shiftAt = (features, pos) => {
+  const i = Math.min(Math.max(Math.floor(pos), 0), features.length - 1);
+  const j = Math.min(i + 1, features.length - 1);
+  const a = features[i].shift ?? 0;
+  const b = features[j].shift ?? 0;
+  return a + (b - a) * (pos - i);
+};
 
 const lerp = (from, to, t) => from + (to - from) * t;
 
@@ -193,18 +201,25 @@ export default function FeatureShowcase({ heading, features }) {
               <img key={feature.id} className={className} src={feature.image} alt={on ? feature.headline : ''} />
             );
           })}
-          <CornerBrackets className={styles.frame} />
+          {/* Figma Feature Frame: 가로 팔 127, 세로 팔 위 137 · 아래 152, 선 1.5 */}
+          <svg className={styles.frame} viewBox="0 0 571 571" fill="none" aria-hidden="true">
+            <path
+              d="M127.772 0.75H0.75V137.747M433.814 0.75H569.75V137.747M0.75 417.624V569.75L127.772 569.75M569.75 417.624V569.75L433.814 569.75"
+              stroke="#151515"
+              strokeWidth="1.5"
+            />
+          </svg>
 
           <p className={styles.tagCode}>{active.tag}</p>
           <p className={styles.tagLabel}>{active.tagLabel}</p>
 
-          <span className={`${styles.rule} ${styles.ruleTop}`} aria-hidden="true" />
-          <span className={`${styles.rule} ${styles.ruleBottom}`} aria-hidden="true" />
+          <span className={`${styles.rule} ${styles.ruleTop}`} style={{ '--shift': shiftAt(features, pos) }} aria-hidden="true" />
+          <span className={`${styles.rule} ${styles.ruleBottom}`} style={{ '--shift': shiftAt(features, pos) }} aria-hidden="true" />
 
           {/* 문구 목록: 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */}
           {features.map((feature, i) => {
             const d = i - pos;
-            const y = sample(Y_AT, d, true);
+            const y = sample(Y_AT, d, true) + shiftAt(features, pos);
             const alpha = sample(ALPHA_AT, d, false);
             const blur = sample(BLUR_AT, d, false);
             return (
