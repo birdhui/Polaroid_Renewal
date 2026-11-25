@@ -1,8 +1,9 @@
 /**
  * Polaroid Now 3D 장면 엔진 (담당: 곽세희)
  *
- * 아티팩트 프로토타입(Polaroid Renewal)의 three.js 장면을 그대로 옮긴 1차 이식본.
- * 히어로 카메라 · 플래시와 사진 출력·낙하·상승 · 레이어 블러 · NOW 도면 정합 · 8가지 컬러 회전을 그린다.
+ * 아티팩트 프로토타입(Polaroid Renewal)의 three.js 장면을 그대로 옮긴 이식본 (2차: 아티팩트 최신본 전체).
+ * 히어로 카메라 · 플래시와 사진 출력 · 역사 · NOW 도면 정합 · 8가지 컬러 회전 → ZERO MINUTES →
+ * 부품 목록 · Make a Moment Last · 필름 사진 · 마지막 DEVELOPED 장면까지, 오로라 배경과 함께 그린다.
  *
  * 주의 (다음 단계 정리 대상): 프로토타입 구조를 유지하느라 지금은 window 스크롤을 직접 읽고
  * window.__* 값으로 Landing UI 엔진과 주고받는다. cameraContract.js 의 props 계약으로 나누는 작업은 따로 진행한다.
@@ -16,7 +17,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
 export function mountPolaroidScene(signal) {
   // ── 프로토타입(아티팩트) 코드를 그대로 옮기기 위한 범위 한정 ──
-  // 창(window)에 다는 이벤트는 페이지를 떠날 때 signal 로 한 번에 해제되고, 애니메이션 루프도 함께 멈춘다.
+  // 창(window)·문서(document)에 다는 이벤트는 페이지를 떠날 때 signal 로 한 번에 해제되고, 애니메이션 루프·타이머도 함께 멈춘다.
   const withSignal = (o) => (o && typeof o === 'object' ? { ...o, signal } : { capture: !!o, signal });
   const addEventListener = (type, fn, o) => window.addEventListener(type, fn, withSignal(o));
   const requestAnimationFrame = (fn) => (signal.aborted ? 0 : window.requestAnimationFrame((t) => { if (!signal.aborted) fn(t); }));
@@ -43,42 +44,73 @@ export function mountPolaroidScene(signal) {
   const track = document.getElementById('track');
   const video = document.getElementById('video');
 
-  /* ---------------- 1. 배경: 좌측 하단 모서리부터 번지는 그라데이션 (Figma title 배경색) */
+  /* ---------------- 1. 배경: kinoria 처럼 화면 뒤에서 오로라(빛 커튼)가 살아 움직임.
+     색은 폴라로이드 무지개 다섯 색(레드 · 오렌지 · 옐로 · 그린 · 블루)을 필름 사진처럼 따뜻하고 낮게 — 카메라보다 밝지 않게.
+     스크롤하면 그 속도만큼 커튼이 더 빨리 흐르고 밝아졌다 가라앉고, 마우스 쪽으로 살짝 몰림 */
   const bgCanvas = document.getElementById('bg');
   const bgl = bgCanvas.getContext('webgl2', { alpha: false, antialias: false });
   const bgProg = (() => {
     const vs = `#version 300 es
     in vec2 aPos; void main(){ gl_Position = vec4(aPos,0.,1.); }`;
-    // oryzo.ai 배경과 같은 구조: 단색 베이스 + 좌측 하단 모서리에서 번지는 웜 글로우 (지수 감쇠, 화면 높이 기준)
-    // 레퍼런스 픽셀 측정값: 베이스 #191613, 모서리 #513420, 감쇠 exp(-(d/a)^1.3), a≈0.59H → 반경을 줄여 0.46H
     const fs = `#version 300 es
-    precision highp float; uniform vec2 uRes; uniform float uT, uReveal; out vec4 o;
+    precision highp float; uniform vec2 uRes, uP; uniform float uT, uReveal, uS, uFlow, uVel; out vec4 o;
     float h(vec2 p){ vec3 q=fract(vec3(p.xyx)*.1031); q+=dot(q,q.yzx+33.33); return fract((q.x+q.y)*q.z); }
+    float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+      return mix(mix(h(i),h(i+vec2(1,0)),f.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x), f.y); }
+    float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<3;i++){ v+=a*vn(p); p=p*2.03+17.1; a*=.5; } return v*1.14; }
     void main(){
-      vec2 p=gl_FragCoord.xy/uRes.y;                       // 좌하단 원점, 화면 높이 = 1
-      float d=length(vec2(p.x, p.y*.9));                    // 위쪽으로 살짝 더 길게 (레퍼런스와 동일)
-      float a=.46*(1.+.025*sin(uT*.35))*mix(.0001,1.,uReveal);
-      float t=exp(-pow(d/a,1.3));
-      vec3 base=vec3(25.,22.,19.)/255., warm=vec3(64.,48.,36.)/255.;   // 빛 색: 81,52,32 → 64,48,36 (덜 밝고 덜 브라운)
-      vec3 c=mix(base,warm,t);
+      vec2 uv=gl_FragCoord.xy/uRes; float asp=uRes.x/uRes.y, x=uv.x*asp;
+      vec3 base=vec3(9.,8.,8.)/255.;
+      vec3 col[5];
+      col[0]=vec3(.86,.30,.20);   // 폴라로이드 레드 (코랄)
+      col[1]=vec3(.95,.55,.22);   // 오렌지 (앰버)
+      col[2]=vec3(.92,.76,.36);   // 옐로 (허니)
+      col[3]=vec3(.36,.66,.42);   // 그린 (세이지)
+      col[4]=vec3(.24,.50,.80);   // 블루
+      float t=uT*.55+uFlow;                                  // 시간 + 스크롤로 쌓인 흐름
+      vec3 c=vec3(0.);
+      for(int i=0;i<5;i++){
+        float fi=float(i), sg=mod(fi,2.)<.5?1.:-1.;
+        float cx=asp*(.1+.2*fi) + .38*sin(t*(.21+.05*fi)+fi*2.3+uS*.5) + .14*sin(t*.47+fi*5.1) + sg*uP.x*.18*asp;
+        float wob=(fbm(vec2(uv.y*1.5+fi*3.7, t*.16+fi))-.5)*.75 + sin(uv.y*3.1+t*.6+fi)*.06;   // 커튼 자락이 물결치며 휨
+        float dx=x-cx-wob, w=.09+.045*fi+.04*sin(t*.33+fi);
+        float band=exp(-dx*dx/(w*w));
+        float rays=.45+.55*fbm(vec2(dx*8.+fi*9., uv.y*.7+t*.12));                                 // 세로 빛줄기 결이 계속 흐름
+        float bot=.05+.25*fbm(vec2(x*1.4+fi*4., t*.14));
+        float vert=smoothstep(bot,.95,uv.y)*(.5+.5*uv.y) + .25*smoothstep(.55,1.,uv.y)*band;
+        float pulse=.6+.4*sin(t*(.5+.13*fi)+fi*1.7);                                                // 커튼마다 숨 쉬듯 밝아졌다 어두워짐
+        c+=col[i]*band*rays*vert*pulse;
+      }
+      c*=.30*(1.+.55*uVel);                                   // 스크롤 중엔 더 밝게 (멈추면 서서히 가라앉음)
+      // 가장자리·아래쪽을 어둡게 → 가운데 카메라가 떠 보이게
+      float vg=smoothstep(1.3,.3,length((uv-vec2(.5,.65))*vec2(asp*.75,1.)));
+      c=base+c*mix(.3,1.,vg)*uReveal;
       c+=(h(gl_FragCoord.xy+fract(uT*7.)*211.)-.5)*(1.6/255.); // 밴딩 방지 디더
       o=vec4(c,1.);
     }`;
-    const mk = (t, src) => { const s = bgl.createShader(t); bgl.shaderSource(s, src); bgl.compileShader(s); return s; };
+    const mk = (t, src) => { const s = bgl.createShader(t); bgl.shaderSource(s, src); bgl.compileShader(s); if (!bgl.getShaderParameter(s, bgl.COMPILE_STATUS)) console.error(bgl.getShaderInfoLog(s)); return s; };
     const p = bgl.createProgram(); bgl.attachShader(p, mk(bgl.VERTEX_SHADER, vs)); bgl.attachShader(p, mk(bgl.FRAGMENT_SHADER, fs));
     bgl.bindAttribLocation(p, 0, 'aPos'); bgl.linkProgram(p);
     const vao = bgl.createVertexArray(); bgl.bindVertexArray(vao);
     bgl.bindBuffer(bgl.ARRAY_BUFFER, bgl.createBuffer());
     bgl.bufferData(bgl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), bgl.STATIC_DRAW);
     bgl.enableVertexAttribArray(0); bgl.vertexAttribPointer(0, 2, bgl.FLOAT, false, 0, 0);
-    return { p, vao, uRes: bgl.getUniformLocation(p, 'uRes'), uT: bgl.getUniformLocation(p, 'uT'), uReveal: bgl.getUniformLocation(p, 'uReveal') };
+    const u = (n) => bgl.getUniformLocation(p, n);
+    return { p, vao, uRes: u('uRes'), uT: u('uT'), uReveal: u('uReveal'), uS: u('uS'), uFlow: u('uFlow'), uVel: u('uVel'), uP: u('uP') };
   })();
-  function drawBg(t, reveal) {
-    const dpr = Math.min(devicePixelRatio || 1, 1.25);
+  const bgDyn = { flow: 0, vel: 0, px: 0, py: 0, last: 0 };
+  function drawBg(t, reveal, sc, scVel, px, py) {
+    const dt = bgDyn.last ? Math.min(0.05, t - bgDyn.last) : 0; bgDyn.last = t;
+    const v = Math.min(1.5, Math.abs(scVel || 0) * 1.2);
+    bgDyn.vel += (v - bgDyn.vel) * (1 - Math.exp(-dt * (v > bgDyn.vel ? 6 : 1.6)));   // 빨리 밝아지고 천천히 가라앉음
+    bgDyn.flow += Math.abs(scVel || 0) * dt * 0.9;                                     // 스크롤한 만큼 커튼이 더 흘러감
+    bgDyn.px += ((px || 0) - bgDyn.px) * (1 - Math.exp(-dt * 1.2)); bgDyn.py += ((py || 0) - bgDyn.py) * (1 - Math.exp(-dt * 1.2));
+    const dpr = 0.5;   // 흐린 빛이라 화면의 절반 해상도로 그려 늘려도 차이 없음 (픽셀 수 1/4 → GPU 부담 크게 감소)
     const w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
     if (bgCanvas.width !== w || bgCanvas.height !== h) { bgCanvas.width = w; bgCanvas.height = h; }
     bgl.viewport(0, 0, w, h); bgl.useProgram(bgProg.p); bgl.bindVertexArray(bgProg.vao);
-    bgl.uniform2f(bgProg.uRes, w, h); bgl.uniform1f(bgProg.uT, t); bgl.uniform1f(bgProg.uReveal, reveal);
+    bgl.uniform2f(bgProg.uRes, w, h); bgl.uniform1f(bgProg.uT, t); bgl.uniform1f(bgProg.uReveal, reveal); bgl.uniform1f(bgProg.uS, sc || 0);
+    bgl.uniform1f(bgProg.uFlow, bgDyn.flow); bgl.uniform1f(bgProg.uVel, bgDyn.vel); bgl.uniform2f(bgProg.uP, bgDyn.px, bgDyn.py);
     bgl.drawArrays(bgl.TRIANGLES, 0, 3);
   }
 
@@ -91,7 +123,7 @@ export function mountPolaroidScene(signal) {
   // 3D 오류를 화면에 표시 (휴대폰에서 카메라가 안 보일 때 원인 확인용)
   const report = (msg) => { console.error('[now]', msg); window.dispatchEvent(new ErrorEvent('error', { message: '[3D] ' + msg })); };
   renderer.debug.onShaderError = (gl, prog, vs, fs) => report('shader compile failed: ' + (gl.getProgramInfoLog(prog) || '').slice(0, 160));
-  threeCanvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); if (!signal.aborted) report('WebGL context lost'); });   // 페이지를 떠나며 직접 정리한 경우는 오류 아님
+  threeCanvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); if (signal.aborted) return; report('WebGL context lost'); });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.86;
@@ -122,9 +154,10 @@ export function mountPolaroidScene(signal) {
   videoTex.colorSpace = THREE.SRGBColorSpace;
 
   // 블렌더 glTF 익스포터로 그대로 뽑은 모델 (Draco 압축 · WebP 텍스처).
+  // .glb 는 아티팩트에서 서빙이 안 돼서 버퍼를 JSON 안에 담고, 여기서 GLB 로 다시 묶어 파싱
   // Draco 디코더를 메인 스레드에서 실행 (워커·외부 wasm 없이 같은 출처의 JS 디코더만 사용)
   const dracoReady = new Promise((res, rej) => {
-    if (window.DracoDecoderModule) { window.DracoDecoderModule().then(res, rej); return; }
+    if (window.DracoDecoderModule) { window.DracoDecoderModule().then(res, rej); return; }   // 다시 마운트될 때는 이미 받은 디코더 사용
     const sc = document.createElement('script'); sc.src = '/assets/landing-camera/draco/draco_decoder.js';
     sc.onload = () => window.DracoDecoderModule().then(res, rej); sc.onerror = rej; document.head.appendChild(sc);
   });
@@ -272,35 +305,49 @@ export function mountPolaroidScene(signal) {
   /* ---- 다음 장면(피그마 print_1): 플래시 → 필름 슬롯에서 사진이 나옴 ----
      Polaroid Now 는 렌즈 아래 정면 필름 슬롯(블렌더 Tray_Film_Slot, 폭 84mm · 높이 ≈16mm)으로 사진을 앞으로 밀어냄.
      i-Type 필름 실물 크기: 88 × 107mm, 사진 79 × 79mm (위 6mm · 좌우 4.5mm · 아래 22mm 흰 테두리) */
+  const tmpV1 = new THREE.Vector3();
   const flash = { pos: new THREE.Vector3(), r: 0.012, cover: null, sprite: null, t: -1, fired: false };
   const print = { group: null, photo: null, k: 0, target: 0, t0: -1 };
   const PH = { W: 0.0805, L: 0.0979 };        // i-Type 비율(88×107) 유지, 폭은 모델 토출구 안쪽(가이드 폭 83.8mm)에 맞춤
   function starburstTex() {
+    // 광선(별 모양) 없이 부드럽게 번지는 빛 덩어리 — 모양이 의식되지 않고 '번쩍'으로만 읽히게
     const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N; const g = cv.getContext('2d');
-    g.translate(N / 2, N / 2); g.globalCompositeOperation = 'lighter';
-    const core = g.createRadialGradient(0, 0, 0, 0, 0, N * 0.18);
-    core.addColorStop(0, 'rgba(255,250,235,1)'); core.addColorStop(0.35, 'rgba(255,214,150,.75)'); core.addColorStop(1, 'rgba(255,170,80,0)');
-    g.fillStyle = core; g.beginPath(); g.arc(0, 0, N * 0.18, 0, Math.PI * 2); g.fill();
-    for (let i = 0; i < 46; i++) {                              // 피그마처럼 길이가 제각각인 광선
-      const a = (i / 46) * Math.PI * 2 + Math.random() * 0.08, L = N * (0.18 + Math.random() * (i % 3 === 0 ? 0.32 : 0.16)), w = N * (0.006 + Math.random() * 0.01);
-      const gr = g.createLinearGradient(0, 0, Math.cos(a) * L, Math.sin(a) * L);
-      gr.addColorStop(0, 'rgba(255,236,190,.9)'); gr.addColorStop(1, 'rgba(255,170,70,0)');
-      g.fillStyle = gr; g.beginPath(); g.moveTo(Math.cos(a + Math.PI / 2) * w, Math.sin(a + Math.PI / 2) * w);
-      g.lineTo(Math.cos(a) * L, Math.sin(a) * L); g.lineTo(Math.cos(a - Math.PI / 2) * w, Math.sin(a - Math.PI / 2) * w); g.fill();
-    }
+    const core = g.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N / 2);
+    core.addColorStop(0, 'rgba(255,255,252,1)'); core.addColorStop(0.08, 'rgba(255,252,244,.95)'); core.addColorStop(0.25, 'rgba(255,244,226,.45)');
+    core.addColorStop(0.55, 'rgba(255,236,210,.12)'); core.addColorStop(1, 'rgba(255,230,200,0)');
+    g.fillStyle = core; g.fillRect(0, 0, N, N);
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
   }
-  function photoTex(img) {
+  // 실제 필름 프레임 이미지(사용자 제공, 바깥·사진 칸 투명) 기준 사진 칸 위치 — 프레임 741×899 중 사진 칸 x 34~705, y 52~709
+  const FRAME = { w: 741, h: 899, wx: 34, wy: 52, ww: 672, wh: 658 };
+  function photoTex(img, frame) {
     // 위쪽(카메라 안쪽) = 사진 윗부분, 바깥쪽 = 두꺼운 아래 테두리 (피그마 print_1 과 같은 방향)
     const W = 880, Hh = 1070, cv = document.createElement('canvas'); cv.width = W; cv.height = Hh; const g = cv.getContext('2d');
-    g.fillStyle = '#f3f0ea'; g.fillRect(0, 0, W, Hh);
-    const id = g.getImageData(0, 0, W, Hh); for (let i = 0; i < id.data.length; i += 4) { const n = (Math.random() - 0.5) * 7; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; } g.putImageData(id, 0, 0);
-    const x = 45, y = 60, S = 790;                              // 4.5mm · 6mm · 79mm (×10)
-    if (img) { const sh = img.height, sw = sh, sx = img.width * 0.56 - sw / 2; g.filter = 'brightness(1.3) contrast(1.06) saturate(1.08)'; g.drawImage(img, Math.max(0, sx), 0, sw, sh, x, y, S, S); g.filter = 'none'; }
-    else { g.fillStyle = '#2a2018'; g.fillRect(x, y, S, S); }
-    const v = g.createRadialGradient(x + S / 2, y + S / 2, S * 0.3, x + S / 2, y + S / 2, S * 0.75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(40,25,10,.28)');
-    g.fillStyle = v; g.fillRect(x, y, S, S);
+    const kx = W / FRAME.w, ky = Hh / FRAME.h;
+    // 사진 칸: 프레임 이미지의 투명한 칸 위치에 맞춤 (테두리 아래로 2px 씩 숨겨 틈이 안 보이게)
+    const x = FRAME.wx * kx - 2, y = FRAME.wy * ky - 2, SW = FRAME.ww * kx + 4, SH = FRAME.wh * ky + 4;
+    g.fillStyle = '#e9e8e5'; g.fillRect(0, 0, W, Hh);
+    if (img) {                                                  // 칸 비율(거의 정사각)에 맞춰 가운데를 잘라 채움
+      const r = SW / SH, sh = img.height, sw = Math.min(img.width, sh * r), sx = Math.min(img.width - sw, Math.max(0, img.width * 0.56 - sw / 2));
+      g.filter = 'brightness(1.3) contrast(1.06) saturate(1.08)'; g.drawImage(img, sx, 0, sw, sh, x, y, SW, SH); g.filter = 'none';
+    } else { g.fillStyle = '#2a2018'; g.fillRect(x, y, SW, SH); }
+    const v = g.createRadialGradient(x + SW / 2, y + SH / 2, SW * 0.3, x + SW / 2, y + SH / 2, SW * 0.75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(40,25,10,.28)');
+    g.fillStyle = v; g.fillRect(x, y, SW, SH);
+    if (frame) g.drawImage(frame, 0, 0, W, Hh);                // 종이 질감이 살아 있는 실제 프레임을 그대로 위에 얹음
+    else { const id = g.getImageData(0, 0, W, Hh); for (let i = 0; i < id.data.length; i += 4) { const n = (Math.random() - 0.5) * 7; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; } g.putImageData(id, 0, 0); }
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+  }
+  // 프레임 종이 결을 빛에 반응하는 요철로: 밝기의 미세한 차이만 남긴 범프맵 (사진 칸은 평평)
+  function frameBump(frame) {
+    const W = 880, Hh = 1070, cv = document.createElement('canvas'); cv.width = W; cv.height = Hh; const g = cv.getContext('2d');
+    g.drawImage(frame, 0, 0, W, Hh);
+    const id = g.getImageData(0, 0, W, Hh), d = id.data, lum = new Float32Array(W * Hh);
+    for (let i = 0, j = 0; j < lum.length; i += 4, j++) lum[j] = d[i + 3] > 200 ? (d[i] + d[i + 1] + d[i + 2]) / 3 : -1;
+    let sum = 0, n = 0; for (const L of lum) if (L >= 0) { sum += L; n++; }
+    const mean = n ? sum / n : 128;
+    for (let i = 0, j = 0; j < lum.length; i += 4, j++) { const v = lum[j] < 0 ? 128 : Math.max(0, Math.min(255, 128 + (lum[j] - mean) * 6)); d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+    g.putImageData(id, 0, 0);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.NoColorSpace; t.anisotropy = 8; return t;
   }
   function setupPrint() {
     // 플래시 광선
@@ -312,13 +359,21 @@ export function mountPolaroidScene(signal) {
     // 휘어지며 말려 올라가야 해서 길이 방향 48분할 평면 + 매 프레임 CPU 에서 휨 계산
     const grp = new THREE.Group(); grp.position.set(0, 0.016, 0.0735); model.add(grp);
     const SEG = 48, geo = new THREE.PlaneGeometry(PH.W, PH.L, 16, SEG); geo.rotateX(-Math.PI / 2);   // XZ 평면, 사진 면 = +Y, 바깥(아래 테두리) = +Z
-    const face = new THREE.MeshStandardMaterial({ roughness: 0.5, map: photoTex(null), side: THREE.FrontSide });
+    const face = new THREE.MeshStandardMaterial({ roughness: 0.5, map: photoTex(null, null), side: THREE.FrontSide });
     const back = new THREE.MeshStandardMaterial({ color: 0x2b2622, roughness: 0.8, side: THREE.BackSide });   // i-Type 뒷면은 검은 필름
     const ph = new THREE.Mesh(geo, face), pb = new THREE.Mesh(geo, back);
     const holder = new THREE.Group(); holder.add(ph, pb); holder.visible = false; holder.matrixAutoUpdate = false; scene.add(holder);
     ph.castShadow = pb.castShadow = true;
     ph.frustumCulled = pb.frustumCulled = false;   // CPU 로 휘어 올리는 평면이라 원래 경계구 기준으로 컬링되면 화면을 다 빠져나가기 전에 툭 사라짐
-    const im = new Image(); im.onload = () => { const old = face.map; face.map = photoTex(im); face.needsUpdate = true; try { renderer.initTexture(face.map); renderer.compile(scene, camera); } catch (e) {} old && old.dispose(); }; im.src = '/assets/landing-camera/print-photo.jpg';   // data URL: 출처가 다른 이미지로 WebGL 텍스처를 만들면 막히는 환경 대비
+    // 사진과 프레임 이미지가 각각 도착하는 대로 텍스처를 다시 만듦 (data URL: 출처가 다른 이미지로 WebGL 텍스처를 만들면 막히는 환경 대비)
+    let pImg = null, fImg = null;
+    const rebuild = () => {
+      const old = face.map; face.map = photoTex(pImg, fImg);
+      if (fImg && !face.bumpMap) { face.bumpMap = frameBump(fImg); face.bumpScale = 0.9; }
+      face.needsUpdate = true; try { renderer.initTexture(face.map); if (face.bumpMap) renderer.initTexture(face.bumpMap); renderer.compile(scene, camera); } catch (e) {} old && old.dispose();
+    };
+    const im = new Image(); im.onload = () => { pImg = im; rebuild(); }; im.src = '/assets/landing-camera/print-photo.jpg';
+    const fr = new Image(); fr.onload = () => { fImg = fr; rebuild(); }; fr.src = '/assets/landing-camera/print-frame.webp';
     print.group = grp; print.photo = holder; print.geo = geo; print.base = geo.attributes.position.array.slice(); print.SEG = SEG;
   }
   const leanM = new THREE.Matrix4(), slotM = new THREE.Matrix4(), ctrM = new THREE.Matrix4(), tmpM = new THREE.Matrix4(), tmpM2 = new THREE.Matrix4(), tmpV3 = new THREE.Vector3();
@@ -356,19 +411,26 @@ export function mountPolaroidScene(signal) {
     }
     pos.needsUpdate = true; print.geo.computeVertexNormals();
   }
+  const veil = document.querySelector('.flash-veil'), veilIn = veil && veil.firstElementChild;
   function updatePrint(sc, dt, now, W, H) {
     if (!print.group) return;
     // 플래시: 스크롤이 지점(1.0 화면)을 넘는 순간 한 번 터짐, 다시 위로 올라가면 장전
     // 히어로 타이포가 다 사라진 직후(0.55 화면) 그 자리의 카메라에서 플래시 → 사진 배출. 위로 되돌리면 다시 장전
-    if (!flash.fired && sc > 0.55) { flash.fired = true; flash.t = now; print.t0 = now + 380; }
+    if (!flash.fired && sc > 0.55) { flash.fired = true; flash.t = now; print.t0 = now + 380; window.dispatchEvent(new Event('pl-flash')); }   // 셔터 소리 신호
     if (flash.fired && sc < 0.4) { flash.fired = false; print.t0 = -1; }
-    const ft = flash.t < 0 ? 9 : (now - flash.t) / 1000;
-    const env = ft < 0.06 ? ft / 0.06 : Math.exp(-(ft - 0.06) * 5.5);                   // 순간 점등 → 빠른 감쇠
+    const ft = window.__flashFT ?? (flash.t < 0 ? 9 : (now - flash.t) / 1000);   // __flashFT: 점검용으로 섬광 시점 고정
+    // 실제 스트로보처럼: 0.035초 만에 최대로 → 처음엔 빠르게, 뒤로 갈수록 천천히 잦아드는 잔광
+    const env = ft < 0.035 ? ft / 0.035 : 0.7 * Math.exp(-(ft - 0.035) * 9) + 0.3 * Math.exp(-(ft - 0.035) * 2.6);
     const fk = flash.fired ? env : 0;
-    flash.sprite.material.opacity = fk;
-    flash.sprite.scale.setScalar(flash.r * (7 + 5 * fk));
-    if (flash.cover) flash.cover.material.emissiveIntensity = 3.5 * fk;
-    { const fv = (0.55 * fk * fk).toFixed(3); if (fv !== updatePrint.fv) { updatePrint.fv = fv; document.documentElement.style.setProperty('--flash', fv); } }   // 값이 바뀔 때만 (매 프레임 문서 전체 스타일 재계산 방지)
+    flash.sprite.material.opacity = Math.min(1, fk * 1.2);
+    flash.sprite.scale.setScalar(flash.r * (14 + 26 * fk));          // 크게 번진 빛 — 테두리가 보이지 않을 만큼
+    if (flash.cover) flash.cover.material.emissiveIntensity = 6 * fk;
+    if (fk > 0.002) {                                                 // 화면 전체 섬광이 플래시 위치에서 퍼지도록
+      const v = flash.sprite.getWorldPosition(tmpV1).project(camera);
+      const fx = Math.round((v.x * 0.5 + 0.5) * W), fy = Math.round((-v.y * 0.5 + 0.5) * H);
+      if (fx !== updatePrint.fx || fy !== updatePrint.fy) { updatePrint.fx = fx; updatePrint.fy = fy; if (veilIn) veilIn.style.transform = `translate3d(${fx}px, ${fy}px, 0)`; }   // 위치는 transform 으로만 (다시 그리기 없음)
+    }
+    { const fv = (0.92 * Math.pow(fk, 1.3)).toFixed(3); if (fv !== updatePrint.fv) { updatePrint.fv = fv; if (veil) veil.style.opacity = fv; } }   // 섬광 막의 투명도만 바꿈 (문서 전체 변수 → 섬광 막 하나: 스타일 재계산이 페이지 전체로 번지지 않음)
     // 사진 배출: 모터로 밀어내듯 1.8s, 끝에서 살짝 처짐 / 위로 올리면 빠르게 다시 들어감
     // 사진 배출도 스크롤 위치에 직접 묶음 — 내릴 때 혼자(시간 기준으로) 튀어나오지 않고, 올릴 때와 똑같이 스크롤한 만큼만 나오고 들어감
     // 출력 → 낙하를 한 번의 연속 동작으로: 예전에는 '배출(끝에서 감속해 멈춤)' → '미끄러져 빠짐(다시 가속)'의 두 단계라
@@ -508,6 +570,16 @@ export function mountPolaroidScene(signal) {
     { n: 'black', b: [0.005, 0.005, 0.0052], f: [0.085, 0.087, 0.095] },   // 공식 블랙: 앞면은 차콜 그레이, 아래 띠·렌즈 링·뒤 하우징은 블랙 (같은 색이면 배경에 묻힘)
   ].map((c) => ({ ...c, bc: c.b ? new THREE.Color().setRGB(...c.b) : null, fc: c.f ? new THREE.Color().setRGB(...c.f) : null }));
   const COL_A = 9.05, COL_STEP = 0.45;   // 컬러 장면 시작(sc)과 색 하나당 스크롤 길이
+  const ZX_SY = 0.465, ZX_H = 1.0;   // ZERO 장면 카메라 세로 위치 (pose 기준점이 실루엣 중심보다 위라 0.5 보다 작게 → 실루엣이 화면 정중앙)
+  const ZX_A = 12.4;
+  // 블랙 → ZERO 자세 전환 구간: 블랙이 되기 직전(12.0)부터 ZERO 글자가 다 올라온 뒤(13.3)까지 길게 — 회전·숙임·기울기·높이가 한꺼번에 짧게 바뀌지 않게
+  const ZX_T0 = 12.0, ZX_T1 = 13.3;
+  const zxT = (sc) => { const k = range(sc, ZX_T0, ZX_T1); return k * k * k * (k * (k * 6 - 15) + 10); };      // ZERO PRINTS 장면 시작 — 블랙이 된 카메라가 정면을 보며 공중에 둥둥 뜸 (kinoria ZERO EXPOSURES)
+  const PART_A = 14.45;   // 부품(확대샷) 장면 시작 — 블랙 카메라가 블러되며 위로 빠져나감
+  const MSG_A = 17.0, MSG_T = 1.15, MSG_OUT = 18.3, MSG_OUT_E = 18.75;
+  const END_A = 19.95, END_T = 0.55;   // 마지막 장면: 사진이 다 빠져나간 뒤 카메라가 위에서 DEVELOPED 아래로 폭신하게 내려앉음 (kinoria EXPOSED 뒤 손 위 안착)   // Make a Moment Last 앞 문장: 카메라 낙하 시작 · 낙하 길이 · 사라짐 시작 · 끝 (index.html 과 같은 값)
+  // 아주 천천히 부드럽게 내려앉음 (kinoria): 살며시 출발 → 천천히 감속해 가운데에 닿음 (smootherstep 을 끝쪽으로 늘린 곡선)
+  function softLand(t) { const x = Math.min(1, Math.max(0, t)), u = 1 - Math.pow(1 - x, 1.6); return u * u * u * (u * (u * 6 - 15) + 10); }
   function colorPhase(sc) {             // 색마다 잠깐 머물렀다가(hold) 다음 색으로 부드럽게 넘어감
     const P = range(sc, COL_A, COL_A + COL_STEP * (NOW_COLS.length - 1)) * (NOW_COLS.length - 1);
     const i = Math.min(NOW_COLS.length - 2, Math.floor(P)), t = clamp((P - i - 0.3) / 0.6);
@@ -793,7 +865,39 @@ export function mountPolaroidScene(signal) {
   const AUTO_DUR = 11; // 로딩 끝 → 유리 → 아이피스 → 회전 → 히어로까지 자동 재생 (초)
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
   let userScrolled = false, exitK = 0, scS = 0, scV = 0;
-  const SPAN = 6; window.__SPAN = SPAN;   // 장면 1 단위 = 화면 6배 스크롤 (히어로 문구가 다 사라지려면 화면 약 2.7개 분량을 내려야 함)
+  const SPAN = 5; window.__SPAN = SPAN;   // 장면 1 단위 = 화면 5배 스크롤 (6 → 5: 약 17% 빠르게. 히어로 문구가 다 사라지려면 화면 약 2.25개 분량)
+  // 역사 구간(1937 도착 직후 ~ 2026 도착)만 스크롤 1칸에 장면이 1.5배 진행 — 모델이 바뀔 때마다 오래 멈춰 있던 느낌 줄임
+  const HS_A = 4.35, HS_B = 7.05, HS_R = 1.5;
+  // 스크롤 속도 구간: [시작 sc, 끝 sc, 속도] — 속도 > 1 이면 같은 스크롤에 장면이 더 빨리, < 1 이면 더 오래 머묾
+  //  · Capture the Moment 문구가 다 보이는 구간(3.3~3.8)은 0.7배 → 약 한 화면만큼 더 오래 머묾
+  //  · 역사 구간(4.35~7.05)은 1.5배 빠르게
+  const PS_A = 14.45, PS_B = 16.85, PS_R = 5;   // 부품 장면: 스크롤이 5배 빨리 넘어감 → 목록이 가볍게 움직임 (항목 하나에 화면 3.5개 → 0.7개 분량)
+  const SPD = [[3.3, 3.8, 0.7], [HS_A, HS_B, HS_R], [PS_A, PS_B, PS_R]];
+  function u2sc(u) {
+    let sc = 0, uu = 0;
+    for (const [a, b, r] of SPD) {
+      if (u <= uu + (a - sc)) return sc + (u - uu);
+      uu += a - sc; sc = a;
+      const len = (b - a) / r;
+      if (u <= uu + len) return sc + (u - uu) * r;
+      uu += len; sc = b;
+    }
+    return sc + (u - uu);
+  }
+  const SC_END = 20.65;
+  function fitTrack() { const t = document.getElementById('track'); if (t) t.style.height = ((sc2u(SC_END) * SPAN + 1) * 100).toFixed(1) + 'vh'; }   // 페이지 끝 = 마지막 장면 끝
+  function sc2u(sc) {
+    let s0 = 0, uu = 0;
+    for (const [a, b, r] of SPD) {
+      if (sc <= a) return uu + (sc - s0);
+      uu += a - s0; s0 = a;
+      if (sc <= b) return uu + (sc - a) / r;
+      uu += (b - a) / r; s0 = b;
+    }
+    return uu + (sc - s0);
+  }
+  fitTrack();
+  window.__sc2u = sc2u;   // 목차 이동(장면 → 스크롤 위치)용
   // 원인: 사용자가 아직 휠을 안 굴렸을 때(userScrolled=false)는 장면을 히어로(sc=0)에 묶어 두고 있었는데,
   // 그 사이 브라우저/뷰어가 이전 스크롤 위치를 복원하면 scrollY 는 이미 아래(NOW 근처)에 가 있음.
   // 그 상태에서 휠을 한 칸 내리는 순간 묶임이 풀리면서 장면이 그 위치까지 한 번에 달려감 → 내려갈 때만 튐.
@@ -910,7 +1014,7 @@ export function mountPolaroidScene(signal) {
     pS += (p - pS) * (1 - Math.exp(-dt * 4.5));               // 항상 부드럽게 따라감 (출발·정지에 튐 없음)
 
     // 배경
-    drawBg(now / 1000, started ? ss(0.04, 0.6, pS) : 0);
+    drawBg(now / 1000, started ? ss(0.04, 0.6, pS) : 0, window.__scS || 0, scV, pointer.x, pointer.y);
 
     // 3D
     if (renderer.domElement.width !== Math.round(W * renderer.getPixelRatio())) renderer.setSize(W, H, false);
@@ -921,10 +1025,10 @@ export function mountPolaroidScene(signal) {
     let pose = poseAt(pS);
     // 스크롤 → 다음 장면(print_1): 히어로 포즈에서 위에서 내려다보는 정면 3/4 포즈로
     // 스크롤 진행(화면 단위) — 휠·트랙패드의 계단식 입력을 관성 보간으로 매끈하게 (Lenis 방식)
-    // SPAN: 장면 1 단위 = 화면 높이 × 2 만큼 스크롤 (휠 몇 칸에 장면이 훅 지나가지 않게, 일반적인 스크롤 길이)
+    // SPAN: 장면 1 단위 = 화면 높이 × SPAN 만큼 스크롤 (휠 몇 칸에 장면이 훅 지나가지 않게, 일반적인 스크롤 길이)
     // 방어: 뷰어가 프레임 높이를 잠깐 0 근처로 바꾸거나 스크롤 값이 비정상이어도 장면이 끝으로 튀지 않게
     const Hs = Math.max(300, H), sy = Number.isFinite(scrollY) ? scrollY : 0;
-    const scRaw = window.__S ?? (started ? Math.min(12.6, sy / (Hs * SPAN)) : 0);
+    const scRaw = window.__S ?? (started ? Math.min(SC_END, u2sc(sy / (Hs * SPAN))) : 0);
     // 관성 보간 + 속도 제한: 트랙패드·휴대폰을 세게 튕겨도 장면이 한 번에 휙 지나가지 않고 일정한 속도 이하로 재생됨
     // 임계감쇠 스프링: 장면이 스크롤바 위치를 짧게(0.2~0.3초) 뒤따라감 — 속도 제한 없이 위치에 직접 묶여 있어서
     // 스크롤을 멈추면 그 자리 모션에서 부드럽게 멎고(oryzo), 혼자 끝까지 재생되는 일이 없음
@@ -952,21 +1056,80 @@ export function mountPolaroidScene(signal) {
     if (hk > 0) {
       const port = W / H < 0.8;
       const fw = (port ? 0.84 : 0.3927) * (0.31 / 0.35);      // 실루엣 폭 = 화면 폭 대비 (피그마 도면 754/1920) × 히어로와 같은 축소 비율(약 11%)
-      const HP = { anchor: 1, rotY: -1.0, rotX: -0.15, h: clamp(fw / 1.883 * W / H, 0.05, 0.6), sx: 0.5, sy: port ? 0.5 : 0.479 };
+      const HP = { anchor: 1, rotY: -1.0, rotX: -0.15, h: clamp(fw / 1.883 * W / H, 0.05, 0.6), sx: 0.5, sy: port ? 0.53 : 0.54 };   // 위 타이포와 여백이 생기도록 화면 가운데보다 살짝 아래
       if (!port) HP.h = Math.min(HP.h, Math.max(0.22, (0.5 - (205 * (W / 1920) + 58) / H) / 0.583));   // 짧은 창: 카메라 위 타이포 블록 자리를 먼저 확보 (잘림 방지)
-      // 도면과 겹친 그 자리·그 크기 그대로, 컬러가 바뀌는 동안 왼쪽으로 천천히 회전 — 마지막 블랙은 반대쪽 3/4 측면(공식 제품컷 각도)에서 멈춤
-      const rk = range(sc, COL_A, COL_A + COL_STEP * (NOW_COLS.length - 1)), rot = 1.95 * rk * rk * rk * (rk * (rk * 6 - 15) + 10);
-      pose = { ...HP, rotY: HP.rotY + rot, fit: port ? 1.12 : 1 };
+      if (!port) HP.h *= 0.85;                                  // Now 카메라(와 겹쳐 놓이는 2026 도면) 15% 작게 (모바일은 fit 로 약 7% 작게)
+      // 도면과 겹친 그 자리·그 크기 그대로, 컬러가 바뀌는 동안 왼쪽으로 천천히 회전하고, 그 회전이 멈추거나 되돌아가지 않고
+      // 그대로 이어져 ZERO 장면(ZX_A + 0.6)에서 정면에 부드럽게 도착 (ZX_T1 까지, 전: 블랙에서 반대쪽 3/4 로 멈췄다가 ZERO 에서 정면으로 되돌아와 갑자기 돌아보는 느낌)
+      const rk = range(sc, COL_A, ZX_T1), rot = 1.1 * rk * rk * rk * (rk * (rk * 6 - 15) + 10);
+      pose = { ...HP, rotY: HP.rotY + rot, fit: port ? 1.2 : 1 };
       const still = 1 - range(sc, 8.6, 9.05);                   // 도면과 겹치는 동안은 흔들림 없이 정확히
       idle.x *= 0.4 * (1 - still); idle.y *= 0.4 * (1 - still);
+    }
+    // 04-0. ZERO PRINTS: 블랙으로 바뀐 카메라가 반대쪽 3/4 에서 정면으로 돌아와, 살짝 기운 채 화면 정중앙에 떠 있음 (카메라 실루엣 중심 = 화면 중심)
+    if (sc > ZX_T0 && (sc < MSG_A || W / H >= 0.8)) {   // 웹: 부품 장면 → 문장 장면까지 카메라는 같은 자리에 계속 떠 있음
+      const zt = zxT(sc);
+      pose = { ...pose, rotY: lerp(pose.rotY, 0.1, zt), rotX: lerp(pose.rotX, 0.08, zt), h: pose.h * lerp(1, ZX_H, zt), sy: lerp(pose.sy, W / H < 0.8 ? 0.55 : ZX_SY, zt) };
+      idle.x *= 1 - 0.6 * zt; idle.y *= 1 - 0.6 * zt;
+    }
+    // 05-0. Make a Moment Last 앞 문장: 부품 장면에서 위로 빠져나간 블랙 카메라가 위에서 화면 가운데로 폭신하게 떨어져 문장 뒤에 놓임 (kinoria)
+    if (sc > MSG_A && W / H < 0.8) {   // 휴대폰 세로만: 위에서 떨어짐
+      // 떨어지는 동안 스스로 천천히 돌며(제자리 회전) 앞으로 숙였던 각도가 펴지고, 내려앉은 뒤에도 아주 느리게 계속 돎
+      const f = softLand((sc - MSG_A) / MSG_T);
+      pose = { anchor: 1, rotY: -0.22 - 0.95 * (1 - f) + 0.16 * Math.max(0, sc - MSG_A - MSG_T), rotX: 0.05 + 0.32 * (1 - f), h: W / H < 0.8 ? 0.2 : 0.3, sx: 0.5, sy: 0.5 };
+      idle.x *= 0.3; idle.y *= 0.3;
+    }
+    if (sc > END_A) {   // 마지막 장면: 빛나는 DEVELOPED 아래 자리로 떨어지며 돌던 각도가 펴지고, 내려앉은 뒤엔 아주 느리게 계속 돎
+      const f = softLand((sc - END_A) / END_T);
+      pose = { anchor: 1, rotY: -0.3 - 0.9 * (1 - f) + 0.12 * Math.max(0, sc - END_A - END_T), rotX: 0.06 + 0.3 * (1 - f), h: W / H < 0.8 ? 0.22 : 0.3, sx: 0.5, sy: W / H < 0.8 ? 0.6 : 0.565 };
+      idle.x *= 0.3; idle.y *= 0.3;
     }
     if (window.__fit) { pose = { ...window.__HP }; idle.x = idle.y = 0; }
     placeCamera(pose, W, H, idle);
     updatePrint(sc, dt, now, W, H);
     if (model) {
       if (hk > 0) { pivot.visible = true; pivot.position.set(0, 0, 0); }
+      // 공중에 둥둥 (kinoria): ZERO → 부품 → 문장 장면까지 장면이 바뀌어도 똑같은 움직임이 끊김 없이 계속됨.
+      // 시간에만 따라 아주 느리게 위아래로 떠다니고, 좌우·앞뒤로 살짝씩 일렁이며, 늘 조금 기운 채. 블랙→ZERO 전환(zxT) 동안 서서히 시작
+      if (sc > ZX_T0 && (sc < MSG_A || (W / H >= 0.8 && sc < END_A))) {
+        const zt = zxT(sc);
+        pivot.position.y += (0.035 * Math.sin(now / 1150) + 0.012 * Math.sin(now / 1730 + 0.8)) * zt;
+        pivot.rotation.y += (0.045 * Math.sin(now / 2300) + 0.025 * Math.sin(now / 1450 + 1.3)) * zt;
+        pivot.rotation.x += (0.025 * Math.sin(now / 1900 + 0.4) + 0.012 * Math.sin(now / 1210 + 2.0)) * zt;
+        pivot.rotation.z += (-0.1 + 0.022 * Math.sin(now / 2700 + 2.1) + 0.01 * Math.sin(now / 1600)) * zt;
+      }
+      const xr = Math.max(0, (sc - PART_A) / 0.85);
+      if (sc > END_A) {
+        const f = softLand((sc - END_A) / END_T);
+        pivot.position.set(0, 2.6 * (1 - f) + 0.025 * Math.sin(now / 1150) * f, 0);
+        pivot.rotation.z += 0.18 * (1 - f) - 0.07 * f;
+        pivot.visible = true;
+      }
+      else if (sc > MSG_A && W / H < 0.8) {
+        const f = softLand((sc - MSG_A) / MSG_T);
+        const xo = eio(range(sc, MSG_OUT, MSG_OUT_E));                                  // 나머지 문장이 사라질 때 뒤로 물러나며 블러로 사라짐 (사진 장면엔 카메라 없음)
+        pivot.position.set(0, 2.6 * (1 - f), -0.5 * xo);
+        pivot.rotation.z += 0.2 * (1 - f) - 0.13 * f;                                   // 반대쪽으로 기울어 있다가 내려앉으며 살짝 반대로 기운 채 놓임
+        pivot.visible = xo < 0.999;
+      }
+      else if (xr > 0 && W / H < 0.8) {   // 휴대폰 세로: kinoria 모바일처럼 확대샷이 화면 가운데 띠를 채우므로 카메라는 예전처럼 위로 빠져나감
+        const xk = Math.min(1, xr), xe = xk * xk * (3 - 2 * xk);
+        pivot.position.y = 2.1 * (xr < 1 ? xr * xr * (2 - xr) : xr);
+        pivot.position.z = -0.22 * xe;
+        pivot.rotation.x -= 0.12 * xe;
+        pivot.visible = xr < 0.4 || !camOffTop(H, 18 * eio(Math.min(1, xr / 0.7)));
+      }
+      else if (xr > 0) {
+        // 04. 부품 장면 (웹): 카메라는 위 '공중에 둥둥' 움직임을 그대로 이어감 — 장면이 바뀐다고 각도나 흔들림이 달라지지 않음
+        // 문장 장면까지 그대로 떠 있다가, 문장 장면 끝에서만 뒤로 물러나며 블러로 사라짐 (위로 빠져나가거나 다시 떨어지는 모션 없음)
+        const xo = eio(range(sc, MSG_OUT, MSG_OUT_E));
+        if (xo > 0) pivot.position.z -= 0.5 * xo;
+        pivot.visible = xo < 0.999;
+      }
       if (print.photo && sc > 3.7) print.photo.visible = false;
       updateNow(sc, W, H);
+      if (sc > END_A) threeCanvas.style.opacity = eio(range(sc, END_A, END_A + 0.2)).toFixed(3);
+      else if (sc > MSG_OUT) threeCanvas.style.opacity = (1 - eio(range(sc, MSG_OUT, MSG_OUT_E))).toFixed(3);   // 문장 장면 끝: 카메라가 블러되며 옅어져 사라짐
     }
     if (window.__hist) window.__hist(sc, W, H);
     if (window.__storyIn) {
@@ -1007,17 +1170,17 @@ export function mountPolaroidScene(signal) {
       eye.visible = U2.uOp.value > 0.001;   // 인트로가 끝나면 영상 텍스처를 아예 그리지 않음
     }
     // 카메라가 떠오르는 동안 점점 흐려짐 (사진은 선명)
-    const camBlur = model && pivot.visible && sc < 4.2 ? eio(range(sc, 1.5, 2.3)) : 0;   // 사진 장면에서만
+    const camBlur = model && pivot.visible ? (sc > END_A ? 0.3 * (1 - eio(range(sc, END_A, END_A + END_T * 0.55))) : sc < 4.2 ? eio(range(sc, 1.5, 2.3)) : sc > MSG_A ? (W / H < 0.8 ? Math.max(0.3 * (1 - eio(range(sc, MSG_A, MSG_A + MSG_T * 0.55))), eio(range(sc, MSG_OUT, MSG_OUT_E))) : eio(range(sc, MSG_OUT, MSG_OUT_E))) : sc > PART_A ? (W / H < 0.8 ? eio(range(sc, PART_A, PART_A + 0.6)) : 0) : 0) : 0;   // 부품 장면에선 또렷 — 다음 장면으로 떠날 때만 블러   // 사진 장면 · 부품 장면에서 카메라가 떠오르며 블러
     try { if (camBlur > 0.004) renderCamBlurred(18 * renderer.getPixelRatio() * camBlur); else renderer.render(scene, camera); } catch (e) { if (!tick.err) { tick.err = 1; report('render: ' + (e && e.message || e)); } }
 
     // 2D 영상판: 3D 아이피스가 준비되기 전까지만 화면을 덮음 (준비되면 같은 프레임에서 3D 로 교대)
     const screen = [0, 0, W, H];
     glassState = live ? null : { rect: screen, content: cover(screen), radius: 0, bevel: 1, refract: 0, bulge: 0, shade: 0, alpha: 1 };
 
-    root.style.setProperty('--hero-o', (1 - ss(0, 0.04, pS)).toFixed(3));
+    { const ho = (1 - ss(0, 0.04, pS)).toFixed(3); if (ho !== tick.ho) { tick.ho = ho; root.style.setProperty('--hero-o', ho); } }   // 바뀔 때만
     // 히어로 텍스트: 등장은 한 번(시간 기반), 퇴장은 사용자가 직접 스크롤한 양에 연동(스크럽)
     // Kinoria 처럼: 카메라가 먼저 나타나 자리 잡고(약 1.3초) → 그 뒤 로고가 카메라 뒤에서 초점 맞춰지며 등장 → 오른쪽 텍스트
-    const wantTitle = pS > 0.84 && readyT > 0 && now - readyT > 750;
+    const wantTitle = pS > 0.84 && readyT > 0 && now - readyT > 750 && window.__fontsOk !== false;   // 글꼴이 다 준비되기 전엔 글자를 띄우지 않음
     exitK = clamp(sc / 0.45);
     if (window.__heroExit) window.__heroExit(exitK < 0.0005 ? 0 : exitK);
     if (wantTitle !== titleOn) { titleOn = wantTitle; root.dataset.title = titleOn ? 'on' : 'off'; }
@@ -1027,6 +1190,6 @@ export function mountPolaroidScene(signal) {
 
   return () => {
     try { renderer.dispose(); renderer.forceContextLoss(); } catch (e) { /* 이미 정리됨 */ }
-    ['__T', '__dbgP', '__nowProj', '__nowCol', '__exitRender', '__SPAN', '__scS'].forEach((k) => { delete window[k]; });
+    ['__SPAN', '__T', '__dbgP', '__exitRender', '__nowCol', '__nowProj', '__sc2u', '__scS'].forEach((k) => { delete window[k]; });
   };
 }
