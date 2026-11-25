@@ -13,7 +13,123 @@
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+
+/* =====================================================================
+   메인에 다시 들어와도 버벅이지 않게: 무거운 준비는 한 번만 하고 페이지를 오가는 동안 재사용한다.
+   · 모델 파일(.glb)은 한 번만 받아 메모리에 둔다
+   · Draco 압축 풀기는 Web Worker + WebAssembly 로 (메인 스레드를 막지 않음, 워커는 계속 살려 둠)
+   · 플래시 렌즈·바디 그레인 텍스처는 처음 한 번만, 그것도 잘게 나눠 그려서 화면이 멈추지 않게
+   ===================================================================== */
+const MODEL_URL = '/assets/landing-camera/polaroid-now.glb';
+let sharedDraco = null;
+function getDraco() {
+  if (!sharedDraco) {
+    sharedDraco = new DRACOLoader().setDecoderPath('/assets/landing-camera/draco/').setDecoderConfig({ type: 'wasm' });
+    sharedDraco.preload();
+  }
+  return sharedDraco;
+}
+let glbBytes = null;
+function loadGlbBytes() {
+  if (!glbBytes) {
+    glbBytes = fetch(MODEL_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error('model ' + res.status);
+        return res.arrayBuffer();
+      })
+      .catch((e) => {
+        glbBytes = null; // 실패하면 다음에 다시 시도
+        throw e;
+      });
+  }
+  return glbBytes;
+}
+/** 메인 스레드를 잠깐 양보 (긴 계산을 조각내 화면이 멈추지 않게) */
+const yieldFrame = () => new Promise((res) => setTimeout(res, 0));
+/** rows 줄을 몇 줄씩 나눠 계산 — 한 조각이 약 8ms 를 넘지 않게 */
+async function forRowsChunked(rows, fn) {
+  let t = performance.now();
+  for (let j = 0; j < rows; j++) {
+    fn(j);
+    if (performance.now() - t > 8) {
+      await yieldFrame();
+      t = performance.now();
+    }
+  }
+}
+
+/* 정면 플래시: 프레넬 렌즈(동심원 홈) 텍스처 — 블렌더 절차적 셰이더를 구운 것. 세션 동안 한 번만 만든다 */
+let flashCanvases = null;
+function getFlashCanvases() {
+  if (flashCanvases) return flashCanvases;
+  flashCanvases = (async () => {
+    const N = 1024, R = 34; // R: 동심원 개수
+    const mk = () => { const c = document.createElement('canvas'); c.width = c.height = N; return [c, c.getContext('2d')]; };
+    const [cc, cx] = mk(), [nc, nx] = mk(), [mc, mx] = mk();
+    const col = cx.createImageData(N, N), nor = nx.createImageData(N, N), mr = mx.createImageData(N, N);
+    const H = (x, y) => { const r = Math.hypot(x, y); return (r * R) % 1; }; // 프레넬 톱니 높이
+    await forRowsChunked(N, (j) => {
+      for (let i = 0; i < N; i++) {
+        const x = (i + 0.5) / N * 2 - 1, y = 1 - (j + 0.5) / N * 2, r = Math.hypot(x, y), k = (j * N + i) * 4;
+        const strip = Math.abs(y) < 0.27 && Math.abs(x) < 0.86; // 가로 반사판이 비치는 띠
+        const ring = 0.5 + 0.5 * Math.cos(r * R * Math.PI * 2);
+        let c;
+        if (strip) { const g = 0.46 + 0.14 * ring + 0.2 * Math.exp(-r * r * 9) - 0.12 * Math.abs(x); c = [g * 0.97, g * 0.98, g]; }
+        else { const g = 0.66 + 0.06 * ring - 0.05 * r; c = [g * 0.97, g * 0.99, g * 1.02]; }
+        col.data[k] = c[0] * 255; col.data[k + 1] = c[1] * 255; col.data[k + 2] = c[2] * 255; col.data[k + 3] = 255;
+        // 노멀: 동심원 톱니의 반경 방향 기울기
+        const e = 1.5 / N; const dx = (H(x + e, y) - H(x - e, y)), dy = (H(x, y + e) - H(x, y - e));
+        const gx = Math.abs(dx) > 0.5 ? 0 : dx / (2 * e) * 0.012, gy = Math.abs(dy) > 0.5 ? 0 : dy / (2 * e) * 0.012;
+        const l = Math.hypot(gx, gy, 1);
+        nor.data[k] = (-gx / l * 0.5 + 0.5) * 255; nor.data[k + 1] = (-gy / l * 0.5 + 0.5) * 255; nor.data[k + 2] = (1 / l * 0.5 + 0.5) * 255; nor.data[k + 3] = 255;
+        // metalness(B) / roughness(G)
+        mr.data[k] = 0; mr.data[k + 1] = (strip ? 0.3 : 0.42) * 255; mr.data[k + 2] = (strip ? 0.55 : 0.08) * 255; mr.data[k + 3] = 255;
+      }
+    });
+    cx.putImageData(col, 0, 0); nx.putImageData(nor, 0, 0); mx.putImageData(mr, 0, 0);
+    return { map: cc, normalMap: nc, mr: mc };
+  })();
+  return flashCanvases;
+}
+
+/* 바디 질감: 절차적 그레인 노멀맵 (블렌더 노이즈 범프 대체). 세션 동안 한 번만 만든다 */
+let grainCanvas = null;
+function getGrainCanvas() {
+  if (grainCanvas) return grainCanvas;
+  grainCanvas = (async () => {
+    const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
+    const cx = cv.getContext('2d'), img = cx.createImageData(N, N), hgt = new Float32Array(N * N);
+    for (let i = 0; i < N * N; i++) hgt[i] = Math.random();
+    for (let k = 0; k < 2; k++) {
+      const t = hgt.slice();
+      await forRowsChunked(N, (y) => {
+        for (let x = 0; x < N; x++) {
+          let a = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) a += t[((y + dy + N) % N) * N + ((x + dx + N) % N)]; hgt[y * N + x] = a / 9;
+        }
+      });
+    }
+    const h = (xx, yy) => hgt[((yy + N) % N) * N + ((xx + N) % N)];
+    await forRowsChunked(N, (y) => {
+      for (let x = 0; x < N; x++) {
+        const nx = (h(x - 1, y) - h(x + 1, y)) * 6, ny = (h(x, y - 1) - h(x, y + 1)) * 6, l = Math.hypot(nx, ny, 1), i = (y * N + x) * 4;
+        img.data[i] = (nx / l * 0.5 + 0.5) * 255; img.data[i + 1] = (ny / l * 0.5 + 0.5) * 255; img.data[i + 2] = (1 / l * 0.5 + 0.5) * 255; img.data[i + 3] = 255;
+      }
+    });
+    cx.putImageData(img, 0, 0);
+    return cv;
+  })();
+  return grainCanvas;
+}
+
+/** 다른 페이지에 있을 때 미리 불러 둘 수 있게 (모델 파일 받기 + 텍스처 미리 만들기 + 디코더 준비) */
+export function preloadPolaroidScene() {
+  loadGlbBytes().catch(() => {});
+  getDraco();
+  getFlashCanvases();
+  getGrainCanvas();
+}
 
 export function mountPolaroidScene(signal) {
   // ── 프로토타입(아티팩트) 코드를 그대로 옮기기 위한 범위 한정 ──
@@ -153,41 +269,17 @@ export function mountPolaroidScene(signal) {
   const videoTex = new THREE.VideoTexture(video);
   videoTex.colorSpace = THREE.SRGBColorSpace;
 
-  // 블렌더 glTF 익스포터로 그대로 뽑은 모델 (Draco 압축 · WebP 텍스처).
-  // .glb 는 아티팩트에서 서빙이 안 돼서 버퍼를 JSON 안에 담고, 여기서 GLB 로 다시 묶어 파싱
-  // Draco 디코더를 메인 스레드에서 실행 (워커·외부 wasm 없이 같은 출처의 JS 디코더만 사용)
-  const dracoReady = new Promise((res, rej) => {
-    if (window.DracoDecoderModule) { window.DracoDecoderModule().then(res, rej); return; }   // 다시 마운트될 때는 이미 받은 디코더 사용
-    const sc = document.createElement('script'); sc.src = '/assets/landing-camera/draco/draco_decoder.js';
-    sc.onload = () => window.DracoDecoderModule().then(res, rej); sc.onerror = rej; document.head.appendChild(sc);
-  });
-  const dracoLite = {
-    preload() { return this; },
-    decodeDracoFile(buffer, onLoad, ids, types, _cs, onError) {
-      dracoReady.then((draco) => {
-        const dec = new draco.Decoder(), arr = new Int8Array(buffer), mesh = new draco.Mesh();
-        const st = dec.DecodeArrayToMesh(arr, arr.byteLength, mesh);
-        if (!st.ok() || mesh.ptr === 0) throw new Error('draco: ' + st.error_msg());
-        const geo = new THREE.BufferGeometry();
-        for (const name in ids) {
-          const T = globalThis[types[name]]; const att = dec.GetAttributeByUniqueId(mesh, ids[name]);
-          const n = att.num_components(), cnt = mesh.num_points() * n, bytes = cnt * T.BYTES_PER_ELEMENT;
-          const dt = { Float32Array: draco.DT_FLOAT32, Int8Array: draco.DT_INT8, Int16Array: draco.DT_INT16, Int32Array: draco.DT_INT32, Uint8Array: draco.DT_UINT8, Uint16Array: draco.DT_UINT16, Uint32Array: draco.DT_UINT32 }[types[name]];
-          const ptr = draco._malloc(bytes); dec.GetAttributeDataArrayForAllPoints(mesh, att, dt, bytes, ptr);
-          geo.setAttribute(name, new THREE.BufferAttribute(new T(draco.HEAPF32.buffer, ptr, cnt).slice(), n)); draco._free(ptr);
-        }
-        const ni = mesh.num_faces() * 3, ptr = draco._malloc(ni * 4);
-        dec.GetTrianglesUInt32Array(mesh, ni * 4, ptr);
-        geo.setIndex(new THREE.BufferAttribute(new Uint32Array(draco.HEAPF32.buffer, ptr, ni).slice(), 1)); draco._free(ptr);
-        draco.destroy(mesh); draco.destroy(dec);
-        onLoad(geo);
-      }).catch(onError);
-    },
-  };
-  const gltfLoader = new GLTFLoader().setDRACOLoader(dracoLite);
-  // 블렌더에서 내보낸 웹용 모델 (Draco 압축) — 아티팩트 프로토타입과 같은 바이너리
-  gltfLoader.loadAsync('/assets/landing-camera/polaroid-now.glb').then((gltf) => {
+  // 블렌더 glTF 익스포터로 그대로 뽑은 모델 (Draco 압축 · WebP 텍스처)
+  // 모델 파일은 한 번만 받고, Draco 는 워커에서 풀어 메인 스레드를 막지 않는다 (위 getDraco · loadGlbBytes)
+  const gltfLoader = new GLTFLoader().setDRACOLoader(getDraco());
+  let GRAIN_CANVAS = null, FLASH_CANVASES = null;
+  Promise.all([
+    loadGlbBytes().then((bytes) => gltfLoader.parseAsync(bytes.slice(0), '/assets/landing-camera/')),
+    getGrainCanvas(),
+    getFlashCanvases(),
+  ]).then(async ([gltf, grainCv, flashCv]) => {
     if (signal.aborted) return;
+    GRAIN_CANVAS = grainCv; FLASH_CANVASES = flashCv;
     model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
@@ -241,7 +333,8 @@ export function mountPolaroidScene(signal) {
     setupNow();
     window.__T = { THREE, model, pivot, camera, scene, print };
     window.__dbgP = () => [renderer.info.programs.length, renderer.info.memory.textures, BL.allocs || 0];
-    prewarm();
+    await prewarm();
+    if (signal.aborted) return;
     readyT = performance.now();   // 카메라 등장 시작 시각 → 로고·텍스트는 카메라가 자리 잡은 뒤에
     root.dataset.model = 'ready';
   }).catch((e) => { report('model load failed: ' + (e && e.message || e)); root.dataset.model = 'error'; });
@@ -251,30 +344,9 @@ export function mountPolaroidScene(signal) {
   /* ---- 정면 플래시: 프레넬 렌즈(동심원 홈) + 뒤쪽 알루미늄 반사판 ----
      블렌더의 절차적 셰이더는 glTF 로 옮겨지지 않아 평면처럼 보였음 → 같은 모양을 텍스처로 구워 재현 */
   function flashTextures() {
-    const N = 1024, R = 34;                                   // R: 동심원 개수
-    const mk = () => { const c = document.createElement('canvas'); c.width = c.height = N; return [c, c.getContext('2d')]; };
-    const [cc, cx] = mk(), [nc, nx] = mk(), [mc, mx] = mk();
-    const col = cx.createImageData(N, N), nor = nx.createImageData(N, N), mr = mx.createImageData(N, N);
-    const H = (x, y) => { const r = Math.hypot(x, y); return (r * R) % 1; };   // 프레넬 톱니 높이
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-      const x = (i + 0.5) / N * 2 - 1, y = 1 - (j + 0.5) / N * 2, r = Math.hypot(x, y), k = (j * N + i) * 4;
-      const strip = Math.abs(y) < 0.27 && Math.abs(x) < 0.86;               // 가로 반사판이 비치는 띠
-      const ring = 0.5 + 0.5 * Math.cos(r * R * Math.PI * 2);
-      let c;
-      if (strip) { const g = 0.46 + 0.14 * ring + 0.2 * Math.exp(-r * r * 9) - 0.12 * Math.abs(x); c = [g * 0.97, g * 0.98, g]; }
-      else { const g = 0.66 + 0.06 * ring - 0.05 * r; c = [g * 0.97, g * 0.99, g * 1.02]; }
-      col.data[k] = c[0] * 255; col.data[k + 1] = c[1] * 255; col.data[k + 2] = c[2] * 255; col.data[k + 3] = 255;
-      // 노멀: 동심원 톱니의 반경 방향 기울기
-      const e = 1.5 / N; const dx = (H(x + e, y) - H(x - e, y)), dy = (H(x, y + e) - H(x, y - e));
-      let gx = Math.abs(dx) > 0.5 ? 0 : dx / (2 * e) * 0.012, gy = Math.abs(dy) > 0.5 ? 0 : dy / (2 * e) * 0.012;
-      const l = Math.hypot(gx, gy, 1);
-      nor.data[k] = (-gx / l * 0.5 + 0.5) * 255; nor.data[k + 1] = (-gy / l * 0.5 + 0.5) * 255; nor.data[k + 2] = (1 / l * 0.5 + 0.5) * 255; nor.data[k + 3] = 255;
-      // metalness(B) / roughness(G)
-      mr.data[k] = 0; mr.data[k + 1] = (strip ? 0.3 : 0.42) * 255; mr.data[k + 2] = (strip ? 0.55 : 0.08) * 255; mr.data[k + 3] = 255;
-    }
-    cx.putImageData(col, 0, 0); nx.putImageData(nor, 0, 0); mx.putImageData(mr, 0, 0);
+    // 캔버스는 세션 동안 한 번만 만든 것을 쓰고(getFlashCanvases), 이 렌더러용 텍스처만 새로 만든다
     const T = (c, srgb) => { const t = new THREE.CanvasTexture(c); t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.anisotropy = 8; return t; };
-    return { map: T(cc, true), normalMap: T(nc, false), mr: T(mc, false) };
+    return { map: T(FLASH_CANVASES.map, true), normalMap: T(FLASH_CANVASES.normalMap, false), mr: T(FLASH_CANVASES.mr, false) };
   }
   function setupFlash() {
     let cover = null; model.traverse((o) => { if (o.isMesh && /Fresnel_Cover/i.test(o.name + (o.material && o.material.name))) cover = o; });
@@ -622,18 +694,7 @@ export function mountPolaroidScene(signal) {
   let _grain = null;
   function grainTex() {
     if (_grain) return _grain;
-    const N = 512, cv = document.createElement('canvas'); cv.width = cv.height = N;
-    const cx = cv.getContext('2d'), img = cx.createImageData(N, N), hgt = new Float32Array(N * N);
-    for (let i = 0; i < N * N; i++) hgt[i] = Math.random();
-    for (let k = 0; k < 2; k++) { const t = hgt.slice(); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      let a = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) a += t[((y + dy + N) % N) * N + ((x + dx + N) % N)]; hgt[y * N + x] = a / 9; } }
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const h = (xx, yy) => hgt[((yy + N) % N) * N + ((xx + N) % N)];
-      const nx = (h(x - 1, y) - h(x + 1, y)) * 6, ny = (h(x, y - 1) - h(x, y + 1)) * 6, l = Math.hypot(nx, ny, 1), i = (y * N + x) * 4;
-      img.data[i] = (nx / l * 0.5 + 0.5) * 255; img.data[i + 1] = (ny / l * 0.5 + 0.5) * 255; img.data[i + 2] = (1 / l * 0.5 + 0.5) * 255; img.data[i + 3] = 255;
-    }
-    cx.putImageData(img, 0, 0);
-    _grain = new THREE.CanvasTexture(cv); _grain.wrapS = _grain.wrapT = THREE.RepeatWrapping; _grain.repeat.set(1, 1);
+    _grain = new THREE.CanvasTexture(GRAIN_CANVAS); _grain.wrapS = _grain.wrapT = THREE.RepeatWrapping; _grain.repeat.set(1, 1);
     return _grain;
   }
   function boxUV(g) { // UV 가 없는 바디용 박스 투영 (그레인만 쓰므로 이음새는 무관)
@@ -944,12 +1005,24 @@ export function mountPolaroidScene(signal) {
   // 버벅임 원인 제거: 사진이 처음 보이는 순간(셰이더·텍스처 첫 업로드)과 레이어 블러가 처음 켜지는 순간
   // (블러용 렌더 타깃 생성 + 렌더 타깃 전용 셰이더 13개 컴파일)이 스크롤 도중에 한꺼번에 일어나 프레임이 멈췄음.
   // → 모델이 준비된 직후, 카메라가 화면에 나타나기 전에 이 작업을 미리 다 해 둠
-  function prewarm() {
+  // 셰이더는 compileAsync 로 GPU 드라이버가 병렬로 컴파일하게 해서(KHR_parallel_shader_compile) 메인 스레드를 막지 않는다.
+  // 화면용 · 블러 렌더 타깃용(톤매핑이 달라 셰이더가 따로 생김) 두 가지를 모두 미리 컴파일한다.
+  async function prewarm() {
     const ph = print.photo, pv = ph ? ph.visible : false;
     try {
       if (ph) ph.visible = true;
-      renderer.compile(scene, camera);
-      renderCamBlurred(2); renderCamBlurred(12);      // 전체·반 해상도 블러 경로 둘 다
+      await renderer.compileAsync(scene, camera);
+      if (signal.aborted) return;
+      renderer.getDrawingBufferSize(blSize);
+      blurTargets(blSize.x, blSize.y);
+      renderer.setRenderTarget(BL.rt);
+      await renderer.compileAsync(scene, camera);
+      renderer.setRenderTarget(null);
+      if (signal.aborted) return;
+      await yieldFrame();
+      renderCamBlurred(2);
+      await yieldFrame();
+      renderCamBlurred(12);      // 전체·반 해상도 블러 경로 둘 다
       renderer.render(scene, camera);
     } catch (e) { /* 미리 준비 실패해도 정상 동작에는 지장 없음 */ }
     if (ph) ph.visible = pv;
