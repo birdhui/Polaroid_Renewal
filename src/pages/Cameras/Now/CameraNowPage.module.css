@@ -283,7 +283,7 @@ span.transitionImage {
 /* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
 .page .filters {
   aspect-ratio: 1920 / 1194;
-  background: linear-gradient(180deg, #232323 0%, #151515 100%);
+  background: #151515; /* Figma 07 Filter Showcase: 단색 #151515 (Transition-2 와 동일) */
 }
 
 .filterEyebrow {
