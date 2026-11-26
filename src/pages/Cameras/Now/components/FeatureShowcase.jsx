@@ -156,9 +156,8 @@ export default function FeatureShowcase({ heading, features, intro }) {
   return (
     <div ref={trackRef} className={styles.track} style={{ '--count': count }}>
       <div className={styles.sticky}>
+        <div className={styles.glow} style={{ opacity: glow.toFixed(3) }} />
         <section className={styles.section} aria-label={heading}>
-          <div className={styles.glow} style={{ opacity: glow.toFixed(3) }} />
-
           {/* 소개: 뒤쪽 큰 글자 + 제목·부제 */}
           <div className={styles.wordmark} style={{ opacity: introAlpha.toFixed(3) }} aria-hidden="true">
             {intro.wordmark.map((line) => (
