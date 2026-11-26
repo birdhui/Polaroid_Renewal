@@ -1,13 +1,12 @@
-/* 04~06 Feature — Figma "Cameras - NOW_v2" Frame 135~137(#151515, 1920×1080) + 스크롤 연동 스테이지 */
+/* Feature — Figma "Cameras - NOW_v3" 04~07 프레임(#191007, 1920×1080) + 스크롤 연동 스테이지 */
 
-/* 스크롤 구간: 기능 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
+/* 스크롤 구간: 장면 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
 .track {
   position: relative;
   height: calc((var(--count) + 1) * 100vh);
-  background: #151515;
+  background: #191007;
 }
 
-/* 고정되는 동안 1920×1080 스테이지는 화면 가운데에 놓이고 나머지 영역도 같은 배경색이다 */
 .sticky {
   position: sticky;
   top: 0;
@@ -22,82 +21,229 @@
   position: relative;
   width: min(100%, calc(100vh * 1920 / 1080));
   aspect-ratio: 1920 / 1080;
-  background: #151515;
+  background: #191007;
   color: #fff;
+  overflow: hidden;
+  perspective: calc(2400 * var(--u));
 }
 
-/* "Funtion 0N" — Outfit Light 22, 상단 가운데(y 227) */
-.label {
+/* 왼쪽 아래 따뜻한 빛(Figma 방사형 그라데이션: #3b2b16 → #2a1e10 → #181109) */
+.glow {
   position: absolute;
-  left: 0;
-  top: calc(227 * var(--u));
-  width: 100%;
-  margin: 0;
-  text-align: center;
-  font-family: var(--f-out);
-  font-weight: 300;
-  font-size: calc(22 * var(--u));
-  line-height: calc(28 * var(--u));
-  white-space: nowrap;
-  color: #fff;
+  inset: 0;
+  background: radial-gradient(
+    ellipse calc(380 * var(--u)) calc(660 * var(--u)) at calc(38 * var(--u)) calc(1080 * var(--u)),
+    #3b2b16 0%,
+    #2a1e10 50%,
+    #181109 100%
+  );
   will-change: opacity;
 }
 
-/* 필름 띠의 영상 — 위치·크기·투명도는 JS 가 인라인으로 준다 */
-.media {
+/* 소개: 뒤쪽 큰 글자 */
+.wordmark {
+  position: absolute;
+  left: 0;
+  top: calc(127 * var(--u));
+  display: grid;
+  font-family: var(--f-out);
+  font-weight: 900;
+  font-size: calc(400 * var(--u));
+  line-height: calc(400 * var(--u));
+  letter-spacing: calc(-15 * var(--u));
+  white-space: nowrap;
+  color: rgba(114, 108, 102, 0.16);
+  will-change: opacity;
+}
+
+.introCopy {
+  position: absolute;
+  left: calc(880 * var(--u));
+  top: calc(214 * var(--u));
+  width: calc(392 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(28 * var(--u));
+  will-change: opacity, transform;
+}
+
+.introTitle {
+  margin: 0;
+  display: grid;
+  font-family: var(--f-out);
+  font-weight: 900;
+  font-size: calc(100 * var(--u));
+  line-height: calc(92 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+}
+
+.introSubtitle {
+  margin: 0;
+  display: grid;
+  font-family: var(--f-out);
+  font-weight: 600;
+  font-size: calc(30 * var(--u));
+  line-height: 1.13;
+  letter-spacing: calc(-0.9 * var(--u));
+  white-space: nowrap;
+}
+
+.introDescription {
+  margin: 0;
+  font-family: var(--f-pre);
+  font-weight: 400;
+  font-size: calc(15 * var(--u));
+  line-height: 1.33;
+  letter-spacing: calc(-0.45 * var(--u));
+  white-space: nowrap;
+}
+
+/* 01·03 왼쪽 영상 683×658 (#393737) */
+.mediaBox {
+  position: absolute;
+  left: calc(269 * var(--u));
+  top: calc(209 * var(--u));
+  width: calc(683 * var(--u));
+  height: calc(658 * var(--u));
+  background: #393737;
+  overflow: hidden;
+  z-index: 2;
+  will-change: opacity;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 카메라 이미지 — 위치·크기는 JS 가 인라인으로 준다 */
+.cameraFront {
   position: absolute;
   max-width: none;
   object-fit: cover;
-  will-change: left, top, width, height, opacity;
-}
-
-/* Feature Frame (Corner Brackets) — 569×569 (675, 255), 571×571 SVG, 선이 박스 밖으로 0.75씩 나온다 */
-.frame {
-  position: absolute;
-  left: calc(674.25 * var(--u));
-  top: calc(254.25 * var(--u));
-  width: calc(571 * var(--u));
-  height: calc(571 * var(--u));
-  z-index: 20;
+  z-index: 3;
   pointer-events: none;
+  will-change: left, top;
 }
 
-/* 제목·부제는 오른쪽 끝이 x=632/633 에 맞는 오른쪽 정렬 */
+.camera3q {
+  position: absolute;
+  overflow: hidden;
+  z-index: 4;
+  pointer-events: none;
+  will-change: left, top, width, height, transform;
+}
+
+.camera3q img {
+  position: absolute;
+  max-width: none;
+  display: block;
+}
+
+/* 기능 글: right = 01·03(x 1019), left = 02(x 307). 라벨·선은 같은 열의 아래쪽 */
 .copy {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 5;
+}
+
+.text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: calc(28 * var(--u));
+  width: calc(631 * var(--u));
+  white-space: nowrap;
+}
+
+.right .text {
+  left: calc(1019 * var(--u));
+  top: calc(209 * var(--u));
+}
+
+.left .text {
+  left: calc(307 * var(--u));
+  top: calc(228 * var(--u));
 }
 
 .title {
-  position: absolute;
-  top: calc(255 * var(--u));
-  right: calc((1920 - 632) * var(--u));
   margin: 0;
   display: grid;
-  text-align: right;
   font-family: var(--f-out);
-  font-weight: 600;
-  font-size: calc(45 * var(--u));
-  line-height: 1.13;
-  letter-spacing: -0.03em;
-  white-space: nowrap;
-  color: #fff;
+  font-weight: 700;
+  font-size: calc(75 * var(--u));
+  line-height: calc(79 * var(--u));
+  letter-spacing: calc(-1.5 * var(--u));
+  text-transform: uppercase;
   will-change: opacity, transform;
 }
 
+.left .title {
+  letter-spacing: calc(-3 * var(--u));
+}
+
 .subtitle {
-  position: absolute;
-  top: calc(374 * var(--u));
-  right: calc((1920 - 633) * var(--u));
   margin: 0;
-  text-align: right;
   font-family: var(--f-pre);
-  font-weight: 300;
-  font-size: calc(15 * var(--u));
+  font-weight: 700;
+  font-size: calc(40 * var(--u));
   line-height: 1.33;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  color: #fff;
+  letter-spacing: calc(-0.8 * var(--u));
   will-change: opacity, transform;
+}
+
+.description {
+  margin: 0;
+  display: grid;
+  font-family: var(--f-pre);
+  font-weight: 400;
+  font-size: calc(18 * var(--u));
+  line-height: 1.6;
+  letter-spacing: calc(-0.45 * var(--u));
+  color: rgba(255, 255, 255, 0.9);
+  will-change: opacity, transform;
+}
+
+.label {
+  position: absolute;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  font-family: var(--f-out);
+  font-weight: 300;
+  font-size: calc(22 * var(--u));
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5);
+  will-change: opacity;
+}
+
+.rule {
+  position: absolute;
+  height: 1px;
+  width: calc(631 * var(--u));
+  will-change: opacity;
+}
+
+.right .label {
+  left: calc(1578 * var(--u));
+  top: calc(853 * var(--u));
+}
+
+.right .rule {
+  left: calc(999 * var(--u));
+  top: calc(870 * var(--u));
+  background: rgba(217, 217, 217, 0.5);
+}
+
+.left .label {
+  left: calc(886 * var(--u));
+  top: calc(872 * var(--u));
+}
+
+.left .rule {
+  left: calc(307 * var(--u));
+  top: calc(889 * var(--u));
+  background: rgba(255, 255, 255, 0.5);
 }

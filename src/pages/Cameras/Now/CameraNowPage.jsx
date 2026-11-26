@@ -6,6 +6,7 @@ import {
   intro,
   featuresHeading,
   features,
+  featureIntro,
   filterShowcase,
   appPromo,
   purchaseCta,
@@ -325,6 +326,7 @@ export default function CameraNowPage() {
       <FeatureShowcase
         heading={featuresHeading.join(' ')}
         features={features}
+        intro={featureIntro}
       />
 
       {/* 07~08, 10: 어두운 구간 (#151515 · Filter 는 #232323 → #151515 그라데이션) */}

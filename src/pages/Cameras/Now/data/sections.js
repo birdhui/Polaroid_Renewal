@@ -48,42 +48,49 @@ export const intro = {
 export const featuresHeading = ['모든 순간을 특별하게 남기는', '세 가지 방법.'];
 
 /**
- * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
- * Figma "Cameras - NOW_v2"(Frame 135~137): #151515 배경, 상단 가운데 "Funtion 0N" 라벨,
- * 가운데 569×569 브래킷 안의 영상, 양옆 필름 띠 타일, 영상 왼쪽에 오른쪽 정렬 제목 · 부제.
- * v2 에서 다이얼·가로선·설명 문단은 빠졌다(description 은 보관용). 라벨 철자("Funtion")는 Figma 그대로다.
- * 02 부제는 v2 원본이 03 문구와 같아서 기존 확정 문구를 유지했다(확인 필요).
+ * v3 Feature — Figma "Cameras - NOW_v3"(2854:2377) 04~07 프레임.
+ * 첫 화면(featureIntro)은 "Polaroid Now Generation 2" 소개, 이어서 01 Sharper → 02 Two-Lens Autofocus → 03 Double Exposure.
+ * 한 화면이 고정(sticky)된 채 스크롤에 따라 카메라 이미지 두 장이 프레임 사이를 옮겨 다닌다.
+ * layout: 'media' = 왼쪽 영상 + 오른쪽 글, 'camera' = 왼쪽 글 + 오른쪽 큰 카메라.
+ * 라벨 철자("Funtion")는 Figma 그대로다.
  */
+export const featureIntro = {
+  wordmark: ['Now', 'Polaroid'],
+  title: ['Polaroid', 'Now'],
+  subtitle: ['Polaroid Now Generation 2', 'i-Type Instant Camera'],
+  description: '폴라로이드 나우 2세대 i-Type 즉석카메라',
+};
+
 export const features = [
   {
+    id: 'sharpness',
+    label: 'Funtion 01',
+    layout: 'media',
+    titleLines: ['sharper', 'pictures'],
+    subtitle: '강한 햇빛 아래서도 더 선명하게',
+    descriptionLines: ['밝은 햇빛 아래서도 노출을 최적화해, 야외에서도 더 선명한 사진을 담아요.', ' 거리 센서와 플래시, 오토포커스를 개선해 쨍한 날에도 또렷한 한 장을 남겨요.'],
+    image: featureSharpnessImage,
+    video: featureSharpnessVideo,
+  },
+  {
     id: 'two-lens-autofocus',
-    label: 'Funtion 01', // Figma 문구 그대로("Funtion")
-    titleLines: ['TWO-LENS', 'AUTOFOCUS'],
+    label: 'Funtion 02',
+    layout: 'camera',
+    titleLines: ['Two-Lens', 'Autofocus'],
     subtitle: '가까운 얼굴도, 먼 풍경도 알아서 또렷하게',
-    description:
-      '표준 렌즈와 인물 렌즈, 두 개의 렌즈를 갖춘 오토포커스 시스템이에요. 피사체와의 거리에 따라 알맞은 렌즈를 카메라가 알아서 골라, 가까운 인물도 먼 풍경도 또렷하게 담아줘요.',
+    descriptionLines: ['표준 렌즈와 인물 렌즈, 두 개의 렌즈를 갖춘 오토포커스 시스템이에요.', '피사체와의 거리에 따라 알맞은 렌즈를 카메라가 알아서 골라, 가까운 인물도 먼 풍경도', '또렷하게 담아줘요.'],
     image: featureAutofocusImage,
     video: featureAutofocusVideo,
   },
   {
     id: 'double-exposure',
-    label: 'Funtion 02',
+    label: 'Funtion 03',
+    layout: 'media',
     titleLines: ['double exposure', 'mode'],
     subtitle: '두 번 찍으면 두 장면이 한 장에',
-    description:
-      '한 장의 사진에 두 장면을 겹쳐 담는 더블 익스포저 모드예요.  셔터를 두 번 눌러 두 컷을 한 장에 담으면, 현실과 상상이 섞인 몽환적인 사진이 나와요.',
+    descriptionLines: ['한 장의 사진에 두 장면을 겹쳐 담는 더블 익스포저 모드예요.', '셔터를 두 번 눌러 두 컷을 한 장에 담으면, 현실과 상상이 섞인 몽환적인 사진이 나와요.'],
     image: featureDoubleExposureImage,
     video: featureDoubleExposureVideo,
-  },
-  {
-    id: 'sharpness',
-    label: 'Funtion 03',
-    titleLines: ['sharper', 'pictures'],
-    subtitle: '강한 햇빛 아래서도 더 선명하게',
-    description:
-      '밝은 햇빛 아래서도 노출을 최적화해, 야외에서도 더 선명한 사진을 담아요.  거리 센서와 플래시, 오토포커스를 개선해 쨍한 날에도 또렷한 한 장을 남겨요.',
-    image: featureSharpnessImage,
-    video: featureSharpnessVideo,
   },
 ];
 
