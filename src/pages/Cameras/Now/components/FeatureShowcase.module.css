@@ -29,20 +29,6 @@
   perspective: calc(2400 * var(--u));
 }
 
-/* 왼쪽 아래 따뜻한 빛(Figma 방사형 그라데이션: #3b2b16 → #2a1e10 → #181109). 화면(sticky) 기준이라 비율이 달라도 가장자리에서 끊기지 않는다 */
-.glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse calc(380 * 100vw / 1920) calc(660 * 100vw / 1920) at calc(38 * 100vw / 1920) 100%,
-    #3b2b16 0%,
-    #2a1e10 50%,
-    #181109 100%
-  );
-  will-change: opacity;
-}
-
 /* 소개: 뒤쪽 큰 글자 */
 .wordmark {
   position: absolute;

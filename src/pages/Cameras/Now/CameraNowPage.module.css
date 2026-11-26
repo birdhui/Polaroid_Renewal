@@ -87,26 +87,9 @@
   background: var(--now-cream);
 }
 
-/* 03 → 04: 제목(섹션의 60% 지점) 아래부터 크림 → 따뜻한 브라운 → #191007 로 서서히 어두워져 04 Feature 배경과 끊김 없이 이어진다
-   (oryzo.ai 처럼 어두운 갈색 바탕으로 이어지고, 왼쪽 아래의 따뜻한 빛은 04 Feature 화면 안에서 나타난다). 부드러운 S 곡선(smoothstep)으로 띠가 보이지 않게 한다 */
+/* 03 → 04: 경계 그라데이션 없음(크림 배경 그대로 끝나고 04 Feature 의 갈색 배경이 이어진다) */
 .featuresHeading {
-  background: linear-gradient(
-    to bottom,
-    var(--now-cream) 0%,
-    rgb(255 250 242) 60.0%,
-    rgb(250 244 235) 63.3%,
-    rgb(236 227 215) 66.7%,
-    rgb(215 201 185) 70.0%,
-    rgb(189 168 148) 73.3%,
-    rgb(159 131 105) 76.7%,
-    rgb(128 92 60) 80.0%,
-    rgb(102 73 47) 83.3%,
-    rgb(78 55 34) 86.7%,
-    rgb(57 40 24) 90.0%,
-    rgb(40 27 15) 93.3%,
-    rgb(29 19 9) 96.7%,
-    rgb(25 16 7) 100.0%
-  );
+  background: var(--now-cream);
 }
 
 /* 제품 사진이 섹션 아래(1080)를 12px 넘어가므로 잘리지 않게 하고, 다음 섹션 위로 보이게 한다 */
@@ -262,7 +245,8 @@
 .darkZone {
   position: relative;
   color: #fff;
-  background: #151515;
+  /* 04 Feature(#191007)에서 이어지는 갈색 바탕. 07·08 은 투명이라 하나의 페이지처럼 이어진다 */
+  background: linear-gradient(to bottom, #191007 0%, #140c05 100%);
 }
 
 .filters,
@@ -276,7 +260,7 @@
 /* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
 .page .filters {
   aspect-ratio: 1920 / 1194;
-  background: #151515; /* Figma 07 Filter Showcase: 단색 #151515 (Transition-2 와 동일) */
+  background: transparent; /* 갈색 그라데이션(.darkZone)이 비친다 */
 }
 
 .filterEyebrow {
@@ -390,7 +374,7 @@
 /* ───────── 08 App Promo (프레임 1920×1583) ───────── */
 .page .appPromo {
   aspect-ratio: 1920 / 1583;
-  background: #151515;
+  background: transparent;
 }
 
 .phoneBody {
@@ -750,7 +734,7 @@
 
 /* ───────── 10 Polaroid Go Film ───────── */
 .page .goFilm {
-  background: #151515;
+  background: linear-gradient(to bottom, #191007 0%, #150d06 100%);
 }
 
 .goFilmEyebrow {
@@ -908,7 +892,7 @@
 
 /* ───────── 11 Discover More ───────── */
 .page .discover {
-  background: #151515;
+  background: linear-gradient(to bottom, #150d06 0%, #110a04 100%);
 }
 
 .discoverEyebrow {
@@ -990,7 +974,7 @@
 
 /* ───────── 12 Footer ───────── */
 .page .footer {
-  background: #151515;
+  background: linear-gradient(to bottom, #110a04 0%, #0d0703 100%);
 }
 
 .footerLogo {

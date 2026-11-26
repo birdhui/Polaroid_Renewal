@@ -29,9 +29,6 @@ const CAMERA_FRONT = [
   { x: 1162, y: -983, size: 1515, o: 0 },
   { x: 1162, y: -983, size: 1515, o: 0 },
 ];
-// 왼쪽 아래 따뜻한 빛: 소개·02 에서 가장 밝고 01·03 에서도 은은하게 남아 갈색 바탕이 이어진다
-const GLOW = [1, 0.45, 1, 0.45];
-
 const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
 const lerp = (a, b, t) => a + (b - a) * t;
 const smooth = (t) => t * t * (3 - 2 * t);
@@ -150,13 +147,11 @@ export default function FeatureShowcase({ heading, features, intro }) {
   const px = (v) => `calc(${v.toFixed(2)} * var(--u))`;
   const k3 = keyAt(CAMERA_3Q, pos);
   const kf = keyAt(CAMERA_FRONT, pos);
-  const glow = keyAt(GLOW.map((o) => ({ o })), pos).o;
   const introAlpha = alpha(pos, 2.2);
 
   return (
     <div ref={trackRef} className={styles.track} style={{ '--count': count }}>
       <div className={styles.sticky}>
-        <div className={styles.glow} style={{ opacity: glow.toFixed(3) }} />
         <section className={styles.section} aria-label={heading}>
           {/* 소개: 뒤쪽 큰 글자 + 제목·부제 */}
           <div className={styles.wordmark} style={{ opacity: introAlpha.toFixed(3) }} aria-hidden="true">
