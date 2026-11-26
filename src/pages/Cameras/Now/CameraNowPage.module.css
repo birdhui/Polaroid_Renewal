@@ -1,11 +1,3 @@
-/* Figma 의 Outfit Black — 글자 안쪽 겹치는 윤곽선을 제거한 파일(외곽선 렌더링용) */
-@font-face {
-  font-family: 'Outfit Black NoOverlap';
-  src: url('../../../assets/fonts/outfit-latin-900-nooverlap.woff2') format('woff2');
-  font-weight: 900;
-  font-display: block;
-}
-
 /*
  * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
  * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
@@ -96,6 +88,12 @@
   background: var(--now-cream);
 }
 
+/* 제품 사진이 섹션 아래(1080)를 12px 넘어가므로 잘리지 않게 하고, 다음 섹션 위로 보이게 한다 */
+.page .intro {
+  overflow: visible;
+  z-index: 1;
+}
+
 /* Vector 48 */
 .introBrackets {
   --x: 662;
@@ -146,15 +144,78 @@
  * Figma의 제품 사진은 배경이 투명한 PNG다. 지금 에셋은 흰 배경 JPG라서
  * multiply로 크림 배경에 녹여 흰 박스가 보이지 않게 한다. TODO: 투명 PNG(7ae68)로 교체.
  */
-.introImage {
+.introPhoto {
   composes: pos size from './components/stage.module.css';
   --x: 600;
   --y: 745;
   --w: 720;
   --h: 347.4;
+  --qp: 0;
+  --qt: 0;
+}
+
+/* 떠오름: 진행도(--q)에 따라 아래(260)에서 제자리로, 투명 → 불투명 */
+.introRise {
+  position: absolute;
+  inset: 0;
+  opacity: var(--q);
+  transform: translateY(calc((1 - var(--q)) * 260 * var(--u))) scale(calc(0.94 + var(--q) * 0.06));
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+}
+
+.introRisePink {
+  --q: var(--qp);
+}
+
+.introRiseTeal {
+  --q: var(--qt);
+}
+
+.introCamera {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
   object-fit: contain;
-  mix-blend-mode: multiply;
+  will-change: transform;
+}
+
+/* 둥실: 올라온 만큼(--q)만 움직이고, 두 대가 서로 반대 방향·다른 박자로 오르내린다 */
+.introFloatTeal {
+  animation: introFloatTeal 5.4s ease-in-out infinite;
+}
+
+.introFloatPink {
+  animation: introFloatPink 6.6s ease-in-out infinite;
+}
+
+@keyframes introFloatTeal {
+  0%,
+  100% {
+    transform: translateY(calc(var(--q) * -8 * var(--u))) rotate(calc(var(--q) * -0.3deg));
+  }
+  50% {
+    transform: translateY(calc(var(--q) * 10 * var(--u))) rotate(calc(var(--q) * 0.3deg));
+  }
+}
+
+@keyframes introFloatPink {
+  0%,
+  100% {
+    transform: translateY(calc(var(--q) * 9 * var(--u))) rotate(calc(var(--q) * 0.4deg));
+  }
+  50% {
+    transform: translateY(calc(var(--q) * -9 * var(--u))) rotate(calc(var(--q) * -0.4deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introFloatTeal,
+  .introFloatPink {
+    animation: none;
+  }
 }
 
 /* ───────── 03 Features Heading ───────── */
@@ -164,11 +225,11 @@
 
 .featuresHeadingText {
   composes: pos text center from './components/stage.module.css';
-  --x: 959;
-  --y: 498;
-  --fs: 40;
-  --ls: -1;
-  line-height: calc(55 * var(--u));
+  --x: 960; /* Figma v2: 박스 x 574 + 너비 772 / 2 */
+  --y: 446;
+  --fs: 76;
+  --ls: -5;
+  line-height: calc(94 * var(--u));
   font-family: var(--f-pre);
   font-weight: 600;
   color: var(--now-ink);
@@ -189,95 +250,6 @@
 .discover,
 .footer {
   color: #fff;
-}
-
-/* ───────── Transition-camera: 스크롤 따라 사진 → 큰 글자(외곽선 → 채움) → #151515 배경 ───────── */
-.transitionTrack {
-  --tbg: #fffaf2;
-  --tstroke: rgb(21, 21, 21);
-  --timg-o: 1;
-  --timg-s: 1;
-  --tx: 0px;
-  --ts: 1;
-  --tfill: 100%;
-  --ty: 62vh;
-  position: relative;
-  height: 560vh;
-  background: var(--tbg);
-}
-
-.transitionSticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.transitionImage {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(100vw, 100vh);
-  height: min(100vw, 100vh);
-  max-width: none;
-  object-fit: contain;
-  opacity: var(--timg-o);
-  transform: translate(-50%, -50%) scale(var(--timg-s));
-}
-
-span.transitionImage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(21, 21, 21, 0.25);
-  color: rgba(21, 21, 21, 0.5);
-  font-family: var(--f-mono);
-  font-size: 12px;
-}
-
-.transitionText {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  display: grid;
-  white-space: nowrap;
-  font-family: 'Outfit Black NoOverlap', var(--f-out);
-  font-weight: 900;
-  font-size: 46.875vw; /* Figma Transition-1: 900px / 1920 */
-  line-height: 1.26;
-  letter-spacing: 0;
-  white-space: pre;
-  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(var(--ts));
-  will-change: transform;
-}
-
-.transitionOutline,
-.transitionFill {
-  grid-area: 1 / 1;
-}
-
-.transitionOutline {
-  /* Figma: 외곽선 3px OUTSIDE(#F0A137). 가운데 정렬 선 6px 을 그리고 글자 안쪽은 배경색으로 덮어 바깥쪽 3px 만 남긴다 */
-  color: var(--tbg);
-  paint-order: stroke fill;
-  -webkit-text-stroke: calc(6em / 900) var(--now-accent);
-  /* 채워진 부분의 외곽선은 보이지 않도록, 아직 안 채워진 오른쪽만 남긴다 */
-  clip-path: inset(0 0 0 calc(100% - var(--tfill)));
-}
-
-/* 같은 글자를 겹쳐 두고 오른쪽부터 잘라 두었다가, 스크롤에 따라 왼쪽 → 오른쪽으로 색이 채워진다 */
-.transitionFill {
-  color: var(--now-accent);
-  clip-path: inset(0 var(--tfill) 0 0);
-}
-
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 /* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */

@@ -10,7 +10,6 @@ import {
   appPromo,
   purchaseCta,
   goFilm,
-  transitionCamera,
   discoverMore,
   footer,
 } from './data/sections.js';
@@ -27,7 +26,7 @@ import styles from './CameraNowPage.module.css';
    React 19가 <link>를 <head>로 올려준다. */
 const FONT_STYLESHEETS = [
   'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500&family=Archivo:wght@300;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500&family=Archivo:wght@300;600;700&display=swap',
 ];
 
 function Lines({ lines }) {
@@ -203,69 +202,52 @@ function usePurchaseScroll(trackRef) {
 
 
 const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
-const smooth = (a, b, v) => {
-  const t = clamp01((v - a) / (b - a));
-  return t * t * (3 - 2 * t);
-};
-const mix = (a, b, t) => a + (b - a) * t;
 
-/*
- * Transition-camera: 스크롤에 맞춰
- *  1) 카메라 사진이 사라지고
- *  2) 큰 외곽선 글자가 왼쪽으로 지나가면서 색이 왼쪽→오른쪽으로 채워지고(채워지는 동안 배경이 크림 → #151515 로 바뀌고)
- *  3) 다 채워지면 글자가 화면 가운데로 모이며 작아진다.
- * 값은 모두 track 의 CSS 변수(--tbg --tstroke --timg-o --timg-s --tx --ts --tfill)로 넘기고 CSS 가 그린다.
+/**
+ * 02 Intro 제품 사진: 스크롤하면 카메라 두 대가 아래에서 차례로 부드럽게 떠오른다.
+ * 분홍(뒤) 카메라가 먼저 올라오고, 간격을 두고 청록(앞) 카메라가 뒤따른다. 올라온 뒤에는 CSS 로 둥실 떠다닌다.
+ * 스크롤 진행도(0~1)를 관성 있게 따라가며 카메라별로 늦춰서(--qp, --qt: 0~1) CSS 에 넘긴다.
  */
-function useTransitionScroll(trackRef, textRef) {
+const easeOutCubic = (v) => 1 - (1 - v) ** 3;
+
+function useIntroRise(sectionRef, photoRef) {
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return undefined;
+    const section = sectionRef.current;
+    const photo = photoRef.current;
+    if (!section || !photo) return undefined;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame = 0;
-    let current = 0;
-    const read = () => {
-      const rect = track.getBoundingClientRect();
-      const scrollable = rect.height - window.innerHeight;
-      return scrollable > 0 ? clamp01(-rect.top / scrollable) : 0;
+    let last = 0;
+    let shown = reduceMotion ? 1 : 0;
+    const paint = (p) => {
+      // 분홍은 처음 70% 구간, 청록은 30% 늦게 시작해 나머지 구간 동안 올라온다
+      photo.style.setProperty('--qp', easeOutCubic(clamp01(p / 0.7)).toFixed(4));
+      photo.style.setProperty('--qt', easeOutCubic(clamp01((p - 0.3) / 0.7)).toFixed(4));
     };
-    const apply = (p) => {
-      const vw = window.innerWidth;
-      const textWidth = textRef.current ? textRef.current.offsetWidth : vw * 2.4;
-      // 배경 · 외곽선 색: 글자가 채워지는 구간에 맞춰 크림 → #151515
-      const dark = smooth(0.14, 0.58, p);
-      const bg = [mix(255, 21, dark), mix(250, 21, dark), mix(242, 21, dark)].map(Math.round).join(',');
-      const stroke = [mix(21, 255, dark), mix(21, 250, dark), mix(21, 242, dark)].map(Math.round).join(',');
-      // 카메라 사진: 처음 20% 동안 천천히 커지면서 사라진다
-      const img = smooth(0.02, 0.2, p);
-      // 글자 중심 위치(화면 가운데 기준 px): 왼쪽 끝이 화면 8% → 오른쪽 끝이 화면 92%
-      const startX = vw * (58 / 1920) + textWidth / 2 - vw / 2; // Figma Transition-1: 글자 왼쪽 x=58
-      const endX = vw * 0.92 - textWidth / 2 - vw / 2;
-      const rise = smooth(0, 0.12, p); // Transition-1: 글자가 아래에서 위로 올라온다
-      const travel = smooth(0.14, 0.62, p);
-      const settle = smooth(0.64, 0.78, p); // 0.78 ~ 1 은 Transition-2 화면을 그대로 보여주는 구간
-      const x = mix(mix(startX, endX, travel), 0, settle);
-      const scale = mix(1, 100 / 900, settle); // Figma Transition-2: 100px / Transition-1: 900px
-      const fill = smooth(0.2, 0.6, p);
-      const s = track.style;
-      s.setProperty('--tbg', 'rgb(' + bg + ')');
-      s.setProperty('--tstroke', 'rgb(' + stroke + ')');
-      s.setProperty('--timg-o', (1 - img).toFixed(3));
-      s.setProperty('--timg-s', mix(1, 1.08, img).toFixed(3));
-      s.setProperty('--tx', x.toFixed(1) + 'px');
-      s.setProperty('--ts', scale.toFixed(4));
-      s.setProperty('--tfill', ((1 - fill) * 100).toFixed(2) + '%');
-      s.setProperty('--ty', ((1 - rise) * 62).toFixed(2) + 'vh');
-    };
-    const tick = () => {
-      const goal = read();
-      current = reduceMotion ? goal : current + (goal - current) * 0.12;
-      if (Math.abs(goal - current) < 0.0004) current = goal;
-      apply(current);
-      frame = current !== goal ? requestAnimationFrame(tick) : 0;
+    const update = (now) => {
+      const rawDt = (now - (last || now)) / 1000;
+      const dt = Number.isFinite(rawDt) ? Math.min(Math.max(rawDt, 0), 0.05) : 0;
+      last = Number.isFinite(now) ? now : 0;
+      const rect = section.getBoundingClientRect();
+      const photoTop = rect.top + (rect.height * 745) / 1080;
+      const vh = window.innerHeight;
+      // 사진 윗부분이 화면 아래 끝에 닿을 때 0, 화면 위쪽(vh의 20%)에 올 때 1
+      const rawGoal = reduceMotion ? 1 : clamp01((vh - photoTop) / (vh * 0.8));
+      const goal = Number.isFinite(rawGoal) ? rawGoal : 0;
+      if (!Number.isFinite(shown)) shown = 0;
+      shown = reduceMotion ? goal : shown + (goal - shown) * (1 - Math.exp(-dt / 0.28));
+      if (Math.abs(goal - shown) < 0.0005) shown = goal;
+      paint(shown);
+      if (shown !== goal) frame = requestAnimationFrame(update);
+      else {
+        frame = 0;
+        last = 0;
+      }
     };
     const wake = () => {
-      if (!frame) frame = requestAnimationFrame(tick);
+      if (!frame) frame = requestAnimationFrame(update);
     };
+    paint(shown);
     wake();
     window.addEventListener('scroll', wake, { passive: true });
     window.addEventListener('resize', wake);
@@ -274,21 +256,17 @@ function useTransitionScroll(trackRef, textRef) {
       window.removeEventListener('resize', wake);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [trackRef, textRef]);
+  }, [sectionRef, photoRef]);
 }
 
 export default function CameraNowPage() {
   const pageRef = useRef(null);
   const purchaseTrackRef = useRef(null);
+  const introSectionRef = useRef(null);
+  const introPhotoRef = useRef(null);
+  useIntroRise(introSectionRef, introPhotoRef);
   useTextReveal(pageRef);
   usePurchaseScroll(purchaseTrackRef);
-  // 글자별 자간(Figma, 900px 기준 px → em)
-  const transitionLetters = [...transitionCamera.text].map((ch, i) => (
-    <span key={i} style={{ letterSpacing: (transitionCamera.letterSpacing[i] ?? 0) / 900 + 'em' }}>{ch}</span>
-  ));
-  const transitionTrackRef = useRef(null);
-  const transitionTextRef = useRef(null);
-  useTransitionScroll(transitionTrackRef, transitionTextRef);
   const purchaseListTravel = PURCHASE_LIST_TRAVEL;
   const [selectedId, setSelectedId] = useState(
     () => filterShowcase.items.find((item) => item.selected).id,
@@ -313,14 +291,22 @@ export default function CameraNowPage() {
       </section>
 
       {/* 02 Intro */}
-      <section className={`${styles.screen} ${styles.intro}`}>
+      <section ref={introSectionRef} className={`${styles.screen} ${styles.intro}`}>
         <CornerBrackets className={styles.introBrackets} />
         <h2 className={styles.introHeading}>
           <Lines lines={intro.heading} />
         </h2>
         <p className={styles.introWordmark}>{intro.wordmark}</p>
         <p className={styles.introEyebrow}>{intro.eyebrow}</p>
-        <img className={styles.introImage} src={intro.image} alt="Polaroid Now 제품 이미지" />
+        {/* 제품 사진: 두 대를 분리해서 차례로 떠오르고(바깥 div), 올라온 뒤에는 서로 다른 박자로 둥실 떠다닌다(img) */}
+        <div ref={introPhotoRef} className={styles.introPhoto} role="img" aria-label="Polaroid Now 제품 이미지">
+          <div className={`${styles.introRise} ${styles.introRisePink}`}>
+            <img className={`${styles.introCamera} ${styles.introFloatPink}`} src={intro.images.pink} alt="" />
+          </div>
+          <div className={`${styles.introRise} ${styles.introRiseTeal}`}>
+            <img className={`${styles.introCamera} ${styles.introFloatTeal}`} src={intro.images.teal} alt="" />
+          </div>
+        </div>
       </section>
 
       {/* 03 Features Heading */}
@@ -340,17 +326,6 @@ export default function CameraNowPage() {
         heading={featuresHeading.join(' ')}
         features={features}
       />
-
-      {/* Transition-camera — 06 Feature 와 07 Filter 사이: 사진이 사라지고, 큰 글자가 지나가며 색이 채워지고, 배경이 #151515 로 바뀐다 */}
-      <div ref={transitionTrackRef} className={styles.transitionTrack}>
-        <div className={styles.transitionSticky}>
-          <div ref={transitionTextRef} className={styles.transitionText} aria-hidden="true">
-            <span className={styles.transitionOutline}>{transitionLetters}</span>
-            <span className={styles.transitionFill}>{transitionLetters}</span>
-          </div>
-          <p className={styles.srOnly}>{transitionCamera.text}</p>
-        </div>
-      </div>
 
       {/* 07~08, 10: 어두운 구간 (#151515 · Filter 는 #232323 → #151515 그라데이션) */}
       <div className={styles.darkZone}>

@@ -2,25 +2,43 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './FeatureShowcase.module.css';
 
 /**
- * 04~06 Feature — Figma Frame 134~136 디자인. 세 프레임은 하나의 화면이고,
- * 화면이 고정(sticky)된 채 스크롤에 맞춰 다이얼 눈금이 돌아가고 문구·영상이 바뀐다.
- * 스크롤 값은 관성 보간을 거쳐 반영되고, 각 기능 위치 근처에서는 잠시 머문다.
+ * 04~06 Feature — Figma "Cameras - NOW_v2" Frame 135~137 디자인.
+ * 세 프레임은 하나의 화면이고, 화면이 고정(sticky)된 채 스크롤에 맞춰 영상 필름 띠가 가로로 흐른다.
+ *  - 가운데: 569×569 코너 브래킷 안에 524×524 영상(활성 기능)
+ *  - 양옆: 341×341 타일(투명도 30%) — 다음/이전 기능이 필름 띠처럼 늘어서 있다
+ *  - 스크롤하면 띠가 밀리면서 다음 기능의 타일이 가운데로 커져 들어오고, 문구는 아래에서 위로 교체된다
+ * 스크롤 값은 관성 보간을 거쳐 반영되고, 각 기능 위치 근처에서는 잠시 머문다(멈추면 가장 가까운 기능에 맞춘다).
  */
 
-// 다이얼 눈금(Figma Frame 134: 눈금 36개를 원통에 감은 모양)
-const DIAL = {
-  cx: 80, // 중앙 눈금 왼쪽 x
-  cy: 540, // 중앙 눈금 y
-  radius: 229, // 원통 반지름(px)
-  step: 3.15, // 눈금 사이 각도(도)
-  maxAngle: 66, // 이 각도보다 먼 눈금은 그리지 않는다
-  perFeature: 5, // 기능이 하나 바뀔 때 돌아가는 눈금 수(큰 눈금 간격)
-};
+// 필름 띠 슬롯(Figma 좌표, px). s = 가운데에서 떨어진 칸 수. 오른쪽(+)이 이전 기능, 왼쪽(−)이 다음 기능이다.
+// Figma: F1 은 왼쪽에 타일 둘, F2 는 양옆 하나씩, F3 는 오른쪽에 타일 둘.
+const SLOTS = [
+  { s: -3, x: -467, y: 483, size: 341, o: 0 },
+  { s: -2, x: -88, y: 483, size: 341, o: 0.3 },
+  { s: -1, x: 291, y: 483, size: 341, o: 0.3 },
+  { s: 0, x: 698, y: 278, size: 524, o: 1 },
+  { s: 1, x: 1287, y: 483, size: 341, o: 0.3 },
+  { s: 2, x: 1671, y: 483, size: 341, o: 0.3 },
+  { s: 3, x: 2055, y: 483, size: 341, o: 0 },
+];
 
 const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
 
-// 기능 i 의 문구 블록 투명도: 활성일 때 1, 절반쯤 넘어가면 0
-const blockAlpha = (d) => clamp01(1 - Math.abs(d) * 2.2);
+// 슬롯 사이는 선형 보간
+function slotAt(s) {
+  const last = SLOTS.length - 1;
+  if (s <= SLOTS[0].s) return SLOTS[0];
+  if (s >= SLOTS[last].s) return SLOTS[last];
+  const i = Math.floor(s - SLOTS[0].s);
+  const a = SLOTS[i];
+  const b = SLOTS[i + 1];
+  const t = s - a.s;
+  const mix = (p, q) => p + (q - p) * t;
+  return { x: mix(a.x, b.x), y: mix(a.y, b.y), size: mix(a.size, b.size), o: mix(a.o, b.o) };
+}
+
+// 문구 투명도: 활성일 때 1, 절반쯤 넘어가면 0. 제목 → 부제 순으로 살짝 시차를 둔다
+const alpha = (d, k) => clamp01(1 - Math.abs(d) * k);
 
 export default function FeatureShowcase({ heading, features }) {
   const trackRef = useRef(null);
@@ -29,7 +47,7 @@ export default function FeatureShowcase({ heading, features }) {
   const index = Math.round(pos);
   const active = features[index];
 
-  // 영상은 해당 기능이 활성이 될 때마다 처음(0초)부터 재생하고, 비활성이 되면(크로스페이드가 끝난 뒤) 멈춘다.
+  // 영상은 해당 기능이 활성이 될 때마다 처음(0초)부터 재생하고, 비활성이 되면(이동이 끝난 뒤) 멈춘다.
   const videoRefs = useRef(new Map());
   useEffect(() => {
     const timers = [];
@@ -38,7 +56,7 @@ export default function FeatureShowcase({ heading, features }) {
         video.currentTime = 0;
         video.play().catch(() => {});
       } else {
-        timers.push(setTimeout(() => video.pause(), 750));
+        timers.push(setTimeout(() => video.pause(), 600));
       }
     });
     return () => timers.forEach(clearTimeout);
@@ -85,7 +103,7 @@ export default function FeatureShowcase({ heading, features }) {
       if (!frame) frame = requestAnimationFrame(tick);
     };
 
-    // 스크롤이 멈추면 가장 가까운 기능 위치로 스크롤을 맞춘다 → 문구가 두 점선 사이에 딱 들어간다
+    // 스크롤이 멈추면 가장 가까운 기능 위치로 스크롤을 맞춘다 → 영상이 가운데 브래킷에 딱 들어간다
     let idleTimer = 0;
     const snap = () => {
       const track = trackRef.current;
@@ -120,109 +138,94 @@ export default function FeatureShowcase({ heading, features }) {
     };
   }, [count]);
 
-  // 다이얼: 스크롤 위치(pos)만큼 눈금이 돌아간다
-  const rotation = pos * DIAL.perFeature;
-  const ticks = [];
-  const from = Math.floor(rotation - 24);
-  const to = Math.ceil(rotation + 24);
-  for (let n = from; n <= to; n += 1) {
-    const angle = (n - rotation) * DIAL.step;
-    if (Math.abs(angle) > DIAL.maxAngle) continue;
-    const rad = (angle * Math.PI) / 180;
-    const c = Math.cos(rad);
-    const major = ((n % 5) + 5) % 5 === 0;
-    ticks.push(
-      <i
-        key={n}
-        className={styles.tick}
-        style={{
-          left: `calc(${(DIAL.cx + 39 * (1 - c)).toFixed(2)} * var(--u))`,
-          top: `calc(${(DIAL.cy + DIAL.radius * Math.sin(rad)).toFixed(2)} * var(--u))`,
-          width: `calc(${((major ? 20 : 7) * c).toFixed(2)} * var(--u))`,
-          opacity: (c * (major ? 0.8 : 0.45)).toFixed(3),
-        }}
-      />,
-    );
-  }
-
   return (
     <div ref={trackRef} className={styles.track} style={{ '--count': count }}>
       <div className={styles.sticky}>
         <section className={styles.section} aria-label={heading}>
-          {/* 왼쪽 다이얼 눈금 + 라벨(Funtion 0N) */}
-          <div className={styles.dial} aria-hidden="true">
-            {ticks}
-          </div>
+          {/* 상단 가운데 "Funtion 0N" 라벨 */}
           {features.map((feature, i) => (
-            <p key={feature.id} className={styles.label} style={{ opacity: blockAlpha(i - pos) }} aria-hidden={i !== index}>
+            <p
+              key={feature.id}
+              className={styles.label}
+              style={{ opacity: alpha(i - pos, 2.2) }}
+              aria-hidden={i !== index}
+            >
               {feature.label}
             </p>
           ))}
 
-          {/* 가운데 문구 블록: 제목 · 선 · 부제 · 설명 (Figma Frame 137) */}
+          {/* 필름 띠: 영상은 겹쳐 두고 슬롯 위치·크기·투명도만 스크롤에 따라 바뀐다 */}
           {features.map((feature, i) => {
-            const d = i - pos;
-            // 제목이 한 줄이어도 선·부제·설명은 세 기능 모두 같은 위치(선 508 · 부제 548 · 설명 628)
-            const titleH = 144;
+            const slot = slotAt(pos - i); // 다음 기능(i > pos)은 왼쪽(−), 지난 기능은 오른쪽(+)
             return (
-              <div
-                key={feature.id}
-                className={styles.block}
-                style={{
-                  opacity: blockAlpha(d),
-                  transform: `translateY(calc(${(-d * 28).toFixed(2)} * var(--u)))`,
-                  pointerEvents: i === index ? undefined : 'none',
-                }}
-                aria-hidden={i !== index}
-              >
-                <h3 className={styles.title}>
-                  {feature.titleLines.map((line, k) => (
-                    <span key={k}>{line}</span>
-                  ))}
-                </h3>
-                <span className={styles.rule} style={{ '--y': titleH + 40 }} />
-                <p className={styles.subtitle} style={{ '--y': titleH + 80 }}>
-                  {feature.subtitle}
-                </p>
-                <p className={styles.description} style={{ '--y': titleH + 160 }}>
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
-
-          {/* 이미지는 겹쳐 두고 투명도만 바꿔서 서로 자연스럽게 교차(크로스페이드)한다 */}
-          {features.map((feature) => {
-            const on = feature.id === active.id;
-            const className = `${styles.image} ${on ? styles.on : ''}`;
-            return feature.video ? (
               <video
                 key={feature.id}
                 ref={(node) => {
                   if (node) videoRefs.current.set(feature.id, node);
                   else videoRefs.current.delete(feature.id);
                 }}
-                className={className}
+                className={styles.media}
+                style={{
+                  left: `calc(${slot.x.toFixed(2)} * var(--u))`,
+                  top: `calc(${slot.y.toFixed(2)} * var(--u))`,
+                  width: `calc(${slot.size.toFixed(2)} * var(--u))`,
+                  height: `calc(${slot.size.toFixed(2)} * var(--u))`,
+                  opacity: slot.o.toFixed(3),
+                  zIndex: 10 - Math.round(Math.abs(pos - i)),
+                }}
                 src={feature.video}
                 poster={feature.image}
+                preload="auto"
                 autoPlay
                 loop
                 muted
                 playsInline
                 aria-hidden="true"
               />
-            ) : (
-              <img key={feature.id} className={className} src={feature.image} alt="" />
             );
           })}
-          {/* Figma Feature Frame: 569×569, 선 1.5 (#151515) */}
+
+          {/* Figma Feature Frame: 569×569 코너 브래킷, 선 1.5 (#fff) */}
           <svg className={styles.frame} viewBox="0 0 571 571" fill="none" aria-hidden="true">
             <path
               d="M127.772 0.75H0.75V137.747M433.814 0.75H569.75V137.747M0.75 417.624V569.75L127.772 569.75M569.75 417.624V569.75L433.814 569.75"
-              stroke="#151515"
+              stroke="#fff"
               strokeWidth="1.5"
             />
           </svg>
+
+          {/* 영상 왼쪽, 오른쪽 정렬 문구: 제목(Outfit SemiBold 45) · 부제(Pretendard Light 15) */}
+          {features.map((feature, i) => {
+            const d = i - pos;
+            const current = i === index;
+            return (
+              <div key={feature.id} className={styles.copy} aria-hidden={!current}>
+                <h3
+                  className={styles.title}
+                  style={{
+                    opacity: alpha(d, 2.2),
+                    transform: `translateY(calc(${(-d * 30).toFixed(2)} * var(--u)))`,
+                  }}
+                >
+                  {feature.titleLines.map((line, k) => (
+                    <span key={k}>{line}</span>
+                  ))}
+                </h3>
+                <p
+                  className={styles.subtitle}
+                  style={{
+                    opacity: alpha(d, 2.6),
+                    transform: `translateY(calc(${(-d * 18).toFixed(2)} * var(--u)))`,
+                  }}
+                >
+                  {feature.subtitle}
+                </p>
+              </div>
+            );
+          })}
+
+          {/* 하단 가운데 안내 */}
+          <p className={styles.hint}>SCROLL TO CONTINUE</p>
         </section>
       </div>
     </div>

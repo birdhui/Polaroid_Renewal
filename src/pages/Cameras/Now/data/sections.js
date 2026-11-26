@@ -6,7 +6,8 @@
  * Figma 원본 값 그대로다. 디자인 담당자 확인 필요.
  */
 import heroImage from '../../../../assets/cameras/now/hero.jpg';
-import introProductImage from '../../../../assets/cameras/now/intro-product.jpg';
+import introCameraTeal from '../../../../assets/cameras/now/intro-camera-teal.png';
+import introCameraPink from '../../../../assets/cameras/now/intro-camera-pink.png';
 import featureAutofocusImage from '../../../../assets/cameras/now/feature-autofocus-poster.png';
 import featureAutofocusVideo from '../../../../assets/cameras/now/feature-autofocus.mp4';
 import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-double-exposure-poster.png';
@@ -40,15 +41,18 @@ export const intro = {
   eyebrow: 'Iconic Polaroid design',
   heading: ['일상의 모든 순간.', '모두 Polaroid Now로.'],
   wordmark: 'Now',
-  image: introProductImage,
+  // 제품 사진을 배경 없이 두 대로 분리한 PNG(720×348, 같은 좌표에 겹쳐 놓는다). 스크롤 모션·부유 모션은 코드로 만든다
+  images: { pink: introCameraPink, teal: introCameraTeal },
 };
 
 export const featuresHeading = ['모든 순간을 특별하게 남기는', '세 가지 방법.'];
 
 /**
  * 04·05·06 프레임은 하나의 화면으로 구현한다(Figma 주석).
- * Figma 현재 디자인(Frame 134~136): 크림 배경, 왼쪽 다이얼 눈금 + "Funtion 0N" 라벨,
- * 가운데 영문 제목 · 선 · 한글 부제 · 설명, 오른쪽 569×569 영상. 라벨 철자는 Figma 그대로다.
+ * Figma "Cameras - NOW_v2"(Frame 135~137): #151515 배경, 상단 가운데 "Funtion 0N" 라벨,
+ * 가운데 569×569 브래킷 안의 영상, 양옆 필름 띠 타일, 영상 왼쪽에 오른쪽 정렬 제목 · 부제.
+ * v2 에서 다이얼·가로선·설명 문단은 빠졌다(description 은 보관용). 라벨 철자("Funtion")는 Figma 그대로다.
+ * 02 부제는 v2 원본이 03 문구와 같아서 기존 확정 문구를 유지했다(확인 필요).
  */
 export const features = [
   {
@@ -74,7 +78,7 @@ export const features = [
   {
     id: 'sharpness',
     label: 'Funtion 03',
-    titleLines: ['sharper pictures'],
+    titleLines: ['sharper', 'pictures'],
     subtitle: '강한 햇빛 아래서도 더 선명하게',
     description:
       '밝은 햇빛 아래서도 노출을 최적화해, 야외에서도 더 선명한 사진을 담아요.  거리 센서와 플래시, 오토포커스를 개선해 쨍한 날에도 또렷한 한 장을 남겨요.',
@@ -198,21 +202,4 @@ export const footer = {
     { title: 'SOCIALS', x: 1529, items: ['Instagram', 'Linkedin', 'YouTube'] },
     { title: 'LEGAL', x: 1675, items: ['Terms of Service', 'Privacy Policy', 'Imprint'] },
   ],
-};
-
-/*
- * Transition-camera (Figma 2408:2095) — 06 Feature 와 07 Filter 사이의 크림색 전환 장면 (1920×1928).
- * 안의 이미지 "수정4 1"(1920×1920, x0 y8)은 Figma에서 PNG로 내보내 아래 이름으로 넣으면 자동으로 나타난다.
- *   src/assets/cameras/now/transition-camera.png (jpg·webp 도 가능)
- */
-const transitionImages = import.meta.glob('../../../../assets/cameras/now/transition-camera.{png,jpg,jpeg,webp}', {
-  eager: true,
-  import: 'default',
-});
-const transitionSrc = Object.values(transitionImages)[0];
-export const transitionCamera = {
-  text: 'POLAROLID NOW', // Figma Transition 프레임 문구 그대로(오타로 보이면 디자인 확인 필요)
-  // Figma 글자별 자간(px, 900px 글자 기준): 'L'(3번째) 뒤만 32, 나머지 -2
-  letterSpacing: [-2, -2, 32, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2],
-  image: { src: transitionSrc, file: 'transition-camera.png' },
 };
