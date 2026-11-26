@@ -17,17 +17,17 @@ const cameraFront = Object.entries(images).find(([key]) => key.includes('v3-came
 // 장면별 이미지 상태(Figma 좌표, px). crop 은 상자 안에서 이미지가 차지하는 비율(%)이고, flip 은 좌우 반전(0/1)이다.
 // 3/4 각도 카메라: 소개(왼쪽) → 01(오른쪽 아래, 반전) → 02(오른쪽 위, 크게) → 03(위로 빠짐)
 const CAMERA_3Q = [
-  { x: 73, y: 157, w: 807, h: 770, l: -11.03, t: -12.73, iw: 119.33, ih: 125.06, flip: 0 },
-  { x: 1073, y: 861, w: 1473, h: 1334, l: 0, t: -16.49, iw: 105.5, ih: 116.49, flip: 1 },
-  { x: 992, y: -439, w: 1554, h: 1554, l: 0, t: 0, iw: 100, ih: 100, flip: 1 },
-  { x: 992, y: -1300, w: 1554, h: 1554, l: 0, t: 0, iw: 100, ih: 100, flip: 1 },
+  { x: 73, y: 157, w: 807, h: 770, l: -11.03, t: -12.73, iw: 119.33, ih: 125.06, flip: 0, o: 1 },
+  { x: 1073, y: 861, w: 1473, h: 1334, l: 0, t: -16.49, iw: 105.5, ih: 116.49, flip: 1, o: 1 },
+  { x: 992, y: -439, w: 1554, h: 1554, l: 0, t: 0, iw: 100, ih: 100, flip: 1, o: 1 },
+  { x: 992, y: -1900, w: 1554, h: 1554, l: 0, t: 0, iw: 100, ih: 100, flip: 1, o: 0 },
 ];
 // 정면 클로즈업: 소개(오른쪽 아래에 걸쳐 보임) → 01 에서 위로 올라가 사라진다
 const CAMERA_FRONT = [
-  { x: 1162, y: 117, size: 1515 },
-  { x: 1162, y: -983, size: 1515 },
-  { x: 1162, y: -983, size: 1515 },
-  { x: 1162, y: -983, size: 1515 },
+  { x: 1162, y: 117, size: 1515, o: 1 },
+  { x: 1162, y: -983, size: 1515, o: 0 },
+  { x: 1162, y: -983, size: 1515, o: 0 },
+  { x: 1162, y: -983, size: 1515, o: 0 },
 ];
 // 왼쪽 아래 따뜻한 빛: 소개·02 에서 가장 밝고 01·03 에서도 은은하게 남아 갈색 바탕이 이어진다
 const GLOW = [1, 0.45, 1, 0.45];
@@ -187,21 +187,25 @@ export default function FeatureShowcase({ heading, features, intro }) {
           {features.map((feature, i) =>
             feature.layout === 'media' ? (
               <div key={feature.id} className={styles.mediaBox} style={{ opacity: alpha(i + 1 - pos, 2.2).toFixed(3) }}>
-                <video
-                  ref={(node) => {
-                    if (node) videoRefs.current.set(feature.id, node);
-                    else videoRefs.current.delete(feature.id);
-                  }}
-                  className={styles.video}
-                  src={feature.video}
-                  poster={feature.image}
-                  preload="auto"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  aria-hidden="true"
-                />
+                {feature.photo ? (
+                  <img className={styles.video} src={feature.photo} alt="" />
+                ) : (
+                  <video
+                    ref={(node) => {
+                      if (node) videoRefs.current.set(feature.id, node);
+                      else videoRefs.current.delete(feature.id);
+                    }}
+                    className={styles.video}
+                    src={feature.video}
+                    poster={feature.image}
+                    preload="auto"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             ) : null,
           )}
@@ -212,7 +216,7 @@ export default function FeatureShowcase({ heading, features, intro }) {
               className={styles.cameraFront}
               src={cameraFront}
               alt=""
-              style={{ left: px(kf.x), top: px(kf.y), width: px(kf.size), height: px(kf.size) }}
+              style={{ left: px(kf.x), top: px(kf.y), width: px(kf.size), height: px(kf.size), opacity: kf.o.toFixed(3) }}
             />
           )}
           {camera3q && (
@@ -223,6 +227,7 @@ export default function FeatureShowcase({ heading, features, intro }) {
                 top: px(k3.y),
                 width: px(k3.w),
                 height: px(k3.h),
+                opacity: k3.o.toFixed(3),
                 transform: `rotateY(${(k3.flip * 180).toFixed(2)}deg)`,
               }}
             >

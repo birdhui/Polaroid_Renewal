@@ -14,6 +14,8 @@ import featureDoubleExposureImage from '../../../../assets/cameras/now/feature-d
 import featureDoubleExposureVideo from '../../../../assets/cameras/now/feature-double-exposure.mp4';
 import featureSharpnessImage from '../../../../assets/cameras/now/feature-sharpness-poster.png';
 import featureSharpnessVideo from '../../../../assets/cameras/now/feature-sharpness.mp4';
+import featureSharperPhoto from '../../../../assets/cameras/now/v3-feature-sharper.jpg';
+import featureDoublePhoto from '../../../../assets/cameras/now/v3-feature-double.jpg';
 import sectionBackgroundImage from '../../../../assets/cameras/now/dark-section-bg.jpg';
 import filterPreviewImage from '../../../../assets/cameras/now/filter-preview.jpg';
 import appStoryImage from '../../../../assets/cameras/now/app-story.jpg';
@@ -71,6 +73,7 @@ export const features = [
     descriptionLines: ['밝은 햇빛 아래서도 노출을 최적화해, 야외에서도 더 선명한 사진을 담아요.', ' 거리 센서와 플래시, 오토포커스를 개선해 쨍한 날에도 또렷한 한 장을 남겨요.'],
     image: featureSharpnessImage,
     video: featureSharpnessVideo,
+    photo: featureSharperPhoto, // v3 왼쪽 683×658 자리의 샘플 사진(Gen 2 vs Gen 3)
   },
   {
     id: 'two-lens-autofocus',
@@ -91,6 +94,7 @@ export const features = [
     descriptionLines: ['한 장의 사진에 두 장면을 겹쳐 담는 더블 익스포저 모드예요.', '셔터를 두 번 눌러 두 컷을 한 장에 담으면, 현실과 상상이 섞인 몽환적인 사진이 나와요.'],
     image: featureDoubleExposureImage,
     video: featureDoubleExposureVideo,
+    photo: featureDoublePhoto, // v3 왼쪽 자리의 더블 익스포저 샘플 사진
   },
 ];
 
