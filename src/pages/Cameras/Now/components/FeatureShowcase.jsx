@@ -223,9 +223,6 @@ export default function FeatureShowcase({ heading, features }) {
               </div>
             );
           })}
-
-          {/* 하단 가운데 안내 */}
-          <p className={styles.hint}>SCROLL TO CONTINUE</p>
         </section>
       </div>
     </div>

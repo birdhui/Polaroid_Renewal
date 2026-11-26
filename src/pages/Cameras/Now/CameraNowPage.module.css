@@ -83,9 +83,29 @@
 }
 
 /* ───────── 02 Intro ───────── */
-.intro,
-.featuresHeading {
+.intro {
   background: var(--now-cream);
+}
+
+/* 03 → 04: 제목(섹션의 59% 지점에서 끝남) 아래부터 크림 → #151515 로 서서히 어두워져 04 Feature 배경과 끊김 없이 이어진다.
+   부드러운 S 곡선(smoothstep) 11단계로 띠가 보이지 않게 한다 */
+.featuresHeading {
+  background: linear-gradient(
+    to bottom,
+    var(--now-cream) 0%,
+    var(--now-cream) 60%,
+    rgb(255 250 242) 60%,
+    rgb(248 244 236) 64%,
+    rgb(231 226 219) 68%,
+    rgb(204 201 194) 72%,
+    rgb(173 169 164) 76%,
+    rgb(138 136 132) 80%,
+    rgb(103 102 99) 84%,
+    rgb(72 70 69) 88%,
+    rgb(45 45 44) 92%,
+    rgb(28 27 27) 96%,
+    rgb(21 21 21) 100%
+  );
 }
 
 /* 제품 사진이 섹션 아래(1080)를 12px 넘어가므로 잘리지 않게 하고, 다음 섹션 위로 보이게 한다 */

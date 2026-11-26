@@ -101,19 +101,3 @@
   color: #fff;
   will-change: opacity, transform;
 }
-
-/* SCROLL TO CONTINUE — Outfit Bold 13, 하단 가운데(y 1009) */
-.hint {
-  position: absolute;
-  left: 0;
-  top: calc(1009 * var(--u));
-  width: 100%;
-  margin: 0;
-  text-align: center;
-  font-family: var(--f-out);
-  font-weight: 700;
-  font-size: calc(13 * var(--u));
-  line-height: calc(16 * var(--u));
-  white-space: nowrap;
-  color: #fff;
-}
