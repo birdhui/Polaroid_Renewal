@@ -1,32 +1,18 @@
 /* Feature — Figma "Cameras - NOW_v3" 04~07 프레임(#191007, 1920×1080) + 스크롤 연동 스테이지 */
 
-/* 스크롤 구간: 장면 수 + 1 화면 높이. 안쪽 화면은 sticky로 고정 */
-.track {
-  position: relative;
-  height: calc((var(--count) + 1) * 100vh);
-  background: #191007;
-}
-
-.sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+/* 소개·01·02·03 을 16:9 프레임으로 이어 붙인 일반 스크롤 구간(고정·이동 연출 없음) */
+.wrap {
   background: #191007;
 }
 
 .section {
   composes: screen from './stage.module.css';
   position: relative;
-  width: min(100%, calc(100vh * 1920 / 1080));
+  width: 100%;
   aspect-ratio: 1920 / 1080;
   background: transparent;
   color: #fff;
-  overflow: visible; /* 16:9 가 아닌 화면에서도 카메라가 스테이지 위·아래에서 잘리지 않고 이어진다(바깥은 .sticky 가 자른다) */
-  z-index: 1;
-  perspective: calc(2400 * var(--u));
+  overflow: hidden;
 }
 
 /* 소개: 뒤쪽 큰 글자 */
@@ -42,7 +28,6 @@
   letter-spacing: calc(-15 * var(--u));
   white-space: nowrap;
   color: rgba(114, 108, 102, 0.16);
-  will-change: opacity;
 }
 
 .introCopy {
@@ -53,7 +38,6 @@
   display: flex;
   flex-direction: column;
   gap: calc(28 * var(--u));
-  will-change: opacity, transform;
 }
 
 .introTitle {
@@ -97,7 +81,6 @@
   background: #393737;
   overflow: hidden;
   z-index: 2;
-  will-change: opacity;
 }
 
 .video {
@@ -114,7 +97,6 @@
   object-fit: cover;
   z-index: 3;
   pointer-events: none;
-  will-change: left, top;
 }
 
 .camera3q {
@@ -122,7 +104,6 @@
   overflow: hidden;
   z-index: 4;
   pointer-events: none;
-  will-change: left, top, width, height, transform;
 }
 
 .camera3q img {
@@ -167,7 +148,6 @@
   line-height: calc(79 * var(--u));
   letter-spacing: calc(-1.5 * var(--u));
   text-transform: uppercase;
-  will-change: opacity, transform;
 }
 
 .left .title {
@@ -181,7 +161,6 @@
   font-size: calc(40 * var(--u));
   line-height: 1.33;
   letter-spacing: calc(-0.8 * var(--u));
-  will-change: opacity, transform;
 }
 
 .description {
@@ -193,7 +172,6 @@
   line-height: 1.6;
   letter-spacing: calc(-0.45 * var(--u));
   color: rgba(255, 255, 255, 0.9);
-  will-change: opacity, transform;
 }
 
 .label {
@@ -205,14 +183,12 @@
   font-size: calc(22 * var(--u));
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.5);
-  will-change: opacity;
 }
 
 .rule {
   position: absolute;
   height: 1px;
   width: calc(631 * var(--u));
-  will-change: opacity;
 }
 
 .right .label {
