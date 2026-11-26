@@ -1,6 +1,6 @@
 .page{
   --u:min(calc(100vw / 1920), calc(100vh / 1080));
-  --page-gutter:50px; --dark:#151515; --ink:#151515;
+  --page-gutter:50px; --dark:#0e0d0d; --ink:#151515;
   --en:"Outfit",system-ui,sans-serif; --kr:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
   color-scheme:dark;
 }
@@ -11,9 +11,9 @@
 .page :global(.pin){position:relative}
 .page :global(.stage){position:sticky;top:0;height:100vh;overflow:hidden}
 /* 배경: Figma 2046:2386 / 2046:2368 — 왼쪽 아래에서 번지는 따뜻한 빛 */
-/* 배경: Since 1937 → 모먼트 → 필름 → 작은 바람 장면까지 단색 #151515 (화면에 고정, 장면만 그 위로 지나감). 마지막 클로징 장면도 단색 #151515 (Figma 1834:4334) */
-.page :global(.closing){background:#151515}
-.page :global(.glow){position:absolute;inset:0;overflow:hidden;background:#151515}
+/* 배경: Since 1937 → 모먼트 → 필름 → 작은 바람 장면까지 단색 #0e0d0d (화면에 고정, 장면만 그 위로 지나감). 마지막 클로징 장면도 단색 #0e0d0d (Figma 1834:4334 원래 #151515) */
+.page :global(.closing){background:#0e0d0d}
+.page :global(.glow){position:absolute;inset:0;overflow:hidden;background:#0e0d0d}
 .page :global(.frame){position:absolute;left:50%;top:50%;width:calc(1920 * var(--u));height:calc(1080 * var(--u));transform:translate(-50%,-50%)}
 .page :global(.scroll-cue){opacity:0;position:absolute;left:0;right:0;bottom:calc(30 * var(--u));text-align:center;font:400 13px/1 var(--en);letter-spacing:3.12px;color:#fff}
 .page :global(.scroll-cue){line-height:16px}
@@ -71,7 +71,14 @@
   background:radial-gradient(circle,#fff 0,rgba(255,252,242,.96) 14%,rgba(255,247,230,.6) 34%,rgba(255,240,215,.18) 52%,rgba(255,240,215,0) 68%)}
 .page :global(.ivory){position:absolute;inset:0;z-index:5;background:#fffaec;opacity:0;pointer-events:none}
 .page :global(.intro){position:absolute;inset:0;z-index:6;display:grid;place-items:center;opacity:0;will-change:filter,opacity}
-.page :global(.quote){margin:0;padding:0 24px;text-align:center;color:#151515;font:600 max(20px,calc(47 * var(--u)))/1.3 var(--en);letter-spacing:-1px;white-space:nowrap;will-change:transform}
+.page :global(.quote){position:relative;margin:0;padding:0 24px;text-align:center;color:#151515;font:600 max(20px,calc(47 * var(--u)))/1.3 var(--en);letter-spacing:-1px;white-space:nowrap}
+/* Why 문구: 한 줄. 스크롤에 맞춰 왼쪽부터 고운 가루가 모여 앉으며 써지고(가루는 아래 캔버스에 그림), 다 모인 부분부터 또렷한 글자로 보임 (마스크는 JS가 지정) */
+.page :global(.quote .ql){display:inline-block}
+/* 다가오는 먼지: 화면에 고정된 캔버스에 흰 입자를 스크린 블렌드로 얹어, 어두운(#0e0d0d) 구간에서만 아주 옅게 보이고 아이보리 구간에서는 묻힘 */
+.page :global(.filmdust){position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;mix-blend-mode:screen;opacity:.85}
+@media (prefers-reduced-motion:reduce){.page :global(.filmdust){display:none}}
+/* 가루 캔버스: 등장할 때 모여드는 가루와 퇴장할 때 흩어지는 먼지를 그림 (문구 밖으로 날아가는 입자도 보이도록 화면 전체 크기) */
+.page :global(.intro .dust){position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .page :global(.hist){--ink:#151515;position:absolute;inset:0;z-index:7;opacity:0;color:var(--ink);background:#fffaec;overflow:hidden}
 .page :global(.dial){position:absolute;left:var(--page-gutter);top:50%;width:calc(120 * var(--u));height:calc(388 * var(--u));min-height:240px;transform:translateY(-50%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5}
 .page :global(.dial::before){content:"";position:absolute;inset:-24px -12px -24px -30px}
@@ -87,8 +94,17 @@
 .page :global(.ch){pointer-events:none;opacity:0;will-change:filter,opacity,transform}
 .page :global(.ch.on){pointer-events:auto;opacity:1}
 /* 연도 섹션: Figma 1705:3122 / 1849:5276 … 6055 — 왼쪽(The Polaroid Story·구분선·연도) + 오른쪽(제목·본문·이미지) */
-.page :global(.row){position:absolute;left:calc(50% + 39.5 * var(--u));top:50%;transform:translate(-50%,-50%);display:flex;align-items:flex-start;gap:calc(113 * var(--u))}
-.page :global(.txt){flex:none;width:calc(576 * var(--u))}
+/* 연도 섹션 (참고: Osmo Draggable Infinite Slider) — 왼쪽(The Polaroid Story·구분선·연도·제목·본문) + 오른쪽(가로 사진 카드 줄, 화면 오른쪽 끝까지)
+   왼쪽 글 묶음의 시작 위치는 기존과 같음(가운데 -684). 카드 줄은 화면 가운데부터 화면 끝까지 이어지고, 지나간 카드는 왼쪽 끝에서 잘리며 넘어감(그라데이션 없음) */
+.page :global(.row){position:absolute;left:calc(50% - 684 * var(--u));top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:calc(84 * var(--u))}   /* 왼쪽 글 묶음은 오른쪽 사진의 세로 가운데에 맞춤 */
+.page :global(.txt){flex:none;width:calc(600 * var(--u))}
+/* 왼쪽 글 묶음(The Polaroid Story·연도·제목·본문)만 화면 폭의 2%만큼 왼쪽으로 (오른쪽 카드 줄은 제자리, 모바일 제외) */
+@media (min-width:821px){.page :global(.txt){translate:-2vw 0}}
+/* 연도 아래 제목·본문: 연도마다 겹쳐 두고 지금 연도 글만 서서히 나타남 */
+.page :global(.copy){margin-top:calc(44 * var(--u))}
+.page :global(.cp){opacity:0;transform:translateY(calc(14 * var(--u)));transition:opacity .5s ease,transform .6s cubic-bezier(.22,.61,.36,1);pointer-events:none}
+.page :global(.cp.on){opacity:1;transform:none;pointer-events:auto;transition-delay:.12s}
+@media (prefers-reduced-motion:reduce){.page :global(.cp){transition:none;transform:none}}
 .page :global(.title-fixed){display:flex;flex-direction:column;gap:calc(30 * var(--u))}
 .page :global(.since){margin:0;font:400 calc(34 * var(--u))/.89 var(--en);letter-spacing:-.8px;color:var(--ink)}
 .page :global(.rule){display:block;width:100%;height:0;border-top:1px solid rgba(21,21,21,.5)}
@@ -96,27 +112,21 @@
 /* 연도 전환 레이어: 앞 두 자리 / 뒤 두 자리(그 연도의 앞 두 자리 폭에서 시작)를 겹쳐 두고 JS가 스크롤에 맞춰 투명도·초점·세로 위치를 조절 */
 .page :global(.yfx-pre),.page :global(.yfx-suf){position:absolute;top:0;left:0;height:100%}
 .page :global(.yfx-pre span),.page :global(.yfx-suf span){position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;will-change:transform,opacity,filter}
-.page :global(.col-r){flex:none;width:calc(758 * var(--u));height:calc(560 * var(--u))}
+.page :global(.col-r){flex:none;width:50vw;height:calc(500 * var(--u));overflow:hidden}   /* 카드 줄은 화면 가운데(글 묶음 600 + 간격 84 = 가운데)부터 오른쪽 끝까지 */
 /* 1920에서는 시안 크기 그대로, 노트북·태블릿에서 글자가 너무 작아지지 않도록 최소 크기를 둠 */
-.page :global(.hl){margin:0;font:700 max(18px,calc(32 * var(--u)))/1.3 var(--kr);letter-spacing:-2px;color:#151515;white-space:nowrap}
-.page :global(.bd){margin:calc(14 * var(--u)) 0 0;font:400 max(13px,calc(16 * var(--u)))/1.5 var(--kr);letter-spacing:-.5px;color:#151515;white-space:nowrap}
-/* 최소 크기가 적용되는 폭(821~1599px)에서는 오른쪽 블록 폭 안에서 줄바꿈 */
-@media (min-width:821px) and (max-width:1599px){
-.page :global(.hl),.page :global(.bd){white-space:normal}
+.page :global(.hl){margin:0;font:700 max(18px,calc(30 * var(--u)))/1.35 var(--kr);letter-spacing:-1.5px;color:#151515;word-break:keep-all}
+.page :global(.bd){margin:calc(16 * var(--u)) 0 0;font:400 max(13px,calc(16 * var(--u)))/1.6 var(--kr);letter-spacing:-.5px;color:#151515;word-break:keep-all}
 .page :global(.bd br){display:none}
-}
-/* 오른쪽 블록 트랙: 제목·본문·이미지가 한 묶음, 블록 사이 간격 160px */
-.page :global(.track){display:flex;flex-direction:column;gap:calc(160 * var(--u));will-change:transform}
-.page :global(.blk){display:flex;flex-direction:column;will-change:opacity}
-.page :global(.pic){position:relative;overflow:hidden;width:calc(758 * var(--u));height:calc(424 * var(--u));margin-top:calc(32 * var(--u))}
+/* 오른쪽 카드 줄: 사진 카드(758×500)를 가로로 이어 붙임 (카드 사이 40px) */
+.page :global(.track){display:flex;flex-direction:row;gap:calc(40 * var(--u));will-change:transform}
+.page :global(.blk){flex:none;will-change:opacity}
+.page :global(.pic){position:relative;overflow:hidden;width:calc(758 * var(--u));height:calc(500 * var(--u))}
 .page :global(.pic img){position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover}
-.page :global(.pic[data-year="1937"] img){inset:auto;left:-.89%;top:-20.61%;width:100.89%;height:141.35%;object-fit:fill}
-.page :global(.pic[data-year="1948"] img){inset:auto;left:.02%;top:-32.19%;width:99.98%;height:137.32%;object-fit:fill}
+.page :global(.pic[data-year="1948"] img){object-fit:cover;object-position:50% 86%}
 .page :global(.pic[data-year="1981"]){background:#fff}
-.page :global(.pic[data-year="1981"] img){inset:auto;left:12.35%;top:2.83%;width:75.43%;height:94.19%;object-fit:fill}
-.page :global(.pic[data-year="2026"] img){object-fit:fill}
-.page :global(#sQuote){z-index:8;background:linear-gradient(to top,#151515 65.046%,#fffaec 185.51%)}
-.page :global(.q-grad){position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(#fffaec 5.324%,#151515 139.03%)}
+.page :global(.pic[data-year="1981"] img){inset:auto;left:12.35%;top:2.83%;width:75.43%;height:94.19%;object-fit:contain}
+.page :global(#sQuote){z-index:8;background:linear-gradient(to top,#0e0d0d 65.046%,#fffaec 185.51%)}
+.page :global(.q-grad){position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(#fffaec 5.324%,#0e0d0d 139.03%)}
 .page :global(.marq){position:absolute;left:calc(82 * var(--u));top:calc(437 * var(--u));margin:0;white-space:nowrap;font:600 calc(128 * var(--u))/1.6 var(--en);letter-spacing:-1.92px;color:#fff;will-change:transform;z-index:2}
 .page :global(.land){position:absolute;left:calc(322 * var(--u));top:calc(81 * var(--u));width:calc(1515 * var(--u));z-index:1;will-change:transform,opacity}
 .page :global(.land img){width:100%}
@@ -138,21 +148,18 @@
 .page :global(#heroFrame){left:0;top:0;width:100%;height:100%;transform:none}
 /* Why 문구가 화면 양 끝에 닿거나 잘리지 않도록 줄바꿈 허용 */
 .page :global(.quote){white-space:normal;max-width:100%}
-/* 지나간 연도 블록이 위의 제목·연도를 덮지 않도록 블록 영역 밖은 가림 (높이는 JS에서 화면 높이에 맞춰 계산) */
-.page :global(.col-r){overflow:hidden}
 .page :global(.film .still){left:50%;top:50%;width:84vw;height:52vw;transform:translate(-50%,-50%)}
 .page :global(.row){left:72px;top:0;transform:none;flex-direction:column;gap:20px}
-.page :global(.col-r),.page :global(.pic){width:calc(100vw - 92px)}
-.page :global(.pic){height:calc((100vw - 92px) * .56)}
+.page :global(.col-r){width:calc(100vw - 72px)}   /* 카드 줄은 화면 오른쪽 끝까지: 다음 카드가 살짝 보임 */
+.page :global(.pic){width:calc(100vw - 112px);height:calc((100vw - 112px) * .66)}
 .page :global(.col-r){height:auto}
 .page :global(.moments-copy p),.page :global(.pre-a p),.page :global(.moments-copy h2),.page :global(.pre-a h2){white-space:normal;padding:0 20px}
 .page :global(.moments-copy p br),.page :global(.pre-a p br){display:none}
 .page :global(.txt){width:calc(100vw - 92px)}
 .page :global(.since){font-size:18px}
 .page :global(.year){font-size:56px}
-.page :global(.hl){white-space:normal;font-size:22px;letter-spacing:-1px}
-.page :global(.bd){margin-top:16px;font-size:13px;white-space:normal}
-.page :global(.bd br){display:none}
+.page :global(.hl){font-size:22px;letter-spacing:-1px}
+.page :global(.bd){margin-top:16px;font-size:13px}
 .page :global(.dial){left:10px;height:240px}
 .page :global(.yr){display:none}
 .page :global(.marq){top:44vh;font-size:56px}

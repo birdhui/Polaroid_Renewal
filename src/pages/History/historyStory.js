@@ -49,11 +49,16 @@ let U = 1, vh = innerHeight, vw = innerWidth;
 /* ================= DOM 생성 ================= */
 // Since + 연도는 한 자리에 고정하고, 숫자만 다이얼처럼 굴러가며 바뀐다.
 $('titles').innerHTML = `<div class="ch on title-fixed"><p class="since">The Polaroid Story</p><i class="rule" aria-hidden="true"></i><p class="year" id="titleYear" aria-label="${CH[0].year}"></p></div>`;
-// 오른쪽: 연도마다 제목·본문·이미지를 한 프레임(블록)으로 묶어 세로로 이어 붙이고, 스크롤에 맞춰 자연스럽게 위로 흘러감
+// 왼쪽: 연도 아래에 그 연도의 제목·본문을 겹쳐 두고, 연도가 바뀌면 해당 글만 서서히 나타남
 // 본문 줄바꿈(<br>)을 숨기는 화면에서도 문장이 붙지 않도록 <br> 앞에 띄어쓰기를 둔다.
-$('track').innerHTML = CH.map((c, i) => `<article class="blk${i ? '' : ' on'}" data-year="${c.year}"><h3 class="hl">${c.hl}</h3><p class="bd">${c.bd.replace(/<br>/g, ' <br>')}</p><div class="pic" data-year="${c.year}"><img src="${c.img}" alt="${c.year}년 아카이브 사진" decoding="async"></div></article>`).join('');
+root.querySelectorAll('#copy').forEach(el => el.remove());          // 개발 모드에서 두 번 마운트돼도 한 벌만 남도록
+$('titles').insertAdjacentHTML('afterend', `<div class="copy stack" id="copy">${CH.map((c, i) => `<div class="cp${i ? '' : ' on'}"${i ? ' aria-hidden="true"' : ''}><h3 class="hl">${c.hl}</h3><p class="bd">${c.bd.replace(/<br>/g, ' <br>')}</p></div>`).join('')}</div>`);
+const copies = [...$('copy').children];
+// 오른쪽: 연도별 사진 카드를 가로로 이어 붙인 슬라이더 (참고: Osmo Draggable Infinite Slider). 버튼 없이 스크롤로만 넘어감
+$('track').innerHTML = CH.map((c, i) => `<article class="blk${i ? '' : ' on'}" data-year="${c.year}"><div class="pic" data-year="${c.year}"><img src="${c.img}" alt="${c.year}년 아카이브 사진" decoding="async"></div></article>`).join('');
 const blocks = [...$('track').children];
-let blockTops = [];
+let cardStep = 0;                                                 // 카드 한 장 폭 + 간격 (layout에서 잼)
+let cardPos = 0;                                                  // 카드 줄의 현재 위치(장 단위)
 /* 연도 전환 (참고: ILKW about 히스토리 연도 흐름).
    앞 두 자리('19')는 제자리에 두고 뒤 두 자리만 스크롤에 맞춰 넘어간다. 1981 → 2008처럼 앞자리가 바뀔 때는 네 자리가 함께 넘어간다.
    진행도는 오른쪽 다음 블록이 올라오는 정도와 같은 값이라, 다음 블록이 자리를 잡는 순간 다음 연도도 함께 자리를 잡는다.
@@ -135,7 +140,7 @@ function layout() {
   // Since 1937 → 폴라로이드 사진 4장이 천천히 현상되듯 나타남 → 긴 페이지처럼 위로 올라가며 Film 등장
   RELEASE = 2.6;
   FILM_A = RELEASE + 0.9; FILM_B = RELEASE + 4.1; FILM_OUT = RELEASE + 3.6;
-  F0 = (RELEASE + 5.2) * k; flashLen = 1.3 * k; whyLen = 1.5 * k; introLen = 1.3 * k; step = 0.9 * k;
+  F0 = (RELEASE + 5.2) * k; flashLen = 1.3 * k; whyLen = 1.5 * k; introLen = 2.2 * k; step = 0.9 * k;   // introLen: Why 문구가 먼지로 흩어지는 퇴장을 천천히 보도록 길게(원래 1.3)
   // Why 문구는 스크롤을 내리는 만큼 서서히 진해지고(WS→WE, 약 1.1화면), 조금 머문 뒤(whyLen 끝) 흐려지며 다음으로 넘어감
   WS = F0 + flashLen * 0.9; WE = F0 + flashLen + 1.0 * k;
   chStart = F0 + flashLen + whyLen + introLen;
@@ -170,7 +175,7 @@ function layout() {
     colR.style.height = Math.max(200, vh - top - txtH - 20 - 16) + 'px';
   } else { row.style.left = ''; row.style.top = ''; row.style.transform = ''; colR.style.height = ''; }   // Figma 1705:3122: 위치는 CSS에서 화면 가운데 기준으로 잡음
   marqW = $('marq').scrollWidth;
-  blockTops = blocks.map(b => b.offsetTop);
+  cardStep = blocks[0].offsetWidth + (parseFloat(getComputedStyle($('track')).columnGap) || 0);
   titleFX.measure(); dialFX.measure();
   lastCur = 99; dirty = true;
 }
@@ -296,31 +301,117 @@ function applyFlash(f) {
   show(fl, f > 0.23 && f < 0.95);
   show(pop, f > 0.19 && f < 0.9);
 }
+/* ================= Why 문구: 가루로 써지고, 먼지로 흩어짐 ================= */
+// 문구를 픽셀 입자로 바꿔 두고,
+//  - 등장(r): 왼쪽부터 오른쪽으로, 고운 가루가 왼쪽 뒤편에서 흩날려 와 글자 모양으로 모여 앉음. 다 모인 부분부터 또렷한 글자(DOM)가 보임
+//  - 퇴장(d): 왼쪽부터 오른쪽으로 글자가 먼지로 부서져 오른쪽 위로 날아가며 사라짐
+// 위치는 스크롤 진행으로만 정해져서, 되돌리면 그대로 거꾸로 움직임.
+let dust = null;
+const PS = 11;                                                     // 입자 하나당 값 개수
+const R_SPAN = 0.8, R_LIFE = 0.2;                                  // 등장: 왼쪽→오른쪽 진행 비율, 한 입자가 날아와 앉는 길이
+const D_SPAN = 0.5, D_LIFE = 0.38;                                 // 퇴장: 같은 뜻 (입자 하나가 오래 떠 있도록 길게)
+function buildDust(qt, cv) {
+  const cr = cv.getBoundingClientRect();
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  const W = Math.max(1, Math.round(cr.width * dpr)), H = Math.max(1, Math.round(cr.height * dpr));
+  cv.width = W; cv.height = H;
+  const ln = qt.querySelector('.ql');
+  const lr = ln.getBoundingClientRect();
+  const cs = getComputedStyle(qt), fs = parseFloat(cs.fontSize) * dpr;
+  const multi = lr.height > parseFloat(cs.lineHeight) * 1.5;      // 좁은 화면에서 두 줄로 바뀌면 가루 효과 없이 마스크로만 드러냄
+  const base = { key: cr.width + 'x' + cr.height + 'x' + cs.fontSize, W, H, dpr, ln, left: lr.left - cr.left, width: lr.width, color: cs.color, multi, ctx: cv.getContext('2d') };
+  if (multi) return { ...base, P: [], step: 1, minX: 0, maxX: 1 };
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const c = off.getContext('2d', { willReadFrequently: true });
+  c.font = `${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
+  try { c.letterSpacing = (parseFloat(cs.letterSpacing) || 0) * dpr + 'px'; } catch (e) { /* 지원 안 하는 브라우저는 자간 없이 그림 */ }
+  c.fillStyle = cs.color; c.textBaseline = 'alphabetic';
+  const m = c.measureText('H'), A = m.fontBoundingBoxAscent, D = m.fontBoundingBoxDescent, lh = parseFloat(cs.lineHeight) * dpr;
+  const x0 = (lr.left - cr.left) * dpr, y0 = (lr.top - cr.top) * dpr;
+  c.fillText(ln.textContent, x0, y0 + (lh - (A + D)) / 2 + A);    // DOM 글자와 같은 기준선에 그림
+  const minX = x0, maxX = x0 + lr.width * dpr, span = Math.max(1, maxX - minX);
+  const img = c.getImageData(0, 0, W, H).data;
+  const step = Math.max(1, Math.round(fs / 30));                   // 고운 가루: 글자 크기에 맞춘 촘촘한 간격(기기 픽셀)
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const P = [];
+  for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) {
+    const al = img[(y * W + x) * 4 + 3];
+    if (al < 40) continue;
+    const fx = (x - minX) / span;
+    P.push(x, y, al / 255,
+      D_SPAN * fx + 0.12 * rnd(),                                   // [3] 퇴장: 부서지기 시작하는 시점
+      (0.5 + rnd() * 1.5) * fs * 0.9, -(0.15 + rnd() * 0.9) * fs * 0.6,   // [4][5] 퇴장: 날아가는 거리
+      rnd() * 6.283, (0.2 + rnd() * 0.5) * fs * 0.12,               // [6][7] 흔들림 위상·폭
+      R_SPAN * fx + 0.06 * rnd(),                                   // [8] 등장: 날아오기 시작하는 시점 (왼쪽부터)
+      -(0.4 + rnd() * 1.6) * fs,                                    // [9] 등장: 출발 위치 (왼쪽 뒤편으로 떨어진 거리)
+      (rnd() - 0.5) * fs * 1.4);                                    // [10] 등장: 출발 위치 (위아래로 흩어진 정도)
+  }
+  return { ...base, P, step, minX, maxX };
+}
+function setMask(ln, m) { ln.style.maskImage = m; ln.style.webkitMaskImage = m; }
+function applyDust(r, d) {
+  const qt = $('quote'), cv = $('dust');
+  if (!cv) return;
+  const ln = qt.querySelector('.ql');
+  if (reduced || (r >= 1 && d <= 0) || r <= 0) {                   // 완성 상태(또는 아직 시작 전): 캔버스 비우고 글자 그대로
+    if (dust) dust.ctx.clearRect(0, 0, dust.W, dust.H);
+    setMask(ln, '');
+    return;
+  }
+  const cr = cv.getBoundingClientRect();
+  if (!dust || dust.key !== cr.width + 'x' + cr.height + 'x' + getComputedStyle(qt).fontSize) dust = buildDust(qt, cv);
+  const { ctx, W, H, dpr, step, P, minX, maxX, left, color, multi } = dust, span = maxX - minX;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = color;
+  const toLn = v => (v / dpr - left).toFixed(1) + 'px';            // 캔버스 기준 x(기기 픽셀) → 글자 요소 기준 x(CSS px)
+  if (d <= 0) {
+    // 등장: 가루가 다 모여 앉은 부분까지 또렷한 글자를 보여 줌 (경계는 부드럽게)
+    const full = minX + (r - R_LIFE - 0.06) / R_SPAN * span, none = minX + (r - R_LIFE * 0.35) / R_SPAN * span;
+    setMask(ln, multi ? `linear-gradient(90deg,#000 ${((r * 1.1 - 0.1) * 100).toFixed(1)}%,transparent ${(r * 1.1 * 100).toFixed(1)}%)`
+                      : `linear-gradient(90deg,#000 ${toLn(full)},transparent ${toLn(none)})`);
+    for (let i = 0; i < P.length; i += PS) {
+      const q = (r - P[i + 8]) / R_LIFE;
+      if (q <= 0 || q >= 1.15) continue;                            // 다 앉은 뒤 잠깐 더 그려 글자와 자연스럽게 겹침
+      const qq = Math.min(1, q), e = 1 - Math.pow(1 - qq, 3);       // 빠르게 날아와 천천히 내려앉음
+      ctx.globalAlpha = P[i + 2] * Math.min(1, qq * 1.6) * (q > 1 ? 1 - (q - 1) / 0.15 : 1);
+      ctx.fillRect(P[i] + P[i + 9] * (1 - e), P[i + 1] + P[i + 10] * (1 - e) + Math.sin(P[i + 6] + qq * 4) * P[i + 7] * (1 - e), step, step);
+    }
+  } else {
+    // 퇴장: 아직 부서지지 않은 부분만 글자로 보이도록, 부서지는 경계를 따라 왼쪽을 가림
+    const hide = minX + (d - 0.12) / D_SPAN * span, show = minX + d / D_SPAN * span;
+    setMask(ln, multi ? `linear-gradient(90deg,transparent ${(d * 100).toFixed(1)}%,#000 ${(d * 100 + 10).toFixed(1)}%)`
+                      : `linear-gradient(90deg,transparent ${toLn(hide)},#000 ${toLn(show)})`);
+    for (let i = 0; i < P.length; i += PS) {
+      const q = (d - P[i + 3]) / D_LIFE;
+      if (q <= 0 || q >= 1) continue;
+      const e = 1 - (1 - q) * (1 - q);                              // 처음엔 빠르게 흩어지고 점점 느려짐
+      ctx.globalAlpha = P[i + 2] * (1 - q) * (1 - q);
+      const sz = step * (1 - 0.5 * q);
+      ctx.fillRect(P[i] + P[i + 4] * e + Math.sin(P[i + 6] + q * 5) * P[i + 7] * q, P[i + 1] + P[i + 5] * e, sz, sz);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
 function applyIntro(t, w) {
-  // Why 문구: 왼쪽부터 서서히 글씨가 드러나고(Figma 1834:4671 → 4673), 퇴장할 때는 초점이 풀리며 사라짐(1834:4675)
-  const qFade = easeInOut(clamp((t - 0.08) / 0.65));
-  // Why 문구는 화면이 밝아진 뒤, 스크롤을 내리는 만큼 투명에서 점점 진해짐 (되돌리면 다시 옅어짐)
+  // Why 문구: 왼쪽부터 고운 가루가 모여 앉으며 써지고, 퇴장할 때는 왼쪽부터 먼지로 부서져 흩어지며 사라짐
+  const d = clamp((t - 0.02) / 0.34);                             // 먼지 퇴장 진행 (다음 화면이 덮기 시작하기 전에 대부분 끝남)
+  // Why 문구는 화면이 밝아진 뒤, 스크롤을 내리는 만큼 써짐 (되돌리면 다시 지워짐)
   focusIn = reduced ? (w > 0 ? 1 : 0) : w;
   const q = $('intro'), r = focusIn;
   const qt = $('quote');
-  // 글씨를 써 내려가듯: 왼쪽부터 오른쪽으로 부드러운 경계(약 10%)가 지나가며 글자가 드러남 (스크롤 진행 r에 맞춰, 되돌리면 다시 지워짐)
-  if (r >= 1) { qt.style.maskImage = 'none'; qt.style.webkitMaskImage = 'none'; }
-  else {
-    const edge = -10 + 110 * easeInOut(r);
-    const m = `linear-gradient(90deg,#000 ${edge.toFixed(2)}%,transparent ${(edge + 10).toFixed(2)}%)`;
-    qt.style.maskImage = m; qt.style.webkitMaskImage = m;
-  }
   qt.style.transform = 'none';
-  q.style.filter = B && qFade > 0 ? `blur(${(qFade * 14).toFixed(2)}px)` : 'none';
+  applyDust(r, d);
+  q.style.filter = 'none';
   q.style.transform = 'none';
-  q.style.opacity = (clamp(r * 6) * (1 - qFade)).toFixed(3);   // 투명도는 바로 차오르고, 드러나는 정도는 위의 마스크가 맡음
-  q.style.visibility = (qFade >= 1 || r <= 0) ? 'hidden' : 'visible';
-  const a = clamp((t - 0.3) / 0.3), h = $('hist');
+  q.style.opacity = (r > 0 ? 1 : 0) * (reduced ? 1 - d : 1);      // 동작 줄이기 설정이면 가루 없이 바로 보이고, 퇴장은 그냥 옅어짐
+  q.style.visibility = (d >= 1 || r <= 0) ? 'hidden' : 'visible';
+  const a = clamp((t - 0.4) / 0.3), h = $('hist');          // 다음 화면은 먼지 퇴장(t 0.36까지)이 끝난 뒤 나타남
   h.style.opacity = a;
   h.style.filter = a >= 1 ? 'none' : `blur(${(14 * (1 - a) * B).toFixed(2)}px)`;
   h.style.transform = a >= 1 ? 'none' : `scale(${(1 - 0.04 * (1 - a) * B).toFixed(4)})`;
-  reveal = clamp((t - 0.55) / 0.4);
-  $('yr').style.opacity = clamp((t - 0.75) / 0.25);
+  reveal = clamp((t - 0.62) / 0.35);
+  $('yr').style.opacity = clamp((t - 0.8) / 0.2);
   // 구분선은 연도와 함께 흐린 상태에서 한 번에 나타남 (가운데에서 펼쳐지는 효과 없음)
 }
 
@@ -350,7 +441,13 @@ function change(from, to) {
   setYear(CH[to].year);
   $('dial').setAttribute('aria-valuenow', to);
   $('dial').setAttribute('aria-valuetext', CH[to].year + '년');
+}
+// 연도 아래 제목·본문과 카드 배지는 카드가 넘어가는 진행도(가운데 지점)에 맞춰 바꿈 → 연도 숫자·카드와 같은 순간에 바뀜
+let copyIdx = 0;
+function setCopy(to) {
+  copyIdx = to;
   blocks.forEach((b, i) => b.classList.toggle('on', i === to));
+  copies.forEach((c, i) => { c.classList.toggle('on', i === to); if (i === to) c.removeAttribute('aria-hidden'); else c.setAttribute('aria-hidden', 'true'); });
 }
 
 /* ================= 5. 인용 → 6. 클로징 ================= */
@@ -481,7 +578,7 @@ function frame() {
   const fc = dirty || !near(f, lastF) || preIn !== lastPre;
   if (fc) { applyFlash(f); lastF = f; lastPre = preIn; }
   if (fc || !near(t, lastT) || !near(w, lastW)) { applyIntro(t, w); lastT = t; lastW = w; }
-  show($('hist'), t > 0.3 && sy < Q0 + vh);
+  show($('hist'), t > 0.4 && sy < Q0 + vh);
   const tRaw = (sy - chStart) / step;                          // 창 크기가 잠깐 0이 되는 순간에도 NaN이 퍼지지 않도록
   const target = Number.isFinite(tRaw) ? clamp(tRaw, 0, n - 1) : 0;
   if (reduced) cur = target;
@@ -492,14 +589,21 @@ function frame() {
     if (!Number.isFinite(cur)) { cur = target; vel = 0; }
   }
   if (dirty || Math.abs(cur - lastCur) > 1e-4 || reveal !== lastReveal) { drawTicks(cur); lastCur = cur; lastReveal = reveal; }
-  { // 오른쪽 블록: 스크롤 위치 그대로 위로 이어서 올라감 (ILKW about 히스토리처럼). 아래에서 올라오는 블록은 투명도 0%에서 시작해 스크롤에 맞춰 서서히 나타남
-    const fi = Math.min(n - 1, Math.floor(target)), fr = target - fi;
-    const a = blockTops[fi] || 0, z = blockTops[Math.min(fi + 1, n - 1)] || a;
-    $('track').style.transform = `translate3d(0,${(-(a + (z - a) * fr)).toFixed(1)}px,0)`;
-    blocks.forEach((b, i) => {
-      const d = i - target;                                      // 0이면 제자리, 1이면 한 칸 아래(막 들어오려는 위치)
-      b.style.opacity = (d <= 0 ? 1 : clamp((1 - d) / 0.7)).toFixed(3);   // d=1에서 0% → d=0.3에서 100%
-    });
+  { // 오른쪽 카드 슬라이더: 스크롤에 맞춰 카드 줄이 왼쪽으로 넘어감. 지금 연도 카드만 또렷하고 양옆 카드는 20%로 흐리게 (참고 사이트와 같은 비율)
+    // 연도 숫자와 같은 진행도(스크롤 값 target 기준): 한 장마다 잠시 머물렀다가(구간 앞 35%) 다음 장으로 부드럽게 넘어감.
+    // 다이얼용 스프링 값(cur)은 끝에서 살짝 지나쳤다 돌아오고 화면 주사율에 따라 속도가 흔들려서, 카드는 쓰지 않고
+    // 주사율과 상관없는 지수 감쇠로 따라감(지나침 없음). 스크롤이 멈추면 연도 숫자처럼 가까운 장으로 마저 정리됨.
+    const ti = Math.min(n - 1, Math.floor(target)), tf = target - ti, tk = clamp((tf - 0.35) / 0.6);
+    let want = Math.min(n - 1, ti + tk * tk * (3 - 2 * tk));
+    const cIdle = now - lastMove > 220 && Math.abs(raw - ss) < 1;
+    if (cIdle) want = Math.round(want);
+    if (reduced || dirty) cardPos = want;
+    else { cardPos += (want - cardPos) * follow(dt, cIdle ? 0.1 : 0.2); if (Math.abs(want - cardPos) < 1e-4) cardPos = want; }
+    const pos = cardPos;
+    $('track').style.transform = `translate3d(${(-pos * cardStep).toFixed(2)}px,0,0)`;
+    blocks.forEach((b, i) => { b.style.opacity = (1 - 0.8 * clamp(Math.abs(i - pos))).toFixed(3); });
+    const ai = Math.round(pos);
+    if (ai !== copyIdx && Math.abs(pos - ai) < 0.45) setCopy(ai);   // 경계 근처에서 앞뒤로 깜빡이지 않도록 조금 넘어야 바뀜
   }
   { // 연도 숫자: 오른쪽 블록이 올라오는 진행도와 같은 값으로 넘어감
     // 다음 블록이 35%쯤 올라왔을 때 넘어가기 시작해 블록이 자리를 잡을 때(95%) 다음 연도도 자리를 잡음
@@ -606,11 +710,64 @@ setYear(CH[0].year);
 if (reduced || scrollY > innerHeight * 0.5) skipIntro();
 requestAnimationFrame(frame);
 
+/* ================= 다가오는 먼지 (#0e0d0d 배경용) =================
+   별 같은 고운 입자들이 화면 가운데(먼 곳)에서 생겨나 바깥쪽(가까운 곳)으로 천천히 다가옴.
+   가운데에선 작고 흐리게 나타나, 바깥으로 갈수록 빨라지고 커지며 조금씩 밝아지다가 화면 밖으로 빠져나가고, 빠져나간 입자는 다시 가운데에서 생김.
+   다가오는 동안 입자마다 밝기가 은은하게 반짝임.
+   화면 1920×1080 기준 약 70점, 작고 은은하게. */
+let dustFxId = null;
+(() => {
+  const cv = $('filmdust');
+  if (!cv || reduced) return;
+  const ctx = cv.getContext('2d');
+  let W = 0, H = 0, R = 1, last = 0, specks = [];
+  const spawn = (fresh) => {
+    const r = R * (fresh ? 0.03 + Math.random() * 0.97 : 0.02 + Math.random() * 0.12);   // 처음엔 곳곳에, 이후엔 가운데 근처에서 생김
+    return { ang: Math.random() * 6.283, r, spin: (Math.random() - 0.5) * 0.04,             // 아주 살짝 소용돌이
+      size: 1 + Math.random() * 1.4, a: 0.5 + Math.random() * 0.45,
+      v: 0.06 + Math.random() * 0.08, born: fresh ? 1 : 0,       // v: 1초에 현재 거리의 6~14%씩 멀어짐(바깥으로 갈수록 빨라짐)
+      tw: Math.random() * 6.283, tws: 2 + Math.random() * 4 };    // 반짝임 위상·속도
+  };
+  const fit = () => {
+    const w = innerWidth, h = innerHeight;
+    if (w === W && h === H) return;
+    W = cv.width = w; H = cv.height = h; R = Math.hypot(w, h) / 2;
+    const n = Math.round(70 * (w * h) / (1920 * 1080));
+    specks = Array.from({ length: n }, () => spawn(true));
+  };
+  const tick = now => {
+    dustFxId = window.requestAnimationFrame(tick);
+    const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
+    if (document.hidden) return;
+    fit();
+    const cx = W / 2, cy = H / 2;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#fff';
+    for (let k = 0; k < specks.length; k++) {
+      const p = specks[k];
+      p.r += p.r * p.v * dt + R * 0.003 * dt;                     // 바깥으로 다가옴 (가운데서도 멈춰 있지 않게 최소 속도 더함)
+      p.ang += p.spin * dt;
+      p.born = Math.min(1, p.born + dt / 1.5);                     // 생길 때 1.5초에 걸쳐 서서히 나타남
+      const depth = p.r / R;                                       // 0이면 가운데(멂), 1이면 가장자리(가까움)
+      if (depth > 1.05) { specks[k] = spawn(false); continue; }
+      p.tw += p.tws * dt;
+      const twinkle = 0.72 + 0.28 * Math.sin(p.tw) * Math.sin(p.tw * 0.37 + 1.3);   // 다가오는 동안 은은하게 반짝임
+      ctx.globalAlpha = p.a * p.born * Math.min(1, 0.25 + depth) * twinkle;  // 가까워질수록 조금씩 밝아짐
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(p.ang) * p.r, cy + Math.sin(p.ang) * p.r, p.size * (0.35 + 0.65 * depth), 0, 6.283);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  };
+  dustFxId = window.requestAnimationFrame(tick);
+})();
+
  return () => {
   disposed = true;
   controller.abort();
   window.cancelAnimationFrame(frameId);
   if (resizeId !== null) window.cancelAnimationFrame(resizeId);
+  if (dustFxId !== null) window.cancelAnimationFrame(dustFxId);
   timers.forEach(window.clearTimeout);
   root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
   if (header) {

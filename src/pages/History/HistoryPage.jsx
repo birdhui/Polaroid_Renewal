@@ -75,7 +75,7 @@ export default function HistoryPage() {
 <div className="flash" id="flash"><img src={asset8} width="1604" height="1604" alt="" /></div>
 <div className="pop" id="pop"></div>
 <div className="ivory" id="ivory"></div>
-<div className="intro" id="intro"><p className="quote" id="quote">{"“Why can’t I see the picture right now?”"}</p></div>
+<div className="intro" id="intro"><p className="quote" id="quote"><span className="ql">{"“Why can’t I see the picture right now?”"}</span></p><canvas className="dust" id="dust" aria-hidden="true" /></div>
 <div className="hist" id="hist" data-year="1937">
 <div className="dial" id="dial" role="slider" tabIndex="0" aria-label="연도 다이얼"><div className="ticks" id="ticks"></div><div className="yr" id="yr"></div></div>
 <div className="row" id="row">
@@ -96,6 +96,8 @@ export default function HistoryPage() {
 <p><span>{"즉석사진의 탄생부터, 멈췄던 필름이 다시 만들어지기까지."}</span><span>{"폴라로이드가 이어온 여정은 오늘 당신이 남기는 한 장의 사진으로 계속됩니다."}</span></p>
 </div>
 </div>
+{/* #0e0d0d 배경 위에만 보일 듯 말 듯, 가운데에서 다가오는 먼지 (밝은 배경에서는 스크린 블렌드라 드러나지 않음) */}
+<canvas className="filmdust" id="filmdust" aria-hidden="true" />
 </section>
 
 </section>;
