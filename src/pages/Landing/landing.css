@@ -3,14 +3,57 @@
     src: url(https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   @font-face { font-family: 'Noto Sans KR'; font-style: normal; font-weight: 400 500; font-display: block;
-    src: url("https://fonts.gstatic.com/l/font?kit=PbykFmXiEBPT4ITbgNA5Cgm202xl6XikOY2DSsjByV5yd5yX3QpA0L_KL6UVbFZ2vHbwFfszVuDp-ZVoUcTHj87Uw5uAMYhD_gFDNeg3lmt63ypM088b6xDNjsn1sxM8--bNIxZHGbLpj-Dc818ls8A-8HKpaVy0_RLHNqN1aiwkSN9Zuwn8ew3dybnNa2HIKO2wuHd0ptQ6fZSIkuKAPU7MbA&skey=87e7ee645936e2c7&v=v40") format('woff2');
-    unicode-range: U+ac00, U+ac04, U+ac11, U+ac83, U+adf8, U+ae30, U+b098, U+b0a8, U+b294, U+b2c8, U+b2e4, U+b2f9, U+b3c4, U+b4dc, U+b77c, U+b798, U+b85c-b85d, U+b97c, U+b9ac, U+c0ac, U+c11c, U+c190, U+c21c, U+c2b5, U+c2dc, U+c2e0, U+c54a, U+c5b4-c5b5, U+c5d0, U+c624, U+c628, U+c6b0, U+c73c, U+c744, U+c758, U+c774, U+c7a5, U+c9c0-c9c1, U+c9c4, U+ce58, U+d3f4, U+d558, U+d55c, U+d560; }
+    src: url("https://fonts.gstatic.com/l/font?kit=PbykFmXiEBPT4ITbgNA5Cgm202xZ6XikOY2DSsjByV5yd5yTxQpP2L7wB6QsXFZ-sHb5Nfs9duDo1JVtTcTfm87C25uVHYhp2wFtLOgBtmtBzy1Q58g-6xfqg87YlxQT8uHgExFrMbL-qeDO2181lsAh_HK7eFynyRLWJqNiYCwsRt9Slwn3eg3U_LnyT2H3Ae2NjHdRgtUoSZWAjuOIOU_EeNRbwe1pcBxbW5R3obeifW93OwO6_1T1J_klG5JopqbfgYKe_A&skey=87e7ee645936e2c7&v=v40") format('woff2');
+    unicode-range: U+ac00, U+ac04, U+ac11, U+ac83, U+ace0, U+adf8, U+ae30, U+aed8, U+b098, U+b0a8, U+b144, U+b294, U+b298, U+b2c8, U+b2e4, U+b2f4, U+b2f9, U+b3c4, U+b4dc, U+b77c, U+b798, U+b85c-b85d, U+b978, U+b97c, U+b9ac, U+b9c8, U+c0ac, U+c11c, U+c190, U+c21c, U+c2b5, U+c2dc, U+c2e0, U+c2f6, U+c54a, U+c5b4-c5b5, U+c5d0, U+c624, U+c628, U+c6b0, U+c73c, U+c740, U+c744, U+c758, U+c774, U+c7a5, U+c815, U+c9c0-c9c1, U+c9c4, U+ce58, U+d3f4, U+d558, U+d55c, U+d560, U+d568-d569; }   /* 푸터 소개 문구 글자 포함 (53자) */
+  @font-face { font-family: 'Noto Sans KR'; font-style: normal; font-weight: 600; font-display: swap;   /* SemiBold — 타임라인 갤러리 타이틀용 (15자: 다시오지않는날을꺼내볼수있도록). 문구를 바꾸면 다시 받아야 함 */
+    src: url("https://fonts.gstatic.com/l/font?kit=PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzjQ1eLHyWH7B4WEZ5NapM812QDgdrBqaGZlZdoCDxPIGUI61loeo-tX_LMoD50QDLbBzrzU99W4v-Yh-8VGqmIqcqURc94asBncmAM6WvJ6g_idZv4xD2TbbdBnG7FK3P-EDb3BTdY8umVmLdVyp19WAUA-FEoX9hwsngpVfddT3tr__HRGzcIwv2YEjW0gWZcE6nufvRz0kHG7f9DWLPpBbBvoWh8OhqOXg1EjNENjOsRiL3ryy5UCApKUMLHw7K9wGNx9EL93BG3w7ufl_1bI1YXKeyuceDTgZnuZhibDefoqFUC9j1SCzyyBO2AqLpXzYL88DRXc9ohS5O_ml475cxjW0d3GaTg1XPLrzXaeCiQTtldUBEbBseZHZr7ywPIUw58lZMreRYUiK_-Y1AesZHxSqqJJD9CYPIvxwjKm8DSs5h3gwEVm8zwoEkkxgac-h1gqaF3mdKTNLt_emnZcoEOAQ2rBCG9xnU3WEPWhlRzAwku6oCZ88SHUIaHjVrNGL3Xq4oqjxnqr4DHlQnY1POyl9cNr2aO2ZjMKU1BXrcAsAMQplIH1y8mb1rJTqpF6Ji7ZumHJmD_oqEOvl8ZdmpOssgL6zesXwehFU2c2raWFocHRxqyEOpP8_NVYNkcum6L5SfYEzIlJ9OSeQgDIFoOvZudxs-P2u0VNKLkbkKLH6zi6QRPUgt2gMtEFXRz8SbbMb8R_eXNZNC5-3cRUHVyWzbqOtuWVwRmWx8BS613Yl_n_qpReQg6jDEUDFPHbID3L2XhQcWp80ysyMIGBBuR64n8SdXOWaw0lXSayKG2J7rBD2jlOBBhGkY47dOm1AQLRT355_qhGCzK5Ff1fhbY1ekcFU7CoSAUBmZMBcVL76TNh2m9ZYky2A6JATjGcMskidTw05hQSz2nCf8pPoz9p6pthIwhl2jSrjbCFKioUB360tWJ3ZsNhP8xA0p3C_FLUZtXUyYtd-Tq2Ws12iRdxi5c2zX8KJYt1TJTD1X1ejqpk0seAW75aLnc-yXgoOt4wgCo4keBixJBAwn_dxbDRCryFnQrHgUfCReVqZsj2-KGM809BuWuMVtqCjeI8jvrW2FI8pFDPQWzmJyYW-NpS7360fSv9PYlVpyr6dWFwB1lU4NVc5d1sblyegPjGSerOtHXh4-aDfQ9bcySXJ5ktARvN55TXcEb2IQME-wDHCRvA3MXTQOygl7j_ik7022G_lpZxn4R4DiGQeeoJ-ht2KF_UJrWYFYnfO_riGhsyRckLKc6ZSbhWBiSxgPe3eQUHbASolM6jvdyRoll_bns0tR4x0pjNxA3yq9iC7wSjx3QIpGg3na8_4KTpiOf2tHRI6qhBw_GzBm59TB6d3xypve90xOBT8GyETlMQ_ZepyMUAvmNqlhm5ajWHl8TvwOF82mhxC_O5EvYyh7Ey1PUY&skey=87e7ee645936e2c7&v=v40") format('woff2');
+    unicode-range: U+aebc, U+b0a0, U+b0b4, U+b294, U+b2e4, U+b3c4, U+b85d, U+bcfc, U+c218, U+c2dc, U+c54a, U+c624, U+c744, U+c788, U+c9c0; }
+  @font-face { font-family: 'Noto Sans KR'; font-style: normal; font-weight: 300; font-display: block;   /* Light — 스토리 문장 · Your Style, Your Film 설명글용 (79자). 새 한글 문구를 넣으면 다시 받아야 함 */
+    src: url("https://fonts.gstatic.com/l/font?kit=PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzrQyeLHyGXfK1WAS0NWiB8p9dC0WmAyRLYlSQIiI894NZpO-pJ2jx8D0EdcI2XIJKpt5qCA38W4l9bd0_HSglYGWpFNdxb6tNEMnNtqXlpCh1BdYkpxC_SLaUzzHy2a2J9MCd11SaYsvhlmKaWWoyvmBTAWEDo38ljMmiL1ZS9XxiZL5JT-1SJgp4pElbWwQUc08q8fpciMiNmTZ3Q2MKaFcEO8Rnu-mscfnz3TKDcTJrBiMwoG1-kSHu78LM0w8N9wBKyJDDcTGOXU8nOd48JMyRFqZ__sZNhUfn8NnhL7YabKDRj9lxDS12glIyS6NtFvePfo&skey=87e7ee645936e2c7&v=v40") format('woff2');
+    unicode-range: U+ac00-ac01, U+ac04, U+ac10-ac11, U+ac19, U+ac83, U+ace0, U+acfc, U+adf8, U+ae30, U+ae34, U+aed8, U+b098, U+b0a0, U+b0a8, U+b294, U+b2c8, U+b2e4, U+b2ec, U+b2f4, U+b2f9, U+b3c4, U+b4dc, U+b4e4, U+b530, U+b77c, U+b78c, U+b798, U+b85c-b85d, U+b978, U+b97c, U+b984, U+b9ac, U+b9c8, U+b9cc, U+baa8, U+bd84, U+c0ac, U+c0dd, U+c11c, U+c120, U+c190, U+c21c, U+c2b5, U+c2dc, U+c2e0, U+c54a, U+c5b4-c5b5, U+c5d0, U+c624, U+c628, U+c6b0, U+c704, U+c73c, U+c740, U+c744, U+c758, U+c774, U+c790, U+c7a5, U+c800, U+c815, U+c9c0-c9c1, U+c9c4, U+cde8, U+ce58, U+d0dd, U+d3f4, U+d544, U+d558, U+d55c, U+d560, U+d568-d569, U+d5a5; }
+  html.lite[data-title="on"] .wordmark { animation-name: logoInL; will-change: opacity; }
+  html.lite[data-title="on"] .ui [data-r] .fw { animation-name: focusInL; }
+  html.lite #three, html.lite[data-skip-intro] #three, html.lite[data-skip-intro][data-model="ready"] #three { filter: none; }
+  html.lite .msg .mlines, html.lite .msg .mlines.on, html.lite .parts .ptrk p > span, html.lite .parts .ptrk p > span.on, html.lite .zx .zi, html.lite .zx.on .zi, html.lite .shot .sh-glow, html.lite .hud .marks, html.lite .hud { filter: none; }
+  html.lite .msg .mo, html.lite .msg .mk, html.lite .zx .zl, html.lite .zx .zw, html.lite .fin > *, html.lite .parts-img .pimg { will-change: auto; }
   html, body { margin: 0; background: #000; }
   body { overflow: hidden; }
   body.scrollable { overflow: auto; }
   #track { height: 9122vh; }   /* scene.js fitTrack() 가 장면 길이에서 다시 계산해 덮어씀 */   /* 장면 길이(약 17.3: 컬러 8종 + 부품 N·O·W 3개 + Make a Moment Last 포함, 역사 구간은 1.5배 빠르게 → 스크롤 단위 약 16.4) × 5 화면 + 마지막 화면 */
   #bg, #three, #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
   #bg { z-index: 0; } #three { z-index: 2; } #gl { z-index: 3; }
+  /* 히어로 배경 — 책상 사진 한 장을 입체 장면처럼 보이게 하는 2.5D
+     ① 책상 사진(.desk, 3D 카메라보다 아래) + 3D 카메라가 책상에 드리우는 그림자(.dk-cam: 카메라 상자를 빛 방향으로 책상 면에 내려 그린 모양 — scene.js 가 계산)
+     ② 3D 카메라
+     ③ 카메라보다 위에 얹는 빛(.dkfx): 창으로 들어온 따뜻한 빛줄기(더하기) + 창틀의 깔끔한 그림자 띠(곱하기)
+        책상과 카메라에 같은 빛·그림자가 함께 지나가므로 카메라가 따로 합성한 것처럼 보이지 않음
+        빛줄기는 천천히 들어왔다가 사라지기를 되풀이하고(16초), 그림자 띠는 띠와 직각 방향으로 잔잔하게 오감(12초)
+     움직임은 CSS 애니메이션(합성 단계)이고 흐림 필터·추가 WebGL 은 쓰지 않음. 로딩 중의 흐린 모습은 아주 작게 줄인 사진을 겹쳐 보여 주는 방식 */
+  .desk { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; isolation: isolate; background: #2b1c12; visibility: hidden; }
+  .desk > i, .desk > canvas { position: absolute; display: block; }
+  .dk-img, .dk-blur { inset: -2.5%; background: center / cover no-repeat; will-change: transform; }
+  .dk-img { background-image: url(/assets/landing/hero/desk.webp); }
+  .dk-blur { background-image: url(/assets/landing/hero/desk-blur.webp); opacity: 0; will-change: opacity; }
+  .dk-dim { inset: 0; background: rgba(12, 6, 2, .2); }
+  .dk-cam { left: 0; top: 0; width: 100%; height: 100%; }
+  .dk-vig { inset: 0; background: radial-gradient(120% 95% at 46% 44%, rgba(0, 0, 0, 0) 38%, rgba(8, 4, 1, .34) 78%, rgba(6, 3, 1, .62) 100%); }
+  .dkfx { position: fixed; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; visibility: hidden; }
+  /* 그림자 띠는 카메라 자리에서는 옅게(가운데 30%만 남김) — 카메라가 그림자에 묻히지 않게. 가운데 = 히어로에서 카메라가 놓인 자리 */
+  .dkfx-a { mix-blend-mode: multiply; background: #fff; -webkit-mask-image: radial-gradient(ellipse 30% 44% at 50% 55%, rgba(0, 0, 0, .3) 35%, #000 100%); mask-image: radial-gradient(ellipse 30% 44% at 50% 55%, rgba(0, 0, 0, .3) 35%, #000 100%); }
+  .dkfx i { position: absolute; display: block; inset: -9%; background: center / cover no-repeat; will-change: transform, opacity; }
+  /* 빛줄기는 책상에만(카메라보다 아래 층): 카메라 위에 밝은 빛을 덧씌우면 검은 렌즈까지 떠서 카메라가 뿌옇게 보였음 → 카메라의 밝기는 3D 조명으로만 올림 */
+  .dk-win { inset: -9%; background: url(/assets/landing/hero/window.webp) center / cover no-repeat; mix-blend-mode: screen; will-change: transform, opacity; animation: dkW 16s ease-in-out infinite; }
+  .desk.paused .dk-win { animation-play-state: paused; }
+  .dkfx-a i { background-image: url(/assets/landing/hero/shade.webp); animation: dkA 12s ease-in-out infinite alternate; }
+  @keyframes dkW { 0%, 100% { opacity: .08; transform: translate3d(-.8%, -1%, 0); } 30% { opacity: 1; transform: translate3d(0, 0, 0); } 55% { opacity: .9; transform: translate3d(.5%, .6%, 0); } 82% { opacity: .15; transform: translate3d(1%, 1.3%, 0); } }   /* 빛이 들어옴 → 머무름 → 사라짐 */
+  @keyframes dkA { from { transform: translate3d(.9%, -2.4%, 0); } to { transform: translate3d(-.9%, 2.4%, 0); } }   /* 띠와 직각 방향(대각선 아래)으로 천천히 오감 */
+  .dkfx.paused i { animation-play-state: paused; }
+  @media (max-aspect-ratio: 4/5) {
+    .dk-img, .dk-blur { background-position: 35% 50%; background-size: auto 106%; }   /* 세로 화면: 사진 더미는 왼쪽 가장자리에 살짝만 걸치고 나뭇결이 글자 뒤에 오도록 */
+    .dk-vig { background: linear-gradient(180deg, rgba(6, 3, 1, .42) 0%, rgba(6, 3, 1, 0) 30%, rgba(6, 3, 1, 0) 58%, rgba(6, 3, 1, .6) 100%); }
+    .dkfx i, .dk-win { background-position: 22% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dkfx i { animation: none; } }
   #three { filter: contrast(1.06) saturate(.86); }
   html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
 
@@ -27,6 +70,9 @@
                        35% { opacity: .28; }
                        100% { filter: blur(0); opacity: 1; transform: var(--ft, none) scale(1); } }
   /* 로고: 크기 변화 없이 제자리에서 레이어 블러가 서서히 걷히며 나타남 */
+  /* 휴대폰(html.lite): CSS 필터 없이 투명도·이동만 */
+  @keyframes focusInL { 0% { opacity: 0; transform: var(--ft, none) scale(1.04); } 100% { opacity: 1; transform: var(--ft, none) scale(1); } }
+  @keyframes logoInL { 0% { opacity: 0; } 100% { opacity: 1; } }
   @keyframes logoIn { 0% { filter: blur(24px); opacity: 0; } 100% { filter: blur(0); opacity: 1; } }
   [data-title="on"] .wordmark { animation: logoIn 1.5s cubic-bezier(.4,0,.2,1) both; will-change: filter, opacity; }
   .fw { display: inline-block; white-space: pre; }
@@ -76,7 +122,13 @@
   /* 왼쪽 휠 — 피그마 Year wheel(1224:1827): 원통(초점 링)에 감긴 눈금. 가운데가 가장 크고 위·아래로 갈수록 작아지며
      안쪽으로 휘어 들어가 조리개(초점 링)처럼 곡선을 그림. 항목 사이 작은 눈금 4개 */
   .wheel { position: absolute; left: calc(48 * var(--u)); top: 50%; width: calc(112 * var(--u)); height: calc(1080 * var(--u)); transform: translateY(-50%);
-    pointer-events: auto; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+    pointer-events: auto; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none;
+    translate: 0 0; transition: translate .7s cubic-bezier(.22, .8, .2, 1); }
+  /* 히어로를 지나면 목차는 왼쪽 화면 밖으로 들어가 있다가, 마우스를 화면 왼쪽 끝으로 가져가면 다시 나옴 */
+  html[data-toc="in"] .wheel { translate: calc(-190 * var(--u)) 0; }
+  /* 들어가고 나올 때: 천천히 미끄러지며 흐려졌다 또렷해짐. (위의 [data-title="on"] 규칙이 transition 을 opacity 만으로 덮어써서 위치가 뚝 바뀌던 것을 여기서 함께 지정) */
+  html[data-title="on"] .ui .wheel { transition: opacity .7s ease, translate 1s cubic-bezier(.22, .8, .2, 1), filter .7s ease; }
+  html[data-title="on"][data-toc="in"] .ui .wheel { opacity: 0; filter: blur(calc(6 * var(--u))); transition: opacity .6s ease .1s, translate 1s cubic-bezier(.5, 0, .3, 1), filter .7s ease; }
   .wheel .trk { position: absolute; inset: 0; }
   .wheel .tk { position: absolute; left: 0; top: 0; height: 1px; background: #fff; transform-origin: 0 50%; will-change: transform, opacity; }
   .wheel a { position: absolute; left: 0; top: 0; width: calc(56 * var(--u)); text-align: center; font-family: 'Outfit', sans-serif; font-weight: 400;
@@ -104,6 +156,27 @@
     .rail { left: 7vw; right: 7vw; width: auto; top: auto; bottom: 24px; } .cue, .wheel { display: none; }
     .col { width: 100%; gap: 14vh; } .info .body, .meta span { white-space: normal; }
   }
+  /* 휴대폰 히어로 — Kinoria 모바일 히어로 캡처(1206×2140)에서 잰 배치 그대로
+     위 한 줄(사양, 자간 넓게): 왼쪽 5vw · 세로 16.4vh / 큰 로고: 왼쪽 6vw · 폭 87.7vw · 위 19.4vh
+     제목+본문: 왼쪽 30.3vw 에서 시작해 오른쪽 93.7vw 까지 · 제목 세로 71vh(글자 6.15vw, 굵게) · 본문 3.57vw, 줄간격 1.6
+     SCROLL: 가로 가운데 · 세로 94.6vh. 구분선·Take one·아래 사양 줄은 Kinoria 에 없어 휴대폰에서는 숨김 */
+  .ui .eyebrow { display: none; }
+  @media (max-aspect-ratio: 4/5) {
+    .wordmark { left: 50%; width: 87.7vw; top: calc(19.4vh + 12vw); }   /* 로고 그림의 중심 기준이라 그림 높이의 절반(12vw)을 더함 → 윗변이 19.4vh */
+    .ui .eyebrow { display: block; position: absolute; left: 5vw; top: 16.4vh; margin: 0; transform: translateY(-50%); font: 500 2.7vw / 1 'Outfit', sans-serif; letter-spacing: .12em; white-space: nowrap; color: rgba(255, 255, 255, .88); }
+    .ui .eyebrow i { font-style: normal; font-weight: 400; opacity: .4; margin: 0 .35em; }
+    .rail { position: absolute; left: 0; right: 0; top: 0; bottom: 0; width: auto; height: auto; display: block; }
+    .col { position: static; width: auto; min-width: 0; display: block; }
+    .info { position: absolute; left: 30.3vw; top: calc(71vh - 3.1vw); width: 63.4vw; }
+    .info h2 { margin: 0 0 3.4vw; font-size: 6.15vw; font-weight: 700; letter-spacing: .005em; line-height: 1; color: #f6e3d6; white-space: nowrap; }
+    .info .body { font-size: 3.57vw; font-weight: 400; line-height: 1.6; color: #c9a48e; white-space: normal; }
+    .info .body br, .info hr, .info .cta, .meta > div { display: none; }
+    /* SCROLL 과 Sound: 같은 바닥선(bottom) · 같은 줄 높이 · 같은 글자 크기 → 글자 밑선이 정확히 같은 높이 (전: 세로 가운데만 맞춰 글자 크기 차이만큼 밑선이 어긋났음) */
+    .cue { display: block; position: absolute; left: 50%; top: auto; bottom: 5.4vh; height: 4vw; line-height: 4vw; margin: 0; transform: translateX(-50%); font-size: 2.9vw; letter-spacing: .45em; margin-right: -.45em; opacity: .55; }
+    .meta { position: absolute; right: 5vw; top: auto; bottom: 5.4vh; height: 4vw; display: block; transform: none; }
+    .meta .sound { margin: 0; height: 4vw; line-height: 4vw; font-size: 2.9vw; align-items: baseline; }
+    .meta .sound .snd-in { line-height: 4vw; }
+  }
 
   /* HUD — Figma loading_page 위치 (베젤 프레임 기준 %) */
     .hud { z-index: 4;
@@ -121,28 +194,38 @@
   }
   @media (max-aspect-ratio: 1/1) { .hud { --frame-w: calc(100vw * 1920 / 814 * .94); } }
   .hud p { margin: 0; }
-  .brand, .state { position: absolute; top: 30.53%; display: flex; align-items: center; gap: .6em; font-weight: 500; transform: translateY(-50%); }
-  .brand { left: 32.1%; } .state { right: 32.3%; }
-  .rainbow { width: 1.85em; height: .7em; transform: skewX(-24deg);
-    background: linear-gradient(90deg,#f0453a 0 20%,#f78f1e 20% 40%,#fbcf2b 40% 60%,#4fb848 60% 80%,#2f8fd6 80%); }
-  .corners { position: absolute; left: 34.8%; top: 35.6%; width: 30.4%; height: 39.2%; }
-  .corners i { position: absolute; width: 5.6%; aspect-ratio: 1; border: 0 solid #fff; }
-  .corners i:nth-child(1){left:0;top:0;border-width:2px 0 0 2px}
-  .corners i:nth-child(2){right:0;top:0;border-width:2px 2px 0 0}
-  .corners i:nth-child(3){left:0;bottom:0;border-width:0 0 2px 2px}
-  .corners i:nth-child(4){right:0;bottom:0;border-width:0 2px 2px 0}
-  .focus { position: absolute; left: 50%; top: 51%; width: 4.2%; height: 9.7%;
-    transform: translate(-50%,-50%) scale(var(--focus-s, 1.25)); }
-  .focus::before, .focus::after { content: ""; position: absolute; top: 0; bottom: 0; width: 18%; border: 2px solid #fff; }
+/* HUD — Kinoria 로딩 화면 캡처(휴대폰 1206×2136, 데스크톱 800×600)에서 픽셀을 직접 재서 그대로 옮김
+     모서리 사각형: 가로 = min(화면 폭의 79.7%, 화면 높이의 51.4%), 비율 961 : 592, 중심은 화면 가로 50% · 세로 52.5%
+     아래 값은 모두 이 사각형 기준 %:
+       모서리 팔 길이 7.1% · 브랜드명 왼쪽 1.1% / 위 19.8% · 초점 괄호 폭 17.6% × 높이 36.5%, 정가운데, 팔 13%
+       눈금 12칸(긴·짧·짧 반복) 왼쪽 31% ~ 69%, 바닥 83.8%, 긴 눈금 6.6% · 짧은 눈금 4.05% (높이 기준), 마지막 2칸은 붉은색
+       수치 줄 세로 91.2%: f 11 왼쪽 끝 23% · 진행률 가운데 50% · AUTO 오른쪽 끝 77.4%
+     글자: 고정폭. 수치 = 사각형 폭의 3.47%, 브랜드명 = 2.9%(자간 .45em). 선 굵기 = 폭의 0.42%, 눈금 0.5% */
+  .hud { --rw: min(79.7vw, 51.4vh); --ln: max(1px, calc(var(--rw) * .0042)); --hc: rgba(238, 232, 222, .7); --ha: #E8553F;
+    left: 50%; top: 52.5%; width: var(--rw); aspect-ratio: 961 / 592; transform: translate(-50%, -50%);
+    font-family: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Roboto Mono', monospace; font-weight: 400; font-size: calc(var(--rw) * .0347);
+    letter-spacing: .02em; color: var(--hc); text-shadow: 0 0 calc(var(--rw) * .006) rgba(238, 232, 222, .35); }
+  .brand, .state { position: absolute; }
+  .brand { left: 1.1%; top: 19.8%; transform: translateY(-50%); font-size: calc(var(--rw) * .029); letter-spacing: .45em; line-height: 1; }
+  .corners { position: absolute; inset: 0; }
+  .corners i { position: absolute; width: 7.1%; aspect-ratio: 1; border: 0 solid var(--hc); }
+  .corners i:nth-child(1){left:0;top:0;border-width:var(--ln) 0 0 var(--ln)}
+  .corners i:nth-child(2){right:0;top:0;border-width:var(--ln) var(--ln) 0 0}
+  .corners i:nth-child(3){left:0;bottom:0;border-width:0 0 var(--ln) var(--ln)}
+  .corners i:nth-child(4){right:0;bottom:0;border-width:0 var(--ln) var(--ln) 0}
+  .focus { position: absolute; left: 50%; top: 50%; width: 17.6%; height: 36.5%;
+    transform: translate(-50%,-50%); }   /* Kinoria 는 로딩 중에도 괄호 크기가 변하지 않음 (14% · 96% 캡처에서 같은 크기) */
+  .focus::before, .focus::after { content: ""; position: absolute; top: 0; bottom: 0; width: 13%; border: var(--ln) solid var(--hc); }
   .focus::before { left: 0; border-right: 0; } .focus::after { right: 0; border-left: 0; }
-  .scale { position: absolute; left: 44.3%; top: 62.9%; width: 12.3%; height: 2.3%;
+  .scale { position: absolute; left: 31%; right: 31%; bottom: 16.2%; height: 6.6%;
     display: flex; justify-content: space-between; align-items: flex-end; }
-  .scale i { width: 2px; height: 55%; background: #fff; }
-  .scale i:nth-child(odd) { height: 100%; }
-  .scale i.on { background: #ff8a1f; }
-  .read { position: absolute; top: 68.5%; left: 50%; width: 16%; display: flex; justify-content: space-between;
-    letter-spacing: .12em; transform: translate(-50%,-50%); }
-  .pct { color: #ff8a1f; }
+  .scale i { width: max(1px, calc(var(--rw) * .005)); height: 61%; background: var(--hc); opacity: .32; }
+  .scale i:nth-child(3n + 1) { height: 100%; }
+  .scale i.done { opacity: 1; }
+  .scale i:nth-last-child(-n + 2) { background: var(--ha); }
+  .read { position: absolute; top: 91.2%; left: 23%; right: 22.6%; display: flex; justify-content: space-between; align-items: center; line-height: 1;
+    transform: translateY(-50%); }
+  .read .pct { position: absolute; left: 50.2%; top: 50%; transform: translate(-50%, -50%); color: var(--ha); font-weight: 700; letter-spacing: .06em; text-shadow: 0 0 calc(var(--rw) * .008) rgba(232, 85, 63, .45); }
 
   .boot { position: fixed; inset: 0; background: #000; transition: opacity .6s linear; pointer-events: none; }
   .ready .boot { opacity: 0; }
@@ -157,15 +240,20 @@
     transition: opacity .9s cubic-bezier(.3,.06,.18,1), transform 1.3s cubic-bezier(.16,.84,.24,1), filter 1s cubic-bezier(.3,.06,.18,1); }
   [data-skip-intro][data-model="ready"] #three { opacity: 1; transform: none; filter: contrast(1.06) saturate(.86); }
   [data-skip-intro] #gl, [data-skip-intro] .hud, [data-skip-intro] .boot { display: none; }
+  /* 시작 로딩 화면(뷰파인더 프레임 + HUD): 히어로 위에 겹쳐 두고, 끝나면 프레임을 통과해 히어로로 들어감. 영상은 쓰지 않음 */
+  [data-skip-intro][data-loader] #gl { display: block; z-index: 60; }
+  [data-skip-intro][data-loader] .hud { display: block; z-index: 61; }
+  [data-skip-intro][data-loader] .boot { display: block; z-index: 59; }
+  html[data-loader] body.scrollable { overflow: hidden; }   /* 로딩 화면이 떠 있는 동안은 스크롤 잠금 */
   /* 플래시가 터질 때 화면 전체에 번지는 빛 */
   .flash-veil { position: fixed; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; opacity: 0; mix-blend-mode: screen; will-change: opacity; }   /* 플래시 위치에서 화면 전체로 번쩍 */
   .flash-veil i { position: absolute; left: 0; top: 0; width: 300vmax; height: 300vmax; margin: -150vmax 0 0 -150vmax; will-change: transform;
-    background: radial-gradient(circle closest-side, #fff 0, rgba(255,252,246,.95) 12%, rgba(255,246,234,.7) 30%, rgba(255,240,224,.45) 54%, rgba(255,236,218,.35) 80%, rgba(255,236,218,.3) 100%); }   /* 원은 한 번만 그려 두고 위치(transform)·투명도(opacity)만 바꿈 → 매 프레임 다시 그리지 않음 */
+    background: radial-gradient(circle closest-side, #fff 0, #fff 14%, rgba(255,251,244,.97) 26%, rgba(255,245,232,.9) 42%, rgba(255,240,224,.84) 62%, rgba(255,236,218,.8) 100%); }   /* 원은 한 번만 그려 두고 위치(transform)·투명도(opacity)만 바꿈 → 매 프레임 다시 그리지 않음 */
   /* 피그마 print_2 카피 — 사진이 말려 올라가며 뒤에서 블러 → 초점 (사진보다 뒤: z-index 1) */
   .story { position: fixed; z-index: 1; left: 50%; top: 50%; width: calc(778 * var(--u)); transform: translate(-50%, -50%);
     display: flex; flex-direction: column; align-items: center; gap: calc(39 * var(--u)); text-align: center; color: #fff; pointer-events: none; }
   .story h3 { margin: 0; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: calc(45 * var(--u)); line-height: calc(55 / 45); letter-spacing: -.02em; }
-  .story p { margin: 0; font-family: 'Outfit', 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;  /* Pretendard 는 외부 CSS 차단 → 설치돼 있으면 사용, 없으면 Noto Sans KR */ font-weight: 400; font-size: max(13px, calc(18 * var(--u))); line-height: calc(26 / 18); letter-spacing: -.03em; }
+  .story p { margin: 0; font-family: 'Outfit', 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;  /* Pretendard 는 외부 CSS 차단 → 설치돼 있으면 사용, 없으면 Noto Sans KR */ font-weight: 300; font-size: max(13px, calc(18 * var(--u))); line-height: calc(26 / 18); letter-spacing: -.03em; }
   .story .sw { display: inline-block; white-space: pre; opacity: 0; }
   .story br.mb { display: none; }   /* 모바일에서만 쉼표 뒤 줄바꿈 */
   @media (max-width: 768px) {
@@ -201,8 +289,8 @@
   /* 05. Make a Moment Last (피그마 최신 시안 · kinoria 사진 연속 넘김) */
   .film { position: fixed; inset: 0; z-index: 3; pointer-events: none; color: #fff; visibility: hidden; }
   .film .fstack { position: absolute; left: 50%; top: 52%; width: calc(659 * var(--u)); aspect-ratio: 480 / 582; transform: translate(-50%, -50%); }
-  .film .fstack img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; box-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgba(0,0,0,.18), 0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0,0,0,.14);   /* 그림자는 티 안 나게: 종이 바로 아래 얇은 접지 그림자 + 아주 옅은 번짐 (전: 18u 아래로 50u 번진 50% 검정 → 사진 뒤에 어두운 판처럼 보였음) */ will-change: transform, opacity; transform-origin: 50% 50%; }
-  .film .fw { position: absolute; top: 50%; left: 50%; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 400; font-size: var(--mfs, calc(64 * var(--u))); line-height: 1; letter-spacing: -.01em; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+  .film .fstack img { position: absolute; left: 0; top: 50%; translate: 0 -50%; width: 100%; height: auto; border-radius: 1.7% / 1.4%; display: block; opacity: 0;   /* 사진마다 세로 비율이 달라 폭만 맞추고 세로는 원본 비율대로, 가운데 정렬 */ box-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgba(0,0,0,.18), 0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(0,0,0,.14);   /* 그림자는 티 안 나게: 종이 바로 아래 얇은 접지 그림자 + 아주 옅은 번짐 (전: 18u 아래로 50u 번진 50% 검정 → 사진 뒤에 어두운 판처럼 보였음) */ will-change: transform, opacity; transform-origin: 50% 50%; }
+  .film .fw { position: absolute; top: 50%; left: 50%; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 400; font-size: var(--mfs, calc(64 * var(--u))); line-height: 1; letter-spacing: -.014em;   /* 문장(.mlines)과 같은 자간 — 달랐을 땐 문장에서 이어받는 순간 단어 폭이 1~2px 넓어지며 글자가 움찔했음 */ white-space: nowrap; opacity: 0; will-change: transform, opacity; }
   @media (max-aspect-ratio: 4/5) { .film .fstack { width: 70vw; } }
   /* 05-0. Make a Moment Last 앞 문장 (kinoria 'Thirty-six frames…' 장면): 카메라가 위에서 가운데로 폭신하게 떨어지고, 세 줄 문장이 아래에서 올라옴.
            가운데 줄의 Make · a Moment · Last 만 남고 나머지는 블러되며 사라짐 → 다음 장면의 세 단어로 그대로 이어짐 */
@@ -212,6 +300,7 @@
   .msg .mlines.on { opacity: 1; filter: blur(0); }
   .msg .ml { display: block; }
   .msg .mo, .msg .mk { display: inline-block; white-space: pre; will-change: opacity; }
+  .msg .mk { opacity: 0; }   /* 문장 속 Make · a Moment · Last 는 자리만 잡아 주고 보이지 않음 — 처음부터 .film 의 세 단어가 그 자리에 놓여 문장과 함께 보임 (중간에 다른 글자로 바꿔 끼우지 않음) */
   @media (max-aspect-ratio: 4/5) {
     .msg .mlines { left: 6vw; right: 6vw; text-align: center; white-space: normal; line-height: 1.1; text-wrap: balance; }
     .msg .mo, .msg .mk { display: inline; white-space: normal; } .msg .mrest, .msg .mpre { display: block; }
@@ -226,8 +315,8 @@
   .parts .pleft { position: absolute; left: calc(558 * var(--u)); top: calc(637 * var(--u)); width: calc(306 * var(--u)); text-align: right; }
   .parts .pname { margin: 0; font-weight: 400; font-size: calc(58 * var(--u)); line-height: calc(70 * var(--u)); letter-spacing: -.02em; white-space: nowrap; }
   .parts .plabel { margin: calc(39 * var(--u)) 0 0; font-weight: 500; font-size: max(11px, calc(14 * var(--u))); letter-spacing: .12em; color: #d6b48c; }
-  .parts .pdesc { margin: calc(13 * var(--u)) 0 0; font-weight: 400; font-size: max(12px, calc(15 * var(--u))); line-height: 1.25; }
-  .parts .pcount { margin: calc(39 * var(--u)) 0 0; font-weight: 400; font-size: max(10px, calc(12 * var(--u))); letter-spacing: .08em; opacity: .55; }
+  .parts .pdesc { margin: calc(13 * var(--u)) 0 0; font-weight: 300; font-size: max(12px, calc(15 * var(--u))); line-height: 1.25; }
+  .parts .pcount { margin: calc(39 * var(--u)) 0 0; font-weight: 300; font-size: max(10px, calc(12 * var(--u))); letter-spacing: .08em; opacity: .55; }
   .parts .px { position: absolute; left: calc(965 * var(--u)); top: calc(637 * var(--u)); width: calc(33 * var(--u)); line-height: calc(70 * var(--u)); font-weight: 200; font-size: calc(40 * var(--u)); text-align: center; opacity: .7; }
   .parts .plist { position: absolute; left: calc(1099 * var(--u)); top: 0; width: calc(581 * var(--u)); height: 100%; }
   .parts .pline { position: absolute; left: 0; width: 100%; height: 1px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.4) 0 1px, rgba(255,255,255,0) 1px 4px); }
@@ -283,7 +372,7 @@
   .sound.off i b, .sndfix.off i b { animation: none; transform: none; background: #5e5b57; }   /* 꺼짐: 막대는 멈춘 채 옅은 색 (Leica) */
   .snd-in { display: inline-flex; align-items: center; gap: 8px; transform-origin: 50% 50%; transition: transform .42s cubic-bezier(.3, 1.3, .5, 1); }
   .sound:hover .snd-in, .sndfix:hover .snd-in, .sound:focus-visible .snd-in, .sndfix:focus-visible .snd-in { transform: scale(1.2); }
-  .sndfix { position: fixed; right: max(16px, calc(50% - 896 * var(--u))); bottom: calc(79 * var(--u));   /* 히어로 Sound 와 같은 자리 */ z-index: 6; display: flex; align-items: center; gap: 8px; color: #fff;
+  .sndfix { position: fixed; right: max(16px, calc(50% - 896 * var(--u))); bottom: calc(79 * var(--u));   /* 히어로 Sound 와 같은 자리 */ z-index: 25; display: flex; align-items: center; gap: 8px; color: #fff;
     font-size: max(11px, calc(15 * var(--u))); font-weight: 500; line-height: 1; opacity: 0; visibility: hidden; transition: opacity .5s ease, visibility 0s linear .5s; }
   .sndfix.show { opacity: 1; visibility: visible; transition: opacity .5s ease; }
   .sndfix i { display: flex; align-items: flex-end; gap: 1.5px; height: 9px; }
@@ -295,6 +384,7 @@
   .zx { position: fixed; inset: 0; pointer-events: none; color: #fff; font-family: 'Outfit', sans-serif; visibility: hidden; }
   .zx .zd, .zx .zcnt, .zx .zw, .zx .zw2, .zx .zg, .zx .zsub, .zx .zb { font-family: 'Outfit', sans-serif; font-synthesis: none; }   /* ZERO PRINTS 장면 글자는 전부 Outfit (굵기도 Outfit 가변 굵기 그대로) */
   .zx-back { z-index: 1; } .zx-front { z-index: 3; }
+  .zx br.zmb { display: none; }   /* 휴대폰에서만: 뜻이 끊기는 자리에서 네 줄로 */
   .zx .zl { position: absolute; left: 0; right: 0; margin: 0; text-align: center; white-space: nowrap; line-height: 1; will-change: transform, opacity, filter; }
   .zx .zi { display: inline-block; opacity: 0; filter: blur(10px); transition: opacity 1.4s cubic-bezier(.165,.84,.44,1), filter 1.4s cubic-bezier(.165,.84,.44,1); }
   .zx.on .zi { opacity: 1; filter: blur(0); }
@@ -308,22 +398,28 @@
   .zx .zsub { font-size: min(3.1vw, 5.75vh); font-weight: 400; letter-spacing: -.004em; word-spacing: .1em; }   /* 51.2px */
   .zx .zsub i { display: inline-block; width: 3.2em; }
   .zx .zb { font-size: max(11px, min(.936vw, 1.73vh)); font-weight: 300; letter-spacing: .004em; line-height: 1.213; color: rgb(235,190,159);   /* 15.4px · 줄간격 18.7px */
-    text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 5px rgba(0,0,0,.8), 0 0 12px rgba(0,0,0,.6), 0 0 22px rgba(0,0,0,.4); }
+    text-shadow: 0 1px 2px rgba(0,0,0,.32), 0 0 10px rgba(0,0,0,.2); }   /* 글자 뒤 그림자를 옅게 (전: 검은 그림자 네 겹 .9 · .8 · .6 · .4 — 글자 뒤가 시커멓게 뭉쳐 보였음) */
   .zghost-wrap { position: fixed; inset: 0; z-index: 1; pointer-events: none; }   /* 카메라 뒤 배경 글씨: 블랙이 된 뒤부터 끝까지 계속 깔림 */
-  .zghost { position: absolute; left: 50%; top: 16%; width: 60vw; transform: translateX(-50%); opacity: 0; }   /* 화면 너비의 60% */
-  /* 마지막 장면 (kinoria EXPOSED): 사진이 다 넘어가면 뒤에 은은하던 POLAROID 가 DEVELOPED 로 바뀌며 빛나고, 카메라가 그 아래로 내려앉음.
+  .zghost { position: absolute; left: 50%; top: 16%; width: 60vw; transform: translateX(-50%) translateZ(0); opacity: 0; visibility: hidden; will-change: opacity; backface-visibility: hidden; }   /* 화면 너비의 60% */
+  /* 마지막 장면 (kinoria EXPOSED): 사진이 다 넘어가면 뒤에 은은하던 POLAROID 가 NOW 로 바뀌며 빛나고 (POLAROID → NOW = 제품명 · 앞 문장과 이어 읽으면 'Make a Memory Last. NOW.' · 전에는 DEVELOPED), 카메라가 그 아래로 내려앉음.
      빛은 배경에 더해지게(plus-lighter) — 어두운 화면 위에서 글자 주변이 밝아짐. 크림색 빛 (kinoria #ffedd7 · #e0d1bd 계열) */
   .zadj { position: absolute; left: 50%; top: 0; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 10vw; line-height: 1; letter-spacing: -.012em;
     white-space: nowrap; transform: translate(-50%, -50%); opacity: 0; visibility: hidden; mix-blend-mode: plus-lighter; will-change: opacity, filter; }
   .zadj span { display: block; }
+  /* DEVELOPED 장면 아래 양쪽 캡션 + 가는 선 (kinoria EXPOSED: 왼쪽 제품명 · 오른쪽 특징) */
+  .dvcap { position: absolute; bottom: calc(118 * var(--u)); width: 25.3vw; margin: 0; padding-bottom: calc(34 * var(--u)); border-bottom: 1px solid rgba(255, 246, 234, .2);
+    font-family: 'Outfit', sans-serif; font-weight: 400; font-size: max(11px, calc(16 * var(--u))); line-height: 1.45; letter-spacing: .05em; text-transform: uppercase; color: rgba(255, 246, 234, .86);
+    opacity: 0; visibility: hidden; will-change: opacity, transform; }
+  .dvcap.l { left: 5.7vw; text-align: left; } .dvcap.r { right: 5.7vw; text-align: right; }
+  @media (max-aspect-ratio: 4/5) { .dvcap { width: 38vw; bottom: 84px; padding-bottom: 14px; font-size: 11px; } .dvcap.l { left: 20px; } .dvcap.r { right: 20px; } }
   .zadj-t { color: #fff6ea; }
   .zadj-g { position: absolute; left: 0; top: 0; color: rgba(255, 238, 214, .55); opacity: 0; will-change: opacity;
     text-shadow: 0 0 .03em rgba(255,246,232,1), 0 0 .08em rgba(255,238,214,.95), 0 0 .2em rgba(248,218,182,.75), 0 0 .45em rgba(236,196,148,.55), 0 0 1em rgba(226,176,118,.38), 0 0 1.8em rgba(220,160,96,.22); }
   .zadj-a { position: absolute; left: -35%; right: -35%; top: -180%; bottom: -220%; opacity: 0; will-change: opacity;   /* 글자 뒤로 화면 전체가 은은하게 밝아지는 빛 */
     background: radial-gradient(50% 50% at 50% 42%, rgba(224,209,189,.2), rgba(224,200,170,.08) 45%, rgba(224,209,189,0) 75%); }
   @media (max-aspect-ratio: 4/5) {
-    .zx .zd { font-size: 15vw; } .zx .zsub { font-size: 5vw; } .zx .zsub i { width: 1.6em; }
-    .zx .zb { font-size: 3.1vw; white-space: normal; padding: 0 7vw; } .zghost { width: 60vw; top: 26%; }
+    .zx .zd { font-size: 15vw; } .zx .zsub { font-size: 4.4vw; } .zx .zsub i { width: 8.8em; }   /* 두 단어 사이를 넓혀 카메라 양옆으로 — 카메라 뒤에 깔려 안쪽 끝만 살짝 가려짐 */
+    .zx .zb { font-size: 3.1vw; white-space: nowrap; line-height: 1.5; letter-spacing: .02em; } .zx br.zmb { display: inline; } .zghost { width: 60vw; top: 26%; }
   }
   /* 히어로 오른쪽 문구 — 흰색이 아닌 따뜻한 빛(투명도 없이 불투명).
      카메라 그늘진 면의 베이지(실측 #B5ABA1)보다 살짝 진한 #A89E94 를 기준색으로 — 주황·노란 기운 없이 카메라 색과 맞춤.
@@ -332,3 +428,212 @@
   .info h2 { color: #D4CFCA; }
   .info .body { color: #A89E94; }
   .info .cta .take { color: #D4CFCA; }
+  /* ===== SHOT: 사용자 경험 섹션 (피그마 레이아웃 · kinoria 인터랙션) — DEVELOPED 섬광 뒤 흰 화면에서 드러남 ===== */
+  /* DEVELOPED 끝의 섬광 (kinoria EXPOSED): 글씨가 있는 자리에서 따뜻한 빛이 점점 세지며 퍼져 화면을 덮음. 처음부터 끝까지 같은 따뜻한 톤 (앰버 → 크림)
+     — 전: 글씨 빛이 차가운 흰색으로 바뀌고 화면 전체가 회색빛으로 한꺼번에 밝아져 톤이 중간에 바뀌었음 */
+  .dv-burst { position: fixed; left: 0; top: 0; width: 100vmax; height: 100vmax; margin: -50vmax 0 0 -50vmax; z-index: 29; pointer-events: none; visibility: hidden; border-radius: 50%; will-change: transform, opacity;
+    background: radial-gradient(circle closest-side, #fff6ea 0, #fff6ea 30%, rgba(255, 236, 205, .96) 44%, rgba(255, 214, 160, .8) 60%, rgba(255, 188, 118, .45) 78%, rgba(255, 168, 92, 0) 100%); }
+  /* DEVELOPED 섬광 (WebGL): 글씨 모양에서 번져 나오는 빛이 일렁이며 화면을 덮음 — 아래 스크립트 __dvfx 참고. 못 쓰는 브라우저에서는 위의 .dv-burst 로 대신함 */
+  .dv-fx { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 29; pointer-events: none; visibility: hidden; }
+  .shot-white { position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: 0; visibility: hidden; background: #fff6ea; }
+  .shot { position: fixed; inset: 0; z-index: 20; visibility: hidden; opacity: 0; color: #fff; font-family: 'Outfit', sans-serif; user-select: none; -webkit-user-select: none; }
+  .shot.on { visibility: visible; }
+  .sh-bg { position: absolute; inset: 0; background: radial-gradient(60% 45% at 50% 42%, rgba(70, 44, 22, .35), rgba(0, 0, 0, 0) 70%), #060505; }   /* 마지막 장면에서 걷히며 뒤의 카메라 뒷면이 드러남 */
+  /* 마지막 장면: 뷰파인더 화면만 남고 나머지(테두리·정보·버튼)는 사라짐 → 화면이 카메라 아이피스 유리 안으로 줄어듦 */
+  .shot.out { pointer-events: none; }
+  /* ===== Your Style, Your Film: 카메라가 위로 빠져나간 뒤 지금까지의 사진들이 아래에서 한 장씩 올라옴 (프레임 색은 Now 컬러) ===== */
+  .ysf { position: fixed; inset: 0; z-index: 1; pointer-events: none; visibility: hidden; color: #fff; }
+  .ysf.on { visibility: visible; }
+  /* 프레임은 첨부받은 필름 프레임 이미지(/assets/landing/frames/frame-*.webp, 520×636) — 사진 창 자리(왼쪽 5.2% · 위 4.6% · 폭 89.5% · 높이 73.6%)에 우리 사진을 얹음 */
+  /* 필름 사진 갤러리 (마지막): 한 장 뒤에 겹쳐 있던 사진들이 스크롤에 따라 펼쳐지고, 마우스를 움직이면 살짝 따라 움직임 */
+  .gal { position: fixed; inset: 0; z-index: 1; pointer-events: none; visibility: hidden; }
+  .gal.on { visibility: visible; }
+  /* 성장 타임라인 갤러리 — betteroff THE LOOKBACK 의 Timeline 보기를 분석해 같은 구조로 만듦
+     위: 타이틀 2줄 · 가운데: 사진 한 줄(같은 폭, 사이 간격 일정, 크기·밝기 차이 없음) · 아래: 눈금 다이얼(사진 1장 = 눈금 9칸, 사진이 시작되는 칸은 긴 눈금 + 연도)
+     사진 줄은 목표 위치를 조금 늦게 따라가고, 그 차이만큼 사진이 세로축으로 살짝 돌아감(빠르게 넘길수록 더 기움). 화면 가운데를 지나는 눈금은 길고 진해짐 */
+  .tl-head { position: absolute; left: 50%; top: 13.5vh; transform: translateX(-50%); width: 92vw; margin: 0; text-align: center; color: #fff; will-change: opacity; }
+  .tl-head .ey { display: block; margin-bottom: calc(18 * var(--u)); font: 400 max(11px, calc(15 * var(--u))) / 1 'Outfit', sans-serif; letter-spacing: .32em; color: rgba(255, 255, 255, .55); font-variant-numeric: tabular-nums; }
+  .tl-head .tt { display: block; font: 600 max(17px, calc(40 * var(--u))) / 1.34 'Outfit', 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', sans-serif; letter-spacing: -.02em; word-break: keep-all; }   /* 다른 한글 타이틀('이어온 시간을 지나…')과 같은 글꼴, 굵기는 600 */
+  .tl-head .tt span { display: block; }
+  .tl-row { position: absolute; left: 0; top: 56%; display: flex; align-items: center; gap: var(--tg, 20px); will-change: transform; }
+  .tl-it { position: relative; flex: none; width: var(--tw, 281px); margin: 0; will-change: transform; }
+  .tl-it img { display: block; width: 100%; height: auto; border-radius: 1.7% / 1.4%; user-select: none; -webkit-user-drag: none;
+    box-shadow: 0 calc(var(--tw, 281px) * .05) calc(var(--tw, 281px) * .11) rgba(0, 0, 0, .45), 0 2px 4px rgba(0, 0, 0, .3); }
+  .tl-it .lb { position: absolute; left: 0; overflow: hidden; font: 400 max(10px, calc(12 * var(--u))) / 1.2 'Outfit', sans-serif; letter-spacing: .14em; color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; }
+  .tl-it .lb.n { bottom: 100%; margin-bottom: 12px; } .tl-it .lb.y { top: 100%; margin-top: 12px; }
+  .tl-it .lb b { display: block; font-weight: 400; transition: transform .7s cubic-bezier(.19, 1, .22, 1); }
+  .tl-it .lb.n b { transform: translateY(105%); } .tl-it .lb.y b { transform: translateY(-105%); }
+  .tl-it.show .lb b { transform: none; }
+  .tl-dial { position: absolute; left: 0; right: 0; bottom: 10.5vh; height: 92px; }   /* Sound 버튼보다 위 */
+  .tl-dial canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+  @media (max-aspect-ratio: 4/5) { .tl-head { top: 15vh; } .tl-head .ey { margin-bottom: 12px; } .tl-head .tt { font-size: 4.7vw; line-height: 1.45; } .tl-row { top: 52%; } .tl-dial { bottom: 11.5vh; } }
+  /* 마지막 카메라 장면: 카메라 위 핵심 문구 · 왼쪽 소개 문장 · 오른쪽 세 줄 */
+  /* 마지막 섹션의 바탕: 푸터와 같은 색(#151515), 오로라 없음. 위쪽 경계는 직선 — 갤러리 아래에서 그대로 밀고 올라옴 (카메라 캔버스보다 아래 층) */
+  .finbg { position: fixed; inset: 0; z-index: 1; pointer-events: none; visibility: hidden; background: rgb(21 21 21 / .999); will-change: transform; }   /* #151515 — 푸터와 같은 이유로 아주 살짝만 투명하게 (완전 불투명이면 테스트 환경에서 위쪽 오로라가 검게 나옴) */
+  .fin { position: fixed; inset: 0; z-index: 4; pointer-events: none; visibility: hidden; color: #fff; }
+  .fin.on { visibility: visible; }
+  .fin > * { position: absolute; margin: 0; will-change: opacity, transform, filter; }
+  .fin-t { left: 50%; top: calc(50% - 170 * var(--u)); transform: translateX(-50%); white-space: nowrap; text-align: center;
+    font-family: 'Outfit', 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; font-weight: 300; font-size: calc(40 * var(--u)); line-height: 1.3; letter-spacing: -.03em; }
+  .fin-l, .fin-r { top: calc(50% + 96 * var(--u)); font-family: 'Outfit', sans-serif; font-weight: 300; font-size: max(13px, calc(18 * var(--u))); line-height: calc(26 / 18); letter-spacing: -.01em; }
+  .fin-l { left: max(24px, calc(50% - 896 * var(--u))); }
+  .fin-r { right: max(24px, calc(50% - 896 * var(--u) + 90 * var(--u))); list-style: none; padding: 0; display: flex; flex-direction: column; gap: calc(14 * var(--u)); }
+  .fin-r li { display: flex; align-items: center; gap: calc(12 * var(--u)); white-space: nowrap; }
+  .fin-r svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); min-width: 16px; min-height: 16px; flex: none; }
+  @media (max-aspect-ratio: 4/5) {
+    .fin-t { top: 24%; font-size: calc(26 * var(--u)); }
+    .fin-l { left: 50%; top: auto; bottom: 23%; width: 84vw; margin-left: -42vw; text-align: center; font-size: 14px; }
+    .fin-l br { display: none; }
+    .fin-r { right: auto; left: 50%; top: auto; bottom: 10.5%; gap: 6px; font-size: 14px; }
+    .fin-r li { gap: 8px; }
+  }
+  .ys-prints { isolation: isolate; }   /* 사진끼리의 앞뒤 순서(z-index)가 타이틀 위로 올라오지 않게 */
+  .ys-p { --pw: calc(380 * var(--u)); transform-origin: 50% 0; position: absolute; left: 0; top: 0; width: var(--pw); aspect-ratio: 520 / 636; border-radius: calc(var(--pw) * .012); will-change: transform;
+    /* 얇은 종이 한 장으로 보이게: 아래로 보이던 옆면·가장자리 밝은 선·짙고 넓은 그림자를 없앰 (전에는 도톰해 보이라고 일부러 넣었던 것) */
+    background: var(--fr) center / 100% 100% no-repeat;
+    box-shadow: 0 calc(var(--pw) * .028) calc(var(--pw) * .07) rgba(0, 0, 0, .34), 0 1px 2px rgba(0, 0, 0, .22); }
+  /* 기본 사진(직접 찍지 않았을 때): 받은 필름 사진을 프레임째 그대로 씀 — 사진마다 비율이 달라 비율은 요소에 직접 지정 */
+  .ys-p.full { background: var(--ph) center / 100% 100% no-repeat; }
+  .ys-p.full i { display: none; }
+  .ys-p i { position: absolute; left: 5.2%; top: 4.6%; width: 89.5%; height: 72.9%; background: #1a1714 center / cover no-repeat; border-radius: calc(var(--pw) * .006);
+    box-shadow: inset 0 0 calc(var(--pw) * .02) rgba(0, 0, 0, .14); }
+  /* 사진 면의 은은한 광택: 비스듬한 빛 띠가 사진 위에 얹힘. 위치(--gl)는 사진이 움직이거나 마우스를 움직이면 조금씩 흘러감 */
+  .ys-p i::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: screen;
+    background: linear-gradient(118deg, rgba(255, 255, 255, 0) 24%, rgba(255, 255, 255, .2) 41%, rgba(255, 255, 255, .06) 49%, rgba(255, 255, 255, 0) 62%) var(--gl, 38%) var(--gl, 38%) / 260% 260% no-repeat; }
+  .ys-p i.crop { background-size: 110.1% auto; background-position: 50% 23.3%; }   /* 흰 테두리까지 있는 필름 사진(480×582)에서 사진 부분만 */
+  /* 타이틀·설명글은 'From Moment to Memory' 스토리 장면(.story)과 같은 서체·크기·간격 */
+  .ys-copy { position: absolute; left: 50%; top: 50%; width: calc(778 * var(--u)); transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: calc(39 * var(--u)); text-align: center; color: #fff; }
+  .ys-copy h2 { margin: 0; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: calc(45 * var(--u)); line-height: calc(55 / 45); letter-spacing: -.02em; white-space: nowrap; }
+  .ys-sub { margin: 0; font-family: 'Outfit', 'Pretendard', 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; font-weight: 300;
+    font-size: max(13px, calc(18 * var(--u))); line-height: calc(26 / 18); letter-spacing: -.03em; white-space: nowrap; }
+  .ys-sub:empty { display: none; }
+  @media (max-aspect-ratio: 4/5) { .ys-p { --pw: calc(210 * var(--u)); } .ys-copy { width: 88vw; gap: 18px; } .ys-copy h2 { font-size: calc(34 * var(--u)); } .ys-sub { font-size: 14px; line-height: 1.6; }   /* 휴대폰에서도 문장(~다.)마다 줄바꿈 → 2줄 */ }
+  .sh-glow { position: absolute; left: 50%; top: calc(48 * var(--u)); width: calc(560 * var(--u)); height: calc(70 * var(--u)); transform: translateX(-50%);
+    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 196, 120, .85), rgba(232, 150, 70, .35) 45%, rgba(0, 0, 0, 0) 75%); filter: blur(calc(10 * var(--u))); opacity: calc(.85 * var(--ui, 1)); }
+  .sh-vf { position: absolute; left: 50%; top: calc(134 * var(--u)); width: calc(778 * var(--u)); height: calc(783 * var(--u));   /* 안쪽 창(710×718)이 카메라 아이피스 유리와 같은 비율(거의 정사각형) → 마지막 장면에서 실제 유리와 그대로 포개짐 */ transform: translateX(-50%);
+    border-radius: calc(96 * var(--u)); background: #0a0806;
+    box-shadow: 0 0 0 calc(1.5 * var(--u)) rgba(255, 190, 120, .16), 0 calc(-2 * var(--u)) calc(30 * var(--u)) rgba(255, 170, 90, .14), inset 0 0 calc(40 * var(--u)) rgba(0, 0, 0, .9); transition: opacity .45s ease; }
+  .sh-vf::before { content: ''; position: absolute; inset: calc(-1.5 * var(--u)); border-radius: inherit; pointer-events: none; padding: calc(1.5 * var(--u));
+    background: linear-gradient(180deg, rgba(255, 196, 130, .9), rgba(255, 170, 90, .15) 22%, rgba(0, 0, 0, 0) 45%, rgba(255, 170, 90, .1) 85%, rgba(255, 190, 120, .45));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  .sh-in { position: absolute; inset: calc(31 * var(--u)) calc(34 * var(--u)) calc(34 * var(--u)); border-radius: calc(66 * var(--u)); overflow: hidden; background: #000; cursor: crosshair; touch-action: none; }
+  .sh-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .sh-in::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;   /* 유리 안쪽 비네팅 */
+    box-shadow: inset 0 0 calc(70 * var(--u)) rgba(0, 0, 0, .55), inset 0 0 calc(6 * var(--u)) rgba(0, 0, 0, .8); }
+  .sh-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .sh-brk { position: absolute; left: 50%; top: 50%; width: calc(250 * var(--u)); height: calc(190 * var(--u)); transform: translate(-50%, -50%); pointer-events: none; opacity: .9; }
+  .sh-brk i { position: absolute; width: calc(22 * var(--u)); height: calc(22 * var(--u)); border: 0 solid #e9bf86; }
+  .sh-brk i:nth-child(1) { left: 0; top: 0; border-left-width: 2px; border-top-width: 2px; }
+  .sh-brk i:nth-child(2) { right: 0; top: 0; border-right-width: 2px; border-top-width: 2px; }
+  .sh-brk i:nth-child(3) { left: 0; bottom: 0; border-left-width: 2px; border-bottom-width: 2px; }
+  .sh-brk i:nth-child(4) { right: 0; bottom: 0; border-right-width: 2px; border-bottom-width: 2px; }
+  .sh-brk b { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #e9bf86; font-weight: 400; font-size: calc(22 * var(--u)); letter-spacing: calc(6 * var(--u)); }
+  .sh-zoom { position: absolute; left: 50%; bottom: calc(34 * var(--u)); transform: translateX(-50%); display: flex; gap: calc(8 * var(--u)); align-items: center; }
+  .sh-zoom button { width: calc(32 * var(--u)); height: calc(32 * var(--u)); border-radius: 50%; border: 1.5px solid rgba(255, 220, 180, .85); background: rgba(0, 0, 0, .25);
+    color: rgba(255, 228, 196, .95); font: 300 calc(24 * var(--u))/1 'Outfit', sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; }
+  .sh-zoom button:hover { background: rgba(255, 220, 180, .16); }
+  /* 촬영 모드 버튼 3개 — Polaroid Now Gen 3 에 실제로 있는 기능: 플래시 켜기/끄기 · 셀프타이머 · 다중 노출 (전: 줌 + / − — Now 에는 줌이 없음) */
+  .sh-modes { gap: calc(12 * var(--u)); }
+  .sh-modes button { width: calc(38 * var(--u)); height: calc(38 * var(--u)); min-width: 30px; min-height: 30px; transition: background .25s ease, color .25s ease, border-color .25s ease; }
+  .sh-modes button svg { width: 52%; height: 52%; display: block; }
+  .sh-modes button.on { background: #e9bf86; border-color: #e9bf86; color: #1a120b; }
+  .sh-modes button.on:hover { background: #f3cf9c; }
+  .sh-ghost { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .25s ease; box-shadow: inset 0 0 0 2px rgba(233, 191, 134, .75); }   /* 다중 노출의 첫 장을 찍은 뒤: 테두리로 '한 장 더' 를 알림 */
+  .sh-ghost.on { opacity: 1; }
+  .sh-ss.big { top: 50%; transform: translate(-50%, -50%); font-size: calc(96 * var(--u)); font-weight: 300; letter-spacing: 0; color: #fff3e4; text-shadow: 0 0 calc(24 * var(--u)) rgba(0, 0, 0, .55); }
+  .sh-dial { display: none; }   /* 줌 눈금: 줌 기능을 뺐으므로 숨김 */
+  .sh-zv { position: absolute; left: 50%; bottom: calc(44 * var(--u)); transform: translateX(-50%); font: 500 calc(15 * var(--u))/1 'Outfit', sans-serif; letter-spacing: .06em; color: #f3d3a6;
+    opacity: 0; transition: opacity .3s ease; white-space: nowrap; }
+  .sh-zv.on { opacity: 1; }
+  .sh-ss { position: absolute; left: 50%; top: calc(30 * var(--u)); transform: translateX(-50%); font: 600 calc(18 * var(--u))/1 'Outfit', sans-serif; letter-spacing: .08em; color: #f3d3a6;
+    opacity: 0; transition: opacity .2s ease; }
+  .sh-ss.on { opacity: 1; }
+  .sh-thumbs { position: absolute; left: calc(50% - 650 * var(--u)); top: calc(333 * var(--u)); display: flex; flex-direction: column; gap: calc(17 * var(--u)); }
+  .sh-thumbs button { position: relative; width: calc(90 * var(--u)); height: calc(90 * var(--u)); padding: 0; border: 0; background: #000; cursor: pointer; }
+  .sh-thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .3; transition: opacity .35s ease; }
+  .sh-thumbs button.on img { opacity: 1; }
+  .sh-thumbs button::before { content: ''; position: absolute; inset: calc(-8 * var(--u)); opacity: 0; transition: opacity .3s ease; pointer-events: none;
+    background: linear-gradient(#fff, #fff) left top / calc(12 * var(--u)) 2px, linear-gradient(#fff, #fff) left top / 2px calc(12 * var(--u)),
+      linear-gradient(#fff, #fff) right top / calc(12 * var(--u)) 2px, linear-gradient(#fff, #fff) right top / 2px calc(12 * var(--u)),
+      linear-gradient(#fff, #fff) left bottom / calc(12 * var(--u)) 2px, linear-gradient(#fff, #fff) left bottom / 2px calc(12 * var(--u)),
+      linear-gradient(#fff, #fff) right bottom / calc(12 * var(--u)) 2px, linear-gradient(#fff, #fff) right bottom / 2px calc(12 * var(--u)); background-repeat: no-repeat; }
+  .sh-thumbs button.on::before { opacity: 1; }
+  .sh-info { box-sizing: border-box; position: absolute; left: calc(50% + 511 * var(--u)); top: calc(345 * var(--u)); width: calc(222 * var(--u)); color: #fff; transition: opacity .4s ease; }
+  .sh-st { display: flex; align-items: center; gap: calc(28 * var(--u)); margin: 0 0 calc(44 * var(--u)); font-weight: 600; font-size: calc(16 * var(--u)); letter-spacing: .3em; color: #d9b48a; white-space: nowrap; }
+  .sh-st::after { content: ''; flex: 1; height: 2px; background: #c9a27a; }
+  .sh-st b { font-weight: 600; color: #d9b48a; }
+  .sh-dl { display: grid; grid-template-columns: calc(118 * var(--u)) 1fr; row-gap: calc(17 * var(--u)); margin: 0; font-size: calc(12.5 * var(--u)); white-space: nowrap; }
+  .sh-dl dt { font-weight: 600; letter-spacing: .24em; color: #e8e2da; }
+  .sh-dl dd { margin: 0; letter-spacing: .1em; color: #fff; font-weight: 400; }
+  .sh-hr { height: 2px; background: #c9a27a; margin: calc(44 * var(--u)) 0 calc(36 * var(--u)); }
+  .sh-tag { margin: 0; font-size: calc(17.5 * var(--u)); line-height: 1.7; letter-spacing: .18em; color: #d9b48a; font-weight: 400; white-space: nowrap; }
+  .sh-fade { transition: opacity .25s ease; }
+  .sh-bar { position: absolute; left: 50%; top: calc(955 * var(--u)); transform: translateX(-50%); width: calc(860 * var(--u)); display: flex; align-items: center; gap: calc(38 * var(--u)); }
+  .sh-help { display: flex; align-items: center; gap: calc(18 * var(--u)); background: none; border: 0; color: #fff; padding: 0; cursor: pointer; font: 500 calc(16 * var(--u))/1 'Outfit', sans-serif; letter-spacing: .12em; white-space: nowrap; }
+  .sh-help i { width: calc(34 * var(--u)); height: calc(34 * var(--u)); border: 1.5px solid #fff; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: calc(18 * var(--u)); font-weight: 500; letter-spacing: 0; }
+  .sh-dial { position: relative; width: calc(336 * var(--u)); height: calc(46 * var(--u)); flex: none; }
+  .sh-dial .tk { position: absolute; left: 0; right: 0; top: calc(16 * var(--u)); height: calc(10 * var(--u)); border-bottom: 1.5px solid rgba(255, 255, 255, .55);
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .55) 0 1.5px, transparent 1.5px calc(336 * var(--u) / 30)); }
+  .sh-dial .tri { position: absolute; top: 0; width: 0; height: 0; border-left: calc(6 * var(--u)) solid transparent; border-right: calc(6 * var(--u)) solid transparent; border-top: calc(9 * var(--u)) solid #fff; transform: translateX(-50%); }
+  .sh-dial .nums { position: absolute; left: 0; right: 0; top: calc(30 * var(--u)); }
+  .sh-dial .nums span { position: absolute; transform: translateX(-50%); font-size: calc(15 * var(--u)); font-weight: 600; color: rgba(255, 255, 255, .45); transition: color .3s ease; }
+  .sh-dial .nums span.on { color: #fff; }
+  .sh-left { display: flex; align-items: center; gap: calc(16 * var(--u)); font-weight: 600; font-size: calc(17 * var(--u)); letter-spacing: .22em; white-space: nowrap; color: #fff; }
+  .sh-left .dots { display: flex; gap: calc(9 * var(--u)); }
+  .sh-left .dots i { width: calc(14 * var(--u)); height: calc(14 * var(--u)); border-radius: 50%; border: 1.5px solid #fff; box-sizing: border-box; transition: background .25s ease, border-color .25s ease; }
+  .sh-left .dots i.used { background: #e3b37c; border-color: #e3b37c; }
+  .sh-new { display: none; align-items: center; gap: calc(10 * var(--u)); background: none; border: 0; color: #e3b37c; cursor: pointer; padding: 0; font: 600 calc(16 * var(--u))/1 'Outfit', sans-serif; letter-spacing: .22em; white-space: nowrap; }
+  .sh-new.on { display: flex; }
+  .sh-new i { width: calc(26 * var(--u)); height: calc(26 * var(--u)); border: 1.5px solid #e3b37c; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: calc(14 * var(--u)); letter-spacing: 0; }
+  /* How to use (kinoria): 뷰파인더를 어둡게 낮추고 오른쪽에 4단계 카드 */
+  .shot.tut .sh-vf, .shot.tut .sh-thumbs { opacity: .3; }
+  .shot.tut .sh-info { opacity: 0; }
+  .sh-tut { box-sizing: border-box; position: absolute; left: calc(50% + 470 * var(--u)); top: calc(330 * var(--u)); width: calc(372 * var(--u)); padding: calc(26 * var(--u)) calc(26 * var(--u)) calc(24 * var(--u));
+    border-radius: calc(14 * var(--u)); background: rgba(16, 13, 10, .94); border: 1px solid rgba(255, 220, 180, .14); box-shadow: 0 calc(20 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, .5);
+    opacity: 0; visibility: hidden; transform: translateY(calc(10 * var(--u))); transition: opacity .35s ease, transform .35s ease, visibility 0s linear .35s; }
+  .shot.tut .sh-tut { opacity: 1; visibility: visible; transform: none; transition: opacity .35s ease, transform .35s ease; }
+  .sh-tut .tp { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: calc(11 * var(--u)); letter-spacing: .3em; color: #d9b48a; }
+  .sh-tut .pg { display: flex; gap: calc(5 * var(--u)); }
+  .sh-tut .pg i { width: calc(16 * var(--u)); height: 2px; background: rgba(255, 255, 255, .22); }
+  .sh-tut .pg i.on { background: #e3b37c; }
+  .sh-tut h3 { margin: calc(18 * var(--u)) 0 calc(18 * var(--u)); font-weight: 700; font-size: calc(26 * var(--u)); letter-spacing: .08em; color: #fff3e4; line-height: 1.15; }
+  .sh-tut .ic { height: calc(130 * var(--u)); display: flex; align-items: center; justify-content: center; gap: calc(28 * var(--u)); color: #e9c99c; }
+  .sh-tut .ic svg { height: 100%; width: auto; overflow: visible; }
+  .sh-tut .tx { margin: calc(16 * var(--u)) 0 calc(10 * var(--u)); font-size: calc(14.5 * var(--u)); line-height: 1.55; color: #f1ebe4; }
+  .sh-tut .hint { margin: 0 0 calc(22 * var(--u)); font-weight: 600; font-size: calc(10.5 * var(--u)); letter-spacing: .28em; color: #b89a78; }
+  .sh-tut .hint b { color: #e9bf86; }
+  .sh-tut .bt { display: flex; justify-content: space-between; align-items: center; }
+  .sh-tut .bt button { cursor: pointer; font: 600 calc(12.5 * var(--u))/1 'Outfit', sans-serif; letter-spacing: .26em; }
+  .sh-tut .skip { background: none; border: 0; color: #d6cfc7; padding: calc(10 * var(--u)) 0; }
+  .sh-tut .next { background: #e3b37c; border: 0; color: #1a120b; padding: calc(12 * var(--u)) calc(22 * var(--u)); border-radius: 999px; }
+  .sh-tut .next:hover { background: #f0c48e; }
+  /* 가이드는 한글 · Pretendard. 이 미리보기에서는 외부 글꼴 CSS 를 불러올 수 없어, Pretendard 가 없는 기기에서는 기기의 한글 고딕(Apple SD Gothic Neo · 맑은 고딕)으로 보임
+     — 글자가 일부만 들어 있는 Noto Sans KR 조각 글꼴은 일부러 빼서 글자마다 글꼴이 섞이지 않게 함. 한글에는 영문용 넓은 자간을 쓰지 않음 */
+  .sh-tut, .sh-help span { --f-kr: 'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif; }
+  .sh-tut h3 { font-family: var(--f-kr); font-weight: 700; letter-spacing: -.01em; word-break: keep-all; }
+  .sh-tut .tx { font-family: var(--f-kr); font-weight: 400; line-height: 1.6; letter-spacing: -.01em; word-break: keep-all; }
+  .sh-tut .hint { font-family: var(--f-kr); font-weight: 500; font-size: calc(12.5 * var(--u)); letter-spacing: 0; }
+  .sh-tut .bt button { font: 600 calc(13.5 * var(--u))/1 var(--f-kr); letter-spacing: 0; }
+  .sh-help span { font-family: var(--f-kr); font-weight: 500; letter-spacing: 0; }
+  @media (max-aspect-ratio: 4/5) {
+    .sh-glow { top: 7vh; width: 80vw; }
+    .sh-vf { top: 10vh; width: 94vw; height: 84vw; border-radius: 9vw; }
+    .sh-in { inset: 2.6vw; border-radius: 7vw; }
+    .sh-thumbs { left: 50%; top: calc(10vh + 88vw); transform: translateX(-50%); flex-direction: row; gap: 3vw; }
+    .sh-thumbs button { width: 15vw; height: 15vw; }
+    .sh-info { left: 6vw; top: calc(10vh + 107vw); width: 88vw; }
+    .sh-st { margin-bottom: 3vw; } .sh-dl { grid-template-columns: 30vw 1fr; row-gap: 1.6vw; } .sh-hr, .sh-tag { display: none; }
+    .sh-bar { top: auto; bottom: 5vh; width: 92vw; gap: 3vw; justify-content: space-between; } .sh-dial { display: none; }
+    /* 휴대폰: 한 줄에 다 들어오게 글자·간격을 줄임. 롤을 다 쓰면(ROLL DONE + NEW ROLL) 'How to use' 는 ? 아이콘만 남김 → 오른쪽이 잘리지 않음 */
+    .sh-help { font-size: 12px; letter-spacing: .06em; gap: 8px; } .sh-help i { width: 26px; height: 26px; font-size: 14px; }
+    .sh-left { font-size: 12px; letter-spacing: .14em; gap: 8px; } .sh-left .dots { gap: 4px; } .sh-left .dots i { width: 8px; height: 8px; }
+    .sh-bar.done .sh-left .dots { display: none; }
+    .sh-ss.big { font-size: 22vw; }
+    .sh-new { font-size: 12px; letter-spacing: .12em; gap: 6px; } .sh-new i { width: 22px; height: 22px; font-size: 12px; }
+    .sh-bar.done .sh-help span { display: none; }
+    .sh-tut { left: 4vw; top: auto; bottom: 12vh; width: 92vw; }
+  }
+  /* SHOT 뷰파인더 유리 안에서는 공통 커서(SiteCursor)를 숨김 — 마우스를 따라다니는 초점 프레임과 겹치지 않게. 판단은 landingUi.js 가 하고 <html> 에 vf-in 을 닮 */
+  html.vf-in #kc-cv { visibility: hidden; }
+  /* 시작 로딩 화면(뷰파인더 프레임)이 떠 있는 동안에는 공통 헤더를 숨김 — 헤더 컴포넌트는 건드리지 않고 랜딩 쪽에서만 처리 */
+  html[data-page="landing"][data-loader] header { visibility: hidden; }
