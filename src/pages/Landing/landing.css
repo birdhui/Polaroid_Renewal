@@ -637,3 +637,6 @@
   html.vf-in #kc-cv { visibility: hidden; }
   /* 시작 로딩 화면(뷰파인더 프레임)이 떠 있는 동안에는 공통 헤더를 숨김 — 헤더 컴포넌트는 건드리지 않고 랜딩 쪽에서만 처리 */
   html[data-page="landing"][data-loader] header { visibility: hidden; }
+  /* 공통 푸터: 랜딩의 장면들은 화면에 고정된 층이라, 스크롤 끝에서 올라오는 푸터가 그 위를 덮도록 겹침 순서만 올림 (푸터 컴포넌트는 건드리지 않음).
+     푸터가 올라온 만큼 타임라인 갤러리도 같이 위로 밀려 올라감 (3D 엔진의 __ftOv) */
+  html[data-page="landing"] footer { position: relative; z-index: 45; }
