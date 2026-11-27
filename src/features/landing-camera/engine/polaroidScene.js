@@ -576,7 +576,7 @@ export function mountPolaroidScene(signal) {
     // 플래시: 스크롤이 지점(1.0 화면)을 넘는 순간 한 번 터짐, 다시 위로 올라가면 장전
     // 히어로 타이포가 다 사라진 직후(0.55 화면) 그 자리의 카메라에서 플래시 → 사진 배출. 위로 되돌리면 다시 장전
     if (!flash.fired && sc > 0.72) {
-      if (sc < 1.3) { if (hfS > 0.965) { flash.fired = true; flash.t = now; print.t0 = now + 380; window.dispatchEvent(new Event('pl-flash')); } }   /* 카메라가 정면으로 다 돌아온 뒤에 터짐 (전: 0.55) */
+      if (sc < 1.6) { if (hfS > 0.94 || sc > 0.86) { flash.fired = true; flash.t = now; print.t0 = now + 380; window.dispatchEvent(new Event('pl-flash')); } }   /* 카메라가 정면으로 돌아온 뒤에 터짐. 빨리 스크롤해 회전이 아직 덜 끝났어도 0.86 을 지나면 반드시 터짐 (전: 회전이 다 끝날 때만 터져서, 조금만 빨리 내려도 플래시 없이 사진만 나왔음) */
       else { flash.fired = true; flash.t = now - 30000; print.t0 = now - 30000; }   /* 히어로를 한 번에 건너뛴 경우(목차 이동·빠른 스크롤): 다른 섹션에 도착한 뒤에 뒤늦게 섬광·셔터 소리가 나지 않도록 소리·빛 없이 '이미 찍힘'으로만 표시 */
     }   // 셔터 소리 신호
     if (flash.fired && sc < 0.55) { flash.fired = false; print.t0 = -1; }
@@ -598,7 +598,7 @@ export function mountPolaroidScene(signal) {
     // 출력 → 낙하를 한 번의 연속 동작으로: 예전에는 '배출(끝에서 감속해 멈춤)' → '미끄러져 빠짐(다시 가속)'의 두 단계라
     // 배출이 끝나는 지점에서 속도가 0이 돼 살짝 멈췄음. 이제 슬롯 이동량 하나(tr: 0 → 1.06)가 천천히 시작해
     // 속도를 유지한 채 슬롯을 빠져나가고, 그 속도 그대로 낙하(ck)로 이어짐
-    print.k = range(sc, 0.78, 1.5);   /* 플래시(0.72) 뒤에 나오기 시작 (전: 0.6 — 플래시 시점을 늦추면서 사진이 플래시보다 먼저 나오게 됐었음) */
+    print.k = range(sc, 0.9, 1.5);   /* 플래시(0.72) 뒤에 나오기 시작 (전: 0.6 — 플래시 시점을 늦추면서 사진이 플래시보다 먼저 나오게 됐었음) */
     const tq = print.k, tq2 = 0.35 * (1 - Math.exp(-Math.max(0, (sc - 1.5) / 0.9) / 0.35));   // 빠져나온 속도 그대로 시작해 서서히 잦아듦
     const tr = 1.06 * (tq * tq * (2 - tq) + tq2);              // 시작은 0속도, 슬롯을 빠져나간 뒤에도 같은 속도로 계속 미끄러지며 낙하로 넘어감
     const e2 = Math.min(1, tr / 0.86);
@@ -1276,7 +1276,8 @@ export function mountPolaroidScene(signal) {
     // 히어로 → 첫 스크롤: 책상 위에서 내려다보던 구도가 배경이 사라지는 동안 정면 눈높이 구도(전의 히어로 구도)로 천천히 돌아옴 → 그 뒤(0.55)에 플래시가 터지고 사진이 나옴
     //   더 긴 스크롤 구간(0.05~0.66, 전: 0.06~0.5)에 걸쳐 돌고, 스크롤을 곧장 따르지 않고 시간을 두고 뒤따라가므로 휠을 빨리 굴려도 카메라는 제 속도로 천천히 돌아옴
     { const hT = range(sc, 0.05, 0.66), hE = hT * hT * hT * (hT * (hT * 6 - 15) + 10);   // 출발과 도착이 아주 완만한 곡선
-      hfS = window.__snap ? hE : hfS + (hE - hfS) * (1 - Math.exp(-dt * 2.2)); if (Math.abs(hE - hfS) < 0.0008) hfS = hE;
+      const hRate = 2.2 + 9 * range(sc, 0.5, 0.86);   // 플래시 지점에 가까워질수록 빨리 따라붙어, 터질 때는 정면에 와 있게
+      hfS = window.__snap ? hE : hfS + (hE - hfS) * (1 - Math.exp(-dt * hRate)); if (Math.abs(hE - hfS) < 0.0008) hfS = hE;
       const hf = hfS;
       if (hf > 0 && pS > 0.6) { pose.rotY = lerp(pose.rotY, -0.42, hf); pose.rotX = lerp(pose.rotX, 0, hf); pose.h = Math.exp(lerp(Math.log(pose.h), Math.log(0.31), hf)); pose.sy = lerp(pose.sy, pose.sy - 0.02, hf); } }
     // 히어로 조명: 책상 사진의 빛(왼쪽 위 창에서 들어오는 따뜻한 빛)에 맞춰 주광을 더 따뜻하게, 카메라는 조금 더 밝게. 책상이 사라지면 원래 조명으로
