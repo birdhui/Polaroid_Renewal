@@ -1,13 +1,13 @@
-import lettering from '@/assets/film/go/go-lettering.png';
-import photo from '@/assets/film/go/go-photo.png';
+import lettering from '@/assets/film/go/go-design-lettering.png';
+import photo from '@/assets/film/go/go-close-up-print.png';
 import FilmStockSection from './FilmStockSection.jsx';
 
 const go = {
   id: 'go',
   name: 'Go',
   selection: 'Selection 1',
-  lettering: { src: lettering, width: 1952, height: 806 },
-  photo: { src: photo, width: 1254, height: 1254, alt: '야외에서 마주 보는 두 사람이 담긴 Go 필름 사진' },
+  lettering: { src: lettering, width: 1792, height: 768, strokeTransform: 'translate(-655 -118) scale(1.58 1.338)' },
+  photo: { src: photo, width: 1122, height: 1402, alt: '얼굴을 가까이 댄 두 사람이 담긴 Go 필름 사진' },
   caption: ['작은 프레임에 담는 커다란 순간,', '어디서든 일상이 특별한 기록으로.'],
   cameras: ['Go'],
   kind: 'Color',

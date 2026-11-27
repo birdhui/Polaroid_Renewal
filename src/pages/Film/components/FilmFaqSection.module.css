@@ -146,15 +146,19 @@
 }
 
 details[open] .icon::before {
-  transform: scaleX(0.857143);
+  transform: scaleX(0);
+  opacity: 0;
 }
 
 details[open] .icon::after {
-  transform: scaleY(0);
+  transform: rotate(90deg) scaleY(0.857143);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .icon::before,
+  .icon::before {
+    transition: transform 220ms ease, opacity 160ms ease;
+  }
+
   .icon::after {
     transition: transform 220ms ease;
   }

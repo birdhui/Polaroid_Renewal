@@ -34,8 +34,12 @@ export default function FilmRecapPhotoPreview({ selection, calendarRef, onClose 
 
     function updatePosition() {
       frame = null;
-      const { top, bottom } = section.getBoundingClientRect();
-      if (!point && (bottom <= 0 || top >= window.innerHeight)) {
+      const { top, bottom, left, right } = section.getBoundingClientRect();
+      const sectionIsOffscreen = bottom <= 0 || top >= window.innerHeight;
+      const pointerIsOutside = point && (
+        point.x < left || point.x >= right || point.y < top || point.y >= bottom
+      );
+      if (sectionIsOffscreen || pointerIsOutside) {
         onClose(null);
         return;
       }

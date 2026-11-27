@@ -22,7 +22,7 @@ const strokesByStock = {
 };
 
 export default function FilmStockLettering({ stockId, lettering }) {
-  const { src, width, height } = lettering;
+  const { src, width, height, strokeTransform } = lettering;
   const maskId = useId();
   const artworkRef = useRef(null);
   const [phase, setPhase] = useState('waiting');
@@ -54,17 +54,19 @@ export default function FilmStockLettering({ stockId, lettering }) {
       <svg className={styles.ink} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
         <defs>
           <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
-            {strokes.map(([path, thickness, delay, duration], index) => (
-              <path
-                className={styles.stroke}
-                d={path}
-                key={path}
-                pathLength="1"
-                strokeWidth={thickness}
-                style={{ animationDelay: `${delay * writingTimeScale}ms`, animationDuration: `${duration * writingTimeScale}ms` }}
-                onAnimationEnd={index === strokes.length - 1 ? () => setPhase('complete') : undefined}
-              />
-            ))}
+            <g transform={strokeTransform}>
+              {strokes.map(([path, thickness, delay, duration], index) => (
+                <path
+                  className={styles.stroke}
+                  d={path}
+                  key={path}
+                  pathLength="1"
+                  strokeWidth={thickness}
+                  style={{ animationDelay: `${delay * writingTimeScale}ms`, animationDuration: `${duration * writingTimeScale}ms` }}
+                  onAnimationEnd={index === strokes.length - 1 ? () => setPhase('complete') : undefined}
+                />
+              ))}
+            </g>
           </mask>
         </defs>
         <image className={styles.maskedInk} href={src} width={width} height={height} mask={`url(#${maskId})`} />

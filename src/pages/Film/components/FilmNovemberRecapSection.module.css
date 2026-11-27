@@ -1,6 +1,7 @@
 .section {
   position: relative;
   overflow: hidden;
+  color: #fff;
   container-type: inline-size;
 }
 
