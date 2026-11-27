@@ -8,7 +8,7 @@
 - Polaroid 브랜드 웹사이트 UX/UI 리뉴얼, 6인 협업. PM: 곽세희
 - 핵심 메시지: "지나가는 순간을, 손에 남는 기록으로." · 랜딩 콘셉트: From Moment to Memory
 - 스택: React 19 · Vite 8 · React Router 8 · JavaScript(JSX) · CSS Modules
-- 범위 밖: 백엔드, 로그인, DB, 서버 API. Archive 이미지 편집·저장은 브라우저에서만 처리합니다.
+- 범위 밖: 백엔드, 로그인, DB, 서버 API. Film 페이지의 사진 편집·저장은 브라우저에서만 처리합니다.
 - 자세한 문서
   - `docs/project-structure.md`: 구조와 담당 디렉터리
   - `docs/git-convention.md`: 브랜치, 커밋, PR
@@ -22,18 +22,18 @@
 | 곽세희 (PM) | `feat/landing-core` | `src/pages/Landing/`, `src/features/landing-camera/` |
 | 임희지 | `feat/landing-visuals` | `src/features/landing-visuals/`, `public/assets/landing/` |
 | 정준혁 | `feat/cameras` | `src/pages/Cameras/`, `src/assets/cameras/` |
-| 손다은 | `feat/film` | `src/pages/Film/`, `src/assets/film/` |
+| 손다은 | `feat/compare` | `src/pages/Compare/`, `src/assets/compare/` |
 | 모진아 | `feat/history` | `src/pages/History/`, `src/assets/history/` |
-| 이나라 | `feat/archive` | `src/pages/Archive/`, `src/assets/archive/` |
+| 이나라 | `feat/film` | `src/pages/Film/`, `src/assets/film/` |
 
 | 담당자 | 주 담당 범위 | 추가 책임 |
 | --- | --- | --- |
 | 곽세희 | Landing 전체 UX/UI, 스크롤 스토리텔링, 3D 카메라 및 핵심 인터랙션 | PM, 카피·연출 관리, 전체 UX/UI 검수, 최종 `main` 병합·배포 |
 | 임희지 | Landing 시네마틱 비주얼, 필름 현상·노후화 효과, 도면 전환, 2.5D 공간 | 랜딩 이미지·영상 에셋 최적화, 반응형·시각 효과 QA |
 | 정준혁 | Cameras 페이지 | 프로젝트 구조·라우팅·공통 컴포넌트 관리, Git 충돌 지원, `develop` 통합 테스트, 배포 전 기술 검수 |
-| 손다은 | Film 페이지 | UX 리서치, IA·User Flow 반영, 사용성 테스트 기획·진행·정리 (오류 수정은 각 페이지 담당자) |
+| 손다은 | Compare 페이지 | UX 리서치, IA·User Flow 반영, 사용성 테스트 기획·진행·정리 (오류 수정은 각 페이지 담당자) |
 | 모진아 | History 페이지 | 공통 디자인 시스템·`docs/styleguide.md`·스타일 토큰, 로고·파비콘 등 브랜드 공통 에셋 관리 |
-| 이나라 | Archive 페이지 | 사진 업로드·편집·꾸미기·저장 인터랙션과 편집 UI |
+| 이나라 | Film 페이지 | 사진 업로드·편집·꾸미기·저장 인터랙션과 편집 UI |
 
 **공통 작업 브랜치**
 - `chore/project-structure`: 곽세희·정준혁. 대상은 `src/app/`, 초기 설정, 공통 라우팅, 개발 문서
