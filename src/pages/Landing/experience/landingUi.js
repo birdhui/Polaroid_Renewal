@@ -1354,13 +1354,16 @@ export function mountLandingUi(signal) {
     const adjFit = () => {   // 글씨 폭 = POLAROID 배경 글씨 폭(화면의 60%), 세로 가운데도 배경 글씨와 같게
       if (adjM && adjM.w === innerWidth && adjM.h === innerHeight) return;
       const r = G.getBoundingClientRect(); if (!r.width) return;
+      // 배경 POLAROID 이미지가 아직 안 받아졌으면 높이가 0 으로 나옴 → 그 값으로 계산하면 글자 크기가 0 이 되어 NOW 가 끝내 안 보였음 (한 번 계산한 값을 계속 쓰므로)
+      //   → 높이는 이미지의 원래 비율(912:250)로 구하고, 이미지가 받아지면 다시 계산
+      const gh = r.height > 1 ? r.height : r.width * 250 / 912;
       ADJ.style.fontSize = '100px';
       const wpx = ADJ.querySelector('.zadj-t').offsetWidth; if (!wpx) return;
       // 글자 크기: 배경 POLAROID 글씨의 폭을 넘지 않으면서, 대문자 높이가 배경 글씨 높이의 0.6배를 넘지 않게
       //   (전: 폭만 맞춤 — 9글자 DEVELOPED 에는 맞았지만 3글자 NOW 는 폭에 맞추면 세로로 지나치게 커짐)
-      ADJ.style.fontSize = Math.min(100 * r.width / wpx, r.height * 0.6 / 0.7).toFixed(2) + 'px';
-      ADJ.style.top = (r.top + r.height / 2).toFixed(1) + 'px';
-      adjM = { w: innerWidth, h: innerHeight };
+      ADJ.style.fontSize = Math.min(100 * r.width / wpx, gh * 0.6 / 0.7).toFixed(2) + 'px';
+      ADJ.style.top = (r.top + gh / 2).toFixed(1) + 'px';
+      if (r.height > 1) adjM = { w: innerWidth, h: innerHeight };   // 이미지 높이를 실제로 잰 뒤에만 계산을 끝냄
     };
     addEventListener('resize', () => { adjM = null; });
     (window.__fontsReady || Promise.resolve()).then(() => { adjM = null; });
