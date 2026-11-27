@@ -63,18 +63,20 @@ faceOrder.forEach((index) => {
  * Compare 페이지에 들어오면 처음 보이는 화면 (Figma 3194:1742).
  * 카메라 선 그림이 완성된 채로 나오지 않고, 선이 그려지면서 나타난다.
  * 선 그림(이미지)을 그대로 쓰되, 선을 따라 만든 경로를 마스크로 써서 그려진 만큼만 보이게 한다.
- * 다 끝나면 onDone 을 한 번 부른다. 화면을 누르면 건너뛴다. 모션 감소 설정에서는 바로 끝낸다.
+ * 사라지기 시작할 때 onExit, 다 끝나면 onDone 을 한 번씩 부른다. 화면을 누르면 건너뛴다. 모션 감소 설정에서는 바로 끝낸다.
  */
-export default function CompareIntro({ onDone }) {
+export default function CompareIntro({ onDone, onExit }) {
   const maskId = useId().replace(/:/g, '');
   const doneRef = useRef(onDone);
+  const exitRef = useRef(onExit);
   const [phase, setPhase] = useState('draw'); // draw | exit
   const timers = useRef([]);
   const strokeRefs = useRef([]);
 
   useEffect(() => {
     doneRef.current = onDone;
-  }, [onDone]);
+    exitRef.current = onExit;
+  }, [onDone, onExit]);
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -99,7 +101,10 @@ export default function CompareIntro({ onDone }) {
     frame = requestAnimationFrame(tick);
     const total = TIMING.start + TIMING.draw + TIMING.hold;
     timers.current = [
-      setTimeout(() => setPhase('exit'), total),
+      setTimeout(() => {
+        setPhase('exit');
+        exitRef.current?.();
+      }, total),
       setTimeout(() => doneRef.current?.(), total + TIMING.exit),
     ];
     return () => {
@@ -112,6 +117,7 @@ export default function CompareIntro({ onDone }) {
     if (phase === 'exit') return;
     timers.current.forEach(clearTimeout);
     setPhase('exit');
+    exitRef.current?.();
     timers.current = [setTimeout(() => doneRef.current?.(), TIMING.exit)];
   };
 

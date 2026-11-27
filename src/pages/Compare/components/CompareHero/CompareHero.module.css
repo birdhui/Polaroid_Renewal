@@ -1,11 +1,20 @@
 /* 수치는 Figma 시안(1920px 기준) 값이다. --u 는 ComparePage.module.css 참고. */
 .hero {
+  /*
+   * 카메라 배치용 배율. 히어로는 화면 한 장(너비 100%, 높이 100svh)을 꽉 채우고,
+   * 가로 위치는 화면 너비(--kx), 세로 위치는 화면 높이(--ky)에 맞춰 늘어난다. 그래서 어떤 화면 비율에서도 가장자리 카메라가 화면 끝에 붙는다.
+   * 카메라 크기(--k)만 둘 중 작은 쪽을 따라 찌그러지지 않게 한다. 아주 좁은 화면에서도 시안의 절반 아래로는 줄이지 않는다(양옆은 잘린다).
+   */
+  --hero-h: max(100svh, 560px);
+  --kx: max(calc(100cqw / 1920), 0.5px);
+  --ky: max(calc(var(--hero-h) / 1080), 0.5px);
+  --k: min(var(--kx), var(--ky));
+
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(1080 * var(--u));
-  min-height: 560px;
+  height: var(--hero-h);
   overflow: hidden;
   background: #fff;
   color: #000;
@@ -17,17 +26,113 @@
   opacity: 0;
 }
 
+/* 카메라가 놓이는 1920 x 1080 시안 화면. 가장자리에 걸친 카메라는 이 화면 끝에서 잘린다 */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 960px);
+  height: 100%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 /*
- * 시안: 문구 묶음이 히어로 위에서 407 에서 시작해 655 에서 끝난다(높이 248).
- * 1080 안에서 가운데 정렬하면 416 에서 시작하므로, 아래 여백 18 로 9 만큼 끌어올려 시안과 맞춘다.
+ * 카메라 한 대. --x --y --size 는 나열된 자리(시안 px), --ex --ey 는 가장자리 자리까지 옮길 양, --ox --oy 는 바깥으로 밀려날 양이다.
+ * 단계(.stage 의 data-stage)와 역할(data-role)에 따라 이동량(--tx --ty)·크기(--sc)·투명도(--op)만 바꾸고, 부드럽게 움직이는 건 transition 이 한다.
+ * 역할: edge 가장자리에 남는 카메라 · swing 흩어져 나갔다 돌아오는 카메라 · gone 나가고 돌아오지 않는 가운데 카메라
+ */
+.camera {
+  --tx: 0;
+  --ty: 0;
+  --sc: 1;
+  --op: 1;
+  --dur: 0ms;
+  --ease: linear;
+  --delay: 0s;
+
+  position: absolute;
+  top: calc(var(--y) * var(--ky));
+  left: calc(var(--x) * var(--kx));
+  width: calc(var(--size) * var(--k));
+  height: calc(var(--size) * var(--k));
+  object-fit: contain;
+  opacity: var(--op);
+  transform: translate(calc(var(--tx) * var(--kx)), calc(var(--ty) * var(--ky))) scale(var(--sc));
+  transition:
+    transform var(--dur) var(--ease) var(--delay),
+    opacity var(--dur) linear var(--delay);
+  /* 마우스 패럴랙스: --mx --my 는 CompareHero.jsx 가 넣고, --depth 는 카메라마다 다르다. transform 과 따로 겹쳐서 적용된다 */
+  translate: calc(var(--mx, 0px) * var(--depth, 1)) calc(var(--my, 0px) * var(--depth, 1));
+  user-select: none;
+}
+
+/* 1) 나타나기 전 */
+.stage[data-stage='wait'] .camera {
+  --sc: 0.7;
+  --op: 0;
+}
+
+/* 2) 격자로 나열: 하나씩 살짝 커지며 나타난다 */
+.stage[data-stage='grid'] .camera {
+  --dur: 600ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --delay: var(--pop);
+}
+
+/* 3) 흩어짐: 12대는 가장자리로, 나머지는 바깥으로 */
+.stage[data-stage='scatter'] .camera {
+  --dur: 750ms;
+  --ease: cubic-bezier(0.7, 0, 0.2, 1);
+  --delay: var(--stagger);
+}
+
+.stage[data-stage='scatter'] .camera[data-role='edge'] {
+  --tx: var(--ex);
+  --ty: var(--ey);
+}
+
+.stage[data-stage='scatter'] .camera:is([data-role='swing'], [data-role='gone']) {
+  --tx: var(--ox);
+  --ty: var(--oy);
+  --sc: 0.8;
+  --op: 0;
+}
+
+/* 4) 다시 모임: 빠르게 제자리로. 가운데 카메라(gone)는 돌아오지 않는다 */
+.stage[data-stage='final'] .camera {
+  --dur: 850ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --delay: var(--stagger);
+}
+
+.stage[data-stage='final'] .camera[data-role='gone'] {
+  --tx: var(--ox);
+  --ty: var(--oy);
+  --sc: 0.8;
+  --op: 0;
+  --dur: 0ms;
+}
+
+/*
+ * 시안: 문구 묶음이 히어로 위에서 404 에서 시작해 652 에서 끝난다(높이 248).
+ * 1080 안에서 가운데 정렬하면 416 에서 시작하므로, 아래 여백 24 로 12 만큼 끌어올려 시안과 맞춘다.
+ * 카메라가 모이는 동안 문구가 뒤늦게 나타난다.
  */
 .copy {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: calc(18 * var(--u));
+  padding-bottom: calc(24 * var(--u));
   text-align: center;
+  opacity: 0;
+  transition: opacity 600ms ease 350ms;
+}
+
+.copy[data-ready='true'] {
+  opacity: 1;
 }
 
 /* 시안: Outfit Regular 20 / 자간 -0.9 */
@@ -86,25 +191,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cta {
+  .cta,
+  .copy,
+  .camera {
     transition: none;
   }
 }
 
-/*
- * 좁은 화면에서는 배경이 확대되어 가운데 빈 자리가 좁아지므로 높이를 늘리고 문구 상자 폭을 제한한다.
- * (문구 뒤에 흰 바탕을 깔아 카메라를 흐리게 하던 보정은 뺐다 — 카메라가 흐려져 보여서)
- */
+/* 좁은 화면에서는 문구 상자 폭을 제한하고 글자 크기를 고정한다. 카메라는 시안 배치를 그대로 줄여서 보여 준다. */
 @media (max-width: 1100px) {
-  .hero {
-    height: auto;
-    min-height: 560px;
-    padding: 120px 24px;
-  }
-
   .copy {
     max-width: 520px;
-    padding: 40px 28px 48px;
+    padding: 0 24px 24px;
   }
 
   .eyebrow {

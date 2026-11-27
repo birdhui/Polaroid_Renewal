@@ -10,7 +10,7 @@ const HERO_LEAVE_DURATION = 350;
 
 /**
  * Compare — 나에게 맞는 카메라 찾기 (feat/compare)
- * 히어로 + 채팅형 질문(STEP 1~3) → 로딩 → 추천 결과.
+ * 진입 화면(카메라 선 드로잉) → 히어로(카메라가 나열·흩어짐·모이며 문구가 나타남) + 채팅형 질문(STEP 1~3) → 로딩 → 추천 결과.
  * 히어로의 "찾아보기"를 누르면 스크롤로 내려가지 않고, 히어로가 사라진 그 자리에 채팅 화면이 바로 나타난다.
  * 질문을 마치면 같은 자리에서 로딩 화면 → 추천 결과로 바뀐다. (스크롤은 히어로와 질문하는 동안 잠그고, 결과가 나오면 푼다)
  * 결과가 나오면 히어로가 결과 위에 다시 붙고 화면은 결과 자리에 그대로 둔다. 그래서 위로 스크롤하면 히어로로, 아래로 스크롤하면 푸터로 갈 수 있다.
@@ -24,6 +24,8 @@ export default function ComparePage() {
   const leaveTimer = useRef(null);
   const [phase, setPhase] = useState('hero'); // hero | leaving(히어로가 사라지는 중) | finder
   const [stage, setStage] = useState('chat'); // chat | loading | result
+  const heroPlayed = useRef(false); // 히어로의 카메라 등장 모션은 처음 한 번만 재생한다 (결과 위에 다시 붙을 때는 마지막 모습으로 바로 보여 준다)
+  const [introExiting, setIntroExiting] = useState(false);
   const [intro, setIntro] = useState(true); // 페이지에 들어오면 먼저 카메라 선이 그려지는 진입 화면을 보여 준다
   const [finderRun, setFinderRun] = useState(0); // 결과의 "다시보기" — 값이 바뀌면 질문 화면을 처음 상태로 새로 시작한다
 
@@ -79,10 +81,18 @@ export default function ComparePage() {
 
   return (
     <div ref={pageRef} className={styles.page}>
-      {intro ? <CompareIntro onDone={() => setIntro(false)} /> : null}
+      {intro ? <CompareIntro onExit={() => setIntroExiting(true)} onDone={() => setIntro(false)} /> : null}
       {phase !== 'finder' || heroAbove ? (
         <div ref={heroRef}>
-          <CompareHero onStart={heroAbove ? goToFinder : startFinder} leaving={phase === 'leaving'} />
+          <CompareHero
+            onStart={heroAbove ? goToFinder : startFinder}
+            leaving={phase === 'leaving'}
+            animate={!heroPlayed.current}
+            play={!intro || introExiting}
+            onPlayed={() => {
+              heroPlayed.current = true;
+            }}
+          />
         </div>
       ) : null}
       {phase === 'finder' ? (
