@@ -6,6 +6,7 @@ import styles from './RootLayout.module.css';
 /**
  * 모든 페이지가 공유하는 레이아웃. (공통 파일 — 수정 전 PM 협의)
  * Header·Footer 는 여기서 한 번만 렌더링한다. 페이지에서 다시 만들지 않는다.
+ * 메인(Landing)도 서브페이지와 같이 맨 아래에 공통 푸터가 붙는다 (타임라인 갤러리 뒤).
  * route 의 `handle.headerOverlay` 가 true 이면 헤더를 페이지 첫 화면 위에 겹쳐 보여 준다.
  * route 의 `handle.hideHeader` 가 true 이면 그 페이지에서는 헤더를 렌더링하지 않는다.
  */

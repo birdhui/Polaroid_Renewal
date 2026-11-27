@@ -2,68 +2,25 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './FeatureShowcase.module.css';
 
 /**
- * 04~06 Feature — Figma "04/05/06 Feature" 디자인 + KINORIA(kinoria.studio) 스크롤 효과.
- * 세 프레임은 하나의 화면이고(Figma 주석), 화면이 고정(sticky)된 채 스크롤에 맞춰
- * 이미지가 크로스페이드되고 문구 목록이 위로 올라간다.
+ * 04~06 Feature — Figma Frame 134~136 디자인. 세 프레임은 하나의 화면이고,
+ * 화면이 고정(sticky)된 채 스크롤에 맞춰 다이얼 눈금이 돌아가고 문구·영상이 바뀐다.
  * 스크롤 값은 관성 보간을 거쳐 반영되고, 각 기능 위치 근처에서는 잠시 머문다.
  */
 
-// Figma 04·05·06 공통 좌표(px, 1920 기준). d = 목록에서 활성 위치까지의 거리(0 = 활성)
-const Y_AT = [
-  [-2, 479], // Headline Stack 첫 줄(숨김)
-  [-1, 566],
-  [0, 653], // 두 선 사이의 활성 문구
-  [1, 740],
-];
-const ALPHA_AT = [
-  [-3, 0],
-  [-2, 0],
-  [-1, 0.15],
-  [0, 1],
-  [1, 0.15],
-  [2, 0],
-];
-// 활성 문구에서 멀어질수록 초점이 풀린다(KINORIA처럼 올라가면서 흐려진다). 단위는 Figma px
-const BLUR_AT = [
-  [-3, 10],
-  [-2, 6],
-  [-1, 2.5],
-  [0, 0],
-  [1, 2.5],
-  [2, 6],
-];
-
-// 기능별 y 보정(Figma 06 프레임은 9px 위). 스크롤 위치에 따라 연속으로 섞는다
-const shiftAt = (features, pos) => {
-  const i = Math.min(Math.max(Math.floor(pos), 0), features.length - 1);
-  const j = Math.min(i + 1, features.length - 1);
-  const a = features[i].shift ?? 0;
-  const b = features[j].shift ?? 0;
-  return a + (b - a) * (pos - i);
+// 다이얼 눈금(Figma Frame 134: 눈금 36개를 원통에 감은 모양)
+const DIAL = {
+  cx: 80, // 중앙 눈금 왼쪽 x
+  cy: 540, // 중앙 눈금 y
+  radius: 229, // 원통 반지름(px)
+  step: 3.15, // 눈금 사이 각도(도)
+  maxAngle: 66, // 이 각도보다 먼 눈금은 그리지 않는다
+  perFeature: 5, // 기능이 하나 바뀔 때 돌아가는 눈금 수(큰 눈금 간격)
 };
 
-const lerp = (from, to, t) => from + (to - from) * t;
+const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
 
-// 구간 선형 보간. 범위 밖은 첫/마지막 구간의 기울기로 이어간다(y) 또는 끝값을 유지한다(alpha)
-const sample = (points, d, extrapolate) => {
-  if (d <= points[0][0]) {
-    if (!extrapolate) return points[0][1];
-    const [[d0, v0], [d1, v1]] = points;
-    return v0 + ((d - d0) * (v1 - v0)) / (d1 - d0);
-  }
-  const last = points.length - 1;
-  if (d >= points[last][0]) {
-    if (!extrapolate) return points[last][1];
-    const [[d0, v0], [d1, v1]] = [points[last - 1], points[last]];
-    return v1 + ((d - d1) * (v1 - v0)) / (d1 - d0);
-  }
-  for (let i = 0; i < last; i += 1) {
-    const [d0, v0] = points[i];
-    const [d1, v1] = points[i + 1];
-    if (d <= d1) return lerp(v0, v1, (d - d0) / (d1 - d0));
-  }
-  return points[last][1];
-};
+// 기능 i 의 문구 블록 투명도: 활성일 때 1, 절반쯤 넘어가면 0
+const blockAlpha = (d) => clamp01(1 - Math.abs(d) * 2.2);
 
 export default function FeatureShowcase({ heading, features }) {
   const trackRef = useRef(null);
@@ -163,19 +120,77 @@ export default function FeatureShowcase({ heading, features }) {
     };
   }, [count]);
 
-  const goTo = (id) => {
-    const track = trackRef.current;
-    const target = features.findIndex((feature) => feature.id === id);
-    if (!track || target < 0) return;
-    const scrollable = track.offsetHeight - window.innerHeight;
-    const top = track.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: top + ((target + 0.5) / count) * scrollable, behavior: 'smooth' });
-  };
+  // 다이얼: 스크롤 위치(pos)만큼 눈금이 돌아간다
+  const rotation = pos * DIAL.perFeature;
+  const ticks = [];
+  const from = Math.floor(rotation - 24);
+  const to = Math.ceil(rotation + 24);
+  for (let n = from; n <= to; n += 1) {
+    const angle = (n - rotation) * DIAL.step;
+    if (Math.abs(angle) > DIAL.maxAngle) continue;
+    const rad = (angle * Math.PI) / 180;
+    const c = Math.cos(rad);
+    const major = ((n % 5) + 5) % 5 === 0;
+    ticks.push(
+      <i
+        key={n}
+        className={styles.tick}
+        style={{
+          left: `calc(${(DIAL.cx + 39 * (1 - c)).toFixed(2)} * var(--u))`,
+          top: `calc(${(DIAL.cy + DIAL.radius * Math.sin(rad)).toFixed(2)} * var(--u))`,
+          width: `calc(${((major ? 20 : 7) * c).toFixed(2)} * var(--u))`,
+          opacity: (c * (major ? 0.8 : 0.45)).toFixed(3),
+        }}
+      />,
+    );
+  }
 
   return (
     <div ref={trackRef} className={styles.track} style={{ '--count': count }}>
       <div className={styles.sticky}>
         <section className={styles.section} aria-label={heading}>
+          {/* 왼쪽 다이얼 눈금 + 라벨(Funtion 0N) */}
+          <div className={styles.dial} aria-hidden="true">
+            {ticks}
+          </div>
+          {features.map((feature, i) => (
+            <p key={feature.id} className={styles.label} style={{ opacity: blockAlpha(i - pos) }} aria-hidden={i !== index}>
+              {feature.label}
+            </p>
+          ))}
+
+          {/* 가운데 문구 블록: 제목 · 선 · 부제 · 설명 (Figma Frame 137) */}
+          {features.map((feature, i) => {
+            const d = i - pos;
+            // 제목이 한 줄이어도 선·부제·설명은 세 기능 모두 같은 위치(선 508 · 부제 548 · 설명 628)
+            const titleH = 144;
+            return (
+              <div
+                key={feature.id}
+                className={styles.block}
+                style={{
+                  opacity: blockAlpha(d),
+                  transform: `translateY(calc(${(-d * 28).toFixed(2)} * var(--u)))`,
+                  pointerEvents: i === index ? undefined : 'none',
+                }}
+                aria-hidden={i !== index}
+              >
+                <h3 className={styles.title}>
+                  {feature.titleLines.map((line, k) => (
+                    <span key={k}>{line}</span>
+                  ))}
+                </h3>
+                <span className={styles.rule} style={{ '--y': titleH + 40 }} />
+                <p className={styles.subtitle} style={{ '--y': titleH + 80 }}>
+                  {feature.subtitle}
+                </p>
+                <p className={styles.description} style={{ '--y': titleH + 160 }}>
+                  {feature.description}
+                </p>
+              </div>
+            );
+          })}
+
           {/* 이미지는 겹쳐 두고 투명도만 바꿔서 서로 자연스럽게 교차(크로스페이드)한다 */}
           {features.map((feature) => {
             const on = feature.id === active.id;
@@ -188,7 +203,6 @@ export default function FeatureShowcase({ heading, features }) {
                   else videoRefs.current.delete(feature.id);
                 }}
                 className={className}
-                style={feature.size ? { width: `calc(${feature.size} * var(--u))`, height: `calc(${feature.size - 1} * var(--u))` } : undefined}
                 src={feature.video}
                 poster={feature.image}
                 autoPlay
@@ -198,10 +212,10 @@ export default function FeatureShowcase({ heading, features }) {
                 aria-hidden="true"
               />
             ) : (
-              <img key={feature.id} className={className} src={feature.image} alt={on ? feature.headline : ''} />
+              <img key={feature.id} className={className} src={feature.image} alt="" />
             );
           })}
-          {/* Figma Feature Frame: 가로 팔 127, 세로 팔 위 137 · 아래 152, 선 1.5 */}
+          {/* Figma Feature Frame: 569×569, 선 1.5 (#151515) */}
           <svg className={styles.frame} viewBox="0 0 571 571" fill="none" aria-hidden="true">
             <path
               d="M127.772 0.75H0.75V137.747M433.814 0.75H569.75V137.747M0.75 417.624V569.75L127.772 569.75M569.75 417.624V569.75L433.814 569.75"
@@ -209,37 +223,6 @@ export default function FeatureShowcase({ heading, features }) {
               strokeWidth="1.5"
             />
           </svg>
-
-          <p className={styles.tagCode}>{active.tag}</p>
-          <p className={styles.tagLabel}>{active.tagLabel}</p>
-
-          <span className={`${styles.rule} ${styles.ruleTop}`} style={{ '--shift': shiftAt(features, pos) }} aria-hidden="true" />
-          <span className={`${styles.rule} ${styles.ruleBottom}`} style={{ '--shift': shiftAt(features, pos) }} aria-hidden="true" />
-
-          {/* 문구 목록: 스크롤 위치에 따라 y·투명도가 연속으로 바뀐다 */}
-          {features.map((feature, i) => {
-            const d = i - pos;
-            const y = sample(Y_AT, d, true) + shiftAt(features, pos);
-            const alpha = sample(ALPHA_AT, d, false);
-            const blur = sample(BLUR_AT, d, false);
-            return (
-              <button
-                key={feature.id}
-                type="button"
-                className={`${styles.headline} ${i === index ? styles.current : ''}`}
-                style={{
-                  '--y': y,
-                  color: `rgba(21, 21, 21, ${alpha})`,
-                  filter: blur > 0.05 ? `blur(calc(${blur} * var(--u)))` : undefined,
-                  pointerEvents: alpha < 0.05 ? 'none' : undefined,
-                }}
-                aria-current={i === index}
-                onClick={() => goTo(feature.id)}
-              >
-                {feature.headline}
-              </button>
-            );
-          })}
         </section>
       </div>
     </div>
