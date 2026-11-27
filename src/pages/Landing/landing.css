@@ -398,7 +398,7 @@
   .zx .zsub { font-size: min(3.1vw, 5.75vh); font-weight: 400; letter-spacing: -.004em; word-spacing: .1em; }   /* 51.2px */
   .zx .zsub i { display: inline-block; width: 3.2em; }
   .zx .zb { font-size: max(11px, min(.936vw, 1.73vh)); font-weight: 300; letter-spacing: .004em; line-height: 1.213; color: rgb(235,190,159);   /* 15.4px · 줄간격 18.7px */
-    text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 5px rgba(0,0,0,.8), 0 0 12px rgba(0,0,0,.6), 0 0 22px rgba(0,0,0,.4); }
+    text-shadow: 0 1px 2px rgba(0,0,0,.32), 0 0 10px rgba(0,0,0,.2); }   /* 글자 뒤 그림자를 옅게 (전: 검은 그림자 네 겹 .9 · .8 · .6 · .4 — 글자 뒤가 시커멓게 뭉쳐 보였음) */
   .zghost-wrap { position: fixed; inset: 0; z-index: 1; pointer-events: none; }   /* 카메라 뒤 배경 글씨: 블랙이 된 뒤부터 끝까지 계속 깔림 */
   .zghost { position: absolute; left: 50%; top: 16%; width: 60vw; transform: translateX(-50%) translateZ(0); opacity: 0; visibility: hidden; will-change: opacity; backface-visibility: hidden; }   /* 화면 너비의 60% */
   /* 마지막 장면 (kinoria EXPOSED): 사진이 다 넘어가면 뒤에 은은하던 POLAROID 가 NOW 로 바뀌며 빛나고 (POLAROID → NOW = 제품명 · 앞 문장과 이어 읽으면 'Make a Memory Last. NOW.' · 전에는 DEVELOPED), 카메라가 그 아래로 내려앉음.
