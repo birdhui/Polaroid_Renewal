@@ -1747,11 +1747,11 @@ export function mountLandingUi(signal) {
     function build() {
       const R = window.__rolls || [];
       PR.textContent = ''; items = [];
-      const n = R.length ? Math.min(8, R.length) : DEF.length;            // 직접 찍었으면 찍은 장수만큼만(최대 8장, 최근 것부터) — 4장 찍었으면 4장. 한 장도 안 찍었으면 기본 사진 5장
+      const shots = Math.min(8, R.length), n = Math.max(DEF.length, shots);   // 최소 5장: 찍은 사진(최근 것부터, 최대 8장)이 5장보다 적으면 모자란 만큼 기본 사진으로 채움 — 0장 → 기본 5장, 3장 → 찍은 3 + 기본 2, 5~8장 → 찍은 사진만
       for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); let ar = 520 / 636;
-        if (i < R.length) { el.className = 'ys-p'; el.style.setProperty('--fr', `url("/assets/landing/frames/frame-${FC[i]}.webp")`); const im = document.createElement('i'); im.style.backgroundImage = `url("${R[i]}")`; el.appendChild(im); }
-        else { const [f, a] = DEF[i - R.length]; ar = a; el.className = 'ys-p full'; el.style.setProperty('--ph', `url("/assets/landing/ys/${f}.webp")`); el.style.aspectRatio = String(a); }
+        if (i < shots) { el.className = 'ys-p'; el.style.setProperty('--fr', `url("/assets/landing/frames/frame-${FC[i]}.webp")`); const im = document.createElement('i'); im.style.backgroundImage = `url("${R[i]}")`; el.appendChild(im); }
+        else { const [f, a] = DEF[i - shots]; ar = a; el.className = 'ys-p full'; el.style.setProperty('--ph', `url("/assets/landing/ys/${f}.webp")`); el.style.aspectRatio = String(a); }
         PR.appendChild(el); items.push({ el, last: '', ar });
       }
       builtV = window.__rollsV || 0;
