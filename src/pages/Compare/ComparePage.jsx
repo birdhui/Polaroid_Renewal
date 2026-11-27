@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CompareFinder from '@/pages/Compare/components/CompareFinder/CompareFinder.jsx';
 import CompareHero from '@/pages/Compare/components/CompareHero/CompareHero.jsx';
+import CompareIntro from '@/pages/Compare/components/CompareIntro/CompareIntro.jsx';
 import useScrollLock from '@/pages/Compare/hooks/useScrollLock.js';
 import styles from './ComparePage.module.css';
 
@@ -23,6 +24,7 @@ export default function ComparePage() {
   const leaveTimer = useRef(null);
   const [phase, setPhase] = useState('hero'); // hero | leaving(히어로가 사라지는 중) | finder
   const [stage, setStage] = useState('chat'); // chat | loading | result
+  const [intro, setIntro] = useState(true); // 페이지에 들어오면 먼저 카메라 선이 그려지는 진입 화면을 보여 준다
   const [finderRun, setFinderRun] = useState(0); // 결과의 "다시보기" — 값이 바뀌면 질문 화면을 처음 상태로 새로 시작한다
 
   // 히어로와 질문하는 동안(채팅·로딩)에는 한 화면에 고정해 둔다. 히어로를 스크롤해도 아래 푸터만 올라오는 일이 없게 하려는 것이다.
@@ -77,6 +79,7 @@ export default function ComparePage() {
 
   return (
     <div ref={pageRef} className={styles.page}>
+      {intro ? <CompareIntro onDone={() => setIntro(false)} /> : null}
       {phase !== 'finder' || heroAbove ? (
         <div ref={heroRef}>
           <CompareHero onStart={heroAbove ? goToFinder : startFinder} leaving={phase === 'leaving'} />

@@ -1,0 +1,70 @@
+/*
+ * Compare 진입 화면 — Figma 3194:1742 (1920×1080 기준, --u 는 ComparePage.module.css 참고)
+ * 배경: 로딩 화면과 같은 어두운 갈색 배경(시안의 image 222) / 카메라 선 그림: 가운데, 폭 308.434 · 높이 212.495, 0.67° 기울임
+ * 숫자는 1920 기준 px 이고 var(--s) 를 곱해 화면에 맞게 줄어든다.
+ */
+.intro {
+  --s: clamp(0.6px, var(--u), 1px);
+
+  position: absolute; /* .page 는 container 라 fixed 가 페이지 전체를 기준으로 잡히므로, 맨 위 한 화면만 덮는다 */
+  inset: 0 0 auto;
+  z-index: 20;
+  height: max(calc(1080 * var(--u)), 560px); /* 히어로와 같은 한 화면 높이 */
+  overflow: hidden;
+  background: #17100a var(--intro-bg) center / cover no-repeat;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 700ms ease; /* CompareIntro.jsx 의 TIMING.exit 과 맞춘다 */
+}
+
+.intro[data-phase='exit'] {
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* 화면 가운데(시안 위치: 가운데에서 약 8 아래) */
+.camera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(310.901 * var(--s));
+  height: calc(216.091 * var(--s));
+  transform: translate(-50%, calc(-50% + 8 * var(--s)));
+}
+
+.cameraTilt {
+  width: calc(308.434 * var(--s));
+  height: calc(212.495 * var(--s));
+  margin: auto;
+  transform: rotate(0.67deg);
+}
+
+.drawing {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 마스크 안의 선: 굵게 그어 선 그림(겹선)이 모두 드러나게 하고, 처음에는 길이 0 으로 숨겨 둔다 */
+.stroke {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* 마지막에 전체가 옅게 번져 나타난다 */
+.fill {
+  opacity: 0;
+  animation: intro-fill var(--fill, 700ms) ease var(--fill-delay, 3s) forwards;
+}
+
+@keyframes intro-fill {
+  to {
+    opacity: 1;
+  }
+}
