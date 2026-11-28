@@ -7,15 +7,17 @@ import styles from './CompareHero.module.css';
  * Figma 시안(3551:2021)의 카메라 20대가 두 개의 고리를 따라 모두 왼쪽(반시계방향)으로 천천히 돈다.
  *  - 안쪽 고리(시안의 파란 선) 10대는 조금 빠르게, 바깥쪽 고리(빨간 선) 10대는 조금 느리게 따로 돈다.
  *  - 카메라는 시안에서 기울어진 각도(tilt)를 그대로 유지한 채 자리만 고리를 따라 옮겨 간다(카메라 자체는 돌지 않는다).
- *  - 고리를 도는 양은 각도가 아니라 "고리를 따라 간 거리"로 센다. 타원은 각도가 같아도 구간마다 실제 거리가 달라서,
- *    각도로 세면 카메라 사이 간격이 돌수록 벌어지고 뭉쳐 시안 배치가 무너진다. 거리로 세면 간격이 그대로 유지된다.
+ *  - 고리는 시안의 카메라 자리를 차례로 이어 만든 "고정된 길"이고, 카메라는 그 길 위에 고르게 서서 같은 빠르기로 흘러간다.
+ *    앞 카메라가 있던 자리를 뒤 카메라가 그대로 이어받으므로, 어느 시점에 봐도 화면에 보이는 배치 모양이 같다.
+ *    (타원을 각자 도는 방식이면 카메라마다 길이 달라 돌수록 모양이 무너진다)
  *  - 처음엔 시안 자리 그대로 가만히 있다가 서서히 돈다. 문구·버튼·로고는 가만히 있다.
- * 고리의 크기·속도는 시안에 수치가 없어서 파란 선·빨간 선 그림을 보고 정한 임시값이다.
+ * 고리의 중심·속도는 시안에 수치가 없어서 파란 선·빨간 선 그림을 보고 정한 임시값이다.
  */
 const RINGS = {
-  // 중심(cx, cy)과 가로·세로 반지름(a, b)은 시안 화면 한가운데(원점) 기준 px, speed 는 초당 도(왼쪽으로 돈다)
-  inner: { cx: -15, cy: 17, a: 700, b: 546, speed: 14 },
-  outer: { cx: 17, cy: 42, a: 991, b: 685, speed: 9 },
+  // 중심(cx, cy)은 시안 화면 한가운데(원점) 기준 px — 카메라를 고리 순서대로 줄 세울 때만 쓴다.
+  // speed 는 초당 도(왼쪽으로 돈다). 360 / speed 초에 길을 한 바퀴 돈다.
+  inner: { cx: -15, cy: 17, speed: 14 },
+  outer: { cx: 17, cy: 42, speed: 9 },
 };
 const SPIN_RAMP = 1800; // 가만히 있다가 이 속도가 될 때까지 걸리는 시간(ms)
 
@@ -50,82 +52,106 @@ const hash = (n) => {
   return x - Math.floor(x);
 };
 
-const ARC_STEPS = 720; // 고리 한 바퀴를 이만큼으로 잘라 거리를 잰다 (0.5도 간격)
+const SEG_SAMPLES = 24; // 자리와 자리 사이를 이만큼으로 잘라 길을 만든다
 
-/** 고리 타원을 0.5도씩 돌며 "시작점에서 거기까지의 거리"를 미리 재 둔다. 거리 ↔ 각도를 서로 바꾸는 데 쓴다 */
-function buildRingPath(a, b) {
-  const cum = new Float64Array(ARC_STEPS + 1);
-  let prevX = a;
-  let prevY = 0;
-  for (let i = 1; i <= ARC_STEPS; i += 1) {
-    const rad = (i / ARC_STEPS) * Math.PI * 2;
-    const x = a * Math.cos(rad);
-    const y = b * Math.sin(rad);
-    cum[i] = cum[i - 1] + Math.hypot(x - prevX, y - prevY);
-    prevX = x;
-    prevY = y;
+/**
+ * 네 점을 지나는 부드러운 곡선(중심 가중 Catmull-Rom). 자리 사이 간격이 들쭉날쭉해도 길이 부풀지 않는다.
+ * t 가 0 이면 p1, 1 이면 p2 를 정확히 지난다. 그래서 카메라가 시안 자리에 정확히 놓인다.
+ */
+function splineAt(p0, p1, p2, p3, t) {
+  const knot = (ti, a, b) => ti + Math.sqrt(Math.hypot(b.x - a.x, b.y - a.y)) || ti + 1;
+  const t0 = 0;
+  const t1 = knot(t0, p0, p1);
+  const t2 = knot(t1, p1, p2);
+  const t3 = knot(t2, p2, p3);
+  const at = t1 + (t2 - t1) * t;
+  const mix = (a, b, ta, tb) => {
+    const span = tb - ta || 1;
+    const w = (tb - at) / span;
+    return { x: a.x * w + b.x * (1 - w), y: a.y * w + b.y * (1 - w) };
+  };
+  const a1 = mix(p0, p1, t0, t1);
+  const a2 = mix(p1, p2, t1, t2);
+  const a3 = mix(p2, p3, t2, t3);
+  return mix(mix(a1, a2, t0, t2), mix(a2, a3, t1, t3), t1, t2);
+}
+
+/**
+ * 시안 자리들을 고리 순서대로 이어 닫힌 길을 만들고, 길을 따라 잰 거리표를 함께 둔다.
+ * nodeArc[i] 는 i 번째 자리가 길 위에서 어디쯤인지(거리)다.
+ */
+function buildRingPath(spots) {
+  const n = spots.length;
+  const points = [{ x: spots[0].x, y: spots[0].y }];
+  const cum = [0];
+  const nodeArc = [0];
+  for (let i = 0; i < n; i += 1) {
+    const p0 = spots[(i - 1 + n) % n];
+    const p1 = spots[i];
+    const p2 = spots[(i + 1) % n];
+    const p3 = spots[(i + 2) % n];
+    for (let k = 1; k <= SEG_SAMPLES; k += 1) {
+      const point = splineAt(p0, p1, p2, p3, k / SEG_SAMPLES);
+      const prev = points[points.length - 1];
+      points.push(point);
+      cum.push(cum[cum.length - 1] + Math.hypot(point.x - prev.x, point.y - prev.y));
+    }
+    if (i < n - 1) nodeArc.push(cum[cum.length - 1]);
   }
-  return { cum, total: cum[ARC_STEPS] };
+  return { points, cum, nodeArc, total: cum[cum.length - 1] };
 }
 
-/** 각도(도) → 시작점에서 거기까지 고리를 따라 간 거리 */
-function arcAt(path, degrees) {
-  const wrapped = ((degrees % 360) + 360) % 360;
-  const pos = (wrapped / 360) * ARC_STEPS;
-  const i = Math.floor(pos);
-  return path.cum[i] + (path.cum[i + 1] - path.cum[i]) * (pos - i);
-}
-
-/** 거리 → 각도(도). 거리를 일정하게 늘리면 화면에서 일정한 빠르기로 움직인다 */
-function paramAt(path, length) {
+/** 길을 따라 length 만큼 간 지점의 좌표. 거리로 재니까 화면에서 일정한 빠르기로 흐른다 */
+function pointAt(path, length) {
   const wrapped = ((length % path.total) + path.total) % path.total;
   let lo = 0;
-  let hi = ARC_STEPS;
+  let hi = path.cum.length - 1;
   while (hi - lo > 1) {
     const mid = (lo + hi) >> 1;
     if (path.cum[mid] <= wrapped) lo = mid;
     else hi = mid;
   }
   const span = path.cum[hi] - path.cum[lo];
-  return ((lo + (span > 0 ? (wrapped - path.cum[lo]) / span : 0)) / ARC_STEPS) * 360;
+  const f = span > 0 ? (wrapped - path.cum[lo]) / span : 0;
+  const a = path.points[lo];
+  const b = path.points[hi];
+  return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
 }
 
-const RING_PATHS = {
-  inner: buildRingPath(RINGS.inner.a, RINGS.inner.b),
-  outer: buildRingPath(RINGS.outer.a, RINGS.outer.b),
-};
+/** 시안 자리를 화면 한가운데 기준으로 바꾼 기본 정보 */
+const SPOTS = SHOWCASE_SPOTS.map(([id, spotX, spotY, width, height, tilt, ring], index) => ({
+  id,
+  src: SHOWCASE_CAMERAS.find((camera) => camera.id === id).src,
+  ring,
+  x: spotX - DESIGN_CENTER.x,
+  y: spotY - DESIGN_CENTER.y,
+  width,
+  height,
+  tilt,
+  depth: 0.7 + hash(index + 1300) * 0.6,
+}));
 
 /**
- * 카메라마다 자리를 화면 한가운데 기준으로 바꾸고, 자기 고리 위에서 어느 각도(t0)에 있는지, 고리 중심에서 얼마나 떨어졌는지(rx, ry)를 미리 계산한다.
- * 고리를 한 바퀴 도는 길은 "고리 타원에 카메라가 떨어진 정도를 곱한 타원"이라, 같은 고리의 카메라끼리 간격이 유지된다.
+ * 고리마다 카메라를 돌아가는 순서(고리 중심에서 본 각도)로 줄 세우고, 그 자리들을 이어 길을 만든다.
+ * 길은 한 번 만들고 고정이다. 카메라는 자기 자리(s0)에서 출발해 모두 같은 거리만큼 길 위를 흘러간다.
  */
-const CAMERAS = SHOWCASE_SPOTS.map(([id, spotX, spotY, width, height, tilt, ring], index) => {
-  const source = SHOWCASE_CAMERAS.find((camera) => camera.id === id);
-  const x = spotX - DESIGN_CENTER.x;
-  const y = spotY - DESIGN_CENTER.y;
-  const { cx, cy, a, b } = RINGS[ring];
-  const nx = (x - cx) / a;
-  const ny = (y - cy) / b;
-  const reach = Math.hypot(nx, ny);
-  const t0 = (Math.atan2(ny, nx) * 180) / Math.PI;
-  return {
-    id,
-    src: source.src,
-    ring,
-    x,
-    y,
-    width,
-    height,
-    tilt,
-    depth: 0.7 + hash(index + 1300) * 0.6,
-    rx: a * reach,
-    ry: b * reach,
-    t0,
-    s0: arcAt(RING_PATHS[ring], t0), // 시작 자리까지 고리를 따라 간 거리
-    cx,
-    cy,
-  };
+const RING_PATHS = {};
+Object.keys(RINGS).forEach((ring) => {
+  const { cx, cy } = RINGS[ring];
+  const ordered = SPOTS.filter((spot) => spot.ring === ring).sort(
+    (a, b) => Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx),
+  );
+  const path = buildRingPath(ordered);
+  RING_PATHS[ring] = path;
+  // 길 위에 고르게 세운다. 시안 자리는 간격이 250px 와 833px 처럼 들쭉날쭉해서,
+  // 그대로 두면 뭉친 덩어리와 빈 구멍이 같이 돌아 구멍이 눈에 띄는 쪽으로 온다.
+  // 고르게 세우면 어느 시점에 봐도 같은 모양이라 돌아도 배치가 무너지지 않는다.
+  ordered.forEach((spot, index) => {
+    spot.s0 = (index / ordered.length) * path.total;
+  });
 });
+
+const CAMERAS = SPOTS;
 
 /**
  * Compare 히어로 — 가운데에 안내 문구와 "찾아보기" 버튼, 위에 로고가 있고, 카메라가 한 덩어리로 천천히 돈다.
@@ -161,8 +187,9 @@ export default function CompareHero({ onStart, leaving = false }) {
         const node = camerasRef.current[index];
         if (!node) return;
         // 왼쪽(반시계방향)으로 도니까 간 거리를 뺀다
-        const t = paramAt(RING_PATHS[camera.ring], camera.s0 - moved[camera.ring]);
-        node.style.setProperty('--t', t.toFixed(3));
+        const at = pointAt(RING_PATHS[camera.ring], camera.s0 - moved[camera.ring]);
+        node.style.setProperty('--ox', (at.x - camera.x).toFixed(2));
+        node.style.setProperty('--oy', (at.y - camera.y).toFixed(2));
       });
       frame = requestAnimationFrame(tick);
     };
@@ -205,10 +232,8 @@ export default function CompareHero({ onStart, leaving = false }) {
                 '--h': camera.height,
                 '--tilt': camera.tilt,
                 '--depth': camera.depth.toFixed(2),
-                '--rx': camera.rx.toFixed(1),
-                '--ry': camera.ry.toFixed(1),
-                '--t0': camera.t0.toFixed(2),
-                '--t': camera.t0.toFixed(2), // 돌기 전에는 시안 자리 그대로
+                '--ox': 0, // 돌기 전에는 시안 자리 그대로
+                '--oy': 0,
               }}
             />
           ))}

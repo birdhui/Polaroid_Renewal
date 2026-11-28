@@ -45,8 +45,8 @@
 
 /*
  * 카메라 한 대. --x --y 는 시안에서 놓인 자리(화면 한가운데 기준 px), --w --h 는 이미지 크기, --tilt 는 시안에서 기울어진 각도다.
- * --rx --ry 는 자기 고리를 도는 길의 크기, --t0 는 시안에서의 시작 각도, --t(도)는 지금 가 있는 각도다.
- * --t 는 CompareHero.jsx 가 "고리를 따라 간 거리"에서 거꾸로 구해 프레임마다 넣는다. --t 가 --t0 와 같으면 시안 자리 그대로다.
+ * --ox --oy 는 시안 자리에서 길을 따라 얼마나 옮겨 갔는지(시안 px)로, CompareHero.jsx 가 프레임마다 넣는다.
+ * 둘 다 0 이면 시안 자리 그대로다.
  */
 .camera {
   position: absolute;
@@ -58,9 +58,7 @@
   object-fit: contain;
   rotate: calc(var(--tilt) * 1deg); /* 시안 기울기 그대로 — 고리를 따라 옮겨 가도 카메라 자체는 돌지 않는다 */
   /* 고리를 따라 옮겨 가는 양 */
-  translate:
-    calc(var(--rx) * var(--k) * (cos(calc(var(--t) * 1deg)) - cos(calc(var(--t0) * 1deg))))
-    calc(var(--ry) * var(--k) * (sin(calc(var(--t) * 1deg)) - sin(calc(var(--t0) * 1deg))));
+  translate: calc(var(--ox) * var(--k)) calc(var(--oy) * var(--k));
   user-select: none;
 }
 
