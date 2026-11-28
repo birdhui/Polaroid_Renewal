@@ -29,17 +29,17 @@
 /*
  * 처음 등장 (참고: Vitra Office Chair Finder 결과 준비 화면)
  *  1) 글이 먼저 작게 나타난다 (0초)
- *  2) 카메라가 아주 연하게 보이기 시작한다 (0.4초)
- *  3) 글과 카메라가 함께 멀리서 앞으로 다가오고, 카메라는 다가오면서 진해진다 (0.8초 ~ 2.7초)
- *  4) 다 나타난 뒤에는 사라지지 않고 그대로 계속 돈다
- * 수치는 참고 영상을 프레임마다 재서 맞춘 값이다. (글 높이 24 -> 32px 이라 0.75배에서 시작)
+ *  2) 카메라가 아주 연하게 보이기 시작한다 (0.2초)
+ *  3) 글과 카메라가 함께 멀리서 앞으로 다가오고, 카메라는 시계 방향으로 휘감아 돌면서 진해진다 (0.4초 ~ 1.35초)
+ *  4) 다 나타난 뒤에는 사라지지 않고 평소 빠르기로 계속 돈다
+ * 순서는 참고 영상을 프레임마다 재서 맞췄고, 빠르기는 그 2배로 했다. (글 높이 24 -> 32px 이라 0.75배에서 시작)
  */
 .hero {
-  --intro-text-fade: 300ms; /* 글이 나타나는 시간 */
-  --intro-fade-delay: 400ms; /* 카메라가 연하게 보이기 시작 */
-  --intro-fade: 2100ms; /* 카메라가 다 진해지기까지 (0.4초 -> 2.5초) */
-  --intro-approach-delay: 800ms; /* 글과 카메라가 함께 다가오기 시작 */
-  --intro-approach: 1900ms; /* 다가와서 제 크기가 되기까지 (0.8초 -> 2.7초) */
+  --intro-text-fade: 150ms; /* 글이 나타나는 시간 */
+  --intro-fade-delay: 200ms; /* 카메라가 연하게 보이기 시작 */
+  --intro-fade: 1050ms; /* 카메라가 다 진해지기까지 (0.2초 -> 1.25초) */
+  --intro-approach-delay: 400ms; /* 글과 카메라가 함께 다가오기 시작 */
+  --intro-approach: 950ms; /* 다가와서 제 크기가 되기까지 (0.4초 -> 1.35초) — 휘감아 도는 것도 이 동안 */
   --intro-ease: cubic-bezier(0.33, 0, 0.2, 1); /* 다가오기: 부드럽게 출발해 끝에서 천천히 멈춘다 */
   --intro-fade-ease: cubic-bezier(0.5, 0, 0.5, 1); /* 진해지기: 처음엔 아주 연하게 머물다 가운데서 빨라진다 */
 }
@@ -73,20 +73,25 @@
   left: 50%;
   width: 0;
   height: 0;
-  /* 회전은 transform, 다가오는 건 scale 이라 서로 겹치지 않는다. 원 중심(화면 한가운데)을 기준으로 커진다 */
+  /*
+   * 평소 회전은 transform, 처음 다가오기는 scale, 다가오며 휘감아 도는 건 rotate 라 셋이 서로 겹치지 않는다.
+   * 휘감아 돌기는 --intro-swirl 만큼 덜 돈 자리에서 시작해 0 으로 오며, 끝으로 갈수록 느려져 평소 회전으로 이어진다.
+   */
   animation:
     ring-spin var(--period) linear infinite,
     intro-approach var(--intro-approach) var(--intro-ease) var(--intro-approach-delay) both;
-  will-change: transform, scale;
+  will-change: transform, scale, rotate;
 }
 
 @keyframes intro-approach {
   from {
     scale: 0.7;
+    rotate: calc(var(--intro-swirl, 40deg) * -1);
   }
 
   to {
     scale: 1;
+    rotate: 0deg;
   }
 }
 

@@ -7,7 +7,7 @@ import styles from './CompareHero.module.css';
  *  - 카메라는 원에 붙어 있어 원과 함께 돈다. 카메라마다 따로 돌지 않으므로 언제나 가운데를 향한 각도 그대로다.
  *  - 안쪽 원은 조금 빠르게, 바깥쪽 원은 조금 느리게 돈다.
  *  - 두 원 모두 화면 높이보다 커서 위아래로는 화면 밖을 지나간다. 그래서 카메라가 양옆에 모이고 가운데가 넓게 빈다.
- *  - 처음엔 글만 작게 떠 있다가, 카메라가 연하게 보이기 시작해 점점 진해지며 다가오고 글도 같이 커진다. (CompareHero.module.css)
+ *  - 처음엔 글만 작게 떠 있다가, 카메라가 연하게 보이며 휘감아 돌면서 다가오고 글도 같이 커진다. (CompareHero.module.css)
  * 반지름·크기·대수·시작 각도는 시안(1953 x 1080)에 놓인 카메라 자리를 재서 맞춘 값이고, 주기는 시안에 없어서 정한 임시값이다.
  * 반지름·크기는 1920 x 1080 화면 기준 px 이다.
  */
@@ -18,6 +18,7 @@ const RING_LAYOUT = [
     size: 158,
     count: 24, // 시안에서 이웃한 카메라가 약 15도 간격
     period: 170, // 한 바퀴(초) — 안쪽보다 조금 느리게
+    swirl: 35, // 처음 다가오면서 더 휘감아 도는 각도(도) — 안쪽보다 조금 덜
     startAngle: 63.6, // 시안 오른쪽 위 카메라 자리 (12시 방향에서 시계 방향으로 잰 각도)
     offset: 14, // 카메라 순서에서 몇 번째부터 쓸지 — 안쪽 원과 같은 카메라가 나란히 오지 않게 한다
   },
@@ -27,6 +28,7 @@ const RING_LAYOUT = [
     size: 150,
     count: 14, // 시안에서 이웃한 카메라가 약 25도 간격
     period: 100, // 한 바퀴(초) — 바깥쪽(170초)보다 조금 빠르게
+    swirl: 50, // 처음 다가오면서 더 휘감아 도는 각도(도)
     startAngle: 50, // 시안 오른쪽 위 검정 카메라 자리
     offset: 0,
   },
@@ -79,7 +81,7 @@ export default function CompareHero({ onStart, leaving = false }) {
     <header className={styles.hero} data-leaving={leaving}>
       <div className={styles.stage} aria-hidden="true">
         {RINGS.map((ring) => (
-          <div key={ring.name} className={styles.ring} style={{ '--period': `${ring.period}s` }}>
+          <div key={ring.name} className={styles.ring} style={{ '--period': `${ring.period}s`, '--intro-swirl': `${ring.swirl}deg` }}>
             {ring.cameras.map((camera) => (
               <div
                 key={camera.key}
