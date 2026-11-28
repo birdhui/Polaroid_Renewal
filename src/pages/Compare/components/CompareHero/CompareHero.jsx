@@ -26,7 +26,7 @@ const RING_LAYOUT = [
     radius: 680,
     size: 150,
     count: 14, // 시안에서 이웃한 카메라가 약 25도 간격
-    period: 110, // 한 바퀴(초) — 바깥쪽보다 조금 빠르게
+    period: 90, // 한 바퀴(초) — 바깥쪽(170초)보다 빠르게
     startAngle: 50, // 시안 오른쪽 위 검정 카메라 자리
     offset: 0,
   },
