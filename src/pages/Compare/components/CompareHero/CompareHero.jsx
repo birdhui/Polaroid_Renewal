@@ -7,7 +7,7 @@ import styles from './CompareHero.module.css';
  *  - 카메라는 원에 붙어 있어 원과 함께 돈다. 카메라마다 따로 돌지 않으므로 언제나 가운데를 향한 각도 그대로다.
  *  - 안쪽 원은 조금 빠르게, 바깥쪽 원은 조금 느리게 돈다.
  *  - 두 원 모두 화면 높이보다 커서 위아래로는 화면 밖을 지나간다. 그래서 카메라가 양옆에 모이고 가운데가 넓게 빈다.
- *  - 처음에 카메라가 하나씩 살짝 커지며 나타난다. 문구·버튼은 가만히 있다.
+ *  - 처음엔 글만 작게 떠 있다가, 카메라가 연하게 보이기 시작해 점점 진해지며 다가오고 글도 같이 커진다. (CompareHero.module.css)
  * 반지름·크기·대수·시작 각도는 시안(1953 x 1080)에 놓인 카메라 자리를 재서 맞춘 값이고, 주기는 시안에 없어서 정한 임시값이다.
  * 반지름·크기는 1920 x 1080 화면 기준 px 이다.
  */
@@ -57,8 +57,6 @@ const CAMERA_ORDER = [
   'nowPlusBlue',
 ];
 
-const POP_STAGGER = 30; // 카메라가 하나씩 나타나는 간격(ms)
-
 const RINGS = RING_LAYOUT.map((ring) => ({
   ...ring,
   cameras: Array.from({ length: ring.count }, (_, index) => {
@@ -67,7 +65,6 @@ const RINGS = RING_LAYOUT.map((ring) => ({
       key: `${ring.name}-${index}`,
       src: SHOWCASE_CAMERAS.find((camera) => camera.id === id).src,
       angle: ring.startAngle + (360 / ring.count) * index, // 원 위의 자리이자 카메라가 기울어진 각도(가운데를 향함)
-      delay: index * POP_STAGGER,
     };
   }),
 }));
@@ -91,7 +88,6 @@ export default function CompareHero({ onStart, leaving = false }) {
                   '--a': `${camera.angle.toFixed(2)}deg`,
                   '--r': ring.radius,
                   '--s': ring.size,
-                  '--d': `${camera.delay}ms`,
                 }}
               >
                 <img className={styles.camera} src={camera.src} alt="" draggable="false" />
