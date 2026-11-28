@@ -45,12 +45,10 @@
 
 /*
  * 카메라 한 대. --x --y 는 시안에서 놓인 자리(화면 한가운데 기준 px), --w --h 는 이미지 크기, --tilt 는 시안에서 기울어진 각도다.
- * --rx --ry --t0 는 자기 고리를 도는 길의 크기와 시작 각도이고, --ang(도)은 그 고리가 지금까지 돈 만큼이다.
- * 왼쪽(반시계방향)으로 도니까 각도에서 --ang 를 뺀다. --ang 가 0 이면 시안 자리 그대로다.
+ * --rx --ry 는 자기 고리를 도는 길의 크기, --t0 는 시안에서의 시작 각도, --t(도)는 지금 가 있는 각도다.
+ * --t 는 CompareHero.jsx 가 "고리를 따라 간 거리"에서 거꾸로 구해 프레임마다 넣는다. --t 가 --t0 와 같으면 시안 자리 그대로다.
  */
 .camera {
-  --ang: 0;
-
   position: absolute;
   top: calc((var(--y) - var(--h) / 2) * var(--k));
   left: calc((var(--x) - var(--w) / 2) * var(--k));
@@ -61,17 +59,9 @@
   rotate: calc(var(--tilt) * 1deg); /* 시안 기울기 그대로 — 고리를 따라 옮겨 가도 카메라 자체는 돌지 않는다 */
   /* 고리를 따라 옮겨 가는 양 */
   translate:
-    calc(var(--rx) * var(--k) * (cos(calc((var(--t0) - var(--ang)) * 1deg)) - cos(calc(var(--t0) * 1deg))))
-    calc(var(--ry) * var(--k) * (sin(calc((var(--t0) - var(--ang)) * 1deg)) - sin(calc(var(--t0) * 1deg))));
+    calc(var(--rx) * var(--k) * (cos(calc(var(--t) * 1deg)) - cos(calc(var(--t0) * 1deg))))
+    calc(var(--ry) * var(--k) * (sin(calc(var(--t) * 1deg)) - sin(calc(var(--t0) * 1deg))));
   user-select: none;
-}
-
-.camera[data-ring='inner'] {
-  --ang: var(--spin-inner, 0);
-}
-
-.camera[data-ring='outer'] {
-  --ang: var(--spin-outer, 0);
 }
 
 /*
