@@ -1,0 +1,370 @@
+/*
+ * 수치는 Figma 시안(3510:654, 1920×1080 기준) 값이다.
+ * 카메라는 가로 위치는 화면 너비(--kx), 세로 위치는 화면 높이(--ky)에 맞춰 늘어나고, 크기(--k)는 둘 중 작은 쪽을 따라 찌그러지지 않는다.
+ * 눈금 카드(--c)는 시안 비율 그대로 --k 를 따라 줄고, 좁은 화면에서는 화면 폭에 맞춘다.
+ */
+.questions {
+  --hero-h: max(100svh, 560px);
+  --kx: max(calc(100cqw / 1920), 0.5px);
+  --ky: max(calc(var(--hero-h) / 1080), 0.5px);
+  --k: min(var(--kx), var(--ky));
+  --c: var(--k);
+
+  position: relative;
+  height: var(--hero-h);
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+  animation: questions-in 500ms ease backwards;
+}
+
+@keyframes questions-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max(100%, 960px);
+  height: 100%;
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+/*
+ * 카메라 한 대. --cx --cy 는 중심 위치, --size 는 크기(시안 px), --op 는 투명도. 값은 CompareQuestions.jsx 가 프레임마다 넣는다.
+ * 기준 크기 220 으로 그려 두고 scale 로 키우고 줄인다.
+ */
+.camera {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(220 * var(--k));
+  height: calc(220 * var(--k));
+  object-fit: contain;
+  opacity: var(--op, 1);
+  translate: calc(var(--cx) * var(--kx) - 110 * var(--k)) calc(var(--cy) * var(--ky) - 110 * var(--k));
+  scale: calc(var(--size) / 220);
+  user-select: none;
+  will-change: translate, scale, opacity;
+}
+
+/* ---- 눈금 카드: 폭 693 · 높이 241 · 아래에서 49 ---- */
+.card {
+  position: absolute;
+  bottom: calc(49 * var(--ky));
+  left: 50%;
+  width: calc(693 * var(--c));
+  height: calc(241 * var(--c));
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: calc(18 * var(--c));
+  box-shadow: 0 calc(12 * var(--c)) calc(26 * var(--c)) rgb(0 0 0 / 0.09);
+  transform: translateX(-50%);
+  font-family: var(--compare-font-ko);
+  animation: card-in 300ms ease backwards;
+}
+
+/* 맨 처음 질문: 카드가 아래에서 위로 스르륵 올라온다 (translate 는 transform 과 따로 적용된다) */
+.cardRise {
+  animation:
+    card-in 500ms ease 200ms backwards,
+    card-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) 200ms backwards;
+}
+
+@keyframes card-rise {
+  from {
+    translate: 0 calc(180 * var(--ky));
+  }
+
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * ---- 질문 번호 "1 / 3" (Figma 3537:838) — 시안 좌표 그대로 ----
+ * 카드: 왼쪽 647 · 위 753 · 폭 693 · 높이 273 (눈금 카드와 같은 테두리·그림자). 카드 안 좌표 = 시안 좌표 − (647, 753)
+ * 앞 번호 40 / 슬래시 40(연회색 #e0e0e0, 9.71° 기울임) / 전체 수 28, 모두 Pretendard SemiBold · 자간 -0.9
+ */
+.counterCard {
+  right: auto;
+  bottom: calc(54 * var(--ky)); /* 1080 − (753 + 273) */
+  left: calc(647 * var(--kx));
+  height: calc(273 * var(--c));
+  transform: none;
+}
+
+.counterGroup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(65 * var(--c));
+  height: calc(47 * var(--c));
+  /* 카드 정중앙에서 오른쪽으로 20 더 — 큰 "2"가 왼쪽에 몰려 있어 가운데 정렬만으로는 왼쪽으로 치우쳐 보인다 */
+  transform: translate(calc(-50% + 20 * var(--c)), -50%);
+}
+
+.counterNow,
+.counterTotal,
+.counterSlashBox {
+  position: absolute;
+  margin: 0;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.9px;
+  white-space: nowrap;
+  color: #000;
+}
+
+/* 아래 좌표는 세 글자가 이루는 덩어리(폭 65 · 높이 47)의 왼쪽 위 기준 — 글자끼리의 간격은 시안 그대로, 덩어리 전체를 카드 정중앙에 둔다 */
+.counterNow {
+  top: calc(-8 * var(--c));
+  left: 0;
+  font-size: calc(40 * var(--c));
+}
+
+.counterSlashBox {
+  top: 0;
+  left: calc(26 * var(--c));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(19.223 * var(--c));
+  height: calc(39.648 * var(--c));
+  font-size: calc(40 * var(--c));
+  color: #e0e0e0;
+}
+
+.counterSlash {
+  display: block;
+  transform: rotate(9.71deg);
+}
+
+.counterTotal {
+  top: calc(20 * var(--c));
+  left: calc(46 * var(--c));
+  font-size: calc(28 * var(--c));
+}
+
+/* 시안: Pretendard SemiBold 20 / 자간 -0.9 / 카드 위에서 28 */
+.title {
+  position: absolute;
+  top: calc(28 * var(--c));
+  right: calc(120 * var(--c));
+  left: calc(120 * var(--c));
+  margin: 0;
+  font-size: max(calc(20 * var(--c)), 15px);
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.045em;
+  text-align: center;
+  white-space: nowrap;
+  animation: title-in 380ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes title-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 시안: 화살표는 카드 안쪽에서 59, 위에서 29 (11 × 21) */
+.arrow {
+  position: absolute;
+  top: calc(40 * var(--c) - 22px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #000;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.arrow[data-side='left'] {
+  left: calc(65 * var(--c) - 22px);
+}
+
+.arrow[data-side='right'] {
+  right: calc(65 * var(--c) - 22px);
+}
+
+.arrow:disabled {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.arrow:not(:disabled):hover .chevron {
+  transform: scale(1.12);
+}
+
+.chevron {
+  width: max(calc(11 * var(--c)), 9px);
+  height: max(calc(21 * var(--c)), 17px);
+  overflow: visible;
+  transition: transform 160ms ease;
+}
+
+.chevron path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- 눈금 ---- */
+.ruler {
+  position: absolute;
+  top: calc(70 * var(--c));
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  outline: none;
+  mask-image: linear-gradient(to right, rgb(0 0 0 / 0.2), #000 17%, #000 83%, rgb(0 0 0 / 0.2));
+}
+
+.ruler[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.ruler:focus-visible {
+  outline: 2px solid #151515;
+  outline-offset: -4px;
+  border-radius: calc(18 * var(--c));
+}
+
+/* 눈금판: 가운데(카드 폭의 절반)에 선택지 0 번이 놓이고, --pos 만큼 왼쪽으로 밀린다 */
+.track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  transform: translateX(calc(var(--pos) * -128 * var(--c)));
+  will-change: transform;
+}
+
+/* 시안: 큰 눈금 높이 66(카드 위에서 122) · 작은 눈금 높이 32(위에서 156) · 선 굵기 약 1.5 */
+.major,
+.minor {
+  position: absolute;
+  left: calc(var(--at) * 128 * var(--c));
+  width: max(calc(1.5 * var(--c)), 1px);
+  background: #b4b4b4;
+  transform: translateX(-50%);
+}
+
+.major {
+  top: calc(52 * var(--c));
+  height: calc(66 * var(--c));
+}
+
+.minor {
+  /* --lift(0~1)는 눈금판이 움직일 때 검은 선 뒤쪽 눈금이 큰 눈금 높이(66)까지 솟는 정도. 아래쪽은 고정 */
+  top: calc((86 - 34 * var(--lift, 0)) * var(--c));
+  height: calc((32 + 34 * var(--lift, 0)) * var(--c));
+  background: #c0c0c0;
+}
+
+/* 가운데 검은 선: 눈금이 지나가도 항상 가운데에 있다 */
+.needle {
+  position: absolute;
+  top: calc(52 * var(--c));
+  left: 50%;
+  width: max(calc(2 * var(--c)), 1.5px);
+  height: calc(66 * var(--c));
+  background: #151515;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* 시안: 문구 Pretendard Medium 14 / 자간 -0.28 — 검은 선에 가까워질수록(--near 0~1) 18 까지 커지고 진해진다. 멀수록 흐리고 번진다 */
+.label {
+  position: absolute;
+  top: calc(16 * var(--c));
+  left: calc(var(--at) * 128 * var(--c));
+  padding: 0;
+  font-family: inherit;
+  font-size: max(calc((14 + 4 * var(--near, 0)) * var(--c)), calc(12px + 4px * var(--near, 0)));
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, #151515 calc(var(--near, 0) * 100%), #858585);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition:
+    filter 250ms ease,
+    opacity 250ms ease;
+}
+
+.label[data-distance='0'] {
+  font-weight: 600;
+}
+
+.label[data-distance='2'] {
+  filter: blur(1px);
+  opacity: 0.8;
+}
+
+.card[data-locked='true'] {
+  pointer-events: none;
+}
+
+/* 좁은 화면: 카드를 화면 폭에 맞춘다 */
+@media (max-width: 700px) {
+  .questions {
+    --c: calc((100cqw - 32px) / 693);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .questions,
+  .title {
+    animation: none;
+  }
+
+  .track {
+    transition: none;
+  }
+}

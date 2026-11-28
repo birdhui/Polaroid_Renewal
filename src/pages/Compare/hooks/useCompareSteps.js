@@ -34,8 +34,14 @@ export default function useCompareSteps(steps = COMPARE_STEPS) {
   const submit = useCallback(
     (nextAnswers) => {
       if (steps.every((item) => nextAnswers[item.id])) {
+        // 추천 규칙표는 선택지의 ruleId(없으면 id)로 찾는다.
         setSubmitted(
-          Object.fromEntries(steps.map((item) => [item.id, nextAnswers[item.id]])),
+          Object.fromEntries(
+            steps.map((item) => {
+              const option = item.options.find((candidate) => candidate.id === nextAnswers[item.id]);
+              return [item.id, option?.ruleId ?? nextAnswers[item.id]];
+            }),
+          ),
         );
       }
     },

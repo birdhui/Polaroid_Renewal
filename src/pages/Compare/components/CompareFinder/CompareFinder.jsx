@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import CompareChat from '@/pages/Compare/components/CompareChat/CompareChat.jsx';
+import CompareQuestions from '@/pages/Compare/components/CompareQuestions/CompareQuestions.jsx';
 import CompareLoading from '@/pages/Compare/components/CompareLoading/CompareLoading.jsx';
 import CompareResult from '@/pages/Compare/components/CompareResult/CompareResult.jsx';
 import useCompareSteps from '@/pages/Compare/hooks/useCompareSteps.js';
@@ -10,12 +10,12 @@ import styles from './CompareFinder.module.css';
 const HANDOFF_DELAY = 900;
 
 /**
- * Compare 섹션 — 채팅형 질문(STEP 1~3) → 로딩 → 추천 결과가 한 화면 크기의 같은 자리에서 차례로 바뀐다.
- * 마지막 질문까지 마치면 채팅 화면이 그 자리에서 로딩 화면으로, 로딩이 끝나면 그 자리에서 추천 결과로 바뀐다.
+ * Compare 섹션 — 눈금 카드형 질문(STEP 1~3, Figma 3510:654) → 로딩 → 추천 결과가 한 화면 크기의 같은 자리에서 차례로 바뀐다.
+ * 마지막 질문까지 마치면 질문 화면이 그 자리에서 로딩 화면으로, 로딩이 끝나면 그 자리에서 추천 결과로 바뀐다.
  * 결과의 "다시보기"를 누르면 onRestart 로 처음 질문부터 다시 시작한다. (화면을 스크롤해서 옮기지 않는다.) 지금 어느 화면인지는 onStageChange('chat' | 'loading' | 'result')로 알려 준다.
  */
 export default function CompareFinder({ onStageChange, onRestart }) {
-  const { steps, answers, stepIndex, submitted, choose } = useCompareSteps();
+  const { steps, answers, stepIndex, submitted, choose, back } = useCompareSteps();
   const resultRef = useRef(null);
   // 로딩 화면을 다 보여 준 뒤에만 결과를 보여 준다.
   const [loaded, setLoaded] = useState(false);
@@ -50,11 +50,13 @@ export default function CompareFinder({ onStageChange, onRestart }) {
   return (
     <div className={styles.stage} data-stage={stage}>
       {stage === 'chat' ? (
-        <CompareChat
+        <CompareQuestions
           steps={steps}
           answers={answers}
           stepIndex={stepIndex}
+          locked={Boolean(submitted)}
           onChoose={(stepId, optionId) => choose(optionId, stepId)}
+          onBack={back}
         />
       ) : null}
       {stage === 'loading' ? <CompareLoading onDone={() => setLoaded(true)} /> : null}

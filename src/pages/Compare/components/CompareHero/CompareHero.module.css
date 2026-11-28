@@ -26,149 +26,94 @@
   opacity: 0;
 }
 
-/* 카메라가 놓이는 1920 x 1080 시안 화면. 가장자리에 걸친 카메라는 이 화면 끝에서 잘린다 */
+/* 카메라가 깔리는 화면. 카메라 자리는 화면 한가운데(원점)를 기준으로 한 시안 px 이다 */
 .stage {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: max(100%, 960px);
-  height: 100%;
+  inset: 0;
   overflow: hidden;
-  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
+/* 카메라들의 기준점(화면 한가운데) */
+.spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
 /*
- * 카메라 한 대. --x --y --size 는 나열된 자리(시안 px), --ex --ey 는 가장자리 자리까지 옮길 양, --ox --oy 는 바깥으로 밀려날 양이다.
- * 단계(.stage 의 data-stage)와 역할(data-role)에 따라 이동량(--tx --ty)·크기(--sc)·투명도(--op)만 바꾸고, 부드럽게 움직이는 건 transition 이 한다.
- * 역할: edge 가장자리에 남는 카메라 · swing 흩어져 나갔다 돌아오는 카메라 · gone 나가고 돌아오지 않는 가운데 카메라
+ * 카메라 한 대. --x --y 는 시안에서 놓인 자리(화면 한가운데 기준 px), --w --h 는 이미지 크기, --tilt 는 시안에서 기울어진 각도다.
+ * --rx --ry --t0 는 자기 고리를 도는 길의 크기와 시작 각도이고, --ang(도)은 그 고리가 지금까지 돈 만큼이다.
+ * 왼쪽(반시계방향)으로 도니까 각도에서 --ang 를 뺀다. --ang 가 0 이면 시안 자리 그대로다.
  */
 .camera {
-  --tx: 0;
-  --ty: 0;
-  --sc: 1;
-  --op: 1;
-  --dur: 0ms;
-  --ease: linear;
-  --delay: 0s;
+  --ang: 0;
 
   position: absolute;
-  top: calc(var(--y) * var(--ky));
-  left: calc(var(--x) * var(--kx));
-  width: calc(var(--size) * var(--k));
-  height: calc(var(--size) * var(--k));
+  top: calc((var(--y) - var(--h) / 2) * var(--k));
+  left: calc((var(--x) - var(--w) / 2) * var(--k));
+  width: calc(var(--w) * var(--k));
+  height: calc(var(--h) * var(--k));
+  max-width: none; /* 전역 img { max-width: 100% } 때문에 폭이 0 이 되지 않게 */
   object-fit: contain;
-  opacity: var(--op);
-  transform: translate(calc(var(--tx) * var(--kx)), calc(var(--ty) * var(--ky))) scale(var(--sc));
-  transition:
-    transform var(--dur) var(--ease) var(--delay),
-    opacity var(--dur) linear var(--delay);
-  /* 마우스 패럴랙스: --mx --my 는 CompareHero.jsx 가 넣고, --depth 는 카메라마다 다르다. transform 과 따로 겹쳐서 적용된다 */
-  translate: calc(var(--mx, 0px) * var(--depth, 1)) calc(var(--my, 0px) * var(--depth, 1));
+  rotate: calc(var(--tilt) * 1deg); /* 시안 기울기 그대로 — 고리를 따라 옮겨 가도 카메라 자체는 돌지 않는다 */
+  /* 고리를 따라 옮겨 가는 양 */
+  translate:
+    calc(var(--rx) * var(--k) * (cos(calc((var(--t0) - var(--ang)) * 1deg)) - cos(calc(var(--t0) * 1deg))))
+    calc(var(--ry) * var(--k) * (sin(calc((var(--t0) - var(--ang)) * 1deg)) - sin(calc(var(--t0) * 1deg))));
   user-select: none;
 }
 
-/* 1) 나타나기 전 */
-.stage[data-stage='wait'] .camera {
-  --sc: 0.7;
-  --op: 0;
+.camera[data-ring='inner'] {
+  --ang: var(--spin-inner, 0);
 }
 
-/* 2) 격자로 나열: 하나씩 살짝 커지며 나타난다 */
-.stage[data-stage='grid'] .camera {
-  --dur: 600ms;
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --delay: var(--pop);
-}
-
-/* 3) 흩어짐: 12대는 가장자리로, 나머지는 바깥으로 */
-.stage[data-stage='scatter'] .camera {
-  --dur: 750ms;
-  --ease: cubic-bezier(0.7, 0, 0.2, 1);
-  --delay: var(--stagger);
-}
-
-.stage[data-stage='scatter'] .camera[data-role='edge'] {
-  --tx: var(--ex);
-  --ty: var(--ey);
-}
-
-.stage[data-stage='scatter'] .camera:is([data-role='swing'], [data-role='gone']) {
-  --tx: var(--ox);
-  --ty: var(--oy);
-  --sc: 0.8;
-  --op: 0;
-}
-
-/* 4) 다시 모임: 빠르게 제자리로. 가운데 카메라(gone)는 돌아오지 않는다 */
-.stage[data-stage='final'] .camera {
-  --dur: 850ms;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --delay: var(--stagger);
-}
-
-.stage[data-stage='final'] .camera[data-role='gone'] {
-  --tx: var(--ox);
-  --ty: var(--oy);
-  --sc: 0.8;
-  --op: 0;
-  --dur: 0ms;
+.camera[data-ring='outer'] {
+  --ang: var(--spin-outer, 0);
 }
 
 /*
- * 시안: 문구 묶음이 히어로 위에서 404 에서 시작해 652 에서 끝난다(높이 248).
- * 1080 안에서 가운데 정렬하면 416 에서 시작하므로, 아래 여백 24 로 12 만큼 끌어올려 시안과 맞춘다.
+ * 시안: 문구 묶음이 히어로 위에서 415 에서 시작해 663 에서 끝난다(높이 248). 1080 의 한가운데(540)에 놓이므로 가운데 정렬만 하면 된다.
  * 카메라가 모이는 동안 문구가 뒤늦게 나타난다.
  */
 .copy {
-  position: relative;
+  /* 시안: 문구 윗면이 화면 위에서 454 (1080 기준) */
+  position: absolute;
+  top: calc(454 * var(--ky));
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: calc(24 * var(--u));
   text-align: center;
-  opacity: 0;
-  transition: opacity 600ms ease 350ms;
 }
 
-.copy[data-ready='true'] {
-  opacity: 1;
-}
-
-/* 시안: Outfit Regular 20 / 자간 -0.9 */
-.eyebrow {
-  font-family: var(--compare-font-display);
-  font-size: max(calc(20 * var(--u)), 15px);
-  font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: -0.045em;
-}
-
-/* 시안: Outfit SemiBold 32 / 자간 -0.9 · 위 문구와 19 간격 */
+/* 시안(Figma 3542:918): Outfit Regular 40 / 두 줄 / 자간 -0.9 */
 .title {
-  margin-top: calc(19 * var(--u));
   font-family: var(--compare-font-display);
-  font-size: max(calc(32 * var(--u)), 22px);
-  font-weight: 600;
+  font-size: max(calc(40 * var(--u)), 24px);
+  font-weight: 400;
   line-height: 1.25;
-  letter-spacing: -0.028em;
+  letter-spacing: -0.0225em;
 }
 
-/* 시안: Pretendard Regular 14 / 행간 1.1 / 자간 -0.28 · 제목과 19 간격 */
-.subtitle {
-  margin-top: calc(19 * var(--u));
-  color: #151515;
-  font-family: var(--compare-font-ko);
-  font-size: max(calc(14 * var(--u)), 13px);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  word-break: keep-all;
+/* 위쪽 로고 — 흰색 svg 라서 색을 뒤집어 #151515 근처로 만든다. 시안: 116 x 31, 위에서 27 */
+.logo {
+  position: absolute;
+  top: calc(27 * var(--ky));
+  left: 50%;
+  width: max(calc(116 * var(--u)), 84px);
+  height: max(calc(31 * var(--u)), 23px);
+  translate: -50% 0;
+  background: var(--logo) center / contain no-repeat;
+  filter: invert(0.92);
 }
 
 /* 시안: 137 x 41 검정 버튼 / Pretendard 14 흰색 / 자간 -1 · 문구와 73 간격 */
 .cta {
-  margin-top: calc(73 * var(--u));
+  margin-top: calc(74 * var(--u));
   width: max(calc(137 * var(--u)), 120px);
   height: max(calc(41 * var(--u)), 38px);
   background: #151515;
@@ -205,18 +150,8 @@
     padding: 0 24px 24px;
   }
 
-  .eyebrow {
-    font-size: 16px;
-  }
-
   .title {
-    margin-top: 14px;
-    font-size: clamp(22px, 4.6vw, 30px);
-  }
-
-  .subtitle {
-    margin-top: 14px;
-    font-size: 14px;
+    font-size: clamp(24px, 4.6vw, 34px);
   }
 
   .cta {

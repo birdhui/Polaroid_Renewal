@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import introBg from '@/assets/compare/loading/loading-bg.webp';
 import cameraLine from '@/assets/compare/intro/camera-line.webp';
 import { INTRO_LINE_PATHS, INTRO_LINE_SIZE } from '@/pages/Compare/data/compareIntroPaths.js';
 import styles from './CompareIntro.module.css';
@@ -8,14 +7,18 @@ import styles from './CompareIntro.module.css';
  * 모션 타이밍(ms) — 임시값이다(시안에 시간 값이 없다). 아래 숫자만 바꾸면 전체 속도가 바뀐다.
  *
  * 흐름: 어두운 화면 → 카메라 선이 그려지기 시작(START) → 큰 윤곽부터 차례로 그려짐(DRAW)
- *       → 마스크로 못 덮은 잔선(렌즈 글씨 등)이 번져 나타남(FILL) → 잠깐 머무름(HOLD) → 화면이 옅어지며 사라짐(EXIT, 이 뒤에 onDone)
+ *       → 마스크로 못 덮은 잔선(렌즈 글씨 등)이 번져 나타남(FILL) → 잠깐 머무름(HOLD)
+ *       → 셔터 직전 숨 고르기(READY) → 찰칵! 순식간에 하얗게 번쩍하고 카메라가 툭 눌림(FLASH)
+ *       → 빛이 빠르게 가시다 서서히 남으며 다음 화면이 드러남(EXIT, 이 뒤에 onDone)
  */
 const TIMING = {
   start: 250, // 화면이 나오고 첫 선이 그려지기까지
-  draw: 3200, // 선이 모두 그려지는 데 걸리는 시간(가장 늦게 시작하는 선이 끝나는 시점)
+  draw: 2900, // 선이 모두 그려지는 데 걸리는 시간(가장 늦게 시작하는 선이 끝나는 시점)
   fill: 700, // 마스크로 덮지 못한 잔선이 번져 나타나는 시간 (draw 끝 직전부터)
-  hold: 900, // 다 그려진 뒤 머무는 시간
-  exit: 700, // 사라지는 시간 (CSS 의 .exit 전환 시간과 맞춘다)
+  hold: 550, // 다 그려진 뒤 셔터가 눌리기 전까지 머무는 시간 (이 끝 ready 만큼은 셔터를 누르기 직전의 숨 고르기)
+  ready: 300, // 셔터 직전: 카메라가 살짝 커지며 선이 밝아진다
+  flash: 160, // 하얗게 번쩍인 채 머무는 시간 — 번쩍임 자체는 순식간(CSS 의 .flash 전환 50ms)에 하얗게 덮는다
+  exit: 1100, // 하얀 빛이 순식간에 가시다 서서히 남으며 다음 화면이 드러나는 시간 (CSS 의 .intro 전환 시간과 맞춘다)
 };
 
 /**
@@ -32,7 +35,7 @@ const isInsideFace = (path) => {
   }
   return true;
 };
-const ACCEL = 1.4; // 클수록 처음이 더 느리고 끝이 더 빠르다 (전체 진행도 = 시간^ACCEL)
+const ACCEL = 1.8; // 클수록 처음이 더 느리고 끝이 더 빠르다 (전체 진행도 = 시간^ACCEL)
 const MAX_LENGTH = Math.max(...INTRO_LINE_PATHS.map((path) => path.length), 1);
 const IS_FACE = INTRO_LINE_PATHS.map(isInsideFace);
 // 1) 겉 윤곽선: 레퍼런스처럼 거의 한꺼번에 시작해서 각자 쭉 뻗어 나간다. 시작 순서는 섞여 있어 한쪽부터 그려지지 않는다. 값은 전체 진행도(0~1)다.
@@ -60,7 +63,7 @@ faceOrder.forEach((index) => {
 });
 
 /**
- * Compare 페이지에 들어오면 처음 보이는 화면 (Figma 3194:1742).
+ * 히어로의 "찾아보기"를 누르면 히어로 위로 덮이는 드로잉 화면 (Figma 3526:802, 흐름은 3542:2020).
  * 카메라 선 그림이 완성된 채로 나오지 않고, 선이 그려지면서 나타난다.
  * 선 그림(이미지)을 그대로 쓰되, 선을 따라 만든 경로를 마스크로 써서 그려진 만큼만 보이게 한다.
  * 사라지기 시작할 때 onExit, 다 끝나면 onDone 을 한 번씩 부른다. 화면을 누르면 건너뛴다. 모션 감소 설정에서는 바로 끝낸다.
@@ -69,7 +72,7 @@ export default function CompareIntro({ onDone, onExit }) {
   const maskId = useId().replace(/:/g, '');
   const doneRef = useRef(onDone);
   const exitRef = useRef(onExit);
-  const [phase, setPhase] = useState('draw'); // draw | exit
+  const [phase, setPhase] = useState('draw'); // draw | ready(셔터 직전) | flash(번쩍임) | exit(드러나는 중)
   const timers = useRef([]);
   const strokeRefs = useRef([]);
 
@@ -77,6 +80,16 @@ export default function CompareIntro({ onDone, onExit }) {
     doneRef.current = onDone;
     exitRef.current = onExit;
   }, [onDone, onExit]);
+
+  // 찰칵: 하얗게 번쩍인 뒤(flash) 그 하얀 화면이 옅어지며 다음 화면이 드러난다(exit). delay 뒤에 시작한다.
+  const shutter = (delay) => [
+    setTimeout(() => setPhase('flash'), delay),
+    setTimeout(() => {
+      setPhase('exit');
+      exitRef.current?.();
+    }, delay + TIMING.flash),
+    setTimeout(() => doneRef.current?.(), delay + TIMING.flash + TIMING.exit),
+  ];
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,13 +113,7 @@ export default function CompareIntro({ onDone, onExit }) {
     };
     frame = requestAnimationFrame(tick);
     const total = TIMING.start + TIMING.draw + TIMING.hold;
-    timers.current = [
-      setTimeout(() => {
-        setPhase('exit');
-        exitRef.current?.();
-      }, total),
-      setTimeout(() => doneRef.current?.(), total + TIMING.exit),
-    ];
+    timers.current = [setTimeout(() => setPhase('ready'), total - TIMING.ready), ...shutter(total)];
     return () => {
       cancelAnimationFrame(frame);
       timers.current.forEach(clearTimeout);
@@ -114,11 +121,9 @@ export default function CompareIntro({ onDone, onExit }) {
   }, []);
 
   const skip = () => {
-    if (phase === 'exit') return;
+    if (phase !== 'draw' && phase !== 'ready') return;
     timers.current.forEach(clearTimeout);
-    setPhase('exit');
-    exitRef.current?.();
-    timers.current = [setTimeout(() => doneRef.current?.(), TIMING.exit)];
+    timers.current = shutter(0);
   };
 
   const drawEnd = (TIMING.start + TIMING.draw) / 1000;
@@ -128,7 +133,7 @@ export default function CompareIntro({ onDone, onExit }) {
       className={styles.intro}
       data-phase={phase}
       onClick={skip}
-      style={{ '--intro-bg': `url(${introBg})`, '--fill': `${TIMING.fill}ms`, '--fill-delay': `${drawEnd - 0.5}s` }}
+      style={{ '--fill': `${TIMING.fill}ms`, '--fill-delay': `${drawEnd - 0.5}s` }}
       aria-hidden="true"
     >
       <div className={styles.camera}>
@@ -160,6 +165,8 @@ export default function CompareIntro({ onDone, onExit }) {
           </svg>
         </div>
       </div>
+      {/* 셔터가 찍히는 순간의 하얀 번쩍임 */}
+      <div className={styles.flash} />
     </div>
   );
 }

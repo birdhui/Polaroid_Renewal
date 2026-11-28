@@ -1,6 +1,6 @@
 /*
- * Compare 진입 화면 — Figma 3194:1742 (1920×1080 기준, --u 는 ComparePage.module.css 참고)
- * 배경: 로딩 화면과 같은 어두운 갈색 배경(시안의 image 222) / 카메라 선 그림: 가운데, 폭 308.434 · 높이 212.495, 0.67° 기울임
+ * Compare 진입 화면 — Figma 3526:802 (1920×1080 기준, --u 는 ComparePage.module.css 참고)
+ * 배경: 단색 #151515 / 카메라 선 그림: 정중앙, 폭 284.811 · 높이 196.22, 0.67° 기울임
  * 숫자는 1920 기준 px 이고 var(--s) 를 곱해 화면에 맞게 줄어든다.
  */
 .intro {
@@ -11,32 +11,85 @@
   z-index: 20;
   height: max(calc(1080 * var(--u)), 560px); /* 히어로와 같은 한 화면 높이 */
   overflow: hidden;
-  background: #17100a var(--intro-bg) center / cover no-repeat;
+  background: #151515;
   cursor: pointer;
   opacity: 1;
-  transition: opacity 700ms ease; /* CompareIntro.jsx 의 TIMING.exit 과 맞춘다 */
+  animation: intro-in 450ms ease backwards; /* 히어로 위로 어두운 화면이 서서히 덮인다 */
+  transition: opacity 1100ms cubic-bezier(0.1, 0.65, 0.2, 1); /* CompareIntro.jsx 의 TIMING.exit 과 맞춘다. 처음에 확 빠졌다가 서서히 남는 곡선(빛의 잔상) */
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.intro[data-phase='flash'],
+.intro[data-phase='exit'] {
+  pointer-events: none;
 }
 
 .intro[data-phase='exit'] {
-  pointer-events: none;
   opacity: 0;
 }
 
-/* 화면 가운데(시안 위치: 가운데에서 약 8 아래) */
+/* 셔터 번쩍임: 순식간에 하얗게 덮고(flash), 이어서 intro 전체가 옅어지며 다음 화면이 드러난다(exit) */
+.flash {
+  position: absolute;
+  inset: 0;
+  /* 가운데(렌즈 쪽)는 새하얗고 가장자리는 살짝 따뜻한 빛 */
+  background: radial-gradient(circle at 50% 50%, #fff 0%, #fff 45%, #fff6e0 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 50ms ease-out; /* 번쩍임은 순식간에 */
+}
+
+.intro[data-phase='flash'] .flash,
+.intro[data-phase='exit'] .flash {
+  opacity: 1;
+}
+
+/* 화면 정중앙 */
 .camera {
   position: absolute;
+  scale: 1;
+  transition: scale 120ms ease-out;
   top: 50%;
   left: 50%;
-  width: calc(310.901 * var(--s));
-  height: calc(216.091 * var(--s));
-  transform: translate(-50%, calc(-50% + 8 * var(--s)));
+  width: calc(287.088 * var(--s));
+  height: calc(199.54 * var(--s));
+  transform: translate(-50%, -50%);
 }
 
 .cameraTilt {
-  width: calc(308.434 * var(--s));
-  height: calc(212.495 * var(--s));
+  width: calc(284.811 * var(--s));
+  height: calc(196.22 * var(--s));
   margin: auto;
   transform: rotate(0.67deg);
+}
+
+/* 셔터 직전(ready): 카메라가 살짝 커지며(숨을 들이쉬듯) 선이 밝아진다 / 찰칵(flash): 툭 눌렸다가 / 빛이 가시는 동안(exit) 제자리로 */
+.intro[data-phase='ready'] .camera {
+  scale: 1.04;
+  transition: scale 300ms ease-in;
+}
+
+.intro[data-phase='flash'] .camera {
+  scale: 0.965;
+  transition: scale 60ms ease-out;
+}
+
+.intro[data-phase='exit'] .camera {
+  scale: 1;
+  transition: scale 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.drawing {
+  transition: filter 300ms ease-in;
+}
+
+.intro[data-phase='ready'] .drawing {
+  filter: brightness(1.7);
 }
 
 .drawing {
