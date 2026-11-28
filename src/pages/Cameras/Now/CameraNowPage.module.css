@@ -304,47 +304,31 @@
   padding-top: calc(361.27 * var(--u));
 }
 
-.coverHeading {
-  position: relative;
+.page .coverHeading {
   flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   width: calc(1600.57 * var(--u));
   height: calc(227.92 * var(--u));
-  font-size: calc(40 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
-}
-
-.coverLine1,
-.coverLine2 {
-  position: absolute;
-  left: 0;
-  right: 0;
-}
-
-.coverLine1 {
-  top: calc(100.73 * var(--u));
-  height: calc(75.46 * var(--u));
-  padding-top: calc(27.73 * var(--u));
-}
-
-.coverLine2 {
-  top: calc(150.46 * var(--u));
-  height: calc(77 * var(--u));
-  padding-top: calc(26.27 * var(--u));
-}
-
-.coverLine1 .line,
-.coverLine2 .line {
-  line-height: calc(48 * var(--u));
+  /* 참고 사이트처럼 굵기는 한 가지(400)로 두고 색으로만 위계를 준다. 크기는 한글 폭에 맞춰 키웠다 */
+  font-weight: 700;
+  font-size: calc(68 * var(--u));
+  line-height: calc(86 * var(--u));
+  letter-spacing: -0.03em;
   white-space: nowrap;
+}
+
+/* 고정 높이 안에서 줄 래퍼(overflow: hidden)가 찌그러져 글자 아래가 잘리지 않게 한다 */
+.page .coverHeading .lineW {
+  flex: none;
 }
 
 .coverMuted {
   color: var(--gray);
-  font-weight: 500;
 }
 
 .coverStrong {
-  font-weight: 600;
   color: var(--gray);
   transition:
     transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
@@ -395,16 +379,16 @@
   padding: calc(171.488 * var(--u)) var(--pad) 0;
 }
 
-.aboutTitle {
+.page .aboutTitle {
   grid-column: 1;
   grid-row: 1;
   align-self: start;
-  width: calc(871 * var(--u));
+  width: calc(1500 * var(--u));
   font-family: var(--f-out);
-  font-weight: 600;
-  font-size: calc(40 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
-  line-height: calc(48 * var(--u));
+  font-weight: 700;
+  font-size: calc(68 * var(--u));
+  letter-spacing: -0.03em;
+  line-height: calc(84 * var(--u));
   white-space: nowrap;
 }
 
@@ -413,14 +397,14 @@
   grid-row: 2;
 }
 
-.aboutText {
+.page .aboutText {
   grid-column: 7 / span 6;
   grid-row: 2;
   width: calc(711 * var(--u));
-  font-weight: 400;
-  font-size: calc(22.9 * var(--u));
-  line-height: calc(29.72 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  font-weight: 500;
+  font-size: calc(24 * var(--u));
+  line-height: calc(34 * var(--u));
+  letter-spacing: -0.02em;
 }
 
 .aboutImage {
@@ -450,31 +434,29 @@
   top: calc(194.34 * var(--u));
 }
 
-.stackTitle {
+.page .stackTitle {
   position: absolute;
   left: calc(425.86 * var(--u));
   top: calc(194.34 * var(--u));
-  font-weight: 600;
-  font-size: calc(40 * var(--u));
-  line-height: calc(48 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  font-weight: 700;
+  font-size: calc(56 * var(--u));
+  line-height: calc(68 * var(--u));
+  letter-spacing: -0.03em;
   white-space: nowrap;
 }
 
-.stackText {
+.page .stackText {
   position: absolute;
-  left: calc(1173 * var(--u));
-  top: calc(436.3 * var(--u));
-  width: calc(434 * var(--u));
-  font-size: calc(20 * var(--u));
-  line-height: calc(24 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  left: calc(1156 * var(--u));
+  top: calc(400 * var(--u));
+  width: calc(467 * var(--u));
+  font-weight: 500;
+  font-size: calc(21 * var(--u));
+  line-height: calc(28 * var(--u));
+  letter-spacing: -0.02em;
 }
 
 .rows {
-  --final-offset: 0px;
-  --scroll-offset: 0px;
-  --scroll-progress: 0;
   position: absolute;
   left: 0;
   right: 0;
@@ -493,9 +475,8 @@
 
 .row {
   position: sticky;
-  top: calc(
-    (96 + 128 * var(--i, 0)) * var(--u) + var(--scroll-offset, 0px) * var(--scroll-progress, 0) - var(--final-offset, 0px)
-  );
+  /* 최종 위치는 스크롤 스크립트가 px 로 직접 쓴다(CSS 변수를 매 프레임 바꾸면 하위 전체가 재계산된다) */
+  top: calc((96 + 128 * var(--i, 0)) * var(--u));
   height: calc(504 * var(--u));
   margin: 0 var(--pad);
   border-top: calc(0.571 * var(--u)) solid var(--gray);
@@ -522,11 +503,12 @@
   overflow: hidden;
 }
 
-.rowText {
+.page .rowText {
   position: absolute;
-  font-size: calc(18.3 * var(--u));
-  line-height: calc(20.12 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  font-weight: 500;
+  font-size: calc(20 * var(--u));
+  line-height: calc(28 * var(--u));
+  letter-spacing: -0.02em;
 }
 
 .rowTextLeft {
@@ -555,16 +537,16 @@
 .tip {
   position: absolute;
   left: 0;
-  top: calc(251.5 * var(--u));
+  top: calc(300 * var(--u));
   font-size: calc(14 * var(--u));
   line-height: calc(24 * var(--u));
-  letter-spacing: calc(-2 * var(--u));
+  letter-spacing: -0.01em;
   color: rgba(0, 0, 0, 0.7);
   white-space: nowrap;
 }
 
 .row2 .tip {
-  top: calc(264.5 * var(--u));
+  top: calc(313 * var(--u));
 }
 
 .tipLabel {
@@ -613,11 +595,11 @@
   line-height: calc(45.27 * var(--u));
 }
 
-.linkText {
-  font-weight: 300;
-  font-size: calc(22.9 * var(--u));
-  line-height: calc(29.72 * var(--u));
-  letter-spacing: calc(-1 * var(--u));
+.page .linkText {
+  font-weight: 500;
+  font-size: calc(24 * var(--u));
+  line-height: calc(33 * var(--u));
+  letter-spacing: -0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {

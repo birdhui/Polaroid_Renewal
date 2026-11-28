@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { ROUTES } from '@/app/routes.js';
 import styles from './CameraNowPage.module.css';
@@ -17,7 +17,7 @@ import styles from './CameraNowPage.module.css';
 
 const FONT_STYLESHEETS = [
   'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css',
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap',
+  'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap',
 ];
 
 const UNIT_BASE = 1646.29; // Figma 프레임 너비
@@ -25,19 +25,13 @@ const clamp = (v, a = 0, b = 1) => Math.min(Math.max(v, a), b);
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* 로더: 3s 동안 0→100% 를 세고, 70% 지점에서 글자가 위로 빠지며 패널이 걷힌다. */
-function useLoader() {
+/* 로더: 3s 동안 0→100% 를 세고, 70% 지점에서 글자가 위로 빠지며 패널이 걷힌다.
+   카운터 숫자는 이 컴포넌트 안에서만 갱신해 페이지 전체가 매 프레임 다시 그려지지 않게 한다. */
+function Loader({ onOut, onDone, onGone }) {
   const [count, setCount] = useState(0);
-  const [phase, setPhase] = useState('pre'); // pre → in → out → gone
-  const [done, setDone] = useState(false);
+  const [phase, setPhase] = useState('pre'); // pre → in → out
 
   useEffect(() => {
-    if (prefersReducedMotion()) {
-      setCount(100);
-      setPhase('gone');
-      setDone(true);
-      return undefined;
-    }
     document.documentElement.style.overflow = 'hidden';
     const duration = 3000;
     const ease = (p) => {
@@ -48,21 +42,26 @@ function useLoader() {
     const timers = [];
     let frame = 0;
     let started = false;
+    let shown = -1;
     const begin = performance.now() + 40;
     timers.push(window.setTimeout(() => setPhase('in'), 40));
     const tick = (now) => {
       const p = clamp((now - begin) / duration);
-      setCount(Math.round(ease(p) * 100));
+      const value = Math.round(ease(p) * 100);
+      if (value !== shown) {
+        shown = value;
+        setCount(value);
+      }
       if (!started && p >= 0.7) {
         started = true;
         setPhase('out');
         timers.push(
           window.setTimeout(() => {
             document.documentElement.style.overflow = '';
-            setDone(true);
+            onDone();
           }, 350),
         );
-        timers.push(window.setTimeout(() => setPhase('gone'), 1900));
+        timers.push(window.setTimeout(onGone, 1900));
       }
       if (p < 1) frame = requestAnimationFrame(tick);
     };
@@ -72,46 +71,79 @@ function useLoader() {
       timers.forEach(window.clearTimeout);
       document.documentElement.style.overflow = '';
     };
-  }, []);
+  }, [onOut, onDone, onGone]);
 
-  return { count, phase, done };
+  return (
+    <div className={`${styles.loader} ${phase === 'in' ? styles.loaderIn : ''} ${phase === 'out' ? styles.loaderOut : ''}`} aria-hidden="true">
+      <div className={styles.loaderPanel} />
+      <p className={styles.loaderTitle}>
+        {['Polaroid', 'Now Gen 3'].map((line, i) => (
+          <span key={line} className={styles.loaderLineW}>
+            <span className={styles.loaderLine} style={{ '--i': i }}>
+              {line}
+            </span>
+          </span>
+        ))}
+      </p>
+      <p className={styles.loaderLabel}>
+        <span className={styles.loaderLineW}>
+          <span className={styles.loaderLine} style={{ '--i': 2 }}>
+            Loading
+          </span>
+        </span>
+      </p>
+      <p className={styles.loaderCount}>
+        <span className={styles.loaderLineW}>
+          <span className={styles.loaderLine} style={{ '--i': 3 }}>
+            {count}%
+          </span>
+        </span>
+      </p>
+    </div>
+  );
 }
 
-/* 관성 스크롤(Lenis 와 같은 방식): 휠 입력마다 현재 위치에서 목표까지 1.2s, easing 1-(1-t)^5 로 이동한다. */
-function useSmoothScroll(enabled) {
+/* 관성 스크롤: 입력(휠)이 목표 위치를 옮기고, 현재 위치가 시간 기반 감쇠로 따라간다(속도가 끊기지 않는다).
+   위치를 옮긴 같은 프레임 안에서 스크롤 연동 효과를 바로 갱신해(fxRef) 고정된 행·시차가 한 프레임 늦지 않게 한다. */
+function useSmoothScroll(enabled, fxRef) {
   useEffect(() => {
     if (!enabled || prefersReducedMotion()) return undefined;
-    let from = window.scrollY;
-    let to = from;
-    let startTime = 0;
+    let current = window.scrollY;
+    let target = current;
+    let last = 0;
     let frame = 0;
     let running = false;
-    const duration = 1200;
     const max = () => document.documentElement.scrollHeight - window.innerHeight;
 
     const loop = (now) => {
-      const t = clamp((now - startTime) / duration);
-      const eased = 1 - (1 - t) ** 5;
-      window.scrollTo(0, from + (to - from) * eased);
-      if (t < 1) frame = requestAnimationFrame(loop);
-      else running = false;
+      const dt = Math.min((now - (last || now)) / 1000, 0.05);
+      last = now;
+      current += (target - current) * (1 - Math.exp(-dt * 5.5));
+      if (Math.abs(target - current) < 0.3) {
+        current = target;
+        running = false;
+      }
+      window.scrollTo(0, current);
+      fxRef.current?.();
+      if (running) frame = requestAnimationFrame(loop);
+      else last = 0;
     };
     const onWheel = (event) => {
       if (event.ctrlKey) return;
       event.preventDefault();
       const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
-      from = window.scrollY;
-      to = clamp((running ? to : from) + delta, 0, max());
-      startTime = performance.now();
+      if (!running) current = window.scrollY;
+      target = clamp((running ? target : current) + delta, 0, max());
       if (!running) {
         running = true;
+        last = 0;
         frame = requestAnimationFrame(loop);
       }
     };
     const onScroll = () => {
       if (!running) {
-        from = window.scrollY;
-        to = from;
+        current = window.scrollY;
+        target = current;
       }
     };
     window.addEventListener('wheel', onWheel, { passive: false });
@@ -121,7 +153,7 @@ function useSmoothScroll(enabled) {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('scroll', onScroll);
     };
-  }, [enabled]);
+  }, [enabled, fxRef]);
 }
 
 /* [data-reveal] 요소의 상단이 화면 90% 지점에 닿으면 data-in="true" (한 번만). */
@@ -152,73 +184,96 @@ function useReveal(rootRef, enabled) {
   }, [rootRef, enabled]);
 }
 
-/* 스크롤 연동 효과: 커버 이미지 확장·scale, 이미지 시차(높이/5), 카드 스택의 오프셋. */
-function useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared) {
+/* 스크롤 연동 효과: 커버 이미지 확장·scale, 이미지 시차(높이/5), 카드 스택의 위치.
+   위치·크기는 미리 재 두고(layout) 매 프레임에는 계산한 값을 쓰기만 해서 강제 레이아웃을 피한다. */
+function useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared, fxRef) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root || prefersReducedMotion()) return undefined;
     const wide = () => window.innerWidth >= 1200;
     let frame = 0;
     let items = [];
+    let rowEls = [];
+    let cover = null;
+    let rows = null;
+    let u = 1;
+    let lastY = -1;
 
     const layout = () => {
       const scrollY = window.scrollY;
-      items = [...root.querySelectorAll('[data-parallax]')].map((box) => {
-        const el = box.querySelector('[data-parallax-el]');
-        if (!el) return null;
-        if (!wide()) {
-          el.style.height = '';
-          el.style.marginTop = '';
-          el.style.transform = '';
-          return null;
-        }
-        const h = box.offsetHeight;
-        const travel = (h / 5) * (Math.min(window.innerWidth, 1440) / 1440);
-        el.style.height = `calc(100% + ${travel}px)`;
-        el.style.marginTop = `${-travel / 2}px`;
-        const top = box.getBoundingClientRect().top + scrollY;
-        return { el, travel, start: top < window.innerHeight ? 0 : top - window.innerHeight, end: top + h };
-      });
-      items = items.filter(Boolean);
+      u = root.clientWidth / UNIT_BASE;
+      items = [...root.querySelectorAll('[data-parallax]')]
+        .map((box) => {
+          const el = box.querySelector('[data-parallax-el]');
+          if (!el) return null;
+          if (!wide()) {
+            el.style.height = '';
+            el.style.marginTop = '';
+            el.style.transform = '';
+            return null;
+          }
+          const h = box.offsetHeight;
+          const travel = (h / 5) * (Math.min(window.innerWidth, 1440) / 1440);
+          el.style.height = `calc(100% + ${travel}px)`;
+          el.style.marginTop = `${-travel / 2}px`;
+          const top = box.getBoundingClientRect().top + scrollY;
+          return { el, travel, start: top < window.innerHeight ? 0 : top - window.innerHeight, end: top + h, last: null };
+        })
+        .filter(Boolean);
+
+      const c = coverRef.current;
+      cover = c
+        ? { box: c, inner: coverInnerRef.current, top: c.getBoundingClientRect().top + scrollY, height: c.offsetHeight }
+        : null;
+
+      const r = rowsRef.current;
+      if (r) {
+        const rect = r.getBoundingClientRect();
+        rows = { top: rect.top + scrollY, height: rect.height };
+        rowEls = [...r.querySelectorAll('[data-row]')];
+        if (!wide()) rowEls.forEach((el) => el.style.removeProperty('top'));
+      }
+      lastY = -1;
     };
 
     const update = () => {
       frame = 0;
       const scrollY = window.scrollY;
+      if (scrollY === lastY) return;
+      lastY = scrollY;
       const vh = window.innerHeight;
-      const u = root.clientWidth / UNIT_BASE;
 
       items.forEach((it) => {
         const p = clamp((scrollY - it.start) / (it.end - it.start || 1));
-        it.el.style.transform = `translate3d(0, ${(-it.travel / 2 + it.travel * p).toFixed(2)}px, 0)`;
+        const y = Math.round((-it.travel / 2 + it.travel * p) * 10) / 10;
+        if (y !== it.last) {
+          it.last = y;
+          it.el.style.transform = `translate3d(0, ${y}px, 0)`;
+        }
       });
 
-      const cover = coverRef.current;
-      const inner = coverInnerRef.current;
-      if (cover && inner && appeared.current && wide()) {
-        const top = cover.getBoundingClientRect().top + scrollY;
-        const start = Math.max(top - vh, 0);
-        const end = top + cover.offsetHeight - vh;
+      if (cover && cover.inner && appeared.current && wide()) {
+        const start = Math.max(cover.top - vh, 0);
+        const end = cover.top + cover.height - vh;
         const p = clamp((scrollY - start) / (end - start || 1));
-        cover.style.transition = 'none';
-        cover.style.clipPath = `inset(0px ${((1 - p) * 22.865 * u).toFixed(2)}px)`;
-        inner.style.transition = 'none';
-        inner.style.transform = `scale(${(1.015 - 0.015 * p).toFixed(5)})`;
+        cover.box.style.transition = 'none';
+        cover.box.style.clipPath = `inset(0px ${((1 - p) * 22.865 * u).toFixed(2)}px)`;
+        cover.inner.style.transition = 'none';
+        cover.inner.style.transform = `scale(${(1.015 - 0.015 * p).toFixed(5)})`;
       }
 
-      const rows = rowsRef.current;
       if (rows && wide()) {
-        const rect = rows.getBoundingClientRect();
-        const lastTop = (96 + 128 * 3) * u;
-        const scrollOffset = vh - (lastTop + 504 * u);
-        const finalP = clamp((vh - rect.bottom) / vh);
-        rows.style.setProperty('--final-offset', `${(vh * finalP).toFixed(2)}px`);
-        if (scrollOffset < 0) {
-          rows.style.setProperty('--scroll-offset', `${scrollOffset.toFixed(2)}px`);
-          rows.style.setProperty('--scroll-progress', clamp(-rect.top / (rect.height - vh || 1)).toFixed(4));
-        } else {
-          rows.style.setProperty('--scroll-offset', '0px');
-          rows.style.setProperty('--scroll-progress', '0');
+        const rectTop = rows.top - scrollY;
+        const rectBottom = rectTop + rows.height;
+        // 카드가 화면에 걸쳐 있는 동안만 위치를 갱신한다
+        if (rectBottom > -vh && rectTop < vh) {
+          const scrollOffset = vh - ((96 + 128 * 3 + 504) * u);
+          const finalOffset = vh * clamp((vh - rectBottom) / vh);
+          const progress = scrollOffset < 0 ? clamp(-rectTop / (rows.height - vh || 1)) : 0;
+          const shift = (scrollOffset < 0 ? scrollOffset : 0) * progress - finalOffset;
+          rowEls.forEach((el, i) => {
+            el.style.top = `${((96 + 128 * i) * u + shift).toFixed(2)}px`;
+          });
         }
       }
     };
@@ -230,6 +285,7 @@ function useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared) {
       layout();
       request();
     };
+    fxRef.current = update;
     layout();
     update();
     window.addEventListener('scroll', request, { passive: true });
@@ -238,13 +294,14 @@ function useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared) {
     const lateLayout = window.setTimeout(relayout, 600);
     document.fonts?.ready.then(relayout);
     return () => {
+      fxRef.current = null;
       window.clearTimeout(lateLayout);
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener('scroll', request);
       window.removeEventListener('resize', relayout);
       window.removeEventListener('load', relayout);
     };
-  }, [rootRef, coverRef, coverInnerRef, rowsRef, appeared]);
+  }, [rootRef, coverRef, coverInnerRef, rowsRef, appeared, fxRef]);
 }
 
 function Brackets({ position }) {
@@ -403,11 +460,16 @@ export default function CameraNowPage() {
   const coverInnerRef = useRef(null);
   const rowsRef = useRef(null);
   const appeared = useRef(false);
-  const { count, phase, done } = useLoader();
+  const fxRef = useRef(null);
+  const [done, setDone] = useState(() => prefersReducedMotion());
+  const [gone, setGone] = useState(() => prefersReducedMotion());
+  const handleOut = useCallback(() => {}, []);
+  const handleDone = useCallback(() => setDone(true), []);
+  const handleGone = useCallback(() => setGone(true), []);
 
-  useSmoothScroll(done);
+  useSmoothScroll(done, fxRef);
   useReveal(rootRef, done);
-  useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared);
+  useScrollEffects(rootRef, coverRef, coverInnerRef, rowsRef, appeared, fxRef);
 
   /* 커버 이미지가 열리는 등장(1.35s)이 끝난 뒤부터 스크롤 값이 클립을 제어한다. */
   useEffect(() => {
@@ -425,48 +487,20 @@ export default function CameraNowPage() {
         <link key={href} rel="stylesheet" href={href} precedence="default" />
       ))}
 
-      {phase !== 'gone' && (
-        <div
-          className={`${styles.loader} ${phase === 'in' ? styles.loaderIn : ''} ${phase === 'out' ? styles.loaderOut : ''}`}
-          aria-hidden="true"
-        >
-          <div className={styles.loaderPanel} />
-          <p className={styles.loaderTitle}>
-            {['Polaroid', 'Now Gen 3'].map((line, i) => (
-              <span key={line} className={styles.loaderLineW}>
-                <span className={styles.loaderLine} style={{ '--i': i }}>
-                  {line}
-                </span>
-              </span>
-            ))}
-          </p>
-          <p className={styles.loaderLabel}>
-            <span className={styles.loaderLineW}>
-              <span className={styles.loaderLine} style={{ '--i': 2 }}>
-                Loading
-              </span>
-            </span>
-          </p>
-          <p className={styles.loaderCount}>
-            <span className={styles.loaderLineW}>
-              <span className={styles.loaderLine} style={{ '--i': 3 }}>
-                {count}%
-              </span>
-            </span>
-          </p>
-        </div>
-      )}
+      {!gone && <Loader onOut={handleOut} onDone={handleDone} onGone={handleGone} />}
 
       {/* 커버 */}
       <section className={styles.cover}>
         <h1 className={styles.coverHeading}>
-          <span className={`${styles.lineW} ${styles.coverLine1}`} data-reveal>
+          <span className={styles.lineW} data-reveal>
             <span className={`${styles.line} ${styles.coverMuted}`}>가장 일상적인 폴라로이드는 네 가지로 완성됩니다.</span>
           </span>
-          <span className={`${styles.lineW} ${styles.coverLine2}`} data-reveal style={{ '--d': '100ms' }}>
+          <span className={styles.lineW} data-reveal style={{ '--d': '100ms' }}>
+            <span className={`${styles.line} ${styles.coverStrong}`}>알아서 맞추는 초점, 두 장면을 겹치는 노출,</span>
+          </span>
+          <span className={styles.lineW} data-reveal style={{ '--d': '200ms' }}>
             <span className={`${styles.line} ${styles.coverStrong}`}>
-              알아서 맞추는 초점, 두 장면을 겹치는 노출, 함께 찍는 셀프타이머<span className={styles.coverMuted}>, 그리고</span> 오래 가는
-              배터리.
+              함께 찍는 셀프타이머<span className={styles.coverMuted}>, 그리고</span> 오래 가는 배터리.
             </span>
           </span>
         </h1>
@@ -521,7 +555,7 @@ export default function CameraNowPage() {
         <div ref={rowsRef} className={styles.rows}>
           {HIGHLIGHTS.map((item, i) => (
             <div key={item.id} className={styles.card} style={{ '--card-h': `calc(${(HIGHLIGHTS.length - i) * 504} * var(--u))`, '--i': i }}>
-              <article className={`${styles.row} ${styles[`row${i + 1}`]}`}>
+              <article data-row className={`${styles.row} ${styles[`row${i + 1}`]}`}>
                 <h3 className={styles.rowTitle}>
                   <Line>{item.title}</Line>
                 </h3>
