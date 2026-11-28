@@ -28,16 +28,20 @@
 
 /*
  * 처음 등장 (참고: Vitra Office Chair Finder 결과 준비 화면)
- *  1) 글과 카메라가 같은 순간에 함께 멀리서부터 앞으로 다가온다 (작게 시작해 제 크기가 된다)
- *  2) 글은 금방 선명해지고, 카메라는 다가오는 내내 아주 연한 데서 서서히 진해진다
- *  3) 다 나타난 뒤에는 사라지지 않고 그대로 계속 돈다
- * 수치는 참고 영상을 재서 잡은 임시값이다.
+ *  1) 글이 먼저 작게 나타난다 (0초)
+ *  2) 카메라가 아주 연하게 보이기 시작한다 (0.4초)
+ *  3) 글과 카메라가 함께 멀리서 앞으로 다가오고, 카메라는 다가오면서 진해진다 (0.8초 ~ 2.7초)
+ *  4) 다 나타난 뒤에는 사라지지 않고 그대로 계속 돈다
+ * 수치는 참고 영상을 프레임마다 재서 맞춘 값이다. (글 높이 24 -> 32px 이라 0.75배에서 시작)
  */
 .hero {
-  --intro-approach: 3200ms; /* 글과 카메라가 함께 다가와 제 크기가 되기까지 */
-  --intro-fade: 3200ms; /* 카메라가 아주 연한 데서 다 진해지기까지 — 다가오는 내내 서서히 */
-  --intro-ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* 다가오기: 처음에 빨리, 끝에 천천히 */
-  --intro-fade-ease: cubic-bezier(0.45, 0, 0.55, 1); /* 진해지기: 처음과 끝을 부드럽게 */
+  --intro-text-fade: 300ms; /* 글이 나타나는 시간 */
+  --intro-fade-delay: 400ms; /* 카메라가 연하게 보이기 시작 */
+  --intro-fade: 2100ms; /* 카메라가 다 진해지기까지 (0.4초 -> 2.5초) */
+  --intro-approach-delay: 800ms; /* 글과 카메라가 함께 다가오기 시작 */
+  --intro-approach: 1900ms; /* 다가와서 제 크기가 되기까지 (0.8초 -> 2.7초) */
+  --intro-ease: cubic-bezier(0.33, 0, 0.2, 1); /* 다가오기: 부드럽게 출발해 끝에서 천천히 멈춘다 */
+  --intro-fade-ease: cubic-bezier(0.5, 0, 0.5, 1); /* 진해지기: 처음엔 아주 연하게 머물다 가운데서 빨라진다 */
 }
 
 /* 카메라가 깔리는 화면. 카메라 자리는 화면 한가운데(원점)를 기준으로 한 시안 px 이다 */
@@ -46,7 +50,7 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  animation: intro-fade var(--intro-fade) var(--intro-fade-ease) both;
+  animation: intro-fade var(--intro-fade) var(--intro-fade-ease) var(--intro-fade-delay) both;
 }
 
 @keyframes intro-fade {
@@ -72,7 +76,7 @@
   /* 회전은 transform, 다가오는 건 scale 이라 서로 겹치지 않는다. 원 중심(화면 한가운데)을 기준으로 커진다 */
   animation:
     ring-spin var(--period) linear infinite,
-    intro-approach var(--intro-approach) var(--intro-ease) both;
+    intro-approach var(--intro-approach) var(--intro-ease) var(--intro-approach-delay) both;
   will-change: transform, scale;
 }
 
@@ -128,22 +132,28 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  animation: intro-text-approach var(--intro-approach) var(--intro-ease) both;
+  /* 글이 먼저 작게 나타나고, 카메라와 같은 때에 같은 빠르기로 다가온다 */
+  animation:
+    intro-text-in var(--intro-text-fade) ease-out both,
+    intro-text-approach var(--intro-approach) var(--intro-ease) var(--intro-approach-delay) both;
 }
 
-/* 멀리 있던 글이 앞으로 다가온다: 작게 시작해 계속 커지고, 처음 잠깐 사이에 선명해진다 */
-@keyframes intro-text-approach {
-  0% {
+@keyframes intro-text-in {
+  from {
     opacity: 0;
-    scale: 0.7;
   }
 
-  18% {
+  to {
     opacity: 1;
   }
+}
 
-  100% {
-    opacity: 1;
+@keyframes intro-text-approach {
+  from {
+    scale: 0.75;
+  }
+
+  to {
     scale: 1;
   }
 }
