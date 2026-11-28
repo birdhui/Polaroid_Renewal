@@ -34,37 +34,62 @@
   pointer-events: none;
 }
 
-/* 카메라들의 기준점(화면 한가운데) */
-.spin {
+/*
+ * 원 하나. 화면 한가운데에 놓인 크기 0 상자로, 통째로 시계 방향으로 돈다.
+ * 카메라는 이 상자에 붙어 있어서 원과 함께 돌고, 따로 돌지 않으므로 언제나 가운데를 향한 각도 그대로다.
+ */
+.ring {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 0;
   height: 0;
+  animation: ring-spin var(--period) linear infinite;
+  will-change: transform;
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /*
- * 카메라 한 대. --x --y 는 시안에서 놓인 자리(화면 한가운데 기준 px), --w --h 는 이미지 크기, --tilt 는 시안에서 기울어진 각도다.
- * --ox --oy 는 시안 자리에서 길을 따라 얼마나 옮겨 갔는지(시안 px)로, CompareHero.jsx 가 프레임마다 넣는다.
- * 둘 다 0 이면 시안 자리 그대로다.
+ * 카메라 한 대. --a 는 원 위의 자리(도), --r 은 반지름, --s 는 크기(1920 x 1080 기준 px)다.
+ * 자리만큼 돌린 뒤 반지름만큼 위로 올리므로, 카메라 아랫면이 언제나 화면 가운데를 향한다.
  */
-.camera {
+.cam {
   position: absolute;
-  top: calc((var(--y) - var(--h) / 2) * var(--k));
-  left: calc((var(--x) - var(--w) / 2) * var(--k));
-  width: calc(var(--w) * var(--k));
-  height: calc(var(--h) * var(--k));
+  top: 0;
+  left: 0;
+  width: calc(var(--s) * var(--k));
+  height: calc(var(--s) * var(--k));
+  margin: calc(var(--s) * var(--k) / -2) 0 0 calc(var(--s) * var(--k) / -2);
+  transform: rotate(var(--a)) translateY(calc(var(--r) * var(--k) * -1));
+}
+
+/* 처음에 카메라가 하나씩 살짝 커지며 나타난다 (--d 만큼 늦게) */
+.camera {
+  display: block;
+  width: 100%;
+  height: 100%;
   max-width: none; /* 전역 img { max-width: 100% } 때문에 폭이 0 이 되지 않게 */
   object-fit: contain;
-  rotate: calc(var(--tilt) * 1deg); /* 시안 기울기 그대로 — 고리를 따라 옮겨 가도 카메라 자체는 돌지 않는다 */
-  /* 고리를 따라 옮겨 가는 양 */
-  translate: calc(var(--ox) * var(--k)) calc(var(--oy) * var(--k));
   user-select: none;
+  opacity: 0;
+  transform: scale(0.86);
+  animation: camera-pop 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d) forwards;
+}
+
+@keyframes camera-pop {
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /*
  * 시안: 문구 묶음이 히어로 위에서 415 에서 시작해 663 에서 끝난다(높이 248). 1080 의 한가운데(540)에 놓이므로 가운데 정렬만 하면 된다.
- * 카메라가 모이는 동안 문구가 뒤늦게 나타난다.
  */
 .copy {
   /* 시안: 문구 윗면이 화면 위에서 454 (1080 기준) */
@@ -87,10 +112,13 @@
   letter-spacing: -0.0225em;
 }
 
-/* 위쪽 로고 — 흰색 svg 라서 색을 뒤집어 #151515 근처로 만든다. 시안: 116 x 31, 위에서 27 */
+/*
+ * 위쪽 로고 — 흰색 svg 라서 색을 뒤집어 #151515 근처로 만든다. 크기는 시안 116 x 31.
+ * 맨 위 카메라와 겹치지 않게 안쪽 원 안에 둔다: 화면 가운데에서 344 위 (1080 기준 위에서 196 — 프로토타입 자리)
+ */
 .logo {
   position: absolute;
-  top: calc(27 * var(--ky));
+  top: calc(50% - 344 * var(--k));
   left: 50%;
   width: max(calc(116 * var(--u)), 84px);
   height: max(calc(31 * var(--u)), 23px);
@@ -125,9 +153,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cta,
-  .copy,
-  .camera {
+  .copy {
     transition: none;
+  }
+
+  .ring {
+    animation: none;
+  }
+
+  .camera {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
