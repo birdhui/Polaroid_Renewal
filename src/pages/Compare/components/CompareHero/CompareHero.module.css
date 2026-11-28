@@ -28,15 +28,14 @@
 
 /*
  * 처음 등장 (참고: Vitra Office Chair Finder 결과 준비 화면)
- *  1) 글만 작게 나타난다
- *  2) 조금 뒤 카메라가 안쪽에서 아주 연하게 보이기 시작해, 점점 진해지면서 바깥으로 퍼지듯 다가온다. 글도 같이 조금 커진다
+ *  1) 글이 멀리서부터 앞으로 다가오듯 작게 나타나 천천히 커진다 (깜빡이지 않고 한 번에 이어진다)
+ *  2) 조금 뒤 카메라가 안쪽에서 아주 연하게 보이기 시작해, 점점 진해지면서 바깥으로 퍼지듯 다가온다
  *  3) 다 나타난 뒤에는 사라지지 않고 그대로 계속 돈다
  * 수치는 참고 영상을 재서 잡은 임시값이다.
  */
 .hero {
-  --intro-text-delay: 200ms; /* 글이 나타나기 시작 */
-  --intro-text-fade: 500ms;
-  --intro-delay: 800ms; /* 카메라가 보이기 시작 (글이 커지기 시작하는 때도 같다) */
+  --intro-text: 3200ms; /* 글이 멀리서 다가와 제 크기가 되기까지 — 카메라가 다 다가올 때 같이 끝난다 */
+  --intro-delay: 800ms; /* 카메라가 보이기 시작 */
   --intro-fade: 1400ms; /* 카메라가 연한 데서 진해지는 시간 */
   --intro-grow: 2400ms; /* 카메라가 다가오고 글이 커지는 시간 */
   --intro-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -130,27 +129,22 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  animation:
-    intro-text-in var(--intro-text-fade) ease-out var(--intro-text-delay) both,
-    intro-text-grow var(--intro-grow) var(--intro-ease) var(--intro-delay) both;
+  animation: intro-text-approach var(--intro-text) var(--intro-ease) both;
 }
 
-@keyframes intro-text-in {
-  from {
+/* 멀리 있던 글이 앞으로 다가온다: 작게 시작해 계속 커지고, 처음 잠깐 사이에 선명해진다 */
+@keyframes intro-text-approach {
+  0% {
     opacity: 0;
+    scale: 0.7;
   }
 
-  to {
+  18% {
     opacity: 1;
   }
-}
 
-@keyframes intro-text-grow {
-  from {
-    scale: 0.85;
-  }
-
-  to {
+  100% {
+    opacity: 1;
     scale: 1;
   }
 }
