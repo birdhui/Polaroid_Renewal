@@ -1,1146 +1,558 @@
 /*
- * Figma "Cameras - NOW" 프레임을 1920px 기준 좌표 그대로 옮긴다.
- * 좌표·폰트 크기는 stage.module.css의 --x --y --w --h --fs --ls (Figma px)로 적고,
- * 화면 너비에 비례해 커지고 작아진다. 색상: 크림 #fffaf2, 잉크 #151515, 포인트 #f0a137.
+ * Now Gen 3 — Figma 3472:5464 (프레임 너비 1646.29). 모든 길이는 --u(= 화면 너비 / 1646.29) 배수라
+ * 화면 너비에 비례해 같은 모양으로 변한다. 헤더는 이번 범위에서 제외.
  */
 .page {
-  --now-cream: #fffaf2;
-  --now-ink: #151515;
-  --now-accent: #f0a137;
-  --f-pre: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --u: calc(100cqw / 1646.29);
+  --gut: calc(11.4325 * var(--u));
+  --pad: calc(22.865 * var(--u));
+  --gray: #cacfcb;
   --f-out: 'Outfit', 'Pretendard', sans-serif;
-  --f-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --f-arch: 'Archivo', 'Pretendard', sans-serif;
-
-  background: var(--now-cream);
-  color: var(--now-ink);
-  font-family: var(--f-pre);
+  --f-pre: 'Pretendard', 'Outfit', sans-serif;
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
   overflow-x: clip;
+  background: #fff;
+  color: #000;
+  font-family: var(--f-pre);
 }
 
-.screen {
-  composes: screen from './components/stage.module.css';
+.page * {
+  box-sizing: border-box;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  margin: 0;
+  font-weight: inherit;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ───────── 로더 ───────── */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #fff;
+  color: #000;
+  transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.loaderDone {
+  transform: translateY(-100%);
+}
+
+.loaderTitle {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  font-family: var(--f-out);
+  font-weight: 600;
+  font-size: clamp(18px, 2.5vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.loaderCount {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  font-family: var(--f-out);
+  font-weight: 300;
+  font-size: clamp(48px, 9vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ───────── 공통: 줄 단위 등장 · 이미지 등장 ───────── */
+.lineW {
+  display: block;
+  overflow: hidden;
 }
 
 .line {
   display: block;
+  transform: translateY(110%);
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
 }
 
-/* 섹션 배경 사진: --bx --by --bw --bh 는 Figma "Section BG Photo" 좌표 */
-.bg {
+.lineW[data-in='true'] .line {
+  transform: none;
+}
+
+.ph {
   position: absolute;
-  left: calc(var(--bx) * var(--u));
-  top: calc(var(--by) * var(--u));
-  width: calc(var(--bw) * var(--u));
-  height: calc(var(--bh) * var(--u));
-  max-width: none;
-  object-fit: cover;
+  inset: 0;
+  background: var(--gray);
 }
 
-/* ───────── 01 Hero ───────── */
-.heroImage {
+/* 흰 막이 걷히듯 선명해진다 */
+.ph::after {
+  content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: calc(1081 * var(--u));
-  max-width: none;
-  object-fit: cover;
-}
-
-.heroTitle {
-  composes: pos text from './components/stage.module.css';
-  --x: 90;
-  --y: 675;
-  --fs: 170;
-  --ls: -2;
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: #fff;
-}
-
-.heroDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 90;
-  --y: 892;
-  --fs: 24;
-  --ls: -0.24;
-  line-height: 1.45;
-  font-family: var(--f-pre);
-  font-weight: 400;
-  color: #fff;
-}
-
-/* Figma gradation_bg: 아래쪽 458px 가 투명 → 검정 60% 로 짙어져 글자가 잘 보이게 한다 */
-.heroGradient {
-  position: absolute;
-  left: 0;
-  top: calc(622 * var(--u));
-  width: 100%;
-  height: calc(458 * var(--u));
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+  inset: 0;
+  background: #fff;
+  opacity: 1;
+  transition: opacity 1.4s ease var(--d, 0ms);
   pointer-events: none;
 }
 
-/* ───────── 02 Intro ───────── */
-.intro {
-  background: var(--now-cream);
-}
-
-/* 03 → 04: 경계 그라데이션 없음(크림 배경 그대로 끝나고 04 Feature 의 갈색 배경이 이어진다) */
-.featuresHeading {
-  background: var(--now-cream);
-}
-
-/* 제품 사진이 섹션 아래(1080)를 12px 넘어가므로 잘리지 않게 하고, 다음 섹션 위로 보이게 한다 */
-.page .intro {
-  overflow: visible;
-  z-index: 1;
-}
-
-/* Vector 48 */
-.introBrackets {
-  --x: 662;
-  --y: 239;
-  --w: 568;
-  --h: 158;
-  --arm: 45;
-  --stroke: 1;
-  --bracket-color: rgba(0, 0, 0, 0.8);
-}
-
-.introHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 946;
-  --y: 248;
-  --fs: 56;
-  --ls: -2;
-  line-height: calc(70 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 600;
-  color: var(--now-ink);
-}
-
-.introWordmark {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 592;
-  --fs: 200;
-  --ls: 0.7;
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #000;
-}
-
-.introEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 595;
-  --fs: 18;
-  --ls: 0.7;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-/*
- * Figma의 제품 사진은 배경이 투명한 PNG다. 지금 에셋은 흰 배경 JPG라서
- * multiply로 크림 배경에 녹여 흰 박스가 보이지 않게 한다. TODO: 투명 PNG(7ae68)로 교체.
- */
-.introPhoto {
-  composes: pos size from './components/stage.module.css';
-  --x: 600;
-  --y: 745;
-  --w: 720;
-  --h: 347.4;
-  --qp: 0;
-  --qt: 0;
-}
-
-/* 떠오름: 진행도(--q)에 따라 아래(260)에서 제자리로, 투명 → 불투명 */
-.introRise {
-  position: absolute;
-  inset: 0;
-  opacity: var(--q);
-  transform: translateY(calc((1 - var(--q)) * 260 * var(--u))) scale(calc(0.94 + var(--q) * 0.06));
-  transform-origin: 50% 100%;
-  will-change: transform, opacity;
-}
-
-.introRisePink {
-  --q: var(--qp);
-}
-
-.introRiseTeal {
-  --q: var(--qt);
-}
-
-.introCamera {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: contain;
-  will-change: transform;
-}
-
-/* 둥실: 올라온 만큼(--q)만 움직이고, 두 대가 서로 반대 방향·다른 박자로 오르내린다 */
-.introFloatTeal {
-  animation: introFloatTeal 5.4s ease-in-out infinite;
-}
-
-.introFloatPink {
-  animation: introFloatPink 6.6s ease-in-out infinite;
-}
-
-@keyframes introFloatTeal {
-  0%,
-  100% {
-    transform: translateY(calc(var(--q) * -8 * var(--u))) rotate(calc(var(--q) * -0.3deg));
-  }
-  50% {
-    transform: translateY(calc(var(--q) * 10 * var(--u))) rotate(calc(var(--q) * 0.3deg));
-  }
-}
-
-@keyframes introFloatPink {
-  0%,
-  100% {
-    transform: translateY(calc(var(--q) * 9 * var(--u))) rotate(calc(var(--q) * 0.4deg));
-  }
-  50% {
-    transform: translateY(calc(var(--q) * -9 * var(--u))) rotate(calc(var(--q) * -0.4deg));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .introFloatTeal,
-  .introFloatPink {
-    animation: none;
-  }
-}
-
-/* ───────── 03 Features Heading ───────── */
-.featuresHeadingText strong {
-  font-weight: 700;
-}
-
-.featuresHeadingText {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960; /* Figma v2: 박스 x 574 + 너비 772 / 2 */
-  --y: 446;
-  --fs: 76;
-  --ls: -5;
-  line-height: calc(94 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 600;
-  color: var(--now-ink);
-}
-
-/* ───────── 07~11 어두운 구간 ─────────
- * Figma 새 디자인: Go Film · Discover · Footer 는 #151515, Filter 는 #232323 → #151515 (위→아래),
- * App Promo 는 #151515. 이전의 고정 갈색 그라데이션은 걷어냈다. */
-.darkZone {
-  position: relative;
-  color: #fff;
-  /* 04 Feature(#191007)에서 이어지는 갈색 바탕. 07·08 은 투명이라 하나의 페이지처럼 이어진다 */
-  background: linear-gradient(to bottom, #191007 0%, #140c05 100%);
-}
-
-.filters,
-.appPromo,
-.goFilm,
-.discover,
-.footer {
-  color: #fff;
-}
-
-/* ───────── 07 Filter Showcase (프레임 1920×1194) ───────── */
-.page .filters {
-  aspect-ratio: 1920 / 1194;
-  background: transparent; /* 갈색 그라데이션(.darkZone)이 비친다 */
-}
-
-.filterEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 959.5;
-  --y: 153;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.filterHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 959.5;
-  --y: 208;
-  --fs: 70;
-  --ls: -2;
-  line-height: calc(91 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.filterDescription {
-  composes: pos from './components/stage.module.css';
-  --x: 317;
-  --y: 634;
-  width: calc(1287 * var(--u));
-  margin: 0;
-  font-family: var(--f-out);
-  font-size: calc(26 * var(--u));
-  font-weight: 200;
-  letter-spacing: calc(-0.4 * var(--u));
-  line-height: calc(33.8 * var(--u));
-  color: #fff;
-}
-
-.filterPrint {
-  composes: pos size from './components/stage.module.css';
-  --x: 763;
-  --y: 476;
-  --w: 396;
-  --h: 482;
-  transition: background-color 0.4s ease;
-}
-
-.filterPreview {
-  composes: pos size from './components/stage.module.css';
-  --x: 786;
-  --y: 503;
-  --w: 351;
-  --h: 351;
-  max-width: none;
-  object-fit: cover;
-}
-
-.filterCardLabel {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 899;
-  --fs: 17;
-  --ls: 1.4;
-  line-height: calc(17 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #1c1c1c;
-}
-
-.filterDisc {
-  composes: pos from './components/stage.module.css';
-  box-sizing: border-box;
-  width: calc(var(--d) * var(--u));
-  height: calc(var(--d) * var(--u));
-  padding: 0;
-  border: calc(4.57 * var(--u)) solid #181818;
-  border-radius: 50%;
-  cursor: pointer;
-  transition:
-    opacity 0.3s ease,
-    left 0.3s ease,
-    top 0.3s ease,
-    width 0.3s ease,
-    height 0.3s ease;
-}
-
-.filterDisc:focus-visible {
-  outline: calc(2 * var(--u)) solid var(--now-accent);
-  outline-offset: calc(3 * var(--u));
-}
-
-.filterDiscLabel {
-  composes: pos text center from './components/stage.module.css';
-  --y: 1074.4;
-  --fs: 12;
-  --ls: 1;
-  line-height: calc(12 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: #eceef0;
+[data-in='true'] > .ph::after,
+[data-in='true'] .ph::after {
   opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
-.filterDiscLabelOn {
-  opacity: 1;
+.subtitle {
+  display: flex;
+  gap: calc(9.04 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 400;
+  font-size: calc(16 * var(--u));
+  line-height: calc(19.21 * var(--u));
+  text-transform: uppercase;
 }
 
-/* ───────── 08 App Promo (프레임 1920×1583) ───────── */
-.page .appPromo {
-  aspect-ratio: 1920 / 1583;
-  background: transparent;
+.subtitleIndex {
+  color: var(--gray);
 }
 
-.phoneBody {
-  composes: pos size from './components/stage.module.css';
-  --x: 290;
-  --y: 463;
-  --w: 334.7;
-  --h: 725.2;
-  border-radius: calc(52 * var(--u));
-  background: #1b1b1d;
+.bracket {
+  position: absolute;
+  width: calc(22.86 * var(--u));
+  height: calc(22.86 * var(--u));
+  pointer-events: none;
 }
 
-.phoneScreen,
-.phoneStory {
-  composes: pos size from './components/stage.module.css';
-  --x: 299.8;
-  --y: 472.8;
-  --w: 315;
-  --h: 705.5;
-  border-radius: calc(44 * var(--u));
+.bracket::before,
+.bracket::after {
+  content: '';
+  position: absolute;
   background: #000;
 }
 
-.phoneStory {
-  max-width: none;
-  object-fit: cover;
+.bracket::before {
+  width: calc(13.71 * var(--u));
+  height: 1px;
 }
 
-.statusTime {
-  composes: pos text from './components/stage.module.css';
-  --x: 325;
-  --y: 488.7;
-  --fs: 14.1;
-  --ls: 0;
-  line-height: calc(14.1 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 600;
-  color: #030303;
+.bracket::after {
+  width: 1px;
+  height: calc(13.71 * var(--u));
 }
 
-.battery {
-  composes: pos size from './components/stage.module.css';
-  --x: 561.3;
-  --y: 491.1;
-  --w: 28.3;
-  --h: 11.3;
-  border-radius: calc(3.2 * var(--u));
-  background: #030303;
-}
-
-.storyBar,
-.storyProgress {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 523.2;
-  --w: 283.5;
-  --h: 2.6;
-  border-radius: calc(1.3 * var(--u));
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.storyProgress {
-  --w: 78;
-  background: #fff;
-}
-
-.avatar {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 535.8;
-  --w: 25.2;
-  --h: 25.2;
-  border-radius: 50%;
-  background: conic-gradient(#e3412b, #ff8200, #f6c243, #74b544, #1d92d2, #e3412b);
-}
-
-.profileName {
-  composes: pos text from './components/stage.module.css';
-  --x: 348.4;
-  --y: 540.7;
-  --fs: 13.4;
-  line-height: calc(13.4 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.profileDot {
-  composes: pos size from './components/stage.module.css';
-  --x: 414.6;
-  --y: 545.9;
-  --w: 5;
-  --h: 5;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.storyMore {
-  composes: pos text from './components/stage.module.css';
-  --x: 564.5;
-  --y: 540.7;
-  --fs: 13.4;
-  line-height: calc(13.4 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 700;
-  color: #fff;
-}
-
-.storyClose {
-  composes: pos text from './components/stage.module.css';
-  --x: 585.3;
-  --y: 536.2;
-  --fs: 22.4;
-  line-height: calc(22.4 * var(--u));
-  font-family: var(--f-arch);
-  font-weight: 300;
-  color: #fff;
-}
-
-.island {
-  composes: pos size from './components/stage.module.css';
-  --x: 407.1;
-  --y: 491.6;
-  --w: 100.4;
-  --h: 26.1;
-  border-radius: calc(13.3 * var(--u));
-  background: #000;
-}
-
-.messageBox {
-  composes: pos size from './components/stage.module.css';
-  --x: 315.6;
-  --y: 1123.7;
-  --w: 198.4;
-  --h: 32.5;
-  box-sizing: border-box;
-  border: calc(1.14 * var(--u)) solid #0f0f0f;
-  border-radius: calc(16.5 * var(--u));
-}
-
-.messageText {
-  composes: pos text from './components/stage.module.css';
-  --x: 329.3;
-  --y: 1133.7;
-  --fs: 11.5;
-  line-height: calc(11.5 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #000;
-}
-
-.phoneIcon {
-  composes: pos from './components/stage.module.css';
-  --y: 1130.5;
-  width: calc(18.9 * var(--u));
-  height: calc(18.9 * var(--u));
-  color: #0f0f0f;
-}
-
-.appEyebrow,
-.appHeading,
-.appDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 1629.7;
-  transform: translateX(-100%);
-  text-align: right;
-  color: #fff;
-}
-
-.appEyebrow {
-  --y: 463;
-  --fs: 18;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.appHeading {
-  --y: 508;
-  --fs: 70;
-  --ls: -2;
-  line-height: calc(91 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-}
-
-.appDescription {
-  --y: 717;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-}
-
-.storeIcon {
-  composes: pos size from './components/stage.module.css';
-  --y: 877;
-  --w: 60;
-  --h: 60;
-  border-radius: calc(13.3 * var(--u));
-  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.6) 100%), #fffaec;
-}
-
-.storeIconApple {
-  --x: 1478.7;
-}
-
-.storeIconGoogle {
-  --x: 1567.7;
-}
-
-.storeGlyph {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.storeGlyphGoogle {
-  position: absolute;
-  left: calc(14 * var(--u));
-  top: calc(11.5 * var(--u));
-  width: calc(31 * var(--u));
-  height: calc(36 * var(--u));
-}
-
-.storeLabel {
-  composes: pos text from './components/stage.module.css';
-  --y: 955;
-  --fs: 13;
-  --ls: 0.5;
-  line-height: calc(13 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 400;
-  color: #cfc9bf;
-}
-
-.storeDownload {
-  --x: 1356.7;
-}
-
-.storeIos {
-  --x: 1508.2;
-  transform: translateX(-50%);
-  text-align: center;
-}
-
-.storeDivider {
-  --x: 1548.7;
-  font-family: var(--f-mono);
-  opacity: 0.5;
-}
-
-.storeAndroid {
-  --x: 1567.7;
-}
-
-/* ───────── 09 Purchase CTA ───────── */
-.purchaseBrackets {
-  --x: 875;
-  --y: 104;
-  --w: 170;
-  --h: 71;
-  --arm: 20;
-  --stroke: 1;
-  --bracket-color: #19140c;
-}
-
-.purchaseWordmark {
-  composes: pos text center from './components/stage.module.css';
-  --x: 961;
-  --y: 112;
-  --fs: 64;
-  --ls: -3.2;
-  line-height: calc(50 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #19140c;
-}
-
-.purchaseHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960.5;
-  --y: 201;
-  --fs: 20;
-  --ls: -1.5;
-  line-height: calc(50 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #19140c;
-}
-
-/* 스크롤 구간: 화면 높이 + 사진 줄이 지나가는 만큼. 안쪽 화면은 sticky 로 고정한다 */
-.purchaseTrack {
-  position: relative;
-  height: 260vh;
-  background: #fffaf2; /* Figma 09: 크림색 배경(Rectangle 1), 배경 사진은 끔 */
-  color: #19140c;
-}
-
-.purchaseSticky {
-  position: sticky;
+.topLeft {
+  left: 0;
   top: 0;
-  height: 100vh;
-  display: grid;
-  place-items: center;
+}
+.topLeft::before {
+  left: calc(4.57 * var(--u));
+  bottom: 0;
+}
+.topLeft::after {
+  right: 0;
+  top: calc(4.57 * var(--u));
+}
+
+.topRight {
+  right: 0;
+  top: 0;
+}
+.topRight::before {
+  right: calc(4.58 * var(--u));
+  bottom: 0;
+}
+.topRight::after {
+  left: 0;
+  top: calc(4.57 * var(--u));
+}
+
+.bottomLeft {
+  left: 0;
+  bottom: 0;
+}
+.bottomLeft::before {
+  left: calc(4.57 * var(--u));
+  top: 0;
+}
+.bottomLeft::after {
+  right: 0;
+  bottom: calc(4.58 * var(--u));
+}
+
+.bottomRight {
+  right: 0;
+  bottom: 0;
+}
+.bottomRight::before {
+  right: calc(4.58 * var(--u));
+  top: 0;
+}
+.bottomRight::after {
+  left: 0;
+  bottom: calc(4.58 * var(--u));
+}
+
+/* ───────── 커버 ───────── */
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(22.85 * var(--u));
+  height: calc(1512.56 * var(--u));
+  padding-top: calc(361.27 * var(--u));
+}
+
+.coverHeading {
+  position: relative;
+  flex: none;
+  width: calc(1600.57 * var(--u));
+  height: calc(227.92 * var(--u));
+  font-size: calc(40 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+}
+
+.coverLine1,
+.coverLine2 {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.coverLine1 {
+  top: calc(100.73 * var(--u));
+  height: calc(75.46 * var(--u));
+  padding-top: calc(27.73 * var(--u));
+}
+
+.coverLine2 {
+  top: calc(150.46 * var(--u));
+  height: calc(77 * var(--u));
+  padding-top: calc(26.27 * var(--u));
+}
+
+.coverLine1 .line,
+.coverLine2 .line {
+  line-height: calc(48 * var(--u));
+  white-space: nowrap;
+}
+
+.coverMuted {
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.coverStrong {
+  font-weight: 600;
+}
+
+.coverImage {
+  position: relative;
+  flex: none;
+  width: calc(1600.56 * var(--u));
+  height: calc(900.52 * var(--u));
   overflow: hidden;
 }
 
-.purchaseSticky > section {
-  width: min(100%, calc(100vh * 1920 / 1080));
-}
-
-/* Figma "photo list": 왼쪽 0 에서 시작, 간격 99, 스크롤 진행도(--p)만큼 왼쪽으로 이동 */
-.purchaseList {
-  position: absolute;
+.coverPh {
+  inset: auto;
   left: 0;
-  top: calc(292 * var(--u));
-  display: flex;
-  align-items: center;
-  gap: calc(var(--gap) * var(--u));
-  transform: translateX(calc(var(--p, 0) * var(--travel) * -1 * var(--u)));
+  top: 0;
+  width: 100%;
+  height: calc(1096.82 * var(--u));
+  background: linear-gradient(180deg, #9fb0c4 0%, #b9c4cf 45%, #d9d3c6 100%);
   will-change: transform;
 }
 
-.purchaseShot {
-  flex: none;
-  width: calc(var(--w) * var(--u));
-  height: calc(573 * var(--u));
-  max-width: none;
-  object-fit: cover;
+/* ───────── 01 About ───────── */
+.about {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: calc(361.26 * var(--u)) calc(349.82 * var(--u)) calc(794.57 * var(--u));
+  column-gap: var(--gut);
+  padding: calc(171.488 * var(--u)) var(--pad) 0;
 }
 
-.purchaseButton {
-  position: absolute;
-  left: calc(50% - 1.5 * var(--u));
-  top: calc(919 * var(--u));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(137 * var(--u));
-  height: calc(41 * var(--u));
-  padding: 0 calc(60 * var(--u));
-  transform: translateX(-50%);
-  background: #19140c;
-  color: #fff;
-  font-family: var(--f-pre);
-  font-size: calc(14 * var(--u));
-  font-weight: 500;
-  letter-spacing: calc(-1 * var(--u));
+.aboutTitle {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  width: calc(871 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 600;
+  font-size: calc(40 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  line-height: calc(48 * var(--u));
   white-space: nowrap;
-  cursor: pointer;
 }
 
-/* ───────── 10 Polaroid Go Film ───────── */
-.page .goFilm {
-  background: linear-gradient(to bottom, #191007 0%, #150d06 100%);
+.aboutSubtitle {
+  grid-column: 1 / span 3;
+  grid-row: 2;
 }
 
-.goFilmEyebrow {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 142;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.goFilmTitle {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 169;
-  --fs: 80;
-  --ls: 0;
-  line-height: calc(88 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.goFilmDescription {
-  composes: pos text from './components/stage.module.css';
-  --x: 341;
-  --y: 389;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #fff;
-}
-
-.goFilmDescription strong {
-  font-weight: 600;
-}
-
-.goFilmButton {
-  composes: pos size from './components/stage.module.css';
-  --x: 341;
-  --y: 540;
-  --w: 160;
-  --h: 48;
-  box-sizing: border-box;
-  padding: 0;
-  border: calc(1 * var(--u)) solid #fff;
-  background: transparent;
-  color: #fff;
-  font-family: var(--f-pre);
-  font-size: calc(14 * var(--u));
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.goFilmTabLine {
-  composes: pos size from './components/stage.module.css';
-  --x: 1113;
-  --y: 142;
-  --w: 107;
-  --h: 70.1;
-  box-sizing: border-box;
-  border-bottom: calc(2 * var(--u)) solid var(--now-accent);
-}
-
-.goFilmTab {
-  composes: pos text from './components/stage.module.css';
-  --x: 1114;
-  --y: 166.6;
-  --fs: 25;
-  --ls: 0;
-  line-height: calc(25 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.goFilmPanel {
-  composes: pos size from './components/stage.module.css';
-  --x: 1113;
-  --y: 239.1;
-  --w: 483;
-  --h: 621;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.goFilmCaption {
-  composes: pos text center from './components/stage.module.css';
-  --x: 1355;
-  --y: 275.1;
-  --fs: 18;
-  --ls: 0;
-  line-height: calc(21 * var(--u));
-  font-family: var(--f-pre);
+.aboutText {
+  grid-column: 7 / span 6;
+  grid-row: 2;
+  width: calc(711 * var(--u));
   font-weight: 400;
-  color: #fff;
-}
-
-.goFilmPack {
-  composes: pos size from './components/stage.module.css';
-  --x: 1190.2;
-  --y: 364.6;
-  --w: 330.6;
-  --h: 279.7;
-  max-width: none;
-  object-fit: contain;
-}
-
-.goFilmThumbTile {
-  composes: pos size from './components/stage.module.css';
-  --y: 716.1;
-  --w: 81.6;
-  --h: 81.6;
-  background: #fff;
-}
-
-.goFilmThumbTileDim {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.goFilmThumb1,
-.goFilmThumb2 {
-  composes: pos size from './components/stage.module.css';
-  --y: 734.4;
-  --w: 57.2;
-  --h: 48.4;
-  max-width: none;
-  object-fit: contain;
-}
-
-.goFilmThumb1 {
-  --x: 1290.2;
-}
-
-.goFilmThumb2 {
-  --x: 1378.9;
-}
-
-/* 이미지 파일이 아직 없을 때 보이는 자리표시자 */
-.imageSlot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  color: rgba(255, 255, 255, 0.55);
-  font-family: var(--f-mono);
-  font-size: calc(11 * var(--u));
-  text-align: center;
-  word-break: break-all;
-}
-
-/* ───────── 11 Discover More ───────── */
-.page .discover {
-  background: linear-gradient(to bottom, #150d06 0%, #110a04 100%);
-}
-
-.discoverEyebrow {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 238;
-  --fs: 20;
-  --ls: 0;
-  line-height: calc(18 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 500;
-  color: var(--now-accent);
-}
-
-.discoverHeading {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 265;
-  --fs: 80;
-  --ls: 0;
-  line-height: calc(88 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 600;
-  color: #fff;
-}
-
-.discoverDescription {
-  composes: pos text center from './components/stage.module.css';
-  --x: 960;
-  --y: 397;
-  --fs: 22;
-  --ls: -0.8;
-  line-height: calc(33 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 300;
-  color: #fff;
-}
-
-.discoverList {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cardFrame {
-  composes: pos size from './components/stage.module.css';
-  --x: 270;
-  --y: 653;
-  --w: 228;
-  --h: 212;
-  overflow: visible;
-}
-
-.cardPhoto {
-  composes: pos size from './components/stage.module.css';
-  max-width: none;
-  object-fit: contain;
-  opacity: 0.5;
-}
-
-.cardPhotoActive {
-  opacity: 1;
-}
-
-.cardLabel {
-  composes: pos text center from './components/stage.module.css';
-  --y: 895;
-  --fs: 24;
-  --ls: 0;
-  line-height: calc(30 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 200;
-  color: #fff;
-}
-
-.cardLabelActive {
-  font-weight: 500;
-}
-
-/* ───────── 12 Footer ───────── */
-.page .footer {
-  background: linear-gradient(to bottom, #110a04 0%, #0d0703 100%);
-}
-
-.footerLogo {
-  composes: pos size from './components/stage.module.css';
-  --x: 64;
-  --y: 454;
-  --w: 102;
-  --h: 28;
-  max-width: none;
-}
-
-.footerTagline {
-  composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 494;
-  --fs: 16;
-  --ls: -0.8;
-  line-height: calc(22.4 * var(--u));
-  font-family: var(--f-pre);
-  font-weight: 400;
-  color: #fff;
-}
-
-.footerCopyright {
-  composes: pos text from './components/stage.module.css';
-  --x: 64;
-  --y: 570;
-  --fs: 12;
-  --ls: -1;
-  line-height: calc(16.8 * var(--u));
-  font-family: var(--f-out);
-  font-weight: 200;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.footerWordmark {
-  composes: pos size from './components/stage.module.css';
-  --x: 64;
-  --y: 751;
-  --w: 940;
-  --h: 258;
-  max-width: none;
-}
-
-.footerColumn {
-  composes: pos from './components/stage.module.css';
-  --y: 808;
-}
-
-.footerColumn ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.footerHeading {
-  margin: 0 0 calc(10 * var(--u));
-  font-family: var(--f-out);
-  font-size: calc(16 * var(--u));
-  font-weight: 500;
-  line-height: calc(22.4 * var(--u));
-  white-space: nowrap;
-  color: #fff;
-}
-
-.footerItem {
-  font-family: var(--f-out);
-  font-size: calc(14 * var(--u));
-  font-weight: 200;
-  line-height: calc(23 * var(--u));
-  white-space: nowrap;
-  color: #fff;
-}
-
-/* ───────── 글자 등장 효과 (KINORIA 글자 등장 값) ─────────
- * data-reveal 은 CameraNowPage.jsx 의 useTextReveal 이 글자 줄마다 붙이고, 화면에 들어오면 data-in 이 붙는다.
- * transform 은 가운데 정렬(translateX)이 쓰고 있어서 올라오는 이동은 별도 속성인 translate 로 준다. */
-.page [data-reveal] {
+  font-size: calc(22.9 * var(--u));
+  line-height: calc(29.72 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
   opacity: 0;
-  filter: blur(10px);
-  translate: 0 1em;
+  transform: translateY(calc(24 * var(--u)));
   transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.page [data-reveal][data-in] {
+.aboutText[data-in='true'] {
   opacity: 1;
-  filter: blur(0);
-  translate: 0 0;
+  transform: none;
 }
 
-/* 01 Hero 그라데이션: 글자와 같은 타이밍으로 아래에서 올라오며 나타난다 */
-.page .heroGradient[data-reveal] {
-  filter: none;
-  translate: 0 calc(90 * var(--u));
+.aboutImage {
+  position: relative;
+  grid-row: 3;
+  height: calc(794.57 * var(--u));
+  overflow: hidden;
 }
 
-.page .heroGradient[data-reveal][data-in] {
-  translate: 0 0;
+.aboutImageLeft {
+  grid-column: 1 / span 6;
 }
 
-/* 작은 프레임이 0 → 원래 크기로 커진다. 글자는 프레임 안에서 살짝 커지며 나온다 */
-.page [data-frame] {
-  transform: scale(0);
-  transition: transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+.aboutImageRight {
+  grid-column: 7 / span 6;
 }
 
-.page [data-frame][data-in] {
-  transform: scale(1);
+/* ───────── 02 Highlights ───────── */
+.stack {
+  position: relative;
+  height: calc(2533.2 * var(--u));
 }
 
-.page [data-reveal][data-pop] {
-  scale: 0.6;
-  translate: none; /* 아래에서 올라오지 않고 제자리(프레임 가운데)에서 커진다 */
+.stackSubtitle {
+  position: absolute;
+  left: var(--pad);
+  top: calc(194.34 * var(--u));
+}
+
+.stackTitle {
+  position: absolute;
+  left: calc(425.86 * var(--u));
+  top: calc(194.34 * var(--u));
+  font-weight: 600;
+  font-size: calc(40 * var(--u));
+  line-height: calc(48 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  white-space: nowrap;
+}
+
+.stackText {
+  position: absolute;
+  left: calc(1173 * var(--u));
+  top: calc(436.3 * var(--u));
+  width: calc(434 * var(--u));
+  font-size: calc(20 * var(--u));
+  line-height: calc(24 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  opacity: 0;
+  transform: translateY(calc(24 * var(--u)));
   transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    scale 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.page [data-reveal][data-pop][data-in] {
-  scale: 1;
-  translate: none;
+.stackText[data-in='true'] {
+  opacity: 1;
+  transform: none;
 }
 
-/* 가운데 정렬(translateX(-50%))을 쓰는 글자 상자는 scale 을 transform 안에 같이 넣어 중앙에서 커지게 한다 */
-.page [data-reveal][data-pop='self'] {
-  scale: none;
-  translate: none;
-  transform: translateX(-50%) scale(0.6);
-  transform-origin: 50% 50%;
+.rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(517.19 * var(--u));
+  height: calc(2016 * var(--u));
+}
+
+.row {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  height: calc(504 * var(--u));
+  border-top: calc(0.571 * var(--u)) solid var(--gray);
+  background: #fff;
+  opacity: 0;
+  transform: translateY(calc(40 * var(--u)));
   transition:
-    opacity 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    filter 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    translate 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s),
-    transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1) var(--rv-delay, 0s);
+    opacity 1s ease,
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.page [data-reveal][data-pop='self'][data-in] {
-  transform: translateX(-50%) scale(1);
+.row[data-in='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+.row1 {
+  top: 0;
+}
+.row2 {
+  top: calc(504.11 * var(--u));
+}
+.row3 {
+  top: calc(1008 * var(--u));
+}
+.row4 {
+  top: calc(1512 * var(--u));
+}
+
+.rowTitle {
+  position: absolute;
+  left: 0;
+  top: calc(22.87 * var(--u));
+  font-family: var(--f-out);
+  font-weight: 400;
+  font-size: calc(41.2 * var(--u));
+  line-height: calc(45.27 * var(--u));
+  white-space: nowrap;
+}
+
+.rowImage {
+  position: absolute;
+  left: calc(1074.66 * var(--u));
+  top: calc(22.87 * var(--u));
+  width: calc(525.9 * var(--u));
+  height: calc(457.53 * var(--u));
+  overflow: hidden;
+}
+
+.rowText {
+  position: absolute;
+  font-size: calc(18.3 * var(--u));
+  line-height: calc(20.12 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+}
+
+.rowTextLeft {
+  left: 0;
+  top: calc(143.5 * var(--u));
+  width: calc(455 * var(--u));
+}
+
+.rowTextRight {
+  left: calc(490.41 * var(--u));
+  top: calc(143.5 * var(--u));
+  width: calc(522 * var(--u));
+}
+
+.row1 .rowTextLeft {
+  top: calc(153.52 * var(--u));
+  width: calc(393 * var(--u));
+}
+
+.row1 .rowTextRight {
+  top: calc(153.52 * var(--u));
+  left: calc(460.81 * var(--u));
+  width: calc(452 * var(--u));
+}
+
+.tip {
+  position: absolute;
+  left: 0;
+  top: calc(251.5 * var(--u));
+  font-size: calc(14 * var(--u));
+  line-height: calc(24 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  color: rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+
+.row2 .tip {
+  top: calc(264.5 * var(--u));
+}
+
+.tipLabel {
+  font-family: var(--f-out);
+}
+
+/* ───────── 하단 링크 ───────── */
+.links {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gut);
+  padding: calc(171.47 * var(--u)) var(--pad) calc(114.325 * var(--u));
+}
+
+.linksSubtitle {
+  grid-column: 1 / span 3;
+}
+
+.linksList {
+  grid-column: 7 / span 6;
+  display: flex;
+  flex-direction: column;
+  gap: calc(77.03 * var(--u));
+  width: calc(794.57 * var(--u));
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: calc(11.43 * var(--u));
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  transform: translateY(calc(24 * var(--u)));
+  transition:
+    opacity 1s ease var(--d, 0ms),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+}
+
+.link[data-in='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) {
+  .link[data-in='true']:hover {
+    opacity: 0.45;
+    transition-delay: 0ms;
+  }
+}
+
+.linkTitle {
+  font-family: var(--f-out);
+  font-weight: 400;
+  font-size: calc(41.2 * var(--u));
+  line-height: calc(45.27 * var(--u));
+}
+
+.linkText {
+  font-weight: 300;
+  font-size: calc(22.9 * var(--u));
+  line-height: calc(29.72 * var(--u));
+  letter-spacing: calc(-1 * var(--u));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page [data-frame],
-  .page [data-frame][data-in] {
-    transform: none;
-    transition: none;
-  }
-
-  .page [data-reveal][data-pop],
-  .page [data-reveal][data-pop][data-in] {
-    scale: none;
-  }
-
-  .page [data-reveal][data-pop='self'],
-  .page [data-reveal][data-pop='self'][data-in] {
-    transform: translateX(-50%);
-  }
-
-  .page [data-reveal] {
-    opacity: 1;
-    filter: none;
-    translate: none;
+  .line,
+  .ph::after,
+  .aboutText,
+  .stackText,
+  .row,
+  .link {
     transition: none;
   }
 }
