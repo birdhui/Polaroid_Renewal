@@ -2,7 +2,7 @@ import lettering from '@/assets/film/go/go-design-lettering.png';
 import photo from '@/assets/film/go/go-close-up-print.png';
 import FilmStockSection from './FilmStockSection.jsx';
 
-const go = {
+export const go = {
   id: 'go',
   name: 'Go',
   selection: 'Selection 1',

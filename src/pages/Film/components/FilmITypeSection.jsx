@@ -2,7 +2,7 @@ import lettering from '@/assets/film/i-type/i-type-design-lettering.png';
 import photo from '@/assets/film/intro-prints/santa-dog.png';
 import FilmStockSection from './FilmStockSection.jsx';
 
-const iType = {
+export const iType = {
   id: 'i-type',
   name: 'i-Type',
   selection: 'Selection 2',

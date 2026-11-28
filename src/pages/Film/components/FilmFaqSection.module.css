@@ -18,7 +18,7 @@
   position: relative;
   container-type: inline-size;
   isolation: isolate;
-  color: #fff;
+  color: #171717;
   font-family: 'Film FAQ Pretendard', var(--font-sans);
 }
 
@@ -185,6 +185,7 @@ details[open] .icon::after {
 }
 
 .divider img {
+  filter: brightness(0);
   inline-size: 100%;
   block-size: 1px;
 }

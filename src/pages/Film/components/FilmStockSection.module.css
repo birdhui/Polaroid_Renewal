@@ -111,13 +111,13 @@
   flex: none;
   inline-size: calc(var(--film-unit) * var(--line-length));
   block-size: calc(var(--film-unit) * 0.5);
-  background: repeating-linear-gradient(to right, #fff 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
+  background: repeating-linear-gradient(to right, var(--film-measurement-ink, #fff) 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
 }
 
 .vertical .track {
   inline-size: calc(var(--film-unit) * 0.5);
   block-size: calc(var(--film-unit) * var(--line-length));
-  background: repeating-linear-gradient(to bottom, #fff 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
+  background: repeating-linear-gradient(to bottom, var(--film-measurement-ink, #fff) 0 var(--dash), transparent var(--dash) calc(2 * var(--dash)));
 }
 
 

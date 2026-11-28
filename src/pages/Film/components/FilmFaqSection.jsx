@@ -1,6 +1,5 @@
 import divider from '@/assets/film/faq-divider.svg';
 import openDivider from '@/assets/film/faq-open-divider.svg';
-import FocusTitle from './FocusTitle.jsx';
 import styles from './FilmFaqSection.module.css';
 
 const introLines = [
@@ -32,17 +31,19 @@ const questions = [
   },
 ];
 
-export default function FilmFaqSection() {
+export default function FilmFaqSection({ revealLine: RevealLine }) {
   return (
     <section className={styles.section} id="film-faq" aria-labelledby="film-faq-title">
       <div className={styles.stage}>
         <div>
-          <FocusTitle as="h2" className={styles.title} id="film-faq-title" lang="en">
-            <span>Any questions?</span>{' '}
+          <h2 className={styles.title} id="film-faq-title" lang="en">
+            <span>Any questions?</span><br />
             <span>We got you.</span>
-          </FocusTitle>
-          <p className={styles.intro}>
-            {introLines.map(line => <span key={line}>{line}</span>)}
+          </h2>
+          <p className={styles.intro} data-film-reveal={RevealLine ? true : undefined}>
+            {introLines.map((line, index) => RevealLine
+              ? <RevealLine key={line} delay={index * 72}>{line}</RevealLine>
+              : <span key={line}>{line}</span>)}
           </p>
           <a
             className={styles.more}

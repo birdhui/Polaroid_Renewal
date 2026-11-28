@@ -20,7 +20,7 @@ function DimensionMark({ asset: [src, width, height] }) {
   );
 }
 
-function Dimensions({ dimensions, vertical = false }) {
+export function Dimensions({ dimensions, vertical = false }) {
   const listRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
