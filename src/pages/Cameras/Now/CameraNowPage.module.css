@@ -41,39 +41,79 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #fff;
   color: #000;
-  transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+  pointer-events: none;
+  --expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --fast: cubic-bezier(0.83, 0, 0.17, 1);
 }
 
-.loaderDone {
+.loaderPanel {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transition: transform 1.1s var(--fast) 0.25s;
+}
+
+.loaderOut .loaderPanel {
   transform: translateY(-100%);
 }
 
-.loaderTitle {
+.loaderTitle,
+.loaderLabel,
+.loaderCount {
   position: absolute;
+  margin: 0;
+  font-family: var(--f-out);
+  letter-spacing: -0.04em;
+}
+
+.loaderTitle {
   left: 22px;
   top: 22px;
-  font-family: var(--f-out);
   font-weight: 600;
   font-size: clamp(18px, 2.5vw, 40px);
   line-height: 1.1;
-  letter-spacing: -0.04em;
+}
+
+.loaderLabel {
+  left: 22px;
+  bottom: 22px;
+  font-weight: 400;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0;
 }
 
 .loaderCount {
-  position: absolute;
   right: 22px;
   bottom: 18px;
-  font-family: var(--f-out);
   font-weight: 300;
   font-size: clamp(48px, 9vw, 150px);
   line-height: 1;
-  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
 
-/* ───────── 공통: 줄 단위 등장 · 이미지 등장 ───────── */
+.loaderLineW {
+  display: block;
+  overflow: hidden;
+}
+
+.loaderLine {
+  display: block;
+  transform: translateY(100%);
+  transition: transform 1.2s var(--expo) calc(var(--i, 0) * 75ms);
+}
+
+.loaderIn .loaderLine {
+  transform: none;
+}
+
+.loaderOut .loaderLine {
+  transform: translateY(-100%);
+  transition: transform 1.2s var(--fast) calc(var(--i, 0) * 50ms);
+}
+
+/* ───────── 공통: 줄 단위 문구 등장(expo.out 1.2s) ───────── */
 .lineW {
   display: block;
   overflow: hidden;
@@ -81,12 +121,27 @@
 
 .line {
   display: block;
-  transform: translateY(110%);
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+  transform: translateY(100%);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms);
 }
 
-.lineW[data-in='true'] .line {
+[data-in='true'] .line {
   transform: none;
+}
+
+.split {
+  position: relative;
+  display: block;
+  word-break: keep-all;
+}
+
+.measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .ph {
@@ -95,22 +150,23 @@
   background: var(--gray);
 }
 
-/* 흰 막이 걷히듯 선명해진다 */
-.ph::after {
-  content: '';
+/* 시차용: 높이/위치는 스크롤 스크립트가 정한다 */
+.parBox {
   position: absolute;
   inset: 0;
-  background: #fff;
-  opacity: 1;
-  transition: opacity 1.4s ease var(--d, 0ms);
-  pointer-events: none;
+  overflow: hidden;
 }
 
-[data-in='true'] > .ph::after,
-[data-in='true'] .ph::after {
-  opacity: 0;
+.parEl {
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
 }
 
+/* 서브타이틀: 글자 단위 */
 .subtitle {
   display: flex;
   gap: calc(9.04 * var(--u));
@@ -123,6 +179,43 @@
 
 .subtitleIndex {
   color: var(--gray);
+}
+
+.chW {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.ch {
+  display: inline-block;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--cd, 0ms);
+}
+
+.chText .ch {
+  transform: translateY(200%);
+}
+
+.chNumber .ch {
+  transform: translateX(-100%);
+}
+
+[data-in='true'] .ch {
+  transform: none;
+}
+
+/* 숫자가 있는 서브타이틀: 글자가 처음엔 맨 앞에 있다가 숫자가 들어오며 제자리로 이동 */
+.subtitleText {
+  display: inline-block;
+}
+
+.subtitleShift {
+  transform: translateX(calc(-1 * var(--shift, 0px)));
+  transition: transform 1.3s cubic-bezier(0.83, 0, 0.17, 1) 0.5s;
+}
+
+[data-in='true'] .subtitleShift {
+  transform: none;
 }
 
 .bracket {
@@ -252,24 +345,44 @@
 
 .coverStrong {
   font-weight: 600;
+  color: var(--gray);
+  transition:
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
+    color 1s ease calc(var(--d, 0ms) + 500ms);
+}
+
+[data-in='true'] .coverStrong {
+  color: #000;
 }
 
 .coverImage {
   position: relative;
   flex: none;
-  width: calc(1600.56 * var(--u));
+  width: 100%;
   height: calc(900.52 * var(--u));
   overflow: hidden;
+  /* 등장 전: 가운데에서 열린다(스크롤 스크립트가 이후 클립을 제어) */
+  clip-path: inset(50% 40cqw 0);
+}
+
+.coverIn {
+  clip-path: inset(0 var(--pad));
+  transition: clip-path 1.35s cubic-bezier(0.83, 0, 0.17, 1) 0.2s;
+}
+
+.coverInner {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+
+.coverIn .coverInner {
+  transform: scale(1.015);
+  transition: transform 1.35s cubic-bezier(0.83, 0, 0.17, 1) 0.2s;
 }
 
 .coverPh {
-  inset: auto;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: calc(1096.82 * var(--u));
   background: linear-gradient(180deg, #9fb0c4 0%, #b9c4cf 45%, #d9d3c6 100%);
-  will-change: transform;
 }
 
 /* ───────── 01 About ───────── */
@@ -308,16 +421,6 @@
   font-size: calc(22.9 * var(--u));
   line-height: calc(29.72 * var(--u));
   letter-spacing: calc(-2 * var(--u));
-  opacity: 0;
-  transform: translateY(calc(24 * var(--u)));
-  transition:
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.aboutText[data-in='true'] {
-  opacity: 1;
-  transform: none;
 }
 
 .aboutImage {
@@ -366,19 +469,12 @@
   font-size: calc(20 * var(--u));
   line-height: calc(24 * var(--u));
   letter-spacing: calc(-2 * var(--u));
-  opacity: 0;
-  transform: translateY(calc(24 * var(--u)));
-  transition:
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.stackText[data-in='true'] {
-  opacity: 1;
-  transform: none;
 }
 
 .rows {
+  --final-offset: 0px;
+  --scroll-offset: 0px;
+  --scroll-progress: 0;
   position: absolute;
   left: 0;
   right: 0;
@@ -386,36 +482,24 @@
   height: calc(2016 * var(--u));
 }
 
-.row {
+/* 카드마다 아래 정렬, 안쪽 행은 sticky 로 (6rem + 8rem × 순번) 위치에 고정되며 쌓인다 */
+.card {
   position: absolute;
-  left: var(--pad);
-  right: var(--pad);
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--card-h);
+}
+
+.row {
+  position: sticky;
+  top: calc(
+    (96 + 128 * var(--i, 0)) * var(--u) + var(--scroll-offset, 0px) * var(--scroll-progress, 0) - var(--final-offset, 0px)
+  );
   height: calc(504 * var(--u));
+  margin: 0 var(--pad);
   border-top: calc(0.571 * var(--u)) solid var(--gray);
   background: #fff;
-  opacity: 0;
-  transform: translateY(calc(40 * var(--u)));
-  transition:
-    opacity 1s ease,
-    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.row[data-in='true'] {
-  opacity: 1;
-  transform: none;
-}
-
-.row1 {
-  top: 0;
-}
-.row2 {
-  top: calc(504.11 * var(--u));
-}
-.row3 {
-  top: calc(1008 * var(--u));
-}
-.row4 {
-  top: calc(1512 * var(--u));
 }
 
 .rowTitle {
@@ -508,25 +592,15 @@
   width: calc(794.57 * var(--u));
 }
 
-.link {
+\.link {
   display: flex;
   flex-direction: column;
   gap: calc(11.43 * var(--u));
   transition: opacity 0.3s ease;
-  opacity: 0;
-  transform: translateY(calc(24 * var(--u)));
-  transition:
-    opacity 1s ease var(--d, 0ms),
-    transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
-}
-
-.link[data-in='true'] {
-  opacity: 1;
-  transform: none;
 }
 
 @media (hover: hover) {
-  .link[data-in='true']:hover {
+  .link:hover {
     opacity: 0.45;
     transition-delay: 0ms;
   }
@@ -548,11 +622,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .line,
-  .ph::after,
-  .aboutText,
-  .stackText,
-  .row,
-  .link {
+  .ch,
+  .subtitleShift,
+  .coverStrong,
+  .coverIn,
+  .coverIn .coverInner {
     transition: none;
   }
 }
