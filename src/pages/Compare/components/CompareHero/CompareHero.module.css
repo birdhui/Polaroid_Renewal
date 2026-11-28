@@ -112,21 +112,6 @@
   letter-spacing: -0.0225em;
 }
 
-/*
- * 위쪽 로고 — 흰색 svg 라서 색을 뒤집어 #151515 근처로 만든다. 크기는 시안 116 x 31.
- * 맨 위 카메라와 겹치지 않게 안쪽 원 안에 둔다: 화면 가운데에서 344 위 (1080 기준 위에서 196 — 프로토타입 자리)
- */
-.logo {
-  position: absolute;
-  top: calc(50% - 344 * var(--k));
-  left: 50%;
-  width: max(calc(116 * var(--u)), 84px);
-  height: max(calc(31 * var(--u)), 23px);
-  translate: -50% 0;
-  background: var(--logo) center / contain no-repeat;
-  filter: invert(0.92);
-}
-
 /* 시안: 137 x 41 검정 버튼 / Pretendard 14 흰색 / 자간 -1 · 문구와 73 간격 */
 .cta {
   margin-top: calc(74 * var(--u));
