@@ -28,17 +28,16 @@
 
 /*
  * 처음 등장 (참고: Vitra Office Chair Finder 결과 준비 화면)
- *  1) 글이 멀리서부터 앞으로 다가오듯 작게 나타나 천천히 커진다 (깜빡이지 않고 한 번에 이어진다)
- *  2) 조금 뒤 카메라가 안쪽에서 아주 연하게 보이기 시작해, 점점 진해지면서 바깥으로 퍼지듯 다가온다
+ *  1) 글과 카메라가 같은 순간에 함께 멀리서부터 앞으로 다가온다 (작게 시작해 제 크기가 된다)
+ *  2) 글은 금방 선명해지고, 카메라는 다가오는 내내 아주 연한 데서 서서히 진해진다
  *  3) 다 나타난 뒤에는 사라지지 않고 그대로 계속 돈다
  * 수치는 참고 영상을 재서 잡은 임시값이다.
  */
 .hero {
-  --intro-text: 3200ms; /* 글이 멀리서 다가와 제 크기가 되기까지 — 카메라가 다 다가올 때 같이 끝난다 */
-  --intro-delay: 800ms; /* 카메라가 보이기 시작 */
-  --intro-fade: 1400ms; /* 카메라가 연한 데서 진해지는 시간 */
-  --intro-grow: 2400ms; /* 카메라가 다가오고 글이 커지는 시간 */
-  --intro-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --intro-approach: 3200ms; /* 글과 카메라가 함께 다가와 제 크기가 되기까지 */
+  --intro-fade: 3200ms; /* 카메라가 아주 연한 데서 다 진해지기까지 — 다가오는 내내 서서히 */
+  --intro-ease: cubic-bezier(0.22, 0.61, 0.36, 1); /* 다가오기: 처음에 빨리, 끝에 천천히 */
+  --intro-fade-ease: cubic-bezier(0.45, 0, 0.55, 1); /* 진해지기: 처음과 끝을 부드럽게 */
 }
 
 /* 카메라가 깔리는 화면. 카메라 자리는 화면 한가운데(원점)를 기준으로 한 시안 px 이다 */
@@ -47,7 +46,7 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  animation: intro-fade var(--intro-fade) ease-in-out var(--intro-delay) both;
+  animation: intro-fade var(--intro-fade) var(--intro-fade-ease) both;
 }
 
 @keyframes intro-fade {
@@ -73,13 +72,13 @@
   /* 회전은 transform, 다가오는 건 scale 이라 서로 겹치지 않는다. 원 중심(화면 한가운데)을 기준으로 커진다 */
   animation:
     ring-spin var(--period) linear infinite,
-    intro-approach var(--intro-grow) var(--intro-ease) var(--intro-delay) both;
+    intro-approach var(--intro-approach) var(--intro-ease) both;
   will-change: transform, scale;
 }
 
 @keyframes intro-approach {
   from {
-    scale: 0.75;
+    scale: 0.7;
   }
 
   to {
@@ -129,7 +128,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  animation: intro-text-approach var(--intro-text) var(--intro-ease) both;
+  animation: intro-text-approach var(--intro-approach) var(--intro-ease) both;
 }
 
 /* 멀리 있던 글이 앞으로 다가온다: 작게 시작해 계속 커지고, 처음 잠깐 사이에 선명해진다 */
